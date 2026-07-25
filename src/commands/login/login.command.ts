@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { login } from '@/services/login'
+import { login } from './login.service'
 
 export const loginCommand = new Command('login')
     .description('Authorize the project with Zoho and store the resulting tokens')

@@ -8,7 +8,7 @@ import {
     resolveProjectSettingsDirPath,
     resolveProjectSettingsPath,
 } from '@/config'
-import { initializeProject } from '@/services/init'
+import { initializeProject } from '@/commands/init'
 import { clearProjectCache, defaultProjectSettings } from '@/settings'
 
 let workingPath: string

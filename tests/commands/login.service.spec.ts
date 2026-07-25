@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { resolveProjectSettingsPath } from '@/config'
-import { login } from '@/services/login'
+import { login } from '@/commands/login'
 import type { ProjectSettings } from '@/settings'
 
 import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../support/temp-project'

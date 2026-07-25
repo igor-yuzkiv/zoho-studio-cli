@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import { relative, resolve } from 'node:path'
 
 import { projectSettingsGitignoreEntry, projectSettingsFileName } from '@/config'
-import { initializeProject } from '@/services/init'
+import { initializeProject } from './init.service'
 
 export const initCommand = new Command('init')
     .description('Initialize a Zoho Studio project in the target folder')
