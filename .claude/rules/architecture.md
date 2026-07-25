@@ -16,6 +16,18 @@ src/
     crm/      # Zoho CRM API clients, requests, and related types.
 ```
 
+Inside `api/`, each area (`auth/`, `crm/`) keeps its requests in a `requests/` folder, one request
+per file, and its own types next to them. Types shared across areas live in the root of `api/`.
+
+```text
+api/
+  auth/
+    requests/
+      exchange-grant-code.api.ts
+    auth.types.ts
+    index.ts
+```
+
 ## Code style
 
 ### File naming

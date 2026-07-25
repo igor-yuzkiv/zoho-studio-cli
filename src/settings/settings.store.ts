@@ -3,25 +3,34 @@ import { resolve } from 'node:path'
 
 import { writeJsonFile } from '@/shared/json.utils'
 
-import { loadProjectSettings } from './settings.loader'
-import { resolveProjectSettingsPath } from '@/config'
-import type { ProjectSettings } from './types'
+import { findProjectPath, loadProjectSettings } from './settings.loader'
+import { projectSettingsGitignoreEntry, resolveProjectSettingsPath } from '@/config'
+import type { ProjectContext, ProjectSettings } from './types'
 
 // Edits made outside the running CLI are not picked up.
 const cachedSettings = new Map<string, ProjectSettings>()
 
-export async function getProjectSettings(projectPath: string = process.cwd()): Promise<ProjectSettings> {
-    const cacheKey = resolve(projectPath)
-    const cached = cachedSettings.get(cacheKey)
+/** Walks up from `startPath` to the project root, so commands work from any subfolder. */
+export async function getProjectSettings(startPath: string = process.cwd()): Promise<ProjectContext> {
+    const projectPath = await findProjectPath(startPath)
+
+    if (!projectPath) {
+        throw new Error(
+            `No ${projectSettingsGitignoreEntry} found in ${resolve(startPath)} or any parent. ` +
+                'Run "zoho-studio init" first.'
+        )
+    }
+
+    const cached = cachedSettings.get(projectPath)
 
     if (cached) {
-        return cached
+        return { projectPath, settings: cached }
     }
 
     const settings = await loadProjectSettings(projectPath)
-    cachedSettings.set(cacheKey, settings)
+    cachedSettings.set(projectPath, settings)
 
-    return settings
+    return { projectPath, settings }
 }
 
 export async function saveProjectSettings(projectPath: string, settings: ProjectSettings): Promise<void> {

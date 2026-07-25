@@ -17,3 +17,9 @@ export interface ProjectSettings {
         version: string
     }
 }
+
+/** The settings together with the project root they were found in. */
+export interface ProjectContext {
+    projectPath: string
+    settings: ProjectSettings
+}

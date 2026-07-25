@@ -39,7 +39,12 @@ There are two kinds of values in there, and the difference matters when you edit
 
 - `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*` — **yours**. You
   fill them in, the CLI only reads them.
-- `auth.tokens.*` — **the CLI's**. It writes them and keeps them up to date.
+- `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
+  `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
+
+`auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
+the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
+never received is a scope it cannot silently use.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
 `clientId` and `clientSecret` is a valid project. That also means you can delete a key to return to
@@ -49,12 +54,15 @@ the default instead of hunting for the original value.
 
 `loadProjectSettings()` reads the file through [bunfig](https://github.com/stacksjs/bunfig) and
 deep-merges it into the defaults. `getProjectSettings()` wraps it with a cache, and is what
-commands call.
+commands call: it walks up from the current folder to the nearest project root and returns both
+that path and the settings, so a command works from any subfolder and no command has to look for
+the project itself.
 
 Three behaviors worth knowing before you rely on them:
 
-- **A missing file is not an error.** You get the defaults, so the return value cannot tell you
-  whether a folder is a project.
+- **Outside a project it fails.** `getProjectSettings()` throws with a hint to run `init` when no
+  parent folder holds a settings file. Only the lower-level `loadProjectSettings()` silently
+  returns the defaults for a missing file.
 - **Environment variables are ignored.** bunfig would otherwise map a `SETTINGS_*` prefix onto the
   defaults, and a stray `SETTINGS_API_BASEURL` in your shell would silently replace a value the
   project file never mentioned. That is turned off.
@@ -78,5 +86,8 @@ and write the result back — do not hand it a partial object.
 | `src/config.ts` | File and folder names, path helpers, the `.gitignore` entry |
 | `src/settings/types.ts` | The `ProjectSettings` shape |
 | `src/settings/default.settings.ts` | The defaults every read merges into |
-| `src/settings/settings.loader.ts` | `loadProjectSettings()` |
+| `src/settings/settings.loader.ts` | `loadProjectSettings()`, `findProjectPath()` |
 | `src/settings/settings.store.ts` | `getProjectSettings()`, `saveProjectSettings()`, the cache |
+
+`saveProjectSettings()` takes the project path explicitly — `init` writes the very first settings
+file, when there is no project to find yet.
