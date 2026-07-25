@@ -1,0 +1,50 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(bun install)",
+            "Bash(bun install:*)",
+            "Bash(bun test:*)",
+            "Bash(bun run:*)",
+            "Bash(bunx tsc:*)",
+            "Bash(bunx eslint:*)",
+            "Bash(bunx prettier:*)",
+            "Bash(git status:*)",
+            "Bash(git diff:*)",
+            "Bash(git log:*)",
+            "Bash(git show:*)",
+            "Bash(git branch:*)",
+            "Bash(git stash list:*)",
+            "Bash(git add:*)",
+            "Bash(git commit:*)",
+            "Bash(project-office:*)"
+        ],
+        "ask": [
+            "Bash(git push:*)",
+            "Bash(bun add:*)",
+            "Bash(bun remove:*)",
+            "Bash(bun update:*)",
+            "Bash(rm -rf:*)"
+        ],
+        "deny": [
+            "Bash(sudo:*)",
+            "Bash(su:*)",
+            "Bash(rm -rf /)",
+            "Bash(rm -rf /*)",
+            "Bash(rm -rf ~)",
+            "Bash(rm -rf ~/*)",
+            "Bash(git push --force:*)",
+            "Bash(git push -f:*)",
+            "Bash(git reset --hard:*)",
+            "Bash(git clean:*)",
+            "Edit(.claude/settings.json)",
+            "Edit(.claude/settings.local.json)",
+            "Edit(~/.claude/settings.json)",
+            "Edit(.git/**)",
+            "Read(~/.ssh/**)",
+            "Read(~/.aws/**)",
+            "Read(~/.claude/.credentials.json)",
+            "Read(**/.env)",
+            "Read(**/.env.*)"
+        ]
+    }
+}
