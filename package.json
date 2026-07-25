@@ -1,0 +1,32 @@
+{
+  "name": "zoho-studio-cli",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^2.0.1",
+    "@eslint/markdown": "^8.0.3",
+    "@types/bun": "latest",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "prettier": "3.9.6",
+    "typescript-eslint": "^8.65.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.5.2",
+    "axios": "^1.18.1",
+    "bunfig": "^0.15.15",
+    "commander": "^15.0.0"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --target=bun --outfile=dist/zoho-studio-cli",
+    "compile": "bun build src/index.ts --compile --outfile=dist/zoho-studio-cli",
+    "lint": "eslint src"
+  }
+}
