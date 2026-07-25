@@ -5,7 +5,6 @@ export interface DeviceVerification {
 }
 
 export interface LoginOptions {
-    startPath?: string
     /** Called once the device code is issued, so the command can show the user what to approve. */
     onVerificationRequired?: (verification: DeviceVerification) => void
 }

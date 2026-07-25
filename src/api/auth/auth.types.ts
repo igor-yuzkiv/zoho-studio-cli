@@ -1,5 +1,4 @@
 export interface DeviceCodeRequest {
-    baseUrl: string
     clientId: string
     scopes: string[]
 }
@@ -14,14 +13,12 @@ export interface DeviceCode {
 }
 
 export interface DeviceTokenRequest {
-    baseUrl: string
     clientId: string
     clientSecret: string
     deviceCode: string
 }
 
 export interface RefreshAccessTokenRequest {
-    baseUrl: string
     clientId: string
     clientSecret: string
     refreshToken: string

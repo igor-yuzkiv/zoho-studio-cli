@@ -26,3 +26,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [2-settings.md](2-settings.md) — the settings file, and how the CLI reads and writes it
 - [3-init-command.md](3-init-command.md) — creating a project with `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`
+- [5-status-command.md](5-status-command.md) — checking the connection with `zoho-studio status`

@@ -1,16 +1,16 @@
 import { Command } from 'commander'
 
-import { debugCommand } from '@/commands/debug'
 import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
+import { statusCommand } from '@/commands/status'
 
 const program = new Command()
 
 program.name('zoho-studio')
 
-program.addCommand(debugCommand)
 program.addCommand(initCommand)
 program.addCommand(loginCommand)
+program.addCommand(statusCommand)
 
 try {
     await program.parseAsync()

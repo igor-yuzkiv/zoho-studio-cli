@@ -2,34 +2,42 @@ import { afterEach, describe, expect, test } from 'bun:test'
 
 import { pollDeviceToken } from '@/api/auth'
 
+import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
+
+let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
 let lastRequestUrl: URL | null = null
 
-function startServer(body: unknown): string {
+async function startZoho(body: unknown): Promise<void> {
     server = Bun.serve({
         port: 0,
         fetch(request) {
             lastRequestUrl = new URL(request.url)
-            return new Response(JSON.stringify(body))
+            return Response.json(body)
         },
     })
 
-    return server.url.origin
+    projectPath = await createTempProject(buildSettings({ auth: { baseUrl: server.url.origin } }))
 }
 
-afterEach(() => {
+afterEach(async () => {
     server?.stop(true)
     server = null
     lastRequestUrl = null
+
+    if (projectPath) {
+        await removeTempProject(projectPath)
+        projectPath = null
+    }
 })
 
-function poll(baseUrl: string) {
-    return pollDeviceToken({ baseUrl, clientId: '1000.CLIENT', clientSecret: 'secret', deviceCode: 'device' })
+function poll() {
+    return pollDeviceToken({ clientId: '1000.CLIENT', clientSecret: 'secret', deviceCode: 'device' })
 }
 
 describe('pollDeviceToken', () => {
     test('sends the device token parameters and maps issued tokens', async () => {
-        const baseUrl = startServer({
+        await startZoho({
             access_token: 'access',
             refresh_token: 'refresh',
             expires_in: 3600,
@@ -38,7 +46,7 @@ describe('pollDeviceToken', () => {
         })
 
         const before = Date.now()
-        const result = await poll(baseUrl)
+        const result = await poll()
 
         expect(lastRequestUrl?.pathname).toBe('/oauth/v3/device/token')
         expect(Object.fromEntries(lastRequestUrl!.searchParams)).toEqual({
@@ -63,45 +71,45 @@ describe('pollDeviceToken', () => {
     })
 
     test('treats authorization_pending as waiting rather than failure', async () => {
-        const baseUrl = startServer({ error: 'authorization_pending' })
+        await startZoho({ error: 'authorization_pending' })
 
-        expect(await poll(baseUrl)).toEqual({ status: 'pending' })
+        expect(await poll()).toEqual({ status: 'pending' })
     })
 
     test('treats slow_down as waiting rather than failure', async () => {
-        const baseUrl = startServer({ error: 'slow_down' })
+        await startZoho({ error: 'slow_down' })
 
-        expect(await poll(baseUrl)).toEqual({ status: 'slow_down' })
+        expect(await poll()).toEqual({ status: 'slow_down' })
     })
 
     test('fails when the user denied the request', async () => {
-        const baseUrl = startServer({ error: 'access_denied' })
+        await startZoho({ error: 'access_denied' })
 
-        await expect(poll(baseUrl)).rejects.toThrow(/access_denied.*denied in the browser/s)
+        await expect(poll()).rejects.toThrow(/access_denied.*denied in the browser/s)
     })
 
     test('explains a wrong data center', async () => {
-        const baseUrl = startServer({ error: 'other_dc' })
+        await startZoho({ error: 'other_dc' })
 
-        await expect(poll(baseUrl)).rejects.toThrow(/other_dc.*data center/s)
+        await expect(poll()).rejects.toThrow(/other_dc.*data center/s)
     })
 
     test('explains a wrong client secret', async () => {
-        const baseUrl = startServer({ error: 'invalid_client_secret' })
+        await startZoho({ error: 'invalid_client_secret' })
 
-        await expect(poll(baseUrl)).rejects.toThrow(/invalid_client_secret.*auth\.clientSecret/s)
+        await expect(poll()).rejects.toThrow(/invalid_client_secret.*auth\.clientSecret/s)
     })
 
     test('fails when the response carries no tokens', async () => {
-        const baseUrl = startServer({ access_token: 'access' })
+        await startZoho({ access_token: 'access' })
 
-        await expect(poll(baseUrl)).rejects.toThrow(/without an access token or a refresh token/)
+        await expect(poll()).rejects.toThrow(/without an access token or a refresh token/)
     })
 
-    test('fails when the accounts server is unreachable', async () => {
-        const baseUrl = startServer({})
+    test('reports an unreachable accounts server', async () => {
+        await startZoho({})
         server?.stop(true)
 
-        await expect(poll(baseUrl)).rejects.toThrow()
+        await expect(poll()).rejects.toThrow(/Could not reach the Zoho accounts server/)
     })
 })

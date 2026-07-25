@@ -2,34 +2,42 @@ import { afterEach, describe, expect, test } from 'bun:test'
 
 import { requestDeviceCode } from '@/api/auth'
 
+import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
+
+let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
 let lastRequestUrl: URL | null = null
 
-function startServer(body: unknown): string {
+async function startZoho(body: unknown): Promise<void> {
     server = Bun.serve({
         port: 0,
         fetch(request) {
             lastRequestUrl = new URL(request.url)
-            return new Response(JSON.stringify(body))
+            return Response.json(body)
         },
     })
 
-    return server.url.origin
+    projectPath = await createTempProject(buildSettings({ auth: { baseUrl: server.url.origin } }))
 }
 
-afterEach(() => {
+afterEach(async () => {
     server?.stop(true)
     server = null
     lastRequestUrl = null
+
+    if (projectPath) {
+        await removeTempProject(projectPath)
+        projectPath = null
+    }
 })
 
-function request(baseUrl: string) {
-    return requestDeviceCode({ baseUrl, clientId: '1000.CLIENT', scopes: ['A', 'B'] })
+function request() {
+    return requestDeviceCode({ clientId: '1000.CLIENT', scopes: ['A', 'B'] })
 }
 
 describe('requestDeviceCode', () => {
     test('asks for an offline device code and maps the response', async () => {
-        const baseUrl = startServer({
+        await startZoho({
             device_code: 'device',
             user_code: 'USER-CODE',
             verification_url: 'https://accounts.zoho.com/oauth/v3/device',
@@ -37,7 +45,7 @@ describe('requestDeviceCode', () => {
             expires_in: 300_000,
         })
 
-        const deviceCode = await request(baseUrl)
+        const deviceCode = await request()
 
         expect(lastRequestUrl?.pathname).toBe('/oauth/v3/device/code')
         expect(Object.fromEntries(lastRequestUrl!.searchParams)).toEqual({
@@ -55,36 +63,28 @@ describe('requestDeviceCode', () => {
         })
     })
 
-    test('trims a trailing slash from the base url', async () => {
-        const baseUrl = startServer({ device_code: 'device', user_code: 'U', verification_url: 'https://zoho' })
-
-        await request(`${baseUrl}/`)
-
-        expect(lastRequestUrl?.pathname).toBe('/oauth/v3/device/code')
-    })
-
     test('explains a rejected scope', async () => {
-        const baseUrl = startServer({ error: 'invalid_scope' })
+        await startZoho({ error: 'invalid_scope' })
 
-        await expect(request(baseUrl)).rejects.toThrow(/invalid_scope.*auth\.scopes/s)
+        await expect(request()).rejects.toThrow(/invalid_scope.*auth\.scopes/s)
     })
 
     test('explains an unknown client', async () => {
-        const baseUrl = startServer({ error: 'invalid_client' })
+        await startZoho({ error: 'invalid_client' })
 
-        await expect(request(baseUrl)).rejects.toThrow(/invalid_client.*auth\.clientId/s)
+        await expect(request()).rejects.toThrow(/invalid_client.*auth\.clientId/s)
     })
 
     test('fails on an incomplete response', async () => {
-        const baseUrl = startServer({ device_code: 'device' })
+        await startZoho({ device_code: 'device' })
 
-        await expect(request(baseUrl)).rejects.toThrow(/incomplete device code response/)
+        await expect(request()).rejects.toThrow(/incomplete device code response/)
     })
 
-    test('fails when the accounts server is unreachable', async () => {
-        const baseUrl = startServer({})
+    test('reports an unreachable accounts server', async () => {
+        await startZoho({})
         server?.stop(true)
 
-        await expect(request(baseUrl)).rejects.toThrow()
+        await expect(request()).rejects.toThrow(/Could not reach the Zoho accounts server/)
     })
 })

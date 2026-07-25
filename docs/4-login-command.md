@@ -44,7 +44,7 @@ Then run `login`.
 ## Staying authorized
 
 You run `login` once. The access token Zoho issues lives an hour, and commands that need it ask
-`TokenService` (`src/services/auth/token.service.ts`) rather than reading the settings themselves.
+`TokenService` (`src/api/auth/token.service.ts`) rather than reading the settings themselves.
 It hands back the stored token while it is valid, and otherwise exchanges the refresh token for a
 new access token and writes it back to `settings.json`. A token within a minute of expiring counts
 as expired, so it is never handed out just before it dies, and concurrent callers in one run share
@@ -54,16 +54,10 @@ The refresh token itself does not expire. You only need `login` again if it was 
 console or the client was replaced; that shows up as
 `The stored refresh token is no longer valid …`.
 
-## Checking the token
+## Checking the result
 
-`zoho-studio debug` calls the Zoho CRM `org` endpoint with the stored access token and prints the
-HTTP status and your organization name. It is a quick manual check that the token and `api.baseUrl`
-are right:
-
-```text
-HTTP 200
-Organization: Acme Inc
-```
+[`zoho-studio status`](5-status-command.md) asks Zoho which organization the project is connected
+to — the quickest confirmation that the credentials and `api.baseUrl` are right.
 
 ## When it fails
 

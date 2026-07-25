@@ -2,34 +2,42 @@ import { afterEach, describe, expect, test } from 'bun:test'
 
 import { refreshAccessToken } from '@/api/auth'
 
+import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
+
+let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
 let lastRequestUrl: URL | null = null
 
-function startServer(body: unknown): string {
+async function startZoho(body: unknown): Promise<void> {
     server = Bun.serve({
         port: 0,
         fetch(request) {
             lastRequestUrl = new URL(request.url)
-            return new Response(JSON.stringify(body))
+            return Response.json(body)
         },
     })
 
-    return server.url.origin
+    projectPath = await createTempProject(buildSettings({ auth: { baseUrl: server.url.origin } }))
 }
 
-afterEach(() => {
+afterEach(async () => {
     server?.stop(true)
     server = null
     lastRequestUrl = null
+
+    if (projectPath) {
+        await removeTempProject(projectPath)
+        projectPath = null
+    }
 })
 
-function refresh(baseUrl: string) {
-    return refreshAccessToken({ baseUrl, clientId: '1000.CLIENT', clientSecret: 'secret', refreshToken: 'refresh' })
+function refresh() {
+    return refreshAccessToken({ clientId: '1000.CLIENT', clientSecret: 'secret', refreshToken: 'refresh' })
 }
 
 describe('refreshAccessToken', () => {
     test('sends the refresh parameters and maps the new access token', async () => {
-        const baseUrl = startServer({
+        await startZoho({
             access_token: 'fresh',
             expires_in: 3600,
             api_domain: 'https://www.zohoapis.com',
@@ -37,7 +45,7 @@ describe('refreshAccessToken', () => {
         })
 
         const before = Date.now()
-        const token = await refresh(baseUrl)
+        const token = await refresh()
 
         expect(lastRequestUrl?.pathname).toBe('/oauth/v2/token')
         expect(Object.fromEntries(lastRequestUrl!.searchParams)).toEqual({
@@ -52,27 +60,27 @@ describe('refreshAccessToken', () => {
     })
 
     test('explains a revoked refresh token', async () => {
-        const baseUrl = startServer({ error: 'invalid_code' })
+        await startZoho({ error: 'invalid_code' })
 
-        await expect(refresh(baseUrl)).rejects.toThrow(/refresh token is no longer valid.*zoho-studio login/s)
+        await expect(refresh()).rejects.toThrow(/refresh token is no longer valid.*zoho-studio login/s)
     })
 
     test('explains a wrong client secret', async () => {
-        const baseUrl = startServer({ error: 'invalid_client_secret' })
+        await startZoho({ error: 'invalid_client_secret' })
 
-        await expect(refresh(baseUrl)).rejects.toThrow(/invalid_client_secret.*auth\.clientSecret/s)
+        await expect(refresh()).rejects.toThrow(/invalid_client_secret.*auth\.clientSecret/s)
     })
 
     test('fails when the response carries no access token', async () => {
-        const baseUrl = startServer({ token_type: 'Bearer' })
+        await startZoho({ token_type: 'Bearer' })
 
-        await expect(refresh(baseUrl)).rejects.toThrow(/without an access token/)
+        await expect(refresh()).rejects.toThrow(/without an access token/)
     })
 
-    test('fails when the accounts server is unreachable', async () => {
-        const baseUrl = startServer({})
+    test('reports an unreachable accounts server', async () => {
+        await startZoho({})
         server?.stop(true)
 
-        await expect(refresh(baseUrl)).rejects.toThrow()
+        await expect(refresh()).rejects.toThrow(/Could not reach the Zoho accounts server/)
     })
 })

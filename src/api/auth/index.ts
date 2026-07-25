@@ -1,4 +1,5 @@
 export * from './auth.types'
-export { pollDeviceToken } from './requests/poll-device-token.api'
-export { refreshAccessToken } from './requests/refresh-access-token.api'
-export { requestDeviceCode } from './requests/request-device-code.api'
+export * from './requests'
+export { AuthError, AuthTransportError } from './auth.error'
+export { authClient } from './auth.client'
+export { TokenService, tokenService } from './token.service'

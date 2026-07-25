@@ -4,9 +4,9 @@ import { getProjectSettings, saveProjectSettings } from '@/settings'
 
 import type { LoginOptions, LoginResult } from './login.types'
 
-export async function login({ startPath = process.cwd(), onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
-    const { projectPath, settings } = await getProjectSettings(startPath)
-    const { baseUrl, clientId, clientSecret, scopes } = settings.auth
+export async function login({ onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
+    const { projectPath, settings } = await getProjectSettings()
+    const { clientId, clientSecret, scopes } = settings.auth
 
     if (!clientId || !clientSecret) {
         throw new Error(
@@ -19,7 +19,7 @@ export async function login({ startPath = process.cwd(), onVerificationRequired 
         throw new Error(`auth.scopes is empty in ${projectSettingsGitignoreEntry}. List the scopes the CLI may use.`)
     }
 
-    const deviceCode = await requestDeviceCode({ baseUrl, clientId, scopes })
+    const deviceCode = await requestDeviceCode({ clientId, scopes })
 
     onVerificationRequired?.({
         verificationUrl: deviceCode.verificationUrl,
@@ -27,7 +27,7 @@ export async function login({ startPath = process.cwd(), onVerificationRequired 
         expiresInMs: deviceCode.expiresInMs,
     })
 
-    const tokens = await waitForApproval({ baseUrl, clientId, clientSecret }, deviceCode)
+    const tokens = await waitForApproval({ clientId, clientSecret }, deviceCode)
 
     await saveProjectSettings(projectPath, {
         ...settings,
@@ -49,7 +49,7 @@ export async function login({ startPath = process.cwd(), onVerificationRequired 
 }
 
 async function waitForApproval(
-    client: { baseUrl: string; clientId: string; clientSecret: string },
+    client: { clientId: string; clientSecret: string },
     deviceCode: DeviceCode
 ): Promise<TokenResponse> {
     const deadline = Date.now() + deviceCode.expiresInMs

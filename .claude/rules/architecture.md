@@ -23,10 +23,17 @@ per file, and its own types next to them. Types shared across areas live in the 
 api/
   auth/
     requests/
-      exchange-grant-code.api.ts
+      refresh-access-token.request.ts
+      index.ts
+    auth.client.ts
+    auth.error.ts
     auth.types.ts
     index.ts
 ```
+
+Each area owns one axios instance, created and exported at module level (`auth.client.ts`,
+`crm.client.ts`). Per-project configuration — base URL, authorization header — is resolved inside
+its interceptors, so requests stay free of setup and callers never build a client.
 
 ## Code style
 
@@ -39,7 +46,7 @@ Examples:
 
 ```text
 crm.client.ts
-functions.api.ts
+get-organization.request.ts
 config.loader.ts
 config.types.ts
 pull-functions.command.ts
@@ -49,7 +56,7 @@ token.store.ts
 Use clear responsibility suffixes where applicable:
 
 * `.command.ts`
-* `.api.ts`
+* `.request.ts`
 * `.client.ts`
 * `.service.ts`
 * `.store.ts`

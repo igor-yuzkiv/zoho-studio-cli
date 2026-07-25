@@ -1,24 +1,25 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
+import { afterEach, describe, expect, test } from 'bun:test'
 import { mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { resolveProjectSettingsPath } from '@/config'
 import { login } from '@/services/login'
-import { clearProjectCache, defaultProjectSettings, type ProjectSettings } from '@/settings'
+import type { ProjectSettings } from '@/settings'
 
-let projectPath: string
+import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../support/temp-project'
+
+let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
-
-beforeEach(async () => {
-    clearProjectCache()
-    projectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-login-'))
-})
 
 afterEach(async () => {
     server?.stop(true)
     server = null
-    await rm(projectPath, { recursive: true, force: true })
+
+    if (projectPath) {
+        await removeTempProject(projectPath)
+        projectPath = null
+    }
 })
 
 const issuedTokens = {
@@ -29,24 +30,24 @@ const issuedTokens = {
     token_type: 'Bearer',
 }
 
+const deviceCodeAnswer = {
+    device_code: 'device',
+    user_code: 'USER-CODE',
+    verification_url: 'https://accounts.zoho.com/oauth/v3/device',
+    // Keeps the polling loop instant in tests; Zoho dictates 5000 in practice.
+    interval: 1,
+    expires_in: 300_000,
+}
+
 /** Answers the device code request, then the given poll answers in order. */
-function startZoho(pollAnswers: unknown[], deviceCodeAnswer: unknown = null): string {
+function startZoho(pollAnswers: unknown[] = [], deviceCode: unknown = deviceCodeAnswer): string {
     const answers = [...pollAnswers]
 
     server = Bun.serve({
         port: 0,
         fetch(request) {
             if (new URL(request.url).pathname.endsWith('/device/code')) {
-                return Response.json(
-                    deviceCodeAnswer ?? {
-                        device_code: 'device',
-                        user_code: 'USER-CODE',
-                        verification_url: 'https://accounts.zoho.com/oauth/v3/device',
-                        // Keeps the polling loop instant in tests; Zoho dictates 5000 in practice.
-                        interval: 1,
-                        expires_in: 300_000,
-                    }
-                )
+                return Response.json(deviceCode)
             }
 
             return Response.json(answers.shift() ?? issuedTokens)
@@ -56,42 +57,40 @@ function startZoho(pollAnswers: unknown[], deviceCodeAnswer: unknown = null): st
     return server.url.origin
 }
 
-async function writeSettings(overrides: Partial<ProjectSettings['auth']>, api = defaultProjectSettings.api) {
-    const settings: ProjectSettings = {
-        ...defaultProjectSettings,
-        auth: { ...defaultProjectSettings.auth, clientId: '1000.CLIENT', clientSecret: 'secret', ...overrides },
-        api,
-    }
-
-    await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify(settings))
+async function startProject(
+    pollAnswers: unknown[] = [],
+    { auth = {}, api = {}, deviceCode = deviceCodeAnswer }: Parameters<typeof buildSettings>[0] & {
+        deviceCode?: unknown
+    } = {}
+): Promise<void> {
+    const baseUrl = startZoho(pollAnswers, deviceCode)
+    projectPath = await createTempProject(buildSettings({ auth: { baseUrl, ...auth }, api }))
 }
 
-function readSettings(): Promise<ProjectSettings> {
-    return Bun.file(resolveProjectSettingsPath(projectPath)).json()
+function readStoredTokens(): Promise<ProjectSettings['auth']['tokens']> {
+    return readStoredSettings(projectPath!).then((settings) => settings.auth.tokens)
 }
 
 describe('login', () => {
     test('waits for approval, then stores the tokens owner-only', async () => {
-        const baseUrl = startZoho([{ error: 'authorization_pending' }, { error: 'slow_down' }, issuedTokens])
-        await writeSettings({ baseUrl })
+        await startProject([{ error: 'authorization_pending' }, { error: 'slow_down' }, issuedTokens])
 
-        const result = await login({ startPath: projectPath })
+        const result = await login()
 
-        const tokens = (await readSettings()).auth.tokens
+        const tokens = await readStoredTokens()
         expect(tokens.accessToken).toBe('access')
         expect(tokens.refreshToken).toBe('refresh')
         expect(tokens.accessTokenExpiresAt).toBe(result.accessTokenExpiresAt)
-        expect((await stat(resolveProjectSettingsPath(projectPath))).mode & 0o777).toBe(0o600)
-        expect(result.projectPath).toBe(projectPath)
+        expect((await stat(resolveProjectSettingsPath(projectPath!))).mode & 0o777).toBe(0o600)
+        expect(result.projectPath).toBe(projectPath!)
         expect(result.apiDomainMismatch).toBeNull()
     })
 
     test('reports the code to enter before waiting', async () => {
-        const baseUrl = startZoho([])
-        await writeSettings({ baseUrl })
+        await startProject()
         const verifications: unknown[] = []
 
-        await login({ startPath: projectPath, onVerificationRequired: (v) => verifications.push(v) })
+        await login({ onVerificationRequired: (verification) => verifications.push(verification) })
 
         expect(verifications).toEqual([
             {
@@ -103,75 +102,75 @@ describe('login', () => {
     })
 
     test('preserves the credentials and overwrites earlier tokens', async () => {
-        const baseUrl = startZoho([])
-        await writeSettings({
-            baseUrl,
-            tokens: { accessToken: 'old', refreshToken: 'old', accessTokenExpiresAt: 1 },
+        await startProject([], {
+            auth: { tokens: { accessToken: 'old', refreshToken: 'old', accessTokenExpiresAt: 1 } },
         })
 
-        await login({ startPath: projectPath })
+        await login()
 
-        const settings = await readSettings()
+        const settings = await readStoredSettings(projectPath!)
         expect(settings.auth.clientSecret).toBe('secret')
         expect(settings.auth.tokens.accessToken).toBe('access')
     })
 
     test('works from a nested folder', async () => {
-        const baseUrl = startZoho([])
-        await writeSettings({ baseUrl })
-        const nestedPath = join(projectPath, 'a', 'b')
+        await startProject()
+        const nestedPath = join(projectPath!, 'a', 'b')
         await mkdir(nestedPath, { recursive: true })
+        process.chdir(nestedPath)
 
-        expect((await login({ startPath: nestedPath })).projectPath).toBe(projectPath)
+        expect((await login()).projectPath).toBe(projectPath!)
     })
 
     test('reports a data center mismatch without failing', async () => {
-        const baseUrl = startZoho([])
-        await writeSettings({ baseUrl }, { baseUrl: 'https://www.zohoapis.eu', version: 'v8' })
+        await startProject([], { api: { baseUrl: 'https://www.zohoapis.eu', version: 'v8' } })
 
-        const result = await login({ startPath: projectPath })
-
-        expect(result.apiDomainMismatch).toEqual({
+        expect((await login()).apiDomainMismatch).toEqual({
             expected: 'https://www.zohoapis.eu',
             received: 'https://www.zohoapis.com',
         })
     })
 
     test('fails outside a project with a hint about init', async () => {
-        await expect(login({ startPath: projectPath })).rejects.toThrow(/zoho-studio init/)
+        const emptyPath = await mkdtemp(join(tmpdir(), 'zoho-studio-empty-'))
+        const previousPath = process.cwd()
+        process.chdir(emptyPath)
+
+        try {
+            await expect(login()).rejects.toThrow(/zoho-studio init/)
+        } finally {
+            process.chdir(previousPath)
+            await rm(emptyPath, { recursive: true, force: true })
+        }
     })
 
     test('fails on empty credentials without calling Zoho', async () => {
-        await writeSettings({ clientId: '', clientSecret: '' })
+        await startProject([], { auth: { clientId: '', clientSecret: '' } })
 
-        await expect(login({ startPath: projectPath })).rejects.toThrow(/auth.clientId and auth.clientSecret/)
+        await expect(login()).rejects.toThrow(/auth.clientId and auth.clientSecret/)
     })
 
     test('fails on empty scopes without calling Zoho', async () => {
-        await writeSettings({ scopes: [] })
+        await startProject([], { auth: { scopes: [] } })
 
-        await expect(login({ startPath: projectPath })).rejects.toThrow(/auth.scopes is empty/)
+        await expect(login()).rejects.toThrow(/auth.scopes is empty/)
     })
 
     test('gives up when the device code expires before approval', async () => {
-        const baseUrl = startZoho([{ error: 'authorization_pending' }], {
-            device_code: 'device',
-            user_code: 'USER-CODE',
-            verification_url: 'https://accounts.zoho.com/oauth/v3/device',
-            interval: 1,
-            expires_in: 1,
+        await startProject([{ error: 'authorization_pending' }], {
+            deviceCode: { ...deviceCodeAnswer, expires_in: 1 },
         })
-        await writeSettings({ baseUrl })
 
-        await expect(login({ startPath: projectPath })).rejects.toThrow(/expired before it was approved/)
+        await expect(login()).rejects.toThrow(/expired before it was approved/)
     })
 
     test('leaves the stored tokens untouched when the user denies the request', async () => {
-        const baseUrl = startZoho([{ error: 'access_denied' }])
-        await writeSettings({ baseUrl, tokens: { accessToken: 'old', refreshToken: 'old', accessTokenExpiresAt: 1 } })
+        await startProject([{ error: 'access_denied' }], {
+            auth: { tokens: { accessToken: 'old', refreshToken: 'old', accessTokenExpiresAt: 1 } },
+        })
 
-        await expect(login({ startPath: projectPath })).rejects.toThrow(/access_denied/)
+        await expect(login()).rejects.toThrow(/access_denied/)
 
-        expect((await readSettings()).auth.tokens.accessToken).toBe('old')
+        expect((await readStoredTokens()).accessToken).toBe('old')
     })
 })
