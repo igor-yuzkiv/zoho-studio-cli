@@ -10,4 +10,9 @@ program.name('zoho-studio')
 program.addCommand(debugCommand)
 program.addCommand(initCommand)
 
-await program.parseAsync()
+try {
+    await program.parseAsync()
+} catch (error) {
+    console.error(error instanceof Error ? error.message : error)
+    process.exit(1)
+}

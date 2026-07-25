@@ -1,10 +1,8 @@
-import type { ProjectConfig } from '@/config/config.types'
+import type { ProjectSettings } from './types'
 
-export const ProjectDefaultConfig: ProjectConfig = {
+export const defaultProjectSettings: ProjectSettings = {
     auth: {
         baseUrl: 'https://accounts.zoho.com',
-        clientId: '',
-        clientSecret: '',
         scopes: [
             'ZohoCRM.settings.modules.READ',
             'ZohoCRM.settings.fields.READ',
@@ -12,9 +10,13 @@ export const ProjectDefaultConfig: ProjectConfig = {
             'ZohoCRM.settings.functions.READ',
             'ZohoCRM.org.READ',
         ],
-        accessToken: '',
-        refreshToken: '',
-        accessTokenExpiresAt: 0,
+        clientId: '',
+        clientSecret: '',
+        tokens: {
+            accessToken: '',
+            refreshToken: '',
+            accessTokenExpiresAt: 0,
+        },
     },
     api: {
         baseUrl: 'https://www.zohoapis.com',

@@ -26,8 +26,8 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --target=bun --outfile=dist/zoho-studio-cli",
-    "compile": "bun build src/index.ts --compile --outfile=dist/zoho-studio-cli",
+    "build": "bun build src/index.ts --target=bun --outfile=dist/zoho-studio",
+    "compile": "bun build src/index.ts --compile --outfile=dist/zoho-studio",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
     "test": "bun test",

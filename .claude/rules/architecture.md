@@ -1,8 +1,3 @@
----
-paths:
-  - "src/**/*.ts"
----
-
 # Rule: Project architecture and code style
 
 Keep the project structure simple and flat while the codebase is small.
@@ -22,25 +17,6 @@ src/
 ```
 
 ## Code style
-
-### Self-documenting code
-
-Prefer **self-documenting code**: the code should explain itself before comments are needed.
-
-- Prefer intention-revealing names over short or generic ones; a slightly longer name is fine when it aids understanding. Avoid abbreviations unless established in the project domain.
-- Introduce explanatory variables and extracted functions when they improve readability.
-- Do not add comments that restate what the code already expresses.
-- Preserve existing comments unless they are incorrect or obsolete.
-- Comments explain **why**, not **what** — non-obvious intent, constraints, trade-offs, external behavior, or a decision that would otherwise look strange.
-
-```ts
-// good
-const taskId = options.task;
-
-// avoid
-// Get task id from options
-const taskId = options.task;
-```
 
 ### File naming
 

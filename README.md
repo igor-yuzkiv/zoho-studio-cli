@@ -6,6 +6,10 @@ The project aims to bring Zoho development closer to conventional software engin
 
 It is designed for both developers and AI agents, providing a predictable interface for inspecting, managing, and processing Zoho project artifacts through scripts, development tools, and agent-driven workflows.
 
+## Documentation
+
+- [Project settings](docs/settings.md) — `.zoho-studio/settings.json` and `zoho-studio init`
+
 ## Commands
 
 ```bash

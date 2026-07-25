@@ -21,3 +21,41 @@ Prefer minimal, surgical changes:
 - prefer extending existing abstractions before introducing new layers;
 - when larger refactoring seems beneficial, propose it separately instead of doing it automatically;
 - do not silently expand scope after an approved plan or reviewed artifact.
+
+
+## Self-documenting code
+
+Prefer **self-documenting code**: the code should explain itself before comments are needed.
+
+The default is no comment. Wanting to write one is usually a signal that a name or the structure
+is wrong: rename, introduce an explanatory variable, or extract a function first, and write the
+comment only when that does not remove the need for it.
+
+- Prefer intention-revealing names over short or generic ones; a slightly longer name is fine when it aids understanding. Avoid abbreviations unless established in the project domain.
+- Introduce explanatory variables and extracted functions when they improve readability.
+- Comments explain **why**, not **what** — non-obvious intent, constraints, trade-offs, external behavior, or a decision that would otherwise look strange.
+- Preserve existing comments unless they are incorrect or obsolete.
+
+Do not write:
+
+- comments that restate what the code already expresses;
+- step-by-step narration of a function body;
+- section headers that split a file into labelled blocks;
+- doc comments that only repeat the name, parameters, and return type.
+
+A comment earns its place when a reader would otherwise ask "why is this here?" — a workaround for
+external behavior, a constraint that is not visible locally, or a deliberate trade-off. Anything
+else is noise that goes stale.
+
+```ts
+// good
+const taskId = options.task
+
+// avoid — restates the code
+// Get task id from options
+const taskId = options.task
+
+// good — explains a constraint that is not visible here
+// bunfig caches the parsed file, so a re-read returns the contents from the first load.
+cachedSettings.set(cacheKey, settings)
+```
