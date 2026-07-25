@@ -9,6 +9,8 @@ export const defaultProjectSettings: ProjectSettings = {
             'ZohoCRM.settings.workflow_rules.READ',
             'ZohoCRM.settings.functions.READ',
             'ZohoCRM.org.READ',
+            'ZohoCRM.modules.ALL',
+            'ZohoCRM.apis.READ',
         ],
         clientId: '',
         clientSecret: '',
