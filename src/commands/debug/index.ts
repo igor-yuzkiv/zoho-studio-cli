@@ -1,0 +1,1 @@
+export { debugCommand } from './debug.command'
