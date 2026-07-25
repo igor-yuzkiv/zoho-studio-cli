@@ -37,3 +37,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .omc
 
 /_tmp/
+
+# personal Claude Code rules
+CLAUDE.local.md
