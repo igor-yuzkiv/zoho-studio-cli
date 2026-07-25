@@ -40,3 +40,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # personal Claude Code rules
 CLAUDE.local.md
+
+# Project Office (personal repo link)
+.project-office/repo-settings.json
