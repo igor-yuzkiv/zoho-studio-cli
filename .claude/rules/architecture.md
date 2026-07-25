@@ -86,6 +86,20 @@ Direct relative imports inside the same module are acceptable.
 Do not create barrel exports only for ceremony.
 
 
+## Tests
+
+Tests live in `tests/`, mirroring the `src/` structure, and use the `.spec.ts` suffix.
+
+```text
+src/config/config.loader.ts   ->  tests/config/config.loader.spec.ts
+src/commands/init/init.command.ts  ->  tests/commands/init.command.spec.ts
+```
+
+Use the built-in Bun test runner (`import { describe, expect, test } from 'bun:test'`).
+The `@/` alias resolves from `tests/` as well, so import production code through it.
+
+Run `bun run check` (lint + typecheck + tests) before handing off a change.
+
 ## CLI command and option style
 
 - Binary name: `zoho-studio`.

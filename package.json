@@ -28,6 +28,10 @@
     "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --target=bun --outfile=dist/zoho-studio-cli",
     "compile": "bun build src/index.ts --compile --outfile=dist/zoho-studio-cli",
-    "lint": "eslint src"
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "check": "bun run lint && bun run typecheck && bun test"
   }
 }

@@ -23,8 +23,9 @@ It is designed for both developers and AI agents, providing a predictable interf
 bun install             # dependencies
 bun run dev -- --help   # run CLI from source
 bun run lint            # eslint
-bunx tsc --noEmit       # type check
+bun run typecheck       # tsc --noEmit
 bun test                # tests
+bun run check           # lint + typecheck + tests
 bun run build           # bun-targeted bundle → dist/
 bun run compile         # standalone executable → dist/
 ```
