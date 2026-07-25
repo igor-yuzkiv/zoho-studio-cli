@@ -1,4 +1,4 @@
-import type { ProjectConfig } from '@/config/types.ts'
+import type { ProjectConfig } from '@/config/config.types'
 
 export const ProjectDefaultConfig: ProjectConfig = {
     auth: {

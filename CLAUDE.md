@@ -1,11 +1,21 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+- Guidance for Claude Code (claude.ai/code) when working in this repository.
+- Local environment-specific instructions may be defined in CLAUDE.local.md.
+- This project uses a project office — for its tasks and documentation, see .project-office/AGENTS.md.
 
 ## Project
 
-`zoho-studio-cli` — CLI for working with Zoho services. Stack: Bun + TypeScript, Commander (CLI),
-Axios (Zoho API), bunfig (config loading from `.zoho-studio/`).
+Zoho Studio CLI is a developer-focused command-line tool for working with Zoho platform resources, configuration, metadata, and code.
+
+The project aims to bring Zoho development closer to conventional software engineering workflows by representing remote resources in a structured, local, and automation-friendly form.
+
+It is designed for both developers and AI agents, providing a predictable interface for inspecting, managing, and processing Zoho project artifacts through scripts, development tools, and agent-driven workflows.
+
+## Project Rules
+
+- [principles.md](.claude/rules/principles.md) — general principles for any work
+- [architecture.md](.claude/rules/architecture.md) — project architecture and code style
 
 ## Commands
 
@@ -19,13 +29,22 @@ bun run build           # bun-targeted bundle → dist/
 bun run compile         # standalone executable → dist/
 ```
 
-## Rules
+## Stack
 
-This file is a router. The actual rules live in `.claude/rules/` — read the relevant file before
-working in its area:
+The project is built as a Bun-based TypeScript CLI application using ECMAScript modules.
 
-- [principles.md](.claude/rules/principles.md) — KISS, DRY, smallest complete change, evidence
-  over assumptions, contract preservation
-- [code-style.md](.claude/rules/code-style.md) — NestJS-style file naming, self-documenting code,
-  TypeScript conventions, Bun-not-Node
-- [git.md](.claude/rules/git.md) — commit policy and message format
+Core technologies:
+
+* **Bun** — runtime, package manager, development runner, and build tool.
+* **TypeScript 5** — primary programming language with static type checking.
+* **Commander.js** — command definition, argument parsing, and CLI structure.
+* **@inquirer/prompts** — interactive terminal prompts.
+* **Axios** — HTTP client for communication with Zoho APIs and other remote services.
+* **bunfig** — project-level configuration loading and management.
+
+Development tooling:
+
+* **ESLint 10** — code quality and static analysis.
+* **typescript-eslint** — TypeScript support for ESLint.
+* **Prettier 3** — code formatting.
+* **Jiti** — runtime loading of TypeScript and modern JavaScript configuration files.
