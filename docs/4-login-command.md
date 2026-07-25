@@ -41,6 +41,19 @@ asking.
 
 Then run `login`.
 
+## Staying authorized
+
+You run `login` once. The access token Zoho issues lives an hour, and commands that need it ask
+`TokenService` (`src/services/auth/token.service.ts`) rather than reading the settings themselves.
+It hands back the stored token while it is valid, and otherwise exchanges the refresh token for a
+new access token and writes it back to `settings.json`. A token within a minute of expiring counts
+as expired, so it is never handed out just before it dies, and concurrent callers in one run share
+a single refresh — Zoho caps a refresh token at 10 access tokens per 10 minutes.
+
+The refresh token itself does not expire. You only need `login` again if it was revoked in the Zoho
+console or the client was replaced; that shows up as
+`The stored refresh token is no longer valid …`.
+
 ## Checking the token
 
 `zoho-studio debug` calls the Zoho CRM `org` endpoint with the stored access token and prints the

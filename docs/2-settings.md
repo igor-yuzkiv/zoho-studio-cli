@@ -41,6 +41,8 @@ There are two kinds of values in there, and the difference matters when you edit
   fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
+  `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
+  refreshed, so do not expect the values you saw last run.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI

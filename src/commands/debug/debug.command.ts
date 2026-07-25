@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Command } from 'commander'
 
+import { TokenService } from '@/services/auth'
 import { getProjectSettings } from '@/settings'
 
 interface OrgResponse {
@@ -10,12 +11,8 @@ interface OrgResponse {
 export const debugCommand = new Command('debug')
     .description('Check the stored access token against the Zoho CRM org endpoint')
     .action(async () => {
-        const { settings } = await getProjectSettings()
-        const { accessToken } = settings.auth.tokens
-
-        if (!accessToken) {
-            throw new Error('No access token stored. Run "zoho-studio login" first.')
-        }
+        const { projectPath, settings } = await getProjectSettings()
+        const accessToken = await new TokenService(projectPath, settings).getAccessToken()
 
         const response = await axios.get<OrgResponse>(
             `${settings.api.baseUrl.replace(/\/+$/, '')}/crm/${settings.api.version}/org`,

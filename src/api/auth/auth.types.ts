@@ -20,12 +20,22 @@ export interface DeviceTokenRequest {
     deviceCode: string
 }
 
-export interface TokenResponse {
-    accessToken: string
+export interface RefreshAccessTokenRequest {
+    baseUrl: string
+    clientId: string
+    clientSecret: string
     refreshToken: string
+}
+
+export interface AccessToken {
+    accessToken: string
     accessTokenExpiresAt: number
     apiDomain: string
     tokenType: string
+}
+
+export interface TokenResponse extends AccessToken {
+    refreshToken: string
 }
 
 /** Zoho answers "not yet" as often as it answers with tokens, so waiting is not an error. */
