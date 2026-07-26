@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@/api/crm'
+import { getOrganization } from '@/shared/api/crm'
 
-import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
+import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
 
 let projectPath: string | null = null
 let crmServer: ReturnType<typeof Bun.serve> | null = null

@@ -1,4 +1,4 @@
-import { pollDeviceToken, requestDeviceCode, type DeviceCode, type TokenResponse } from '@/api/auth'
+import { pollDeviceToken, requestDeviceCode, type DeviceCode, type TokenResponse } from '@/shared/api/auth'
 import { projectSettingsGitignoreEntry } from '@/config'
 import { getProjectSettings, saveProjectSettings } from '@/settings'
 

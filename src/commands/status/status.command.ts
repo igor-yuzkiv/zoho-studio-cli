@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { getOrganization } from '@/api/crm'
+import { getOrganization } from '@/shared/api/crm'
 
 export const statusCommand = new Command('status')
     .description('Show the Zoho organization the project is connected to')

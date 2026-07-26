@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { tokenService } from '@/api/auth'
+import { tokenService } from '@/shared/api/auth'
 import { getProjectSettings } from '@/settings'
 
 const crmClient = axios.create()

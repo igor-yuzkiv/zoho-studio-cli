@@ -44,7 +44,7 @@ Then run `login`.
 ## Staying authorized
 
 You run `login` once. The access token Zoho issues lives an hour, and commands that need it ask
-`TokenService` (`src/api/auth/token.service.ts`) rather than reading the settings themselves.
+`TokenService` (`src/shared/api/auth/token.service.ts`) rather than reading the settings themselves.
 It hands back the stored token while it is valid, and otherwise exchanges the refresh token for a
 new access token and writes it back to `settings.json`. A token within a minute of expiring counts
 as expired, so it is never handed out just before it dies, and concurrent callers in one run share

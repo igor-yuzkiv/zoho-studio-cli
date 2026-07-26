@@ -1,7 +1,7 @@
 import { chmod } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { writeJsonFile } from '@/shared/json.utils'
+import { writeJsonFile } from '@/shared/utils'
 
 import { findProjectPath, loadProjectSettings } from './settings.loader'
 import { projectSettingsGitignoreEntry, resolveProjectSettingsPath } from '@/config'

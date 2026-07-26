@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { requestDeviceCode } from '@/api/auth'
+import { requestDeviceCode } from '@/shared/api/auth'
 
-import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
+import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
 let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null

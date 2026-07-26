@@ -8,19 +8,30 @@ Do not introduce new architectural layers, generic abstractions, or shared folde
 
 ```text
 src/
-  commands/   # CLI command definitions
-  entities/   # domain entities (e.g.: function, workflow, module)
-  shared/     # reusable infrastructure and utilities
-  api/
-    auth/     # authentication, OAuth, tokens, and authenticated client setup.
-    crm/      # Zoho CRM API clients, requests, and related types.
+  index.ts      # CLI entry point, registers the commands
+  config.ts     # file names and paths the CLI relies on
+  commands/     # CLI command definitions
+  settings/     # project settings: loading, defaults, and storage
+  entities/     # domain entities (e.g.: function, workflow, module)
+    <entity>/
+      api/      # requests belonging to this entity
+  shared/       # reusable infrastructure and utilities
+    utils/      # standalone helpers, exposed through index.ts
+    api/        # shared API infrastructure only — no entity endpoints
+      auth/     # authentication, OAuth, tokens, and authenticated client setup.
+      crm/      # Zoho CRM API clients, requests, and related types.
 ```
 
-Inside `api/`, each area (`auth/`, `crm/`) keeps its requests in a `requests/` folder, one request
-per file, and its own types next to them. Types shared across areas live in the root of `api/`.
+`shared/api/` holds only infrastructure that belongs to no single entity: base clients, HTTP
+configuration, authentication, error handling, and shared types. An endpoint that belongs to a
+domain entity lives in `entities/<entity>/api/` instead.
+
+Inside `shared/api/`, each area (`auth/`, `crm/`) keeps its requests in a `requests/` folder, one
+request per file, and its own types next to them. Types shared across areas live in the root of
+`shared/api/`.
 
 ```text
-api/
+shared/api/
   auth/
     requests/
       refresh-access-token.request.ts
@@ -73,7 +84,7 @@ Use `index.ts` to expose a clear public interface for a folder when it improves 
 
 ```ts
 import { loadConfig } from '@/config';
-import { fetchFunctionsRequest } from '@/api/crm';
+import { fetchFunctionsRequest } from '@/shared/api/crm';
 ```
 
 Direct relative imports inside the same module are acceptable.
@@ -86,8 +97,9 @@ Do not create barrel exports only for ceremony.
 Tests live in `tests/`, mirroring the `src/` structure, and use the `.spec.ts` suffix.
 
 ```text
-src/config/config.loader.ts   ->  tests/config/config.loader.spec.ts
-src/commands/init/init.command.ts  ->  tests/commands/init.command.spec.ts
+src/settings/settings.loader.ts             ->  tests/settings/settings.loader.spec.ts
+src/commands/init/init.service.ts           ->  tests/commands/init.service.spec.ts
+src/shared/api/auth/token.service.ts        ->  tests/shared/api/auth/token.service.spec.ts
 ```
 
 Use the built-in Bun test runner (`import { describe, expect, test } from 'bun:test'`).

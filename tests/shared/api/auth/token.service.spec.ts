@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
-import { TokenService } from '@/api/auth'
+import { TokenService } from '@/shared/api/auth'
 import type { ProjectSettings } from '@/settings'
 
-import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../../support/temp-project'
+import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../../../support/temp-project'
 
 let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
