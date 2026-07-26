@@ -1,42 +1,32 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test'
-import { mkdtemp, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { afterEach, describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 
-import type { createCommandLogger as CreateCommandLogger, logger as SharedLogger } from '@/shared/logger'
+import { createCommandLogger, logger } from '@/shared/logger'
 
-const initialCwd = process.cwd()
+import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
-let projectPath: string
-let logFilePath: string
-let logger: typeof SharedLogger
-let createCommandLogger: typeof CreateCommandLogger
+let projectPath: string | null = null
 
-// The destination is opened when the module is first imported, so the working directory
-// has to be the temp project before that happens.
-beforeAll(async () => {
-    projectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-logger-'))
-    process.chdir(projectPath)
-    logFilePath = join(projectPath, 'logs', 'cli.log')
-    ;({ createCommandLogger, logger } = await import('@/shared/logger'))
+afterEach(async () => {
+    if (projectPath) {
+        await removeTempProject(projectPath)
+        projectPath = null
+    }
 })
 
-afterAll(async () => {
-    process.chdir(initialCwd)
-    await rm(projectPath, { recursive: true, force: true })
-})
+async function startProject(logFile?: string): Promise<string> {
+    projectPath = await createTempProject(logFile ? buildSettings({ logs: { file: logFile } }) : buildSettings())
 
-async function readLogEntries(): Promise<Record<string, unknown>[]> {
+    return projectPath
+}
+
+async function readEntryWithMessage(logFilePath: string, message: string): Promise<Record<string, unknown>> {
     const contents = await Bun.file(logFilePath).text()
-
-    return contents
+    const entry = contents
         .split('\n')
         .filter((line) => line.length > 0)
         .map((line) => JSON.parse(line) as Record<string, unknown>)
-}
-
-async function readEntryWithMessage(message: string): Promise<Record<string, unknown>> {
-    const entry = (await readLogEntries()).find((candidate) => candidate.msg === message)
+        .find((candidate) => candidate.msg === message)
 
     expect(entry).toBeDefined()
 
@@ -44,40 +34,70 @@ async function readEntryWithMessage(message: string): Promise<Record<string, unk
 }
 
 describe('shared logger', () => {
-    test('writes structured JSON to logs/cli.log', async () => {
-        logger.info('structured entry')
+    test('writes structured JSON to .zoho-studio/cli.log by default', async () => {
+        const path = await startProject()
+        const logFilePath = join(path, '.zoho-studio', 'cli.log')
+
+        const commandLogger = await createCommandLogger('functions:pull')
+        commandLogger.info('structured entry')
 
         expect(await Bun.file(logFilePath).exists()).toBe(true)
-        expect(await readEntryWithMessage('structured entry')).toMatchObject({ level: 30 })
+        expect(await readEntryWithMessage(logFilePath, 'structured entry')).toMatchObject({ level: 30 })
+    })
+
+    test('follows the configured log file and creates its folder', async () => {
+        const path = await startProject('var/log/zoho.log')
+        const logFilePath = join(path, 'var', 'log', 'zoho.log')
+
+        const commandLogger = await createCommandLogger('functions:pull')
+        commandLogger.info('configured entry')
+
+        expect(await readEntryWithMessage(logFilePath, 'configured entry')).toMatchObject({ level: 30 })
     })
 
     test('supports the standard levels', async () => {
-        logger.debug('debug entry')
-        logger.warn('warn entry')
-        logger.error('error entry')
+        const path = await startProject()
+        const logFilePath = join(path, '.zoho-studio', 'cli.log')
 
-        expect(await readEntryWithMessage('debug entry')).toMatchObject({ level: 20 })
-        expect(await readEntryWithMessage('warn entry')).toMatchObject({ level: 40 })
-        expect(await readEntryWithMessage('error entry')).toMatchObject({ level: 50 })
+        const commandLogger = await createCommandLogger('functions:pull')
+        commandLogger.debug('debug entry')
+        commandLogger.warn('warn entry')
+        commandLogger.error('error entry')
+
+        expect(await readEntryWithMessage(logFilePath, 'debug entry')).toMatchObject({ level: 20 })
+        expect(await readEntryWithMessage(logFilePath, 'warn entry')).toMatchObject({ level: 40 })
+        expect(await readEntryWithMessage(logFilePath, 'error entry')).toMatchObject({ level: 50 })
     })
 
-    test('a command logger tags every entry with the command name', async () => {
-        createCommandLogger('functions:pull').info('command entry')
+    test('tags every entry with the command name', async () => {
+        const path = await startProject()
+        const logFilePath = join(path, '.zoho-studio', 'cli.log')
 
-        expect(await readEntryWithMessage('command entry')).toMatchObject({ command: 'functions:pull' })
+        const commandLogger = await createCommandLogger('functions:pull')
+        commandLogger.info('command entry')
+
+        expect(await readEntryWithMessage(logFilePath, 'command entry')).toMatchObject({
+            command: 'functions:pull',
+        })
     })
 
     test('serializes an error logged as { err } with its stack', async () => {
-        logger.error({ err: new Error('request failed') }, 'error with cause')
+        const path = await startProject()
+        const logFilePath = join(path, '.zoho-studio', 'cli.log')
 
-        const { err } = await readEntryWithMessage('error with cause')
+        const commandLogger = await createCommandLogger('functions:pull')
+        commandLogger.error({ err: new Error('request failed') }, 'error with cause')
+
+        const { err } = await readEntryWithMessage(logFilePath, 'error with cause')
 
         expect(err).toMatchObject({ type: 'Error', message: 'request failed' })
         expect((err as { stack: string }).stack).toContain('request failed')
     })
 
-    test('shares one instance between the command loggers', () => {
-        expect(createCommandLogger('a').level).toBe(logger.level)
+    test('shares one instance between the command loggers', async () => {
+        await startProject()
+
+        expect((await createCommandLogger('a')).level).toBe(logger.level)
         expect(logger.level).toBe('debug')
     })
 })

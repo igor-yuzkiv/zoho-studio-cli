@@ -22,6 +22,10 @@ export interface ProjectSettings {
             root_dir: string
         }
     }
+    logs: {
+        /** The file every command logs to, relative to the project root. */
+        file: string
+    }
 }
 
 /** The settings together with the project root they were found in. */

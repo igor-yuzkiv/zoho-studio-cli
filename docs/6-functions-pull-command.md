@@ -80,8 +80,8 @@ API limits, so a large project takes a while.
 
 ## Logs
 
-The CLI writes structured JSON logs to `logs/cli.log`, resolved against the current directory and
-created on the first line written — a command that logs nothing leaves no `logs/` behind. `functions:pull` records the start of the run, how many functions were found,
+The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `.zoho-studio/cli.log` by
+default, created on the first line written — a command that logs nothing leaves no file behind. `functions:pull` records the start of the run, how many functions were found,
 the final counts, and every failure with its stack trace. Individual successful functions are not
 logged — the progress bar already shows them.
 

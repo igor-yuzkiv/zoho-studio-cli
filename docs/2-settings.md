@@ -36,14 +36,17 @@ leaked.
         "functions": {
             "root_dir": "functions"
         }
+    },
+    "logs": {
+        "file": ".zoho-studio/cli.log"
     }
 }
 ```
 
 There are two kinds of values in there, and the difference matters when you edit the file by hand:
 
-- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `crm.*` — **yours**.
-  You fill them in, the CLI only reads them.
+- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `crm.*`, `logs.*` —
+  **yours**. You fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
   `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
@@ -53,6 +56,11 @@ There are two kinds of values in there, and the difference matters when you edit
 always relative to the project root — `crm/functions` puts the result in `<project>/crm/functions`.
 An absolute path, or one that climbs out of the project with `..`, is refused: the command deletes
 that directory on every run.
+
+`logs.file` is where every command writes its log, also relative to the project root, and its folder
+is created on the first line written. The default `.zoho-studio/cli.log` keeps it next to the
+settings — note that `.gitignore` only lists `.zoho-studio/settings.json`, so add the log file
+yourself if you keep it inside a folder you commit.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI

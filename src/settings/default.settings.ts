@@ -1,3 +1,5 @@
+import { projectSettingsDirName } from '@/config'
+
 import type { ProjectSettings } from './types'
 
 export const defaultProjectSettings: ProjectSettings = {
@@ -30,5 +32,8 @@ export const defaultProjectSettings: ProjectSettings = {
         functions: {
             root_dir: 'functions',
         },
+    },
+    logs: {
+        file: `${projectSettingsDirName}/cli.log`,
     },
 }
