@@ -1,9 +1,6 @@
 # Rule: Git
 
-How to work with git in this repository. Commits are covered today; other areas — branches, history
-rewriting, releases — are added here as they are needed.
-
-Commit and push only when the user asks for it.
+How to work with git in this repository.
 
 ## Commits
 
@@ -40,43 +37,3 @@ Common types:
 * `chore` — maintenance, tooling, or dependency changes;
 * `build` — changes the build system or external dependencies;
 * `ci` — changes CI configuration.
-
-Good examples:
-
-```text
-refactor(shared): move API client into shared layer
-```
-
-```text
-feat(functions): add command for fetching CRM functions
-```
-
-```text
-fix(config): preserve existing settings during initialization
-```
-
-```text
-test(api): cover expired token handling
-```
-
-```text
-docs: document project initialization flow
-```
-
-Examples to avoid:
-
-```text
-updates
-```
-
-```text
-fix stuff
-```
-
-```text
-changed files
-```
-
-```text
-refactor and fix tests and update dependencies
-```
