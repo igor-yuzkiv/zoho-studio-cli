@@ -55,7 +55,8 @@ API limits, so a large project takes a while.
 
 The CLI writes structured JSON logs to `logs/cli.log`, resolved against the current directory and
 created on demand. `functions:pull` records the start of the run, how many functions were found,
-each function at `debug` level, and every failure with its stack trace.
+the final counts, and every failure with its stack trace. Individual successful functions are not
+logged — the progress bar already shows them.
 
 The terminal keeps the progress bar, the summary, and short error messages; the detail stays in the
 log file. Tokens and authorization headers are never logged.

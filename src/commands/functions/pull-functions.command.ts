@@ -65,12 +65,10 @@ export const pullFunctionsCommand = new Command('functions:pull')
                 }
 
                 progressBar.update({ name: zohoFunction.name })
-                logger.debug({ functionId: zohoFunction.id, apiName: zohoFunction.api_name }, 'Fetching function code')
 
                 try {
                     const code = await getFunctionCode(zohoFunction.id)
                     await Bun.write(resolveCodePath(functionsPath, zohoFunction), code)
-                    logger.debug({ functionId: zohoFunction.id, apiName: zohoFunction.api_name }, 'Function code saved')
                 } catch (error) {
                     failed.push({
                         name: zohoFunction.name,
