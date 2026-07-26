@@ -1,16 +1,18 @@
+import { appendFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 import pino, { type Logger } from 'pino'
 
-// The CLI is short-lived and may exit right after a command, so writes are synchronous:
-// an async destination can lose buffered lines on exit.
-const destination = pino.destination({
-    dest: join(process.cwd(), 'logs', 'cli.log'),
-    mkdir: true,
-    sync: true,
-})
+// The file is opened per line rather than at import: the CLI is short-lived, so buffered writes
+// can be lost at exit, and a command that never logs must not leave an empty logs/ behind.
+function appendLogLine(line: string): void {
+    const logDirPath = join(process.cwd(), 'logs')
 
-export const logger = pino({ level: 'debug' }, destination)
+    mkdirSync(logDirPath, { recursive: true })
+    appendFileSync(join(logDirPath, 'cli.log'), line)
+}
+
+export const logger = pino({ level: 'debug' }, { write: appendLogLine })
 
 export function createCommandLogger(command: string): Logger {
     return logger.child({ command })
