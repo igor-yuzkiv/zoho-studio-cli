@@ -4,6 +4,7 @@ import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/commands/status'
 import { debugCommand } from '@/commands/debug'
+import { pullFunctionsCommand } from '@/commands/functions'
 
 const program = new Command()
 
@@ -13,6 +14,7 @@ program.addCommand(initCommand)
 program.addCommand(loginCommand)
 program.addCommand(statusCommand)
 program.addCommand(debugCommand);
+program.addCommand(pullFunctionsCommand)
 
 try {
     await program.parseAsync()
