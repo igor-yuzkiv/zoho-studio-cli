@@ -1,5 +1,5 @@
 import { mkdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
+import { isAbsolute, join, resolve, sep } from 'node:path'
 
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
@@ -9,7 +9,6 @@ import { getProjectSettings } from '@/settings'
 import { createCommandLogger } from '@/shared/logger'
 import { writeJsonFile } from '@/shared/utils'
 
-const functionsDirName = 'functions'
 const delayBetweenCodeRequestsMs = 300
 
 type FailedFunction = {
@@ -24,8 +23,8 @@ export const pullFunctionsCommand = new Command('functions:pull')
         const logger = createCommandLogger('functions:pull')
         logger.info('Starting functions pull')
 
-        const { projectPath } = await getProjectSettings()
-        const functionsPath = join(projectPath, functionsDirName)
+        const { projectPath, settings } = await getProjectSettings()
+        const functionsPath = resolveFunctionsRootPath(projectPath, settings.crm.functions.root_dir)
 
         let functions: ZohoFunction[]
 
@@ -100,12 +99,31 @@ export const pullFunctionsCommand = new Command('functions:pull')
         }
     })
 
+/**
+ * The whole directory is wiped on every pull, so a configured path that is absolute, escapes the
+ * project, or resolves to the project root itself is refused instead of deleting something else.
+ */
+export function resolveFunctionsRootPath(projectPath: string, rootDir: string): string {
+    if (isAbsolute(rootDir)) {
+        throw new Error(`crm.functions.root_dir must be relative to the project, got "${rootDir}".`)
+    }
+
+    const projectRootPath = resolve(projectPath)
+    const functionsPath = resolve(projectRootPath, rootDir)
+
+    if (!functionsPath.startsWith(projectRootPath + sep)) {
+        throw new Error(`crm.functions.root_dir must point inside the project, got "${rootDir}".`)
+    }
+
+    return functionsPath
+}
+
 function resolveMetadataPath(functionsPath: string, zohoFunction: ZohoFunction): string {
     return join(resolveFunctionDirPath(functionsPath, zohoFunction), `${toPathSegment(zohoFunction.name)}.metadata.json`)
 }
 
 function resolveCodePath(functionsPath: string, zohoFunction: ZohoFunction): string {
-    return join(resolveFunctionDirPath(functionsPath, zohoFunction), `${toPathSegment(zohoFunction.name)}.deluge.js`)
+    return join(resolveFunctionDirPath(functionsPath, zohoFunction), `${toPathSegment(zohoFunction.name)}.deluge`)
 }
 
 function resolveFunctionDirPath(functionsPath: string, zohoFunction: ZohoFunction): string {

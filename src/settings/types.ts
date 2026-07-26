@@ -16,6 +16,12 @@ export interface ProjectSettings {
         baseUrl: string
         version: string
     }
+    crm: {
+        functions: {
+            /** Where `functions:pull` writes, relative to the project root. */
+            root_dir: string
+        }
+    }
 }
 
 /** The settings together with the project root they were found in. */

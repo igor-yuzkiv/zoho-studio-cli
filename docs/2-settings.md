@@ -31,18 +31,28 @@ leaked.
     "api": {
         "baseUrl": "https://www.zohoapis.com",
         "version": "v8"
+    },
+    "crm": {
+        "functions": {
+            "root_dir": "functions"
+        }
     }
 }
 ```
 
 There are two kinds of values in there, and the difference matters when you edit the file by hand:
 
-- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*` — **yours**. You
-  fill them in, the CLI only reads them.
+- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `crm.*` — **yours**.
+  You fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
   `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
   refreshed, so do not expect the values you saw last run.
+
+`crm.functions.root_dir` is where [`zoho-studio functions:pull`](6-functions-pull-command.md) writes,
+always relative to the project root — `crm/functions` puts the result in `<project>/crm/functions`.
+An absolute path, or one that climbs out of the project with `..`, is refused: the command deletes
+that directory on every run.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI

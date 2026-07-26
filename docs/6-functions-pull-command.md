@@ -27,18 +27,45 @@ directory.
 functions/
 └── calculate_invoice_total/
     ├── Calculate Invoice Total.metadata.json
-    └── Calculate Invoice Total.deluge.js
+    └── Calculate Invoice Total.deluge
 ```
 
 The directory is named after the function's API name, the files after its display name. Only
 characters a path segment cannot contain are replaced; nothing else about the name is changed.
 
 `*.metadata.json` holds the full function record exactly as the list endpoint returned it,
-formatted with a four-space indent and a trailing newline. `*.deluge.js` holds the source verbatim
-— it is never formatted, wrapped, or parsed.
+formatted with a four-space indent and a trailing newline. `*.deluge` holds the source verbatim —
+it is never formatted, wrapped, or parsed.
 
-**`functions/` is deleted and recreated on every run.** The folder always reflects the current pull,
+**The target directory is deleted and recreated on every run.** It always reflects the current pull,
 so a function removed in Zoho disappears locally, and any local edit inside it is lost.
+
+## Choosing the directory
+
+`functions/` is the default. [`crm.functions.root_dir`](2-settings.md) moves it anywhere inside the
+project:
+
+```json
+{
+    "crm": {
+        "functions": {
+            "root_dir": "crm/functions"
+        }
+    }
+}
+```
+
+```text
+crm/
+└── functions/
+    └── calculate_invoice_total/
+        ├── Calculate Invoice Total.metadata.json
+        └── Calculate Invoice Total.deluge
+```
+
+The path is always relative to the project root and is created if it does not exist. Because the
+whole directory is wiped on each run, an absolute path or one escaping the project with `..` is
+refused before anything is deleted.
 
 ## Failures
 
@@ -54,7 +81,7 @@ API limits, so a large project takes a while.
 ## Logs
 
 The CLI writes structured JSON logs to `logs/cli.log`, resolved against the current directory and
-created on demand. `functions:pull` records the start of the run, how many functions were found,
+created on the first line written — a command that logs nothing leaves no `logs/` behind. `functions:pull` records the start of the run, how many functions were found,
 the final counts, and every failure with its stack trace. Individual successful functions are not
 logged — the progress bar already shows them.
 

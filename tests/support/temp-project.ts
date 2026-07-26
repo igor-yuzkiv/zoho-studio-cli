@@ -10,13 +10,16 @@ const initialCwd = process.cwd()
 export function buildSettings({
     auth = {},
     api = {},
+    crm = {},
 }: {
     auth?: Partial<ProjectSettings['auth']>
     api?: Partial<ProjectSettings['api']>
+    crm?: Partial<ProjectSettings['crm']>
 } = {}): ProjectSettings {
     return {
         auth: { ...defaultProjectSettings.auth, clientId: '1000.CLIENT', clientSecret: 'secret', ...auth },
         api: { ...defaultProjectSettings.api, ...api },
+        crm: { ...defaultProjectSettings.crm, ...crm },
     }
 }
 

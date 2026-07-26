@@ -26,4 +26,9 @@ export const defaultProjectSettings: ProjectSettings = {
         baseUrl: 'https://www.zohoapis.com',
         version: 'v8',
     },
+    crm: {
+        functions: {
+            root_dir: 'functions',
+        },
+    },
 }
