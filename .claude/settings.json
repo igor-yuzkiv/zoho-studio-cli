@@ -44,7 +44,9 @@
             "Read(~/.aws/**)",
             "Read(~/.claude/.credentials.json)",
             "Read(**/.env)",
-            "Read(**/.env.*)"
+            "Read(**/.env.*)",
+            "Edit(.zoho-studio/settings.json)",
+            "Read(.zoho-studio/settings.json)"
         ]
     }
 }
