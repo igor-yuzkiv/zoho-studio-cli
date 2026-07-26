@@ -16,7 +16,9 @@ It is designed for both developers and AI agents, providing a predictable interf
 
 - [principles.md](.claude/rules/principles.md) — general principles for any work
 - [architecture.md](.claude/rules/architecture.md) — project architecture and code style
+- [developer-workflow.md](.claude/rules/developer-workflow.md) — how an implementation task is carried out
 - [documentation.md](.claude/rules/documentation.md) — writing and structuring `docs/`
+- [git.md](.claude/rules/git.md) — commits and other git work
 
 ## Commands
 
