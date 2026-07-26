@@ -67,7 +67,10 @@ export const pullFunctionsCommand = new Command('functions:pull')
 
                 try {
                     const code = await getFunctionCode(zohoFunction.id)
-                    await Bun.write(resolveCodePath(functionsPath, zohoFunction), code)
+                    await Bun.write(
+                        resolveCodePath(functionsPath, zohoFunction, settings.crm.functions.code_extension),
+                        code
+                    )
                 } catch (error) {
                     failed.push({
                         name: zohoFunction.name,
@@ -119,11 +122,24 @@ export function resolveFunctionsRootPath(projectPath: string, rootDir: string): 
 }
 
 function resolveMetadataPath(functionsPath: string, zohoFunction: ZohoFunction): string {
-    return join(resolveFunctionDirPath(functionsPath, zohoFunction), `${toPathSegment(zohoFunction.name)}.metadata.json`)
+    return join(
+        resolveFunctionDirPath(functionsPath, zohoFunction),
+        `${toPathSegment(zohoFunction.name)}.metadata.json`
+    )
 }
 
-function resolveCodePath(functionsPath: string, zohoFunction: ZohoFunction): string {
-    return join(resolveFunctionDirPath(functionsPath, zohoFunction), `${toPathSegment(zohoFunction.name)}.deluge`)
+function resolveCodePath(functionsPath: string, zohoFunction: ZohoFunction, codeExtension: string): string {
+    return join(
+        resolveFunctionDirPath(functionsPath, zohoFunction),
+        resolveCodeFileName(zohoFunction.name, codeExtension)
+    )
+}
+
+/** A configured extension may be written with or without its leading dot, or left out entirely. */
+export function resolveCodeFileName(functionName: string, codeExtension: string): string {
+    const extension = toPathSegment(codeExtension.replace(/^\.+/, ''))
+
+    return extension ? `${toPathSegment(functionName)}.${extension}` : toPathSegment(functionName)
 }
 
 function resolveFunctionDirPath(functionsPath: string, zohoFunction: ZohoFunction): string {

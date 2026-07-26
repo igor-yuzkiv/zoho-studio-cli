@@ -35,7 +35,8 @@ characters a path segment cannot contain are replaced; nothing else about the na
 
 `*.metadata.json` holds the full function record exactly as the list endpoint returned it,
 formatted with a four-space indent and a trailing newline. `*.deluge` holds the source verbatim —
-it is never formatted, wrapped, or parsed.
+it is never formatted, wrapped, or parsed. [`crm.functions.code_extension`](2-settings.md) renames
+that extension if `deluge` does not suit your editor.
 
 **The target directory is deleted and recreated on every run.** It always reflects the current pull,
 so a function removed in Zoho disappears locally, and any local edit inside it is lost.

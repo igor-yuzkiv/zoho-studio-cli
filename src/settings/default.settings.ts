@@ -31,6 +31,7 @@ export const defaultProjectSettings: ProjectSettings = {
     crm: {
         functions: {
             root_dir: 'functions',
+            code_extension: 'deluge',
         },
     },
     logs: {

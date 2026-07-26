@@ -20,6 +20,8 @@ export interface ProjectSettings {
         functions: {
             /** Where `functions:pull` writes, relative to the project root. */
             root_dir: string
+            /** Extension of the saved Deluge files, written without a leading dot. */
+            code_extension: string
         }
     }
     logs: {
