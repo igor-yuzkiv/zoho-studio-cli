@@ -14,11 +14,62 @@ It is designed for both developers and AI agents, providing a predictable interf
 
 ## Project Rules
 
-- [principles.md](.claude/rules/principles.md) — general principles for any work
-- [architecture.md](.claude/rules/architecture.md) — project architecture and code style
-- [developer-workflow.md](.claude/rules/developer-workflow.md) — how an implementation task is carried out
+- [architecture.md](.claude/rules/architecture.md) — project architecture, code style, CLI conventions
 - [documentation.md](.claude/rules/documentation.md) — writing and structuring `docs/`
 - [git.md](.claude/rules/git.md) — commits and other git work
+
+How work is carried out — sizing, verification, review, closing — is not a project rule here; it
+comes from the pipeline below.
+
+<!-- composable-pipeline:begin -->
+
+## Agent configuration
+
+Work is executed through the pipeline in `.claude/blocks/pipelines/run-task.md` — orient, size
+the ceremony, implement, verify, review, close. Read it before starting a task, not after.
+
+Project-specific addresses, exemplars, and verification commands live in
+`.claude/project-profile.yml`. Never guess one of those — read the profile, and if the answer is
+not there, ask once and write it in.
+
+### Entry points
+
+| Invoke | For |
+|---|---|
+| `/task <description>` | run a piece of work through the full cycle |
+| `/review [target]` | independent review of a diff, delegated to `code-reviewer` |
+| `run-task` skill | same cycle, when picked up without the command |
+| `code-explorer` subagent | map code before changing it — several in parallel, narrow scopes |
+| `code-reviewer` subagent | review a finished diff; reports, never fixes |
+
+### Rules — `.claude/blocks/rules/`, mandatory
+
+| Block | |
+|---|---|
+| `execution-discipline` | do what the task specifies; report adjacent problems instead of fixing them |
+| `decision-authority` | depth is granted, decisions are not — escalate rather than choose |
+| `definition-of-done` | done means verified and reported; unverified work is a proposal |
+| `evidence-and-claims` | separate what was verified from what was inferred, and mark which |
+| `output-discipline` | a subagent returns conclusions and `file:line`, never the material it read |
+| `communication-defaults` | anything a human reads leads with the conclusion and names its uncertainty |
+| `artifact-routing` | destinations come from the profile, never from the catalog |
+
+### Principles — `.claude/blocks/principles/`, guidance
+
+`kiss` simplest sufficient solution · `yagni` build the requirement you have · `dry` one home per
+fact, link elsewhere · `chestertons-fence` do not remove what you do not understand ·
+`reference-over-prose` point at a real file instead of describing it · `bluf` conclusion first ·
+`eli5` ordinary language · `plain-language` describe behaviour, keep terms stable
+
+### Operations — `.claude/blocks/operations/`
+
+`orient-in-codebase` · `clarify-task` · `decompose-into-workstreams` · `implement-change` ·
+`verify-change` · `review-change` · `wrap-up-work`
+
+The pipeline sequences these and states which are skipped in which lane. Open the operation when
+you reach its step — each defines its own inputs, output shape, and escalation triggers.
+
+<!-- composable-pipeline:end -->
 
 ## Commands
 

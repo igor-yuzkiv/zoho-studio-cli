@@ -4,36 +4,43 @@ How to work with git in this repository.
 
 ## Commits
 
-When creating commits:
-
 * Do not add the AI agent as a co-author and do not include `Co-authored-by` or similar AI attribution.
 * Create small, focused commits that represent one logical change.
 * Do not mix refactoring, formatting, dependency updates, and functional changes unless they are inseparable.
-* Follow the repository's existing commit convention. If none exists, use Conventional Commits.
+* Use Conventional Commits. Older history contains bare-noun subjects (`login`, `init and settings`) — do not imitate them.
 * Write the subject in the imperative mood, without a trailing period.
-* Keep the subject concise and explain what the commit does.
-* Use the commit body only when additional context, reasoning, limitations, or migration details are useful.
-* Reference a task or issue when its identifier is known.
+* Use the commit body when context, reasoning, or a limitation is worth recording.
 * Do not commit temporary files, generated artifacts, debug code, secrets, or unrelated changes.
-* Review the staged diff before committing.
 
-Recommended format:
+Format:
 
 ```text
 <type>(<optional-scope>): <description>
 
 <optional body>
 
-<optional task or issue reference>
+<optional task reference>
 ```
 
-Common types:
+Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `build`, `ci`.
 
-* `feat` — introduces new functionality;
-* `fix` — fixes incorrect behavior;
-* `refactor` — restructures code without changing behavior;
-* `test` — adds or updates tests;
-* `docs` — updates documentation only;
-* `chore` — maintenance, tooling, or dependency changes;
-* `build` — changes the build system or external dependencies;
-* `ci` — changes CI configuration.
+Scope is the area touched, named as in `src/` and in the singular or plural form already used for
+it: `functions`, `fields`, `modules`, `logger`, `utils`, `shared`.
+
+## Task references
+
+Project Office task keys are `ZS-<number>`. When the identifier is known, put it alone on the last
+line of the body, separated by a blank line:
+
+```text
+feat(fields): add the fields:pull command
+
+Fields are pulled per module, so a failure for one module does not
+abort the rest of the run.
+
+ZS-5
+```
+
+Nothing parses this as a git trailer — it is a plain line, and that is the established convention
+here. Do not convert it to `Refs: ZS-5` in one commit while the rest of the history uses the bare
+form.
