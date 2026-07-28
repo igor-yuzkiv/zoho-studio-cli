@@ -1,5 +1,5 @@
 import { mkdir, rm } from 'node:fs/promises'
-import { isAbsolute, join, resolve, sep } from 'node:path'
+import { join } from 'node:path'
 
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
@@ -7,7 +7,7 @@ import { Command } from 'commander'
 import { getFunctionCode, getFunctionsList, type ZohoFunction } from '@/entities/function'
 import { getProjectSettings } from '@/settings'
 import { createCommandLogger } from '@/shared/logger'
-import { writeJsonFile } from '@/shared/utils'
+import { resolveProjectDirPath, writeJsonFile } from '@/shared/utils'
 
 const delayBetweenCodeRequestsMs = 300
 
@@ -24,7 +24,11 @@ export const pullFunctionsCommand = new Command('functions:pull')
         logger.info('Starting functions pull')
 
         const { projectPath, settings } = await getProjectSettings()
-        const functionsPath = resolveFunctionsRootPath(projectPath, settings.crm.functions.root_dir)
+        const functionsPath = resolveProjectDirPath(
+            projectPath,
+            settings.crm.functions.root_dir,
+            'crm.functions.root_dir'
+        )
 
         let functions: ZohoFunction[]
 
@@ -101,25 +105,6 @@ export const pullFunctionsCommand = new Command('functions:pull')
             console.log(`  - ${failure.name} (${failure.apiName}): ${failure.message}`)
         }
     })
-
-/**
- * The whole directory is wiped on every pull, so a configured path that is absolute, escapes the
- * project, or resolves to the project root itself is refused instead of deleting something else.
- */
-export function resolveFunctionsRootPath(projectPath: string, rootDir: string): string {
-    if (isAbsolute(rootDir)) {
-        throw new Error(`crm.functions.root_dir must be relative to the project, got "${rootDir}".`)
-    }
-
-    const projectRootPath = resolve(projectPath)
-    const functionsPath = resolve(projectRootPath, rootDir)
-
-    if (!functionsPath.startsWith(projectRootPath + sep)) {
-        throw new Error(`crm.functions.root_dir must point inside the project, got "${rootDir}".`)
-    }
-
-    return functionsPath
-}
 
 function resolveMetadataPath(functionsPath: string, zohoFunction: ZohoFunction): string {
     return join(
