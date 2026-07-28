@@ -6,6 +6,7 @@ import { statusCommand } from '@/commands/status'
 import { debugCommand } from '@/commands/debug'
 import { pullFunctionsCommand } from '@/commands/functions'
 import { pullModulesCommand } from '@/commands/modules'
+import { pullFieldsCommand } from '@/commands/fields'
 
 const program = new Command()
 
@@ -17,6 +18,7 @@ program.addCommand(statusCommand)
 program.addCommand(debugCommand);
 program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
+program.addCommand(pullFieldsCommand)
 
 try {
     await program.parseAsync()
