@@ -28,3 +28,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`
 - [5-status-command.md](5-status-command.md) — checking the connection with `zoho-studio status`
 - [6-functions-pull-command.md](6-functions-pull-command.md) — downloading functions with `zoho-studio functions:pull`
+- [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio modules:pull`

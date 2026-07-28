@@ -5,6 +5,7 @@ import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/commands/status'
 import { debugCommand } from '@/commands/debug'
 import { pullFunctionsCommand } from '@/commands/functions'
+import { pullModulesCommand } from '@/commands/modules'
 
 const program = new Command()
 
@@ -15,6 +16,7 @@ program.addCommand(loginCommand)
 program.addCommand(statusCommand)
 program.addCommand(debugCommand);
 program.addCommand(pullFunctionsCommand)
+program.addCommand(pullModulesCommand)
 
 try {
     await program.parseAsync()

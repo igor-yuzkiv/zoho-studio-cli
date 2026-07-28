@@ -23,6 +23,10 @@ export interface ProjectSettings {
             /** Extension of the saved Deluge files, written without a leading dot. */
             code_extension: string
         }
+        modules: {
+            /** Where `modules:pull` writes, relative to the project root. */
+            root_dir: string
+        }
     }
     logs: {
         /** The file every command logs to, relative to the project root. */

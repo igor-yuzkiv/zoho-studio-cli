@@ -36,6 +36,9 @@ leaked.
         "functions": {
             "root_dir": "functions",
             "code_extension": "deluge"
+        },
+        "modules": {
+            "root_dir": "modules"
         }
     },
     "logs": {
@@ -61,6 +64,10 @@ that directory on every run.
 `crm.functions.code_extension` names the saved Deluge files — `deluge` gives
 `Calculate Invoice Total.deluge`. A leading dot is optional, and an empty value saves the code with
 no extension at all.
+
+`crm.modules.root_dir` is the same idea for
+[`zoho-studio modules:pull`](7-modules-pull-command.md) — relative to the project root, refused when
+it is absolute or climbs out with `..`, and deleted on every run.
 
 `logs.file` is where every command writes its log, also relative to the project root, and its folder
 is created on the first line written. The default `.zoho-studio/cli.log` keeps it next to the

@@ -33,6 +33,9 @@ export const defaultProjectSettings: ProjectSettings = {
             root_dir: 'functions',
             code_extension: 'deluge',
         },
+        modules: {
+            root_dir: 'modules',
+        },
     },
     logs: {
         file: `${projectSettingsDirName}/cli.log`,
