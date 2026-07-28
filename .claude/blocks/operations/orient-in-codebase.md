@@ -8,6 +8,7 @@ use_when:
   - the change touches code you have not established the shape of
 skip_when:
   - the relevant files and their behaviour are already established in this session
+  - the question is "what shape should this code take" — read the exemplar directly instead; a map is the wrong output for that
 
 requires:
   - a narrow scope question — one area, one flow, one concern
@@ -36,6 +37,8 @@ applies_rules:
 Answer one narrow question about the codebase with a map compact enough to reason from.
 
 This operation does not propose implementations and does not change code. Its entire value is that reading forty files happens somewhere other than the main context.
+
+**It is not how the caller gets an exemplar.** If the question is what shape the new code should take, the answer is the exemplar's text, and a compressed map cannot carry it — the caller should open that file directly rather than send you for a summary of it.
 
 ## Scope narrowly, run several
 

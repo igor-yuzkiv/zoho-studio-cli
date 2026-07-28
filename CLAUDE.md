@@ -22,53 +22,48 @@ How work is carried out — sizing, verification, review, closing — is not a p
 comes from the pipeline below.
 
 <!-- composable-pipeline:begin -->
+## How work is done here
 
-## Agent configuration
+These rules are **binding** — they apply to every task in this repository, with or without a
+command. Each line below is the rule. Open the matching block in `.claude/blocks/rules/` when the
+line is not enough to decide.
 
-Work is executed through the pipeline in `.claude/blocks/pipelines/run-task.md` — orient, size
-the ceremony, implement, verify, review, close. Read it before starting a task, not after.
+- **execution-discipline** — do exactly what the task specifies. Minimal diff. Report adjacent
+  problems instead of fixing them.
+- **decision-authority** — depth is granted, decisions are not. Silence in the task is not
+  permission; escalate with options and a recommendation, then continue with what does not depend
+  on the answer.
+- **definition-of-done** — done means verified and reported. Name which checks ran and what they
+  showed. Partial work is reported as partial.
+- **evidence-and-claims** — separate verified from inferred and mark which. A claim about code
+  carries a `file:line` that was actually opened.
+- **output-discipline** — subagents return conclusions and pointers, never the material they read.
+- **communication-defaults** — lead with the conclusion, name uncertainty plainly, use the language
+  the profile sets for that surface.
+- **artifact-routing** — destinations come from the profile. Never guess one; ask once and record it.
 
-Project-specific addresses, exemplars, and verification commands live in
-`.claude/project-profile.yml`. Never guess one of those — read the profile, and if the answer is
-not there, ask once and write it in.
+Guidance principles are in `.claude/blocks/principles/` — `kiss`, `yagni`, `dry`,
+`chestertons-fence`, `reference-over-prose`, `bluf`, `eli5`, `plain-language`. Applied by
+judgement, not by rote.
 
-### Entry points
+**To execute a task:** follow `.claude/blocks/pipelines/run-task.md`. Pick the lane before
+anything else; when unsure, take the lighter one. `/cp-run-task` invokes it explicitly; the skill
+also triggers on its own when a request looks like a task.
 
-| Invoke | For |
-|---|---|
-| `/task <description>` | run a piece of work through the full cycle |
-| `/review [target]` | independent review of a diff, delegated to `code-reviewer` |
-| `run-task` skill | same cycle, when picked up without the command |
-| `code-explorer` subagent | map code before changing it — several in parallel, narrow scopes |
-| `code-reviewer` subagent | review a finished diff; reports, never fixes |
+The trigger is **the move from discussing to changing code** — not the wording of the request.
+"Go ahead", "let's do it", or a nod at the end of a long planning conversation all start the
+cycle, exactly as a formally stated task would. State the lane in one line before the first edit,
+so the choice is visible and correctable. For the direct lane that line is the whole ceremony.
 
-### Rules — `.claude/blocks/rules/`, mandatory
+**Orienting** splits in two, and conflating them is the usual mistake. *Where does this live and
+what will it affect* → `code-explorer` subagent, several in parallel with narrow scopes, returns a
+map. *What shape should the new code take* → read the exemplar named in the profile **directly**,
+here, in full. A map cannot carry the text you need to write a file like it.
 
-| Block | |
-|---|---|
-| `execution-discipline` | do what the task specifies; report adjacent problems instead of fixing them |
-| `decision-authority` | depth is granted, decisions are not — escalate rather than choose |
-| `definition-of-done` | done means verified and reported; unverified work is a proposal |
-| `evidence-and-claims` | separate what was verified from what was inferred, and mark which |
-| `output-discipline` | a subagent returns conclusions and `file:line`, never the material it read |
-| `communication-defaults` | anything a human reads leads with the conclusion and names its uncertainty |
-| `artifact-routing` | destinations come from the profile, never from the catalog |
+**To review:** `/cp-review`, or the `code-reviewer` subagent — reports, never fixes.
 
-### Principles — `.claude/blocks/principles/`, guidance
-
-`kiss` simplest sufficient solution · `yagni` build the requirement you have · `dry` one home per
-fact, link elsewhere · `chestertons-fence` do not remove what you do not understand ·
-`reference-over-prose` point at a real file instead of describing it · `bluf` conclusion first ·
-`eli5` ordinary language · `plain-language` describe behaviour, keep terms stable
-
-### Operations — `.claude/blocks/operations/`
-
-`orient-in-codebase` · `clarify-task` · `decompose-into-workstreams` · `implement-change` ·
-`verify-change` · `review-change` · `wrap-up-work`
-
-The pipeline sequences these and states which are skipped in which lane. Open the operation when
-you reach its step — each defines its own inputs, output shape, and escalation triggers.
-
+**Project facts** — artifact destinations, exemplars, verification commands, language per surface —
+are in `.claude/project-profile.yml`. Read it rather than guessing.
 <!-- composable-pipeline:end -->
 
 ## Commands

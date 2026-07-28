@@ -32,3 +32,12 @@ If the natural home for something does not exist yet, that is a question for the
 ## The profile is the only place
 
 When an address changes, it changes in the profile. An address repeated inside a block, a template, or an agent prompt is a second copy that will drift — see [[dry]].
+
+## What may be written into it
+
+Two constraints, whenever you add an entry:
+
+- **Nothing sensitive.** No tokens, credentials, internal hostnames, or client data. The profile is read by agents, quoted into outputs, and may sit in a repository other people can read.
+- **No absolute paths.** Relative to the project root, or a named reference such as `project-office` or `creative-team:some/path`. An absolute path breaks on every other machine and leaks the local filesystem layout into the project.
+
+Both hold regardless of whether the file is currently committed — that decision can change later, and nobody re-audits the file when it does.

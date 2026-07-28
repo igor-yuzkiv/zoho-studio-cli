@@ -55,7 +55,9 @@ This operation does not design. If a design decision is still open when you reac
 ## Steps
 
 1. **Re-read the scope.** Note what is explicitly excluded. Excluded items are boundaries, not suggestions.
-2. **Open the exemplar first.** Read it before writing anything. Structure, naming, layering, and error handling come from there, not from general best practice.
+2. **Open the exemplar first, in full, in this context.** Read it before writing anything. Structure, naming, layering, and error handling come from there, not from general best practice.
+
+   Do not delegate this to a subagent. A summary of an exemplar is useless for writing code shaped like it — you need the text. Reading two named files deliberately is cheap; it is reading forty blind that context hygiene exists to prevent.
 3. **Confirm the context map is still true.** File paths and entry points get stale. Verify the ones you are about to touch actually exist and do what the map says.
 4. **Make the change.** Smallest diff that reaches the outcome. No incidental cleanup.
 5. **Note every departure** from the spec or the exemplar as you go, with the reason. Do not reconstruct these afterwards from memory.

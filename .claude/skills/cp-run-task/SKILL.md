@@ -1,5 +1,5 @@
 ---
-name: run-task
+name: cp-run-task
 description: The default cycle for executing a piece of work in a codebase — orient, size the ceremony, implement, verify, review, close. Use when picking up a task, ticket, bug, or change request that is ready to be worked on, at any size from a one-line fix to a multi-part feature. Not for deciding what to build — that is concept work.
 ---
 

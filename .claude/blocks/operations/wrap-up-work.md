@@ -43,6 +43,8 @@ Leave the work in a state where someone else — including you in three weeks �
 
 ## Commit or pull request
 
+**Committing locally is within your authority. Anything that leaves this machine is not.** A commit is reversible and private; a push, a pull request, or a release is outward-facing and belongs to the person, not the task — ask, and say what you are about to send where.
+
 The message answers **what changed and why**. The diff already shows how.
 
 Why is the part that decays: in six months the diff is still readable and the reason is gone. A commit that says "fix tariff recalculation" without saying which condition was wrong forces the next reader to reconstruct it from scratch.

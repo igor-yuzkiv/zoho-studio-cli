@@ -43,9 +43,20 @@ Say which lane you picked and why, in one line. That line is what lets the choic
 
 ## The cycle
 
-**1. Orient** — [[orient-in-codebase]], skipped in the direct lane.
+**1. Orient** — skipped in the direct lane.
 
-In the wide lane, fan out: several narrow scopes at once rather than one agent told to understand everything. Reads never conflict, so this is free parallelism and it keeps the main context clean.
+Two different questions live here, and they are answered differently. Conflating them is the most common way this step goes wrong.
+
+| Question | How |
+|---|---|
+| Where does this live, how does it flow, what will it affect | [[orient-in-codebase]] via subagent — returns a map |
+| What shape should the new code take | **read the exemplar directly**, in this context |
+
+A subagent returns a compressed map, and a map is the wrong output for "write a file like this one". Nobody can write code analogous to `pull-fields.command.ts` from a summary of it — they need its text. The profile's `exemplars` names those files; open them here, fully and deliberately.
+
+That is not a breach of context hygiene, it is the point of it: two exemplars read on purpose cost far less than forty files read blind, which is what the subagent exists to prevent.
+
+In the wide lane, fan out the map side: several narrow scopes at once rather than one agent told to understand everything. Reads never conflict, so this parallelism is free.
 
 **2. Clarify** — [[clarify-task]].
 
