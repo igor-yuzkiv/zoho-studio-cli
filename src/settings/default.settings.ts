@@ -36,6 +36,9 @@ export const defaultProjectSettings: ProjectSettings = {
         modules: {
             root_dir: 'modules',
         },
+        workflows: {
+            root_dir: 'workflows',
+        },
     },
     logs: {
         file: `${projectSettingsDirName}/cli.log`,

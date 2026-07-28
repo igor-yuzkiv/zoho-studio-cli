@@ -16,6 +16,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [functions:pull](docs/6-functions-pull-command.md) — downloading functions
 - [modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
 - [fields:pull](docs/8-fields-pull-command.md) — downloading module fields
+- [workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
 
 ## Editor support
 

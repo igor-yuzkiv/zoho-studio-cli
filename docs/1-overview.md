@@ -30,3 +30,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [6-functions-pull-command.md](6-functions-pull-command.md) — downloading functions with `zoho-studio functions:pull`
 - [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio modules:pull`
 - [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio fields:pull`
+- [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio workflows:pull`

@@ -7,6 +7,7 @@ import { debugCommand } from '@/commands/debug'
 import { pullFunctionsCommand } from '@/commands/functions'
 import { pullModulesCommand } from '@/commands/modules'
 import { pullFieldsCommand } from '@/commands/fields'
+import { pullWorkflowsCommand } from '@/commands/workflows'
 
 const program = new Command()
 
@@ -19,6 +20,7 @@ program.addCommand(debugCommand);
 program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
+program.addCommand(pullWorkflowsCommand)
 
 try {
     await program.parseAsync()

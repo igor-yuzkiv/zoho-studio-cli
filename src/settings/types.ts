@@ -27,6 +27,10 @@ export interface ProjectSettings {
             /** Where `modules:pull` writes, relative to the project root. */
             root_dir: string
         }
+        workflows: {
+            /** Where `workflows:pull` writes, relative to the project root. */
+            root_dir: string
+        }
     }
     logs: {
         /** The file every command logs to, relative to the project root. */

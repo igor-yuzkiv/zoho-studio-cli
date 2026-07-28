@@ -39,6 +39,9 @@ leaked.
         },
         "modules": {
             "root_dir": "modules"
+        },
+        "workflows": {
+            "root_dir": "workflows"
         }
     },
     "logs": {
@@ -68,6 +71,10 @@ no extension at all.
 `crm.modules.root_dir` is the same idea for
 [`zoho-studio modules:pull`](7-modules-pull-command.md) — relative to the project root, refused when
 it is absolute or climbs out with `..`, and deleted on every run.
+
+`crm.workflows.root_dir` is the same again for
+[`zoho-studio workflows:pull`](9-workflows-pull-command.md), with one difference: a run narrowed to
+one module with `--module` deletes only that module's rule files instead of the whole folder.
 
 `logs.file` is where every command writes its log, also relative to the project root, and its folder
 is created on the first line written. The default `.zoho-studio/cli.log` keeps it next to the
