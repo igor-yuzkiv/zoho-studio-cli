@@ -56,7 +56,9 @@ A subagent returns a compressed map, and a map is the wrong output for "write a 
 
 That is not a breach of context hygiene, it is the point of it: two exemplars read on purpose cost far less than forty files read blind, which is what the subagent exists to prevent.
 
-In the wide lane, fan out the map side: several narrow scopes at once rather than one agent told to understand everything. Reads never conflict, so this parallelism is free.
+Fan out the map side: several narrow scopes at once rather than one agent told to understand everything. Reads never conflict, so this parallelism is free.
+
+**Name the scopes you launched, in one line, before launching.** A skipped delegation is otherwise invisible — see [[delegate-orientation]]. Orienting yourself with a batched `grep` or `cat` is the same reading, landing in the same context; the tool used does not change the cost.
 
 **2. Clarify** — [[clarify-task]].
 

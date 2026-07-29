@@ -31,6 +31,7 @@ applies_rules:
 applies_principles:
   - yagni
   - chestertons-fence
+  - self-documenting-code
 ---
 
 # Review change

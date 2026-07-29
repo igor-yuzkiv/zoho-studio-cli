@@ -42,6 +42,7 @@ applies_principles:
   - kiss
   - yagni
   - chestertons-fence
+  - self-documenting-code
 ---
 
 # Implement change

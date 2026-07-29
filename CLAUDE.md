@@ -37,17 +37,24 @@ line is not enough to decide.
   showed. Partial work is reported as partial.
 - **evidence-and-claims** — separate verified from inferred and mark which. A claim about code
   carries a `file:line` that was actually opened.
+- **delegate-orientation** — reading to find out is delegated; reading to transform is done here.
+  By the third file opened to answer one question — through `Read`, `cat`, `sed`, or a batched
+  `grep` — that question belonged to a subagent. Say which scopes you launched, in one line.
 - **output-discipline** — subagents return conclusions and pointers, never the material they read.
 - **communication-defaults** — lead with the conclusion, name uncertainty plainly, use the language
   the profile sets for that surface.
 - **artifact-routing** — destinations come from the profile. Never guess one; ask once and record it.
 
 Guidance principles are in `.claude/blocks/principles/` — `kiss`, `yagni`, `dry`,
-`chestertons-fence`, `reference-over-prose`, `bluf`, `eli5`, `plain-language`. Applied by
+`chestertons-fence`, `reference-over-prose`, `self-documenting-code`, `bluf`, `eli5`,
+`plain-language`. Applied by
 judgement, not by rote.
 
+**To find a block without opening forty files:** `.claude/blocks/index.yaml` lists every block with
+its `description`, `use_when`, and `skip_when`. Read the index, then open only what applies.
+
 **To execute a task:** follow `.claude/blocks/pipelines/run-task.md`. Pick the lane before
-anything else; when unsure, take the lighter one. `/cp-run-task` invokes it explicitly; the skill
+anything else; when unsure, take the lighter one. `/cp-run-task` invokes it explicitly; it
 also triggers on its own when a request looks like a task.
 
 The trigger is **the move from discussing to changing code** — not the wording of the request.
@@ -60,7 +67,17 @@ what will it affect* → `code-explorer` subagent, several in parallel with narr
 map. *What shape should the new code take* → read the exemplar named in the profile **directly**,
 here, in full. A map cannot carry the text you need to write a file like it.
 
-**To review:** `/cp-review`, or the `code-reviewer` subagent — reports, never fixes.
+**To plan work that is not ready to execute:** `/cp-plan-work` — follow
+`.claude/blocks/pipelines/plan-work.md`. Requirements, a coverage pass over
+`.claude/blocks/coverage/`, real options with their costs, **the person decides**, the decision is
+recorded, and the result is cut into task specs. It ends in artifacts, not in agreement.
+
+**To review:** `/cp-review`, or the `code-reviewer` subagent — reports, never fixes. For a plan,
+a spec, a design, or a document rather than a diff, use `critic`.
+
+**Subagents:** `code-explorer` maps code · `code-reviewer` reviews a diff · `critic` reviews a plan
+or spec, and audits its own findings · `requirements-analyst` extracts from long or non-technical
+source material · `test-designer` builds a test matrix before the code exists.
 
 **Project facts** — artifact destinations, exemplars, verification commands, language per surface —
 are in `.claude/project-profile.yml`. Read it rather than guessing.
