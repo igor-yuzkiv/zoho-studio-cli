@@ -1,0 +1,40 @@
+# Project profile
+#
+# A lookup table for the steps that need it — not a description of the project.
+# Project rules and architecture live in .claude/rules/, which is always in context.
+#
+# No secrets, no absolute paths. See the plugin template for the reasoning.
+
+artifacts:
+  progress_update: project-office
+  client_update: none
+
+language:
+  chat: uk
+  code: en
+  git: en
+  repo_docs: en
+  tasks: en
+  client: none
+  local_notes: uk
+
+exemplars:
+  command: src/commands/fields/pull-fields.command.ts
+  service: src/commands/init/init.service.ts
+  request: src/entities/field/api/get-fields-list.request.ts
+  client: src/shared/api/crm/crm.client.ts
+  entity_types: src/entities/field/field.types.ts
+  settings: src/settings/settings.store.ts
+  utils: src/shared/utils/path.utils.ts
+  test_command: tests/commands/pull-fields.command.spec.ts
+  test_unit: tests/settings/settings.loader.spec.ts
+  test_fixture: tests/support/temp-project.ts
+  docs_page: docs/8-fields-pull-command.md
+
+verification:
+  tests: bun test
+  tests_filtered: bun test <path-to-spec>
+  lint: bun run lint
+  types: bun run typecheck
+  build: bun run build
+  all: bun run check
