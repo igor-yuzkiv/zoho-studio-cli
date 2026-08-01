@@ -1,5 +1,5 @@
 import { pollDeviceToken, requestDeviceCode, type DeviceCode, type TokenResponse } from '@/shared/api/auth'
-import { projectSettingsGitignoreEntry } from '@/config'
+import { projectSettingsRelativePath } from '@/config'
 import { getProjectSettings, saveProjectSettings } from '@/settings'
 
 import type { LoginOptions, LoginResult } from './login.types'
@@ -10,13 +10,13 @@ export async function login({ onVerificationRequired }: LoginOptions = {}): Prom
 
     if (!clientId || !clientSecret) {
         throw new Error(
-            `auth.clientId and auth.clientSecret are required in ${projectSettingsGitignoreEntry}. ` +
+            `auth.clientId and auth.clientSecret are required in ${projectSettingsRelativePath}. ` +
                 'Copy them from your client in the Zoho API Console — see docs/4-login-command.md.'
         )
     }
 
     if (scopes.length === 0) {
-        throw new Error(`auth.scopes is empty in ${projectSettingsGitignoreEntry}. List the scopes the CLI may use.`)
+        throw new Error(`auth.scopes is empty in ${projectSettingsRelativePath}. List the scopes the CLI may use.`)
     }
 
     const deviceCode = await requestDeviceCode({ clientId, scopes })

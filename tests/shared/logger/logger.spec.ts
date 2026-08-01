@@ -34,9 +34,9 @@ async function readEntryWithMessage(logFilePath: string, message: string): Promi
 }
 
 describe('shared logger', () => {
-    test('writes structured JSON to .zoho-studio/cli.log by default', async () => {
+    test('writes structured JSON to logs/zoho-studio-cli.log by default', async () => {
         const path = await startProject()
-        const logFilePath = join(path, '.zoho-studio', 'cli.log')
+        const logFilePath = join(path, 'logs', 'zoho-studio-cli.log')
 
         const commandLogger = await createCommandLogger('functions:pull')
         commandLogger.info('structured entry')
@@ -57,7 +57,7 @@ describe('shared logger', () => {
 
     test('supports the standard levels', async () => {
         const path = await startProject()
-        const logFilePath = join(path, '.zoho-studio', 'cli.log')
+        const logFilePath = join(path, 'logs', 'zoho-studio-cli.log')
 
         const commandLogger = await createCommandLogger('functions:pull')
         commandLogger.debug('debug entry')
@@ -71,7 +71,7 @@ describe('shared logger', () => {
 
     test('tags every entry with the command name', async () => {
         const path = await startProject()
-        const logFilePath = join(path, '.zoho-studio', 'cli.log')
+        const logFilePath = join(path, 'logs', 'zoho-studio-cli.log')
 
         const commandLogger = await createCommandLogger('functions:pull')
         commandLogger.info('command entry')
@@ -83,7 +83,7 @@ describe('shared logger', () => {
 
     test('serializes an error logged as { err } with its stack', async () => {
         const path = await startProject()
-        const logFilePath = join(path, '.zoho-studio', 'cli.log')
+        const logFilePath = join(path, 'logs', 'zoho-studio-cli.log')
 
         const commandLogger = await createCommandLogger('functions:pull')
         commandLogger.error({ err: new Error('request failed') }, 'error with cause')

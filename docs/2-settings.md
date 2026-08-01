@@ -3,9 +3,9 @@
 A project keeps everything it needs in **one file**: `.zoho-studio/settings.json`. Every command
 reads it, and [`zoho-studio init`](3-init-command.md) creates it.
 
-**The file is a secret.** It stores the client secret and the refresh token, so it is listed in
-`.gitignore` and restricted to `chmod 0600`. Never commit it, and treat a leak as if a password
-leaked.
+**The file is a secret.** It stores the client secret and the refresh token, so `init` puts a
+`.gitignore` next to it that keeps it out of git, and writes it with `chmod 0600`. Never commit it,
+and treat a leak as if a password leaked.
 
 ## The file
 
@@ -32,54 +32,29 @@ leaked.
         "baseUrl": "https://www.zohoapis.com",
         "version": "v8"
     },
-    "crm": {
-        "functions": {
-            "root_dir": "functions",
-            "code_extension": "deluge"
-        },
-        "modules": {
-            "root_dir": "modules"
-        },
-        "workflows": {
-            "root_dir": "workflows"
-        }
-    },
     "logs": {
-        "file": ".zoho-studio/cli.log"
+        "file": "logs/zoho-studio-cli.log"
     }
 }
 ```
 
+**Where the pulled files go is not configurable.** Every artifact lands under `src/` at a fixed
+path — `src/functions`, `src/modules`, `src/workflows` — so that the CLI can rely on the layout.
+See [`zoho-studio init`](3-init-command.md) for the whole tree.
+
 There are two kinds of values in there, and the difference matters when you edit the file by hand:
 
-- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `crm.*`, `logs.*` —
+- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `logs.*` —
   **yours**. You fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
   `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
   refreshed, so do not expect the values you saw last run.
 
-`crm.functions.root_dir` is where [`zoho-studio functions:pull`](6-functions-pull-command.md) writes,
-always relative to the project root — `crm/functions` puts the result in `<project>/crm/functions`.
-An absolute path, or one that climbs out of the project with `..`, is refused: the command deletes
-that directory on every run.
-
-`crm.functions.code_extension` names the saved Deluge files — `deluge` gives
-`Calculate Invoice Total.deluge`. A leading dot is optional, and an empty value saves the code with
-no extension at all.
-
-`crm.modules.root_dir` is the same idea for
-[`zoho-studio modules:pull`](7-modules-pull-command.md) — relative to the project root, refused when
-it is absolute or climbs out with `..`, and deleted on every run.
-
-`crm.workflows.root_dir` is the same again for
-[`zoho-studio workflows:pull`](9-workflows-pull-command.md), with one difference: a run narrowed to
-one module with `--module` deletes only that module's rule files instead of the whole folder.
-
-`logs.file` is where every command writes its log, also relative to the project root, and its folder
-is created on the first line written. The default `.zoho-studio/cli.log` keeps it next to the
-settings — note that `.gitignore` only lists `.zoho-studio/settings.json`, so add the log file
-yourself if you keep it inside a folder you commit.
+`logs.file` is where every command writes its log, relative to the project root, and its folder is
+created on the first line written. The default is `logs/zoho-studio-cli.log`, and the `logs/`
+folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Point this somewhere
+else and that no longer applies — add the new path to your `.gitignore` yourself.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
@@ -88,6 +63,11 @@ never received is a scope it cannot silently use.
 Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
 `clientId` and `clientSecret` is a valid project. That also means you can delete a key to return to
 the default instead of hunting for the original value.
+
+A key the CLI does not know is kept and ignored. A project created before the paths were fixed
+still carries its `crm` section, which now does nothing — delete it when it bothers you. Such a
+project also saved its Deluge files under whatever `code_extension` said; the next
+`functions:pull` writes `.deluge` files and leaves the old ones beside them.
 
 ## How reading works
 
@@ -122,7 +102,7 @@ and write the result back — do not hand it a partial object.
 
 | File | Role |
 | --- | --- |
-| `src/config.ts` | File and folder names, path helpers, the `.gitignore` entry |
+| `src/config.ts` | File and folder names, including the fixed artifact paths, and path helpers |
 | `src/settings/types.ts` | The `ProjectSettings` shape |
 | `src/settings/default.settings.ts` | The defaults every read merges into |
 | `src/settings/settings.loader.ts` | `loadProjectSettings()`, `findProjectPath()` |

@@ -1,15 +1,11 @@
 import { mkdir, stat } from 'node:fs/promises'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
-import {
-    projectSettingsFileName,
-    projectSettingsGitignoreEntry,
-    resolveProjectSettingsDirPath,
-    resolveProjectSettingsPath,
-} from '@/config'
+import { projectSettingsFileName, resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
 import { defaultProjectSettings, saveProjectSettings } from '@/settings'
 
-import type { GitignoreOutcome, InitializeProjectOptions, InitializeProjectResult } from './init.types'
+import { templateFiles } from './template.manifest'
+import type { InitializeProjectOptions, InitializeProjectResult, TemplateFileResult } from './init.types'
 
 export async function initializeProject(
     projectPath: string,
@@ -26,12 +22,35 @@ export async function initializeProject(
         )
     }
 
+    const copied = await copyTemplateFiles(projectPath)
+
     await saveProjectSettings(projectPath, defaultProjectSettings)
 
-    return {
-        projectPath,
-        gitignoreOutcome: await ensureGitignoreEntry(projectPath, projectSettingsGitignoreEntry),
+    return { templateFiles: copied }
+}
+
+/**
+ * An existing file is never overwritten, with or without `--force`: the user owns everything the
+ * template handed them, and the pulled artifacts live in the same tree.
+ */
+async function copyTemplateFiles(projectPath: string): Promise<TemplateFileResult[]> {
+    const results: TemplateFileResult[] = []
+
+    for (const { embeddedPath, destination } of templateFiles) {
+        const targetPath = join(projectPath, destination)
+
+        if (await Bun.file(targetPath).exists()) {
+            results.push({ path: destination, outcome: 'skipped' })
+            continue
+        }
+
+        await mkdir(dirname(targetPath), { recursive: true })
+        await Bun.write(targetPath, Bun.file(embeddedPath))
+
+        results.push({ path: destination, outcome: 'created' })
     }
+
+    return results
 }
 
 async function assertPathIsNotAFile(path: string): Promise<void> {
@@ -40,22 +59,6 @@ async function assertPathIsNotAFile(path: string): Promise<void> {
     if (pathStats && !pathStats.isDirectory()) {
         throw new Error(`Target path is not a directory: ${path}`)
     }
-}
-
-async function ensureGitignoreEntry(projectPath: string, entry: string): Promise<GitignoreOutcome> {
-    const gitignorePath = join(projectPath, '.gitignore')
-    const gitignoreFile = Bun.file(gitignorePath)
-    const gitignoreExists = await gitignoreFile.exists()
-    const existingContent = gitignoreExists ? await gitignoreFile.text() : ''
-
-    if (existingContent.split('\n').some((line) => line.trim() === entry)) {
-        return 'unchanged'
-    }
-
-    const separator = existingContent === '' || existingContent.endsWith('\n') ? '' : '\n'
-    await Bun.write(gitignorePath, `${existingContent}${separator}${entry}\n`)
-
-    return gitignoreExists ? 'updated' : 'created'
 }
 
 async function statOrNull(path: string) {

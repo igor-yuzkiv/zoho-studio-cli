@@ -1,13 +1,11 @@
-import { mkdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
-
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
+import { functionCodeExtension, functionsDirName } from '@/config'
 import { getFunctionCode, getFunctionsList, type ZohoFunction } from '@/entities/function'
 import { getProjectSettings } from '@/settings'
+import { replaceArtifactDir, toPathSegment, writeArtifactJson, writeArtifactText } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { resolveProjectDirPath, writeJsonFile } from '@/shared/utils'
 
 const delayBetweenCodeRequestsMs = 300
 
@@ -23,12 +21,7 @@ export const pullFunctionsCommand = new Command('functions:pull')
         const logger = await createCommandLogger('functions:pull')
         logger.info('Starting functions pull')
 
-        const { projectPath, settings } = await getProjectSettings()
-        const functionsPath = resolveProjectDirPath(
-            projectPath,
-            settings.crm.functions.root_dir,
-            'crm.functions.root_dir'
-        )
+        const { projectPath } = await getProjectSettings()
 
         let functions: ZohoFunction[]
 
@@ -42,11 +35,10 @@ export const pullFunctionsCommand = new Command('functions:pull')
         logger.info({ total: functions.length }, 'Functions found')
 
         // The directory mirrors exactly what this pull returned, so stale functions are dropped.
-        await rm(functionsPath, { recursive: true, force: true })
-        await mkdir(functionsPath, { recursive: true })
+        await replaceArtifactDir(projectPath, [functionsDirName])
 
         for (const zohoFunction of functions) {
-            await writeJsonFile(resolveMetadataPath(functionsPath, zohoFunction), zohoFunction)
+            await writeArtifactJson(projectPath, resolveMetadataSegments(zohoFunction), zohoFunction)
         }
 
         const failed: FailedFunction[] = []
@@ -71,10 +63,7 @@ export const pullFunctionsCommand = new Command('functions:pull')
 
                 try {
                     const code = await getFunctionCode(zohoFunction.id)
-                    await Bun.write(
-                        resolveCodePath(functionsPath, zohoFunction, settings.crm.functions.code_extension),
-                        code
-                    )
+                    await writeArtifactText(projectPath, resolveCodeSegments(zohoFunction), code)
                 } catch (error) {
                     failed.push({
                         name: zohoFunction.name,
@@ -106,34 +95,19 @@ export const pullFunctionsCommand = new Command('functions:pull')
         }
     })
 
-function resolveMetadataPath(functionsPath: string, zohoFunction: ZohoFunction): string {
-    return join(
-        resolveFunctionDirPath(functionsPath, zohoFunction),
-        `${toPathSegment(zohoFunction.name)}.metadata.json`
-    )
+/** Only the two names are used, so the tests can exercise this without a whole Zoho payload. */
+type NamedFunction = Pick<ZohoFunction, 'api_name' | 'name'>
+
+function resolveMetadataSegments(zohoFunction: NamedFunction): string[] {
+    return [...resolveFunctionDirSegments(zohoFunction), `${toPathSegment(zohoFunction.name)}.metadata.json`]
 }
 
-function resolveCodePath(functionsPath: string, zohoFunction: ZohoFunction, codeExtension: string): string {
-    return join(
-        resolveFunctionDirPath(functionsPath, zohoFunction),
-        resolveCodeFileName(zohoFunction.name, codeExtension)
-    )
+export function resolveCodeSegments(zohoFunction: NamedFunction): string[] {
+    return [...resolveFunctionDirSegments(zohoFunction), `${toPathSegment(zohoFunction.name)}.${functionCodeExtension}`]
 }
 
-/** A configured extension may be written with or without its leading dot, or left out entirely. */
-export function resolveCodeFileName(functionName: string, codeExtension: string): string {
-    const extension = toPathSegment(codeExtension.replace(/^\.+/, ''))
-
-    return extension ? `${toPathSegment(functionName)}.${extension}` : toPathSegment(functionName)
-}
-
-function resolveFunctionDirPath(functionsPath: string, zohoFunction: ZohoFunction): string {
-    return join(functionsPath, toPathSegment(zohoFunction.api_name))
-}
-
-// Zoho names are kept as they are; only characters that cannot appear in a path segment are replaced.
-function toPathSegment(value: string): string {
-    return value.replace(/[/\\\0]/g, '_')
+function resolveFunctionDirSegments(zohoFunction: NamedFunction): string[] {
+    return [functionsDirName, toPathSegment(zohoFunction.api_name)]
 }
 
 function delay(milliseconds: number): Promise<void> {

@@ -10,7 +10,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 
 - [Overview](docs/1-overview.md) — what a project is, and how to run the CLI
 - [Project settings](docs/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
-- [init](docs/3-init-command.md) — creating a project with `zoho-studio init`
+- [init](docs/3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [login](docs/4-login-command.md) — authorizing a project with `zoho-studio login`
 - [status](docs/5-status-command.md) — checking the connection with `zoho-studio status`
 - [functions:pull](docs/6-functions-pull-command.md) — downloading functions
@@ -24,17 +24,6 @@ Pulled functions are saved as `.deluge` files. For syntax highlighting, IntelliS
 docs on Zoho's built-in functions, install
 [Deluge Language Support](https://marketplace.visualstudio.com/items?itemName=BagaduceDigital.deluge-lang)
 by OldPine Digital — it registers both `.deluge` and `.ds`, so it picks the files up as they are.
-
-If you point `crm.functions.code_extension` at something else, either use `.ds`, or map your
-extension to the `deluge` language in VS Code:
-
-```json
-{
-    "files.associations": {
-        "*.dg": "deluge"
-    }
-}
-```
 
 ## Commands
 

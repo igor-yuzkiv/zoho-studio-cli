@@ -26,7 +26,7 @@ with the `ZohoCRM.settings.fields.READ` scope granted.
 ## What lands on disk
 
 ```text
-modules/
+src/modules/
 └── Leads/
     ├── Leads.metadata.json
     └── fields/
@@ -40,7 +40,7 @@ Each file is named after the field's API name and holds the full field record ex
 characters a path segment cannot contain are replaced; nothing else about the name is changed.
 
 The `fields/` folder is fixed — it is not configurable. Its parent is
-[`crm.modules.root_dir`](2-settings.md), the same folder `modules:pull` writes to.
+`src/modules/`, the same folder `modules:pull` writes to.
 
 **The `fields/` folder of every pulled module is deleted and recreated on each run**, so a field
 removed in Zoho disappears locally and any local edit inside it is lost. Nothing else is touched:
@@ -76,7 +76,7 @@ currently being pulled.
 
 ## Logs
 
-The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `.zoho-studio/cli.log` by
+The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
 default. `fields:pull` records the start of the run, how many local modules were found, the final
 counts, and every failure with its stack trace. Individual successful modules are not logged — the
 progress bar already shows them.

@@ -10,8 +10,8 @@ dist
 /coverage
 *.lcov
 
-# logs
-logs
+# logs — anchored to the repository root, so template/logs/ stays tracked
+/logs
 _.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
@@ -38,5 +38,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 _tmp
 .claude/settings.local.json
-.zoho-studio
+/.zoho-studio
 .project-office/repo-settings.json

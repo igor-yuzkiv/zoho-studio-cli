@@ -1,8 +1,12 @@
-export type GitignoreOutcome = 'created' | 'updated' | 'unchanged'
+export type TemplateFileOutcome = 'created' | 'skipped'
+
+export interface TemplateFileResult {
+    path: string
+    outcome: TemplateFileOutcome
+}
 
 export interface InitializeProjectResult {
-    projectPath: string
-    gitignoreOutcome: GitignoreOutcome
+    templateFiles: TemplateFileResult[]
 }
 
 export interface InitializeProjectOptions {

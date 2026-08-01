@@ -1,6 +1,6 @@
 # `zoho-studio functions:pull`
 
-Downloads every Zoho CRM function of the project into a local `functions/` folder — one directory
+Downloads every Zoho CRM function of the project into `src/functions/` — one directory
 per function, holding its metadata and its Deluge source.
 
 ```bash
@@ -24,7 +24,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-functions/
+src/functions/
 └── calculate_invoice_total/
     ├── Calculate Invoice Total.metadata.json
     └── Calculate Invoice Total.deluge
@@ -35,38 +35,13 @@ characters a path segment cannot contain are replaced; nothing else about the na
 
 `*.metadata.json` holds the full function record exactly as the list endpoint returned it,
 formatted with a four-space indent and a trailing newline. `*.deluge` holds the source verbatim —
-it is never formatted, wrapped, or parsed. [`crm.functions.code_extension`](2-settings.md) renames
-that extension if `deluge` does not suit your editor.
+it is never formatted, wrapped, or parsed.
 
 **The target directory is deleted and recreated on every run.** It always reflects the current pull,
 so a function removed in Zoho disappears locally, and any local edit inside it is lost.
 
-## Choosing the directory
-
-`functions/` is the default. [`crm.functions.root_dir`](2-settings.md) moves it anywhere inside the
-project:
-
-```json
-{
-    "crm": {
-        "functions": {
-            "root_dir": "crm/functions"
-        }
-    }
-}
-```
-
-```text
-crm/
-└── functions/
-    └── calculate_invoice_total/
-        ├── Calculate Invoice Total.metadata.json
-        └── Calculate Invoice Total.deluge
-```
-
-The path is always relative to the project root and is created if it does not exist. Because the
-whole directory is wiped on each run, an absolute path or one escaping the project with `..` is
-refused before anything is deleted.
+The location is fixed: `src/functions/` under the project root, created if it is not there. No
+setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.
 
 ## Failures
 
@@ -81,7 +56,7 @@ API limits, so a large project takes a while.
 
 ## Logs
 
-The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `.zoho-studio/cli.log` by
+The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
 default, created on the first line written — a command that logs nothing leaves no file behind. `functions:pull` records the start of the run, how many functions were found,
 the final counts, and every failure with its stack trace. Individual successful functions are not
 logged — the progress bar already shows them.

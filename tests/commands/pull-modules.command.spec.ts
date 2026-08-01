@@ -1,19 +1,13 @@
-import { join } from 'node:path'
-
 import { describe, expect, test } from 'bun:test'
 
-import { resolveMetadataPath } from '@/commands/modules/pull-modules.command'
+import { resolveMetadataSegments } from '@/commands/modules/pull-modules.command'
 
-const modulesPath = '/tmp/zoho-project/modules'
-
-describe('resolveMetadataPath', () => {
+describe('resolveMetadataSegments', () => {
     test('names both the directory and the file after the module API name', () => {
-        expect(resolveMetadataPath(modulesPath, 'Leads')).toBe(join(modulesPath, 'Leads', 'Leads.metadata.json'))
+        expect(resolveMetadataSegments('Leads')).toEqual(['modules', 'Leads', 'Leads.metadata.json'])
     })
 
     test('keeps each name a single path segment', () => {
-        expect(resolveMetadataPath(modulesPath, 'crm/Leads')).toBe(
-            join(modulesPath, 'crm_Leads', 'crm_Leads.metadata.json')
-        )
+        expect(resolveMetadataSegments('crm/Leads')).toEqual(['modules', 'crm_Leads', 'crm_Leads.metadata.json'])
     })
 })

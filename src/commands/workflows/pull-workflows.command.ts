@@ -1,13 +1,14 @@
-import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
+import { readdir, unlink } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
+import { workflowsDirName } from '@/config'
 import { getWorkflowRule, getWorkflowRulesList, type ZohoWorkflowRule } from '@/entities/workflow-rule'
 import { getProjectSettings } from '@/settings'
+import { ensureArtifactDir, replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { resolveProjectDirPath, writeJsonFile } from '@/shared/utils'
 
 const delayBetweenRuleRequestsMs = 300
 
@@ -23,8 +24,7 @@ export const pullWorkflowsCommand = new Command('workflows:pull')
         const logger = await createCommandLogger('workflows:pull')
         logger.info({ module: options.module ?? null }, 'Starting workflow rules pull')
 
-        const { projectPath, settings } = await getProjectSettings()
-        const workflowsPath = resolveProjectDirPath(projectPath, settings.crm.workflows.root_dir, 'crm.workflows.root_dir')
+        const { projectPath } = await getProjectSettings()
         const module = options.module ? assertModuleName(options.module) : undefined
 
         let workflowRules: ZohoWorkflowRule[]
@@ -40,8 +40,8 @@ export const pullWorkflowsCommand = new Command('workflows:pull')
 
         // A full pull mirrors what Zoho returned; a single-module pull may only drop that module.
         const takenFileNames = module
-            ? await removeModuleRuleFiles(workflowsPath, module)
-            : await recreateDirectory(workflowsPath)
+            ? await removeModuleRuleFiles(await ensureArtifactDir(projectPath, [workflowsDirName]), module)
+            : await emptyWorkflowsDir(projectPath)
 
         const failed: FailedRule[] = []
         let savedRules = 0
@@ -69,7 +69,7 @@ export const pullWorkflowsCommand = new Command('workflows:pull')
                     const details = await getWorkflowRule(workflowRule.id)
                     const fileName = resolveRuleFileName(workflowRule.name, workflowRule.id, takenFileNames)
 
-                    await writeJsonFile(join(workflowsPath, fileName), details)
+                    await writeArtifactJson(projectPath, [workflowsDirName, fileName], details)
 
                     takenFileNames.add(fileName)
                     savedRules += 1
@@ -141,9 +141,8 @@ export function describeRequestError(error: unknown): string {
     return error instanceof Error ? error.message : String(error)
 }
 
-async function recreateDirectory(workflowsPath: string): Promise<Set<string>> {
-    await rm(workflowsPath, { recursive: true, force: true })
-    await mkdir(workflowsPath, { recursive: true })
+async function emptyWorkflowsDir(projectPath: string): Promise<Set<string>> {
+    await replaceArtifactDir(projectPath, [workflowsDirName])
 
     return new Set()
 }
@@ -153,8 +152,6 @@ async function recreateDirectory(workflowsPath: string): Promise<Set<string>> {
  * of the file itself. A file that cannot be read as a rule is left alone rather than guessed about.
  */
 export async function removeModuleRuleFiles(workflowsPath: string, module: string): Promise<Set<string>> {
-    await mkdir(workflowsPath, { recursive: true })
-
     const entries = await readdir(workflowsPath, { withFileTypes: true })
     const survivingFileNames = new Set<string>()
 

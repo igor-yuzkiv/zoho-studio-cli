@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { writeJsonFile } from '@/shared/utils'
 
 import { findProjectPath, loadProjectSettings } from './settings.loader'
-import { projectSettingsGitignoreEntry, resolveProjectSettingsPath } from '@/config'
+import { projectSettingsRelativePath, resolveProjectSettingsPath } from '@/config'
 import type { ProjectContext, ProjectSettings } from './types'
 
 // Edits made outside the running CLI are not picked up.
@@ -16,7 +16,7 @@ export async function getProjectSettings(startPath: string = process.cwd()): Pro
 
     if (!projectPath) {
         throw new Error(
-            `No ${projectSettingsGitignoreEntry} found in ${resolve(startPath)} or any parent. ` +
+            `No ${projectSettingsRelativePath} found in ${resolve(startPath)} or any parent. ` +
                 'Run "zoho-studio init" first.'
         )
     }

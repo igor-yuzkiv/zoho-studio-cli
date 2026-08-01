@@ -1,12 +1,10 @@
-import { mkdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
-
 import { Command } from 'commander'
 
+import { modulesDirName } from '@/config'
 import { getModulesList, type ZohoModule } from '@/entities/module'
 import { getProjectSettings } from '@/settings'
+import { replaceArtifactDir, toPathSegment, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { resolveProjectDirPath, writeJsonFile } from '@/shared/utils'
 
 export const pullModulesCommand = new Command('modules:pull')
     .description('Download the metadata of every Zoho CRM module into the project modules directory')
@@ -14,8 +12,7 @@ export const pullModulesCommand = new Command('modules:pull')
         const logger = await createCommandLogger('modules:pull')
         logger.info('Starting modules pull')
 
-        const { projectPath, settings } = await getProjectSettings()
-        const modulesPath = resolveProjectDirPath(projectPath, settings.crm.modules.root_dir, 'crm.modules.root_dir')
+        const { projectPath } = await getProjectSettings()
 
         let modules: ZohoModule[]
 
@@ -29,11 +26,10 @@ export const pullModulesCommand = new Command('modules:pull')
         logger.info({ total: modules.length }, 'Modules found')
 
         // The directory mirrors exactly what this pull returned, so stale modules are dropped.
-        await rm(modulesPath, { recursive: true, force: true })
-        await mkdir(modulesPath, { recursive: true })
+        await replaceArtifactDir(projectPath, [modulesDirName])
 
         for (const module of modules) {
-            await writeJsonFile(resolveMetadataPath(modulesPath, module.api_name), module)
+            await writeArtifactJson(projectPath, resolveMetadataSegments(module.api_name), module)
         }
 
         logger.info({ total: modules.length }, 'Modules pull finished')
@@ -43,13 +39,8 @@ export const pullModulesCommand = new Command('modules:pull')
     })
 
 /** Both the directory and the file are named after the API name, which is what the fields reuse. */
-export function resolveMetadataPath(modulesPath: string, apiName: string): string {
+export function resolveMetadataSegments(apiName: string): string[] {
     const segment = toPathSegment(apiName)
 
-    return join(modulesPath, segment, `${segment}.metadata.json`)
-}
-
-// Zoho names are kept as they are; only characters that cannot appear in a path segment are replaced.
-function toPathSegment(value: string): string {
-    return value.replace(/[/\\\0]/g, '_')
+    return [modulesDirName, segment, `${segment}.metadata.json`]
 }

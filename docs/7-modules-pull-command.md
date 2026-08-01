@@ -1,6 +1,6 @@
 # `zoho-studio modules:pull`
 
-Downloads the metadata of every Zoho CRM module of the organization into a local `modules/` folder —
+Downloads the metadata of every Zoho CRM module of the organization into `src/modules/` —
 one directory per module, holding its metadata file.
 
 ```bash
@@ -21,7 +21,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-modules/
+src/modules/
 ├── Leads/
 │   └── Leads.metadata.json
 └── CustomModule1/
@@ -42,31 +42,8 @@ That includes the fields [`zoho-studio fields:pull`](8-fields-pull-command.md) w
 `<module>/fields/`: this command wipes them along with everything else. The order is always
 `modules:pull` first, `fields:pull` after.
 
-## Choosing the directory
-
-`modules/` is the default. [`crm.modules.root_dir`](2-settings.md) moves it anywhere inside the
-project:
-
-```json
-{
-    "crm": {
-        "modules": {
-            "root_dir": "crm/modules"
-        }
-    }
-}
-```
-
-```text
-crm/
-└── modules/
-    └── Leads/
-        └── Leads.metadata.json
-```
-
-The path is always relative to the project root and is created if it does not exist. Because the
-whole directory is wiped on each run, an absolute path or one escaping the project with `..` is
-refused before anything is deleted.
+The location is fixed: `src/modules/` under the project root, created if it is not there. No
+setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.
 
 ## Failures
 
@@ -76,6 +53,6 @@ list arrives.
 
 ## Logs
 
-The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `.zoho-studio/cli.log` by
+The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
 default, created on the first line written. `modules:pull` records the start of the run, how many
 modules were found, and the final count. Tokens and authorization headers are never logged.

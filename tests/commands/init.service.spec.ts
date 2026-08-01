@@ -1,13 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import {
-    projectSettingsGitignoreEntry,
-    resolveProjectSettingsDirPath,
-    resolveProjectSettingsPath,
-} from '@/config'
+import { resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
 import { initializeProject } from '@/commands/init'
 import { clearProjectCache, defaultProjectSettings } from '@/settings'
 
@@ -22,17 +18,27 @@ afterEach(async () => {
     await rm(workingPath, { recursive: true, force: true })
 })
 
-function readGitignore(projectPath: string): Promise<string> {
-    return Bun.file(join(projectPath, '.gitignore')).text()
+function readTemplateFile(projectPath: string, relativePath: string): Promise<string> {
+    return Bun.file(join(projectPath, relativePath)).text()
 }
 
 describe('initializeProject', () => {
-    test('creates settings.json and the gitignore entry', async () => {
+    test('scaffolds the project tree and writes the settings', async () => {
         const result = await initializeProject(workingPath)
 
         expect(await Bun.file(resolveProjectSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
-        expect(await readGitignore(workingPath)).toBe(`${projectSettingsGitignoreEntry}\n`)
-        expect(result).toEqual({ projectPath: workingPath, gitignoreOutcome: 'created' })
+        expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
+        expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
+        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\n')
+        expect(result.templateFiles.every(({ outcome }) => outcome === 'created')).toBe(true)
+    })
+
+    test('keeps the settings readable by the owner only', async () => {
+        await initializeProject(workingPath)
+
+        const mode = (await stat(resolveProjectSettingsPath(workingPath))).mode & 0o777
+
+        expect(mode).toBe(0o600)
     })
 
     test('creates a missing target folder', async () => {
@@ -43,43 +49,46 @@ describe('initializeProject', () => {
         expect(await Bun.file(resolveProjectSettingsPath(projectPath)).exists()).toBe(true)
     })
 
-    test('appends to an existing .gitignore instead of overwriting it', async () => {
-        const gitignorePath = join(workingPath, '.gitignore')
-        await Bun.write(gitignorePath, 'node_modules\n')
-
-        const result = await initializeProject(workingPath)
-
-        expect(await readGitignore(workingPath)).toBe(`node_modules\n${projectSettingsGitignoreEntry}\n`)
-        expect(result.gitignoreOutcome).toBe('updated')
-    })
-
-    test('appends to an existing .gitignore that lacks a trailing newline', async () => {
-        await Bun.write(join(workingPath, '.gitignore'), 'node_modules')
-
+    test('leaves the root .gitignore alone', async () => {
         await initializeProject(workingPath)
 
-        expect(await readGitignore(workingPath)).toBe(`node_modules\n${projectSettingsGitignoreEntry}\n`)
+        expect(await Bun.file(join(workingPath, '.gitignore')).exists()).toBe(false)
     })
 
-    test('does not duplicate the gitignore entry on a forced re-init', async () => {
+    test('never overwrites a template file the user has edited', async () => {
         await initializeProject(workingPath)
+        await Bun.write(join(workingPath, 'logs/.gitignore'), 'edited\n')
 
         const result = await initializeProject(workingPath, { force: true })
 
-        expect(await readGitignore(workingPath)).toBe(`${projectSettingsGitignoreEntry}\n`)
-        expect(result.gitignoreOutcome).toBe('unchanged')
+        expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('edited\n')
+        expect(result.templateFiles).toContainEqual({ path: 'logs/.gitignore', outcome: 'skipped' })
+    })
+
+    test('restores a template file the user deleted', async () => {
+        await initializeProject(workingPath)
+        await rm(join(workingPath, 'logs/.gitignore'))
+
+        const result = await initializeProject(workingPath, { force: true })
+
+        expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
+        expect(result.templateFiles).toContainEqual({ path: 'logs/.gitignore', outcome: 'created' })
+    })
+
+    test('never deletes pulled artifacts, even when forced', async () => {
+        await initializeProject(workingPath)
+        const artifactPath = join(workingPath, 'src/functions/send_invoice/Send Invoice.deluge')
+        await Bun.write(artifactPath, 'info "sent";')
+
+        await initializeProject(workingPath, { force: true })
+
+        expect(await Bun.file(artifactPath).text()).toBe('info "sent";')
     })
 
     test('fails on an already initialized folder', async () => {
         await initializeProject(workingPath)
 
         await expect(initializeProject(workingPath)).rejects.toThrow(/already exists.*--force/s)
-    })
-
-    test('reports an existing empty .gitignore as updated', async () => {
-        await Bun.write(join(workingPath, '.gitignore'), '')
-
-        expect((await initializeProject(workingPath)).gitignoreOutcome).toBe('updated')
     })
 
     test('fails when .zoho-studio exists as a file', async () => {

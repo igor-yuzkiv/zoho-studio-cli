@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, rm } from 'node:fs/promises'
+import { mkdir, mkdtemp, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -75,6 +75,7 @@ describe('removeModuleRuleFiles', () => {
 
     beforeEach(async () => {
         workflowsPath = join(await mkdtemp(join(tmpdir(), 'zoho-studio-workflows-')), 'workflows')
+        await mkdir(workflowsPath, { recursive: true })
     })
 
     afterEach(async () => {
@@ -103,7 +104,8 @@ describe('removeModuleRuleFiles', () => {
         expect((await readdir(workflowsPath)).sort()).toEqual(['broken.json', 'no-module.json'])
     })
 
-    test('creates the directory when the first pull of a module runs into nothing', async () => {
+    // The command creates the directory before calling this, so an empty one is the smallest input.
+    test('claims no file names when the directory is empty', async () => {
         expect(await removeModuleRuleFiles(workflowsPath, 'Deals')).toEqual(new Set())
         expect(await readdir(workflowsPath)).toEqual([])
     })

@@ -1,6 +1,6 @@
 # `zoho-studio workflows:pull`
 
-Downloads every Zoho CRM workflow rule into a flat `workflows/` folder — one JSON file per rule,
+Downloads every Zoho CRM workflow rule into a flat `src/workflows/` folder — one JSON file per rule,
 including the conditions and actions that the rule list alone does not carry.
 
 ```bash
@@ -26,7 +26,7 @@ rules takes about a minute. The progress bar shows the rule currently being pull
 ## What lands on disk
 
 ```text
-workflows/
+src/workflows/
 ├── Big Deal Rule.json
 ├── Contacts.Server.Upsert.json
 └── Send Welcome Email.json
@@ -38,7 +38,7 @@ criteria, the instant actions, and the scheduled actions — which is what makes
 reading. The actions themselves appear as references (name, id, type); their own bodies live behind
 separate endpoints and are not pulled.
 
-The folder is [`crm.workflows.root_dir`](2-settings.md), `workflows` by default.
+The folder is always `src/workflows/`; no setting moves it.
 
 **The whole folder is deleted and recreated on each full run**, so a rule removed in Zoho disappears
 locally and any local edit is lost.
@@ -75,13 +75,11 @@ Workflow rules failed: 1
   - Big Deal Rule: The value provided to the param is Invalid (INVALID_MODULE)
 ```
 
-Failing to fetch the rule *list* is fatal — there is nothing to write. So is a
-`crm.workflows.root_dir` that is absolute or climbs out of the project with `..`; both are refused
-before anything is deleted.
+Failing to fetch the rule *list* is fatal — there is nothing to write.
 
 ## Logs
 
-The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `.zoho-studio/cli.log` by
+The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
 default. `workflows:pull` records the start of the run, how many rules were found, the final counts,
 and every failure with its stack trace. Individual successful rules are not logged — the progress
 bar already shows them.

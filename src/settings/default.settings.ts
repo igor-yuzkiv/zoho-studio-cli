@@ -1,4 +1,4 @@
-import { projectSettingsDirName } from '@/config'
+import { logsDirName } from '@/config'
 
 import type { ProjectSettings } from './types'
 
@@ -28,19 +28,7 @@ export const defaultProjectSettings: ProjectSettings = {
         baseUrl: 'https://www.zohoapis.com',
         version: 'v8',
     },
-    crm: {
-        functions: {
-            root_dir: 'functions',
-            code_extension: 'deluge',
-        },
-        modules: {
-            root_dir: 'modules',
-        },
-        workflows: {
-            root_dir: 'workflows',
-        },
-    },
     logs: {
-        file: `${projectSettingsDirName}/cli.log`,
+        file: `${logsDirName}/zoho-studio-cli.log`,
     },
 }

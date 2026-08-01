@@ -1,16 +1,15 @@
-import { mkdir, readdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
+import { readdir } from 'node:fs/promises'
 
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
+import { fieldsDirName, modulesDirName } from '@/config'
 import { getFieldsList } from '@/entities/field'
 import { getProjectSettings } from '@/settings'
+import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { resolveProjectDirPath, writeJsonFile } from '@/shared/utils'
 
 const delayBetweenModuleRequestsMs = 300
-const fieldsDirName = 'fields'
 
 type FailedModule = {
     apiName: string
@@ -24,12 +23,12 @@ export const pullFieldsCommand = new Command('fields:pull')
         const logger = await createCommandLogger('fields:pull')
         logger.info({ module: options.module ?? null }, 'Starting fields pull')
 
-        const { projectPath, settings } = await getProjectSettings()
-        const modulesPath = resolveProjectDirPath(projectPath, settings.crm.modules.root_dir, 'crm.modules.root_dir')
+        const { projectPath } = await getProjectSettings()
+        const modulesPath = resolveArtifactPath(projectPath, [modulesDirName])
 
         const moduleNames = options.module
-            ? [await resolveRequestedModule(modulesPath, options.module, settings.crm.modules.root_dir)]
-            : await readLocalModuleNames(modulesPath, settings.crm.modules.root_dir)
+            ? [await resolveRequestedModule(modulesPath, options.module)]
+            : await readLocalModuleNames(modulesPath)
 
         logger.info({ modules: moduleNames.length }, 'Local modules found')
 
@@ -56,14 +55,17 @@ export const pullFieldsCommand = new Command('fields:pull')
 
                 try {
                     const fields = await getFieldsList(moduleName)
-                    const fieldsPath = join(modulesPath, moduleName, fieldsDirName)
+                    const fieldsSegments = [modulesDirName, moduleName, fieldsDirName]
 
                     // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
-                    await rm(fieldsPath, { recursive: true, force: true })
-                    await mkdir(fieldsPath, { recursive: true })
+                    await replaceArtifactDir(projectPath, fieldsSegments)
 
                     for (const field of fields) {
-                        await writeJsonFile(join(fieldsPath, resolveFieldFileName(field.api_name)), field)
+                        await writeArtifactJson(
+                            projectPath,
+                            [...fieldsSegments, resolveFieldFileName(field.api_name)],
+                            field
+                        )
                     }
 
                     savedFields += fields.length
@@ -108,7 +110,7 @@ export function resolveFieldFileName(fieldApiName: string): string {
     return `${fieldApiName.replace(/[/\\\0]/g, '_')}.json`
 }
 
-async function readLocalModuleNames(modulesPath: string, rootDir: string): Promise<string[]> {
+async function readLocalModuleNames(modulesPath: string): Promise<string[]> {
     const entries = await readdir(modulesPath, { withFileTypes: true }).catch(() => null)
     const moduleNames = (entries ?? [])
         .filter((entry) => entry.isDirectory())
@@ -116,19 +118,19 @@ async function readLocalModuleNames(modulesPath: string, rootDir: string): Promi
         .sort()
 
     if (moduleNames.length === 0) {
-        throw new Error(`No modules found in "${rootDir}". Run "zoho-studio modules:pull" first.`)
+        throw new Error(`No modules found in "${modulesPath}". Run "zoho-studio modules:pull" first.`)
     }
 
     return moduleNames
 }
 
-async function resolveRequestedModule(modulesPath: string, requested: string, rootDir: string): Promise<string> {
+async function resolveRequestedModule(modulesPath: string, requested: string): Promise<string> {
     const moduleName = assertModuleName(requested)
     const entries = await readdir(modulesPath, { withFileTypes: true }).catch(() => null)
     const exists = (entries ?? []).some((entry) => entry.isDirectory() && entry.name === moduleName)
 
     if (!exists) {
-        throw new Error(`Module "${moduleName}" is not in "${rootDir}". Run "zoho-studio modules:pull" first.`)
+        throw new Error(`Module "${moduleName}" is not in "${modulesPath}". Run "zoho-studio modules:pull" first.`)
     }
 
     return moduleName
