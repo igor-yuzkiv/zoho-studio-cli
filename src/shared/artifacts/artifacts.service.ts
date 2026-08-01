@@ -1,4 +1,4 @@
-import { mkdir, rm } from 'node:fs/promises'
+import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
 import { resolveProjectSourcePath } from '@/config'
@@ -60,9 +60,75 @@ export async function writeArtifactJson(projectPath: string, segments: string[],
     await writeJsonFile(resolveArtifactPath(projectPath, segments), value)
 }
 
+interface ModuleOwnedRecord {
+    id: string
+    name: string
+    module?: { api_name?: string }
+}
+
+/**
+ * A flat directory names files after records, so the order they are written in decides which of two
+ * same-named records keeps the plain name. Fixing the order keeps that answer stable between runs.
+ */
+export function sortForStableFileNames<TRecord extends ModuleOwnedRecord>(records: TRecord[]): TRecord[] {
+    return [...records].sort(
+        (left, right) =>
+            (left.module?.api_name ?? '').localeCompare(right.module?.api_name ?? '') ||
+            left.name.localeCompare(right.name) ||
+            left.id.localeCompare(right.id)
+    )
+}
+
+/**
+ * Zoho names are unique per module, not per organization, so a flat directory can collide. The
+ * second claimant of a name carries the record id instead of overwriting the first one.
+ */
+export function resolveArtifactFileName(name: string, id: string, takenFileNames: Set<string>): string {
+    const baseName = toFileBaseName(name, id)
+    const fileName = `${baseName}.json`
+
+    return takenFileNames.has(fileName) ? `${baseName}.${id}.json` : fileName
+}
+
+/**
+ * Drops the records of one module from a flat directory and reports the file names left behind.
+ * The owning module is read back out of each file, because the file is named after the record
+ * rather than the module. A file that cannot be read as a record is left alone rather than guessed
+ * about.
+ */
+export async function removeModuleArtifactFiles(dirPath: string, module: string): Promise<Set<string>> {
+    const entries = await readdir(dirPath, { withFileTypes: true })
+    const survivingFileNames = new Set<string>()
+
+    for (const entry of entries) {
+        if (!entry.isFile() || !entry.name.endsWith('.json')) {
+            continue
+        }
+
+        const filePath = join(dirPath, entry.name)
+        const storedRecord = await Bun.file(filePath)
+            .json()
+            .catch(() => null)
+
+        if (storedRecord?.module?.api_name === module) {
+            await unlink(filePath)
+        } else {
+            survivingFileNames.add(entry.name)
+        }
+    }
+
+    return survivingFileNames
+}
+
 export async function writeArtifactText(projectPath: string, segments: string[], content: string): Promise<void> {
     const filePath = resolveArtifactPath(projectPath, segments)
 
     await mkdir(dirname(filePath), { recursive: true })
     await Bun.write(filePath, content)
+}
+
+function toFileBaseName(name: string, id: string): string {
+    const baseName = name.replace(/[/\\\0]/g, '_').trim()
+
+    return !baseName || baseName === '.' || baseName === '..' ? id : baseName
 }
