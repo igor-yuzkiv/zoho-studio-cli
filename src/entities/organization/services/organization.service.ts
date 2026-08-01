@@ -1,5 +1,7 @@
-import { getOrganization, type Organization } from '@/shared/api/crm'
 import { getProjectSettings, saveProjectOrganization } from '@/settings'
+
+import { getOrganization } from '../api'
+import type { Organization } from '../organization.types'
 
 export interface OrganizationSnapshot {
     projectPath: string

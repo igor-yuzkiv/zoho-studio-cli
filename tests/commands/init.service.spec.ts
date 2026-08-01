@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
-import { initializeProject } from '@/commands/init'
+import { initializeProject } from '@/commands/init/init.service'
 import { clearProjectCache, defaultProjectSettings } from '@/settings'
 
 let workingPath: string

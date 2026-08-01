@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveFieldFileName } from '@/commands/fields/pull-fields.command'
+import { resolveFieldFileName } from '@/entities/field'
 
 describe('resolveFieldFileName', () => {
     test('names the file after the field API name', () => {

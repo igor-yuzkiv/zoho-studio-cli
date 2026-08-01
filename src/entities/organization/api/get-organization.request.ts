@@ -1,5 +1,6 @@
-import { crmClient } from '../crm.client'
-import type { Organization } from '../crm.types'
+import { crmClient } from '@/shared/api/crm'
+
+import type { Organization } from '../organization.types'
 
 interface OrganizationPayload {
     org?: Organization[]

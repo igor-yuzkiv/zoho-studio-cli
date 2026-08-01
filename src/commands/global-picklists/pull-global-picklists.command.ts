@@ -2,7 +2,12 @@ import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
 import { globalPicklistsDirName } from '@/config'
-import { getGlobalPicklist, getGlobalPicklistsList, type ZohoGlobalPicklist } from '@/entities/global-picklist'
+import {
+    getGlobalPicklist,
+    getGlobalPicklistsList,
+    sortGlobalPicklists,
+    type ZohoGlobalPicklist,
+} from '@/entities/global-picklist'
 import { getProjectSettings } from '@/settings'
 import { describeRequestError } from '@/shared/api/crm'
 import { replaceArtifactDir, resolveArtifactFileName, writeArtifactJson } from '@/shared/artifacts'
@@ -96,10 +101,3 @@ export const pullGlobalPicklistsCommand = new Command('global-picklists:pull')
             console.log(`  - ${failure.apiName}: ${failure.message}`)
         }
     })
-
-/** Ordered so that a name collision is always resolved the same way between runs. */
-export function sortGlobalPicklists(globalPicklists: ZohoGlobalPicklist[]): ZohoGlobalPicklist[] {
-    return [...globalPicklists].sort(
-        (left, right) => left.api_name.localeCompare(right.api_name) || left.id.localeCompare(right.id)
-    )
-}

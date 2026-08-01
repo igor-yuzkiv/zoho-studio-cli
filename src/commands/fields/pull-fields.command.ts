@@ -4,7 +4,7 @@ import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
 import { fieldsDirName, modulesDirName } from '@/config'
-import { getFieldsList } from '@/entities/field'
+import { getFieldsList, resolveFieldFileName } from '@/entities/field'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
@@ -97,10 +97,6 @@ export const pullFieldsCommand = new Command('fields:pull')
             console.log(`  - ${failure.apiName}: ${failure.message}`)
         }
     })
-
-export function resolveFieldFileName(fieldApiName: string): string {
-    return `${fieldApiName.replace(/[/\\\0]/g, '_')}.json`
-}
 
 async function readLocalModuleNames(modulesPath: string): Promise<string[]> {
     const entries = await readdir(modulesPath, { withFileTypes: true }).catch(() => null)

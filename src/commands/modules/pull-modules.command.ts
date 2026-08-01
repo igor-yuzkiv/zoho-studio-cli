@@ -1,9 +1,9 @@
 import { Command } from 'commander'
 
 import { modulesDirName } from '@/config'
-import { getModulesList, type ZohoModule } from '@/entities/module'
+import { getModulesList, resolveMetadataSegments, type ZohoModule } from '@/entities/module'
 import { getProjectSettings } from '@/settings'
-import { replaceArtifactDir, toPathSegment, writeArtifactJson } from '@/shared/artifacts'
+import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
 
 export const pullModulesCommand = new Command('modules:pull')
@@ -37,10 +37,3 @@ export const pullModulesCommand = new Command('modules:pull')
         console.log(`Modules found: ${modules.length}`)
         console.log(`Metadata saved: ${modules.length}`)
     })
-
-/** Both the directory and the file are named after the API name, which is what the fields reuse. */
-export function resolveMetadataSegments(apiName: string): string[] {
-    const segment = toPathSegment(apiName)
-
-    return [modulesDirName, segment, `${segment}.metadata.json`]
-}

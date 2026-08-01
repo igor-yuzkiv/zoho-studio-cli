@@ -1,8 +1,8 @@
 import { Command } from 'commander'
 
-import { printOrganization, pullOrganization } from '@/commands/org'
+import { printOrganization, pullOrganization } from '@/entities/organization'
 
-import { login } from './login.service'
+import { login } from '@/shared/api/auth'
 
 export const loginCommand = new Command('login')
     .description('Authorize the project with Zoho and store the resulting tokens')

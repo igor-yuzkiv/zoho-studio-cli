@@ -4,10 +4,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { resolveProjectSettingsPath } from '@/config'
-import { login } from '@/commands/login'
+import { login } from '@/shared/api/auth'
 import type { ProjectSettings } from '@/settings'
 
-import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../support/temp-project'
+import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../../../support/temp-project'
 
 let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null

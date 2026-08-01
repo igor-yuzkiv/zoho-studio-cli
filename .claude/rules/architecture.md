@@ -15,14 +15,20 @@ src/
   entities/     # domain entities (e.g.: field, function, module)
     <entity>/
       <entity>.types.ts   # the shape the CLI depends on
+      <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
       api/                # requests belonging to this entity, one per file
+      services/           # work built on top of the entity, when more than one caller needs it
   shared/       # reusable infrastructure and utilities
     logger/     # pino logger, createCommandLogger per command
     utils/      # standalone helpers, exposed through index.ts
     api/        # shared API infrastructure only — no entity endpoints
-      auth/     # authentication, OAuth, tokens, and authenticated client setup
-      crm/      # Zoho CRM client and organization-level requests
+      auth/     # authentication, OAuth, tokens, and the login flow
+      crm/      # Zoho CRM client and request error handling
 ```
+
+A command folder exposes the command and nothing else: its `index.ts` exports only the `Command`,
+and whatever the command needs is either its own private file or lives in an entity. A command
+never imports from another command — logic two commands share belongs in `entities/<entity>/`.
 
 `shared/api/` holds only infrastructure that belongs to no single entity: base clients, HTTP
 configuration, authentication, and error handling. An endpoint that belongs to a domain entity

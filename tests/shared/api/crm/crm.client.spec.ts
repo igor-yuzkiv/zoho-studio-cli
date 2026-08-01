@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@/shared/api/crm'
+import { getOrganization } from '@/entities/organization'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
 
@@ -75,23 +75,5 @@ describe('crmClient', () => {
         await startProject({ code: 'INVALID_TOKEN' }, { status: 401 })
 
         await expect(getOrganization()).rejects.toThrow(/401/)
-    })
-})
-
-describe('getOrganization', () => {
-    test('returns the organization record as Zoho sent it', async () => {
-        await startProject(organizationAnswer)
-
-        expect(await getOrganization()).toEqual({
-            company_name: 'Acme Inc',
-            id: '77',
-            primary_email: 'a@acme.test',
-        })
-    })
-
-    test('fails when the response holds no organization', async () => {
-        await startProject({ org: [] })
-
-        await expect(getOrganization()).rejects.toThrow(/no organization/)
     })
 })

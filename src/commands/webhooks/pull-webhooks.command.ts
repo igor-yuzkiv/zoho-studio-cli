@@ -3,9 +3,16 @@ import { Command } from 'commander'
 
 import { webhooksDirName } from '@/config'
 import { getWebhook, getWebhooksList, type ZohoWebhook } from '@/entities/webhook'
+import { describeRequestError } from '@/shared/api/crm'
 import { getProjectSettings } from '@/settings'
-import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
+import {
+    replaceArtifactDir,
+    resolveArtifactFileName,
+    sortForStableFileNames,
+    writeArtifactJson,
+} from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
+import { delay } from '@/shared/utils'
 
 const delayBetweenWebhookRequestsMs = 300
 
@@ -25,7 +32,7 @@ export const pullWebhooksCommand = new Command('webhooks:pull')
         let webhooks: ZohoWebhook[]
 
         try {
-            webhooks = sortWebhooks(await getWebhooksList())
+            webhooks = sortForStableFileNames(await getWebhooksList())
         } catch (error) {
             logger.error({ err: error }, 'Failed to fetch the webhooks list')
             throw new Error(describeRequestError(error), { cause: error })
@@ -61,7 +68,7 @@ export const pullWebhooksCommand = new Command('webhooks:pull')
                     // The list carries no body, headers, or authentication, so the full record is
                     // fetched per webhook.
                     const details = await getWebhook(webhook.id)
-                    const fileName = resolveWebhookFileName(webhook.name, webhook.id, takenFileNames)
+                    const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
 
                     await writeArtifactJson(projectPath, [webhooksDirName, fileName], details)
 
@@ -89,46 +96,3 @@ export const pullWebhooksCommand = new Command('webhooks:pull')
         }
     })
 
-/**
- * Webhook names are not guaranteed to be unique, so a flat directory can collide. The second
- * claimant of a name carries the webhook id instead of overwriting the first one.
- */
-export function resolveWebhookFileName(name: string, id: string, takenFileNames: Set<string>): string {
-    const baseName = toFileBaseName(name, id)
-    const fileName = `${baseName}.json`
-
-    return takenFileNames.has(fileName) ? `${baseName}.${id}.json` : fileName
-}
-
-/** Ordered so that a name collision is always resolved the same way between runs. */
-export function sortWebhooks(webhooks: ZohoWebhook[]): ZohoWebhook[] {
-    return [...webhooks].sort(
-        (left, right) =>
-            (left.module?.api_name ?? '').localeCompare(right.module?.api_name ?? '') ||
-            left.name.localeCompare(right.name) ||
-            left.id.localeCompare(right.id)
-    )
-}
-
-/** Zoho reports a rejected request as an HTTP error whose body explains it far better than the status. */
-export function describeRequestError(error: unknown): string {
-    const payload = (error as { response?: { data?: { message?: unknown; code?: unknown } } })?.response?.data
-    const message = typeof payload?.message === 'string' ? payload.message : null
-    const code = typeof payload?.code === 'string' ? payload.code : null
-
-    if (message) {
-        return code ? `${message} (${code})` : message
-    }
-
-    return error instanceof Error ? error.message : String(error)
-}
-
-function toFileBaseName(name: string, id: string): string {
-    const baseName = name.replace(/[/\\\0]/g, '_').trim()
-
-    return !baseName || baseName === '.' || baseName === '..' ? id : baseName
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
-}

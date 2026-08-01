@@ -1,7 +1,8 @@
-import { pollDeviceToken, requestDeviceCode, type DeviceCode, type TokenResponse } from '@/shared/api/auth'
 import { projectSettingsRelativePath } from '@/config'
 import { getProjectSettings, saveProjectSettings } from '@/settings'
 
+import { pollDeviceToken, requestDeviceCode } from './requests'
+import type { DeviceCode, TokenResponse } from './auth.types'
 import type { LoginOptions, LoginResult } from './login.types'
 
 export async function login({ onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {

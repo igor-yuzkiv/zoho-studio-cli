@@ -1,5 +1,5 @@
 import { resolveProjectOrganizationPath } from '@/config'
-import type { Organization } from '@/shared/api/crm'
+import type { Organization } from '@/entities/organization'
 import { writeJsonFile } from '@/shared/utils'
 
 /** Stores the org record as Zoho returned it and answers with the file it wrote. */

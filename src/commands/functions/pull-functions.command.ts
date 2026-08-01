@@ -1,10 +1,16 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { functionCodeExtension, functionsDirName } from '@/config'
-import { getFunctionCode, getFunctionsList, type ZohoFunction } from '@/entities/function'
+import { functionsDirName } from '@/config'
+import {
+    getFunctionCode,
+    getFunctionsList,
+    resolveCodeSegments,
+    resolveMetadataSegments,
+    type ZohoFunction,
+} from '@/entities/function'
 import { getProjectSettings } from '@/settings'
-import { replaceArtifactDir, toPathSegment, writeArtifactJson, writeArtifactText } from '@/shared/artifacts'
+import { replaceArtifactDir, writeArtifactJson, writeArtifactText } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
 import { delay } from '@/shared/utils'
 
@@ -96,17 +102,3 @@ export const pullFunctionsCommand = new Command('functions:pull')
         }
     })
 
-/** Only the two names are used, so the tests can exercise this without a whole Zoho payload. */
-type NamedFunction = Pick<ZohoFunction, 'api_name' | 'name'>
-
-function resolveMetadataSegments(zohoFunction: NamedFunction): string[] {
-    return [...resolveFunctionDirSegments(zohoFunction), `${toPathSegment(zohoFunction.name)}.metadata.json`]
-}
-
-export function resolveCodeSegments(zohoFunction: NamedFunction): string[] {
-    return [...resolveFunctionDirSegments(zohoFunction), `${toPathSegment(zohoFunction.name)}.${functionCodeExtension}`]
-}
-
-function resolveFunctionDirSegments(zohoFunction: NamedFunction): string[] {
-    return [functionsDirName, toPathSegment(zohoFunction.api_name)]
-}

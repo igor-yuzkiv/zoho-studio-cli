@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { formatOrganization, pullOrganization } from '@/commands/org'
+import { formatOrganization, pullOrganization } from '@/entities/organization'
 import { resolveProjectOrganizationPath } from '@/config'
 
-import { buildSettings, createTempProject, removeTempProject } from '../support/temp-project'
+import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
 function storedOrganizationFile(): ReturnType<typeof Bun.file> {
     return Bun.file(resolveProjectOrganizationPath(projectPath!))

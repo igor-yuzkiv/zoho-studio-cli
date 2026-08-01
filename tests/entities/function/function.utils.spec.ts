@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveCodeSegments } from '@/commands/functions/pull-functions.command'
+import { resolveCodeSegments } from '@/entities/function'
 
 describe('resolveCodeSegments', () => {
     test('places the code in the function directory under the fixed extension', () => {

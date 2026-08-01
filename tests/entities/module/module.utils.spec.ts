@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveMetadataSegments } from '@/commands/modules/pull-modules.command'
+import { resolveMetadataSegments } from '@/entities/module'
 
 describe('resolveMetadataSegments', () => {
     test('names both the directory and the file after the module API name', () => {

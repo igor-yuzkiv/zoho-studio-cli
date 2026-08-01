@@ -4,7 +4,7 @@ import {
     assertWorkflowActionType,
     describePullError,
     toWorkflowActionDirName,
-} from '@/commands/workflow-actions/pull-workflow-actions.command'
+} from '@/entities/workflow-action'
 
 describe('assertWorkflowActionType', () => {
     test('accepts the name Zoho uses for the endpoint', () => {

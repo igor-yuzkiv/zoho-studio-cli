@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { sortGlobalPicklists } from '@/commands/global-picklists/pull-global-picklists.command'
+import { sortGlobalPicklists } from '@/entities/global-picklist'
 
 describe('sortGlobalPicklists', () => {
     test('orders by API name, then id so collisions resolve the same way each run', () => {
