@@ -80,7 +80,6 @@ explain what was blocked and why it is needed.
 ## Working model
 
 - Do not push, migrate data, or perform destructive git operations on your own.
-- The user reviews the final diff. Do not add a mandatory agent review.
 - `wrap-up-work` always runs in this order and never starts on its own initiative:
   1. **ask for approval** — state the outcome, what was verified, and what remains, then wait;
   2. **hand off** — `project-office task:handoff --task ZS-<n> --resolution @<file>`, which
