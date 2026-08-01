@@ -9,6 +9,7 @@ import { pullFunctionsCommand } from '@/commands/functions'
 import { pullModulesCommand } from '@/commands/modules'
 import { pullFieldsCommand } from '@/commands/fields'
 import { pullWorkflowsCommand } from '@/commands/workflows'
+import { pullWebhooksCommand } from '@/commands/webhooks'
 import { pullWorkflowActionsCommand } from '@/commands/workflow-actions'
 
 const program = new Command()
@@ -24,6 +25,7 @@ program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
 program.addCommand(pullWorkflowsCommand)
+program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
 
 try {
