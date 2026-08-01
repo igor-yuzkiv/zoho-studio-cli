@@ -9,7 +9,7 @@ everything the CLI needs: which Zoho account to talk to, which API to call, and 
 do it with. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, at paths it fixes and no setting moves —
-`src/functions`, `src/modules`, `src/workflows`.
+`src/functions`, `src/modules`, `src/workflows`, `src/workflow-actions`.
 
 ## Running the CLI
 
@@ -34,3 +34,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio modules:pull`
 - [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio fields:pull`
 - [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio workflows:pull`
+- [10-workflow-actions-pull-command.md](10-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio workflow-actions:pull`
