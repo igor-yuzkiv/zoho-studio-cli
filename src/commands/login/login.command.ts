@@ -1,5 +1,7 @@
 import { Command } from 'commander'
 
+import { printOrganization, pullOrganization } from '@/commands/org'
+
 import { login } from './login.service'
 
 export const loginCommand = new Command('login')
@@ -29,8 +31,23 @@ export const loginCommand = new Command('login')
         }
 
         console.log()
+        await reportOrganization()
+
+        console.log()
         console.log('The project is authorized.')
     })
+
+/** The tokens are already stored, so a failing org pull is reported rather than raised. */
+async function reportOrganization(): Promise<void> {
+    try {
+        printOrganization(await pullOrganization())
+    } catch (error) {
+        console.log(
+            `Could not read the organization: ${error instanceof Error ? error.message : String(error)}. ` +
+                'Run "zoho-studio org:info" once the cause is fixed.'
+        )
+    }
+}
 
 function formatMinutes(durationMs: number): string {
     return `${Math.max(0, Math.round(durationMs / 60_000))} min`

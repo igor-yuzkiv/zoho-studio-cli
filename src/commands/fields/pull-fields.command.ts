@@ -8,6 +8,7 @@ import { getFieldsList } from '@/entities/field'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
+import { assertModuleName, delay } from '@/shared/utils'
 
 const delayBetweenModuleRequestsMs = 300
 
@@ -97,15 +98,6 @@ export const pullFieldsCommand = new Command('fields:pull')
         }
     })
 
-/** `--module` names a directory inside the modules root, so anything but a plain segment is refused. */
-export function assertModuleName(moduleName: string): string {
-    if (!moduleName || moduleName === '.' || moduleName === '..' || /[/\\\0]/.test(moduleName)) {
-        throw new Error(`--module must be a module API name, got "${moduleName}".`)
-    }
-
-    return moduleName
-}
-
 export function resolveFieldFileName(fieldApiName: string): string {
     return `${fieldApiName.replace(/[/\\\0]/g, '_')}.json`
 }
@@ -134,8 +126,4 @@ async function resolveRequestedModule(modulesPath: string, requested: string): P
     }
 
     return moduleName
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }

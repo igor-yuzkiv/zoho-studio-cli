@@ -15,6 +15,7 @@ export const defaultProjectSettings: ProjectSettings = {
             'ZohoCRM.apis.READ',
             'ZohoCRM.settings.automation_actions.READ',
             'ZohoCRM.settings.global_picklist.READ',
+            'ZohoCRM.settings.ALL',
         ],
         clientId: '',
         clientSecret: '',
