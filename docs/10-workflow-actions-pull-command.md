@@ -8,7 +8,7 @@ zoho-studio workflow-actions:pull
 ```
 
 ```text
-Pulling workflow actions |████████████████████| 92/92 | webhooks: SRV.Shipping_Packages.Delete
+Pulling workflow actions |████████████████████| 92/92 | webhooks: Contacts.Server.Upsert
 Workflow actions found: 92
 Workflow actions saved: 92
 Saved from the list, because Zoho returned no details: 0
@@ -34,15 +34,15 @@ pulled, prefixed by its type.
 ```text
 src/workflow-actions/
 ├── email-notifications/
-│   └── Contractor. On Shipping Label Purchased.json
+│   └── Send Welcome Email.json
 ├── field-updates/
-│   └── Set Recruiting Priority.json
+│   └── Set Lead Status.json
 ├── functions/
-│   └── OZ_Move_Files_On_Change_Topper.json
+│   └── wf_leads_assignOwner.json
 ├── tasks/
-│   └── Rename Routes.json
+│   └── Follow Up Call.json
 └── webhooks/
-    └── SRV.Shipping_Packages.Delete.json
+    └── Contacts.Server.Upsert.json
 ```
 
 There are five action types, and each has its own folder:
@@ -56,17 +56,17 @@ There are five action types, and each has its own folder:
 | `functions` | `functions` | `arguments` |
 
 Each file holds the full action record as `GET /settings/automation/{type}/{id}` returned it,
-formatted with a four-space indent and a trailing newline. Zoho reports no details at all for a
-small number of actions it otherwise lists normally; those files hold the list entry instead, and
-the run says which ones:
+formatted with a four-space indent and a trailing newline. Zoho reports no details for a small
+number of actions it otherwise lists normally; those files hold the list entry instead, and the run
+says which ones:
 
 ```text
 Saved from the list, because Zoho returned no details: 1
-  - field_updates: Fill Submitted At
+  - field_updates: Set Lead Status
 ```
 
-For a field update or a task that loses nothing, since the list entry is already the whole record.
-For the other three types the file is a partial record — which is why it is reported rather than
+That loses nothing for a field update or a task, where the list entry is already the whole record.
+For the other three types the file is a partial record, which is why it is reported rather than
 passed over.
 
 A `functions` action records which function it calls and with what arguments; the Deluge source
@@ -81,7 +81,7 @@ contents untouched.
 Files are named after the action. Only characters a path segment cannot contain are replaced;
 nothing else about the name is changed. Action names are unique within a module but not across an
 organization, so when two actions of the same type would claim the same file name the second one
-carries its action id as well — `Send Reminder.6640142000024463018.json`. Actions are processed in a
+carries its action id as well — `Send Reminder.1000000000000012345.json`. Actions are processed in a
 fixed order, so a full run always names them the same way.
 
 ## Narrowing the run

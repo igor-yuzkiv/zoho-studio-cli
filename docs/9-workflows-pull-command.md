@@ -45,7 +45,7 @@ locally and any local edit is lost.
 
 Files are named after the rule. Only characters a path segment cannot contain are replaced; nothing
 else about the name is changed. Rule names are not unique, so when two rules would claim the same
-file name the second one carries its rule id as well — `Move Files.6640142000024463018.json`. Rules
+file name the second one carries its rule id as well — `Move Files.1000000000000012345.json`. Rules
 are processed in a fixed order, so a full run always names them the same way. Which of two duplicates
 gets the plain name can still change if the folder was built by `--module` runs and is then rebuilt
 by a full one — both rules are kept either way, but the pair shows up as a rename.

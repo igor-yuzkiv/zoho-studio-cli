@@ -8,7 +8,7 @@ zoho-studio functions:pull
 ```
 
 ```text
-Pulling functions |████████████████████| 77/77 | wf_contractors_generatePublicRoutesLink
+Pulling functions |████████████████████| 77/77 | wf_leads_generatePublicLink
 Functions found: 77
 Metadata saved: 77
 Code downloaded: 76
