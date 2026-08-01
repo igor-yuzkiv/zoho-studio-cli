@@ -52,16 +52,16 @@ afterEach(async () => {
     }
 })
 
-const deleteHook = { id: '1', name: 'Programs.Server.Delete', module: { api_name: 'Programs' } }
-const createHook = { id: '2', name: 'Programs.Server.Create', module: { api_name: 'Programs' } }
+const upsertHook = { id: '1', name: 'Contacts.Server.Upsert', module: { api_name: 'Contacts' } }
+const deleteHook = { id: '2', name: 'Contacts.Server.Delete', module: { api_name: 'Contacts' } }
 
 describe('getWorkflowActionsPage', () => {
     test('reads the list out of the key Zoho names after the action type', async () => {
-        await startProject(() => Response.json({ webhooks: [deleteHook], info: { more_records: true } }))
+        await startProject(() => Response.json({ webhooks: [upsertHook], info: { more_records: true } }))
 
         const page = await getWorkflowActionsPage('webhooks', { per_page: 200, page: 3 })
 
-        expect(page).toEqual({ workflowActions: [deleteHook], info: { more_records: true } })
+        expect(page).toEqual({ workflowActions: [upsertHook], info: { more_records: true } })
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/webhooks')
         expect(requestedUrls[0]?.searchParams.get('page')).toBe('3')
         expect(requestedUrls[0]?.searchParams.get('module')).toBeNull()
@@ -92,19 +92,19 @@ describe('getWorkflowActionsList', () => {
             const page = new URL(request.url).searchParams.get('page')
 
             return page === '1'
-                ? Response.json({ webhooks: [deleteHook], info: { more_records: true } })
-                : Response.json({ webhooks: [createHook], info: { more_records: false } })
+                ? Response.json({ webhooks: [upsertHook], info: { more_records: true } })
+                : Response.json({ webhooks: [deleteHook], info: { more_records: false } })
         })
 
-        expect(await getWorkflowActionsList('webhooks')).toEqual([deleteHook, createHook])
+        expect(await getWorkflowActionsList('webhooks')).toEqual([upsertHook, deleteHook])
         expect(requestedUrls.map((url) => url.searchParams.get('page'))).toEqual(['1', '2'])
     })
 
     test('narrows the request to one module when asked', async () => {
-        await startProject(() => Response.json({ webhooks: [deleteHook], info: { more_records: false } }))
+        await startProject(() => Response.json({ webhooks: [upsertHook], info: { more_records: false } }))
 
-        expect(await getWorkflowActionsList('webhooks', 'Programs')).toEqual([deleteHook])
-        expect(requestedUrls[0]?.searchParams.get('module')).toBe('Programs')
+        expect(await getWorkflowActionsList('webhooks', 'Contacts')).toEqual([upsertHook])
+        expect(requestedUrls[0]?.searchParams.get('module')).toBe('Contacts')
     })
 
     test('returns an empty list when Zoho answers with no content', async () => {

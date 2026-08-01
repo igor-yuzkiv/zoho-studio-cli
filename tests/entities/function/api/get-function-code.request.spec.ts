@@ -65,7 +65,7 @@ describe('getFunctionCode', () => {
     test('keeps a body that looks like JSON as a string', async () => {
         await startProject('{"code":"SUCCESS"}', { contentType: 'application/json' })
 
-        const code = await getFunctionCode('6640142000049441001')
+        const code = await getFunctionCode('1000000000000012345')
 
         expect(typeof code).toBe('string')
         expect(code).toBe('{"code":"SUCCESS"}')

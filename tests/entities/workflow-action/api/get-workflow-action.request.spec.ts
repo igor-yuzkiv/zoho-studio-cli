@@ -54,10 +54,10 @@ afterEach(async () => {
 
 const detailedWebhook = {
     id: '1',
-    name: 'Programs.Server.Delete',
-    module: { api_name: 'Programs' },
-    url: 'https://example.test/hooks/programs/delete',
-    body: { raw_data_content: '{"id":"${!Programs.id}"}' },
+    name: 'Contacts.Server.Upsert',
+    module: { api_name: 'Contacts' },
+    url: 'https://example.test/hooks/contacts/upsert',
+    body: { raw_data_content: '{"id":"${!Contacts.id}"}' },
     headers: { module_parameters: null, custom_parameters: null },
 }
 
