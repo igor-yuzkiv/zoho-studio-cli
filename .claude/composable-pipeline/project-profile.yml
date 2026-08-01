@@ -10,13 +10,13 @@ artifacts:
   client_update: none
 
 language:
-  chat: uk
-  code: en
-  git: en
-  repo_docs: en
-  tasks: en
+  chat: Ukrainian
+  code: English
+  git: English
+  repo_docs: English
+  tasks: Ukrainian
   client: none
-  local_notes: uk
+  local_notes: Ukrainian
 
 exemplars:
   command: src/commands/fields/pull-fields.command.ts
