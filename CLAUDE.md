@@ -3,9 +3,7 @@
 A Bun + TypeScript CLI that represents Zoho CRM resources — functions, modules, fields, workflow
 rules — as local files, so Zoho development fits normal engineering workflows.
 
-Built on Commander (CLI), axios (HTTP), pino (logging), and `@inquirer/prompts` (interactive
-input). A project is a directory with a `.zoho-studio/` folder; the CLI reads its settings from
-there.
+A project is a directory with a `.zoho-studio/` folder; the CLI reads its settings from there.
 
 Run `bun run check` before handing off a change.
 
@@ -35,34 +33,7 @@ Project-specific artifact destinations, exemplars, verification commands, and la
 `.claude/composable-pipeline/project-profile.yml`.
 <!-- composable-pipeline:end -->
 
-## Commands
-
-```bash
-bun run dev -- --help   # run the CLI from source
-bun run check           # lint + typecheck + tests — the pre-handoff gate
-bun run lint            # eslint src tests
-bun run typecheck       # tsc --noEmit
-bun test                # all tests
-bun test tests/settings/settings.loader.spec.ts   # a single spec
-bun run build           # bundle → dist/zoho-studio
-bun run compile         # standalone executable → dist/zoho-studio
-```
-
-## Where things live
-
-`src/index.ts` registers every command: `init`, `login`, `status`, `debug`, `functions:pull`,
-`modules:pull`, `fields:pull`, `workflows:pull`.
-
-```text
-src/commands/    one folder per command
-src/entities/    domain entities (field, function, module, workflow-rule) with their requests
-src/settings/    the .zoho-studio/ project settings
-src/shared/      logger, utils, and API infrastructure (auth, CRM client)
-tests/           mirrors src/, .spec.ts, Bun test runner
-docs/            flat and numbered, starting at 1-overview.md
-```
-
-`.claude/rules/architecture.md` is the source of truth for this layout, file naming, exports,
+`.claude/rules/architecture.md` is the source of truth for the folder layout, file naming, exports,
 tests, and CLI option style. Read it before adding a file, not after.
 
 ## Project rules

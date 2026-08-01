@@ -1,3 +1,9 @@
+---
+paths:
+  - "docs/**/*.md"
+  - "README.md"
+---
+
 # Rule: Documentation
 
 Applies to `docs/**/*.md` and `README.md`.
