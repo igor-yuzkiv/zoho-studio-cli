@@ -17,9 +17,10 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
 - [fields:pull](docs/8-fields-pull-command.md) — downloading module fields
 - [workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
-- [webhooks:pull](docs/10-webhooks-pull-command.md) — downloading webhooks
-- [workflow-actions:pull](docs/10-workflow-actions-pull-command.md) — downloading workflow actions
 - [org:info](docs/10-org-info-command.md) — reading the organization and storing it in the project
+- [workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
+- [webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
+- [global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
 
 ## Editor support
 
