@@ -1,6 +1,13 @@
-# Project Office
+# Zoho Studio CLI
 
-Guidance for Claude Code when working in this repository.
+A Bun + TypeScript CLI that represents Zoho CRM resources — functions, modules, fields, workflow
+rules — as local files, so Zoho development fits normal engineering workflows.
+
+Built on Commander (CLI), axios (HTTP), pino (logging), and `@inquirer/prompts` (interactive
+input). A project is a directory with a `.zoho-studio/` folder; the CLI reads its settings from
+there.
+
+Run `bun run check` before handing off a change.
 
 <!-- composable-pipeline:begin -->
 ## How work is done here
@@ -28,28 +35,52 @@ Project-specific artifact destinations, exemplars, verification commands, and la
 `.claude/composable-pipeline/project-profile.yml`.
 <!-- composable-pipeline:end -->
 
-## Project
-
-A Bun + TypeScript CLI that represents Zoho CRM resources — functions, modules, fields, workflow
-rules — as local files, so Zoho development fits normal engineering workflows.
-
-Run `bun run check` (lint + typecheck + tests) before handing off a change.
-
 ## Commands
 
 ```bash
 bun run dev -- --help   # run the CLI from source
-bun run check           # lint + typecheck + tests
+bun run check           # lint + typecheck + tests — the pre-handoff gate
+bun run lint            # eslint src tests
+bun run typecheck       # tsc --noEmit
+bun test                # all tests
 bun test tests/settings/settings.loader.spec.ts   # a single spec
 bun run build           # bundle → dist/zoho-studio
 bun run compile         # standalone executable → dist/zoho-studio
 ```
 
+## Where things live
+
+`src/index.ts` registers every command: `init`, `login`, `status`, `debug`, `functions:pull`,
+`modules:pull`, `fields:pull`, `workflows:pull`.
+
+```text
+src/commands/    one folder per command
+src/entities/    domain entities (field, function, module, workflow-rule) with their requests
+src/settings/    the .zoho-studio/ project settings
+src/shared/      logger, utils, and API infrastructure (auth, CRM client)
+tests/           mirrors src/, .spec.ts, Bun test runner
+docs/            flat and numbered, starting at 1-overview.md
+```
+
+`.claude/rules/architecture.md` is the source of truth for this layout, file naming, exports,
+tests, and CLI option style. Read it before adding a file, not after.
+
+## Project rules
+
+- `.claude/rules/architecture.md` — folder layout, file naming, exports, tests, CLI option style
+- `.claude/rules/git.md` — commit format and `ZS-<number>` task references
+- `.claude/rules/documentation.md` — `docs/` is flat, numbered, and describes only shipped behavior
+
+A new command needs a page in `docs/`, an entry in `docs/1-overview.md`, and an entry in
+`README.md` — in the same change as the command itself.
+
+Mechanical restrictions live in `.claude/settings.json`. Never work around a blocked action:
+explain what was blocked and why it is needed.
+
 ## Working model
 
 - Do not push, migrate data, or perform destructive git operations on your own.
-- The user reviews the final diff and visually verifies UI changes. Do not add a mandatory agent
-  review.
+- The user reviews the final diff. Do not add a mandatory agent review.
 - `wrap-up-work` always runs in this order and never starts on its own initiative:
   1. **ask for approval** — state the outcome, what was verified, and what remains, then wait;
   2. **hand off** — `project-office task:handoff --task ZS-<n> --resolution @<file>`, which
@@ -57,20 +88,6 @@ bun run compile         # standalone executable → dist/zoho-studio
   3. **commit**.
 
   One approval covers both the handoff and the commit. Without it, neither happens.
-- Backend and frontend contracts are one change: keep Resources, request shapes, and frontend
-  types aligned when both sides are in scope.
-
-## Project rules
-
-- `.claude/rules/architecture.md` — folder layout, file naming, exports, tests, CLI option style
-- `.claude/rules/git.md` — commit format and `ZS-<number>` task references
-- `.claude/rules/documentation.md` — `docs/` is flat, numbered, and describes only shipped behavior
-- `docs/1-overview.md` — the user-facing entry point; a new command needs a page there, plus an
-  entry in that overview and in `README.md`
-
-Mechanical restrictions and automatic formatting live in `.claude/settings.json` and
-`.claude/hooks/`. Never work around a blocked action. Explain what was blocked and why it is
-needed.
 
 ## Project Office task workflow
 
