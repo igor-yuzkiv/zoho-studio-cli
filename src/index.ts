@@ -11,6 +11,7 @@ import { pullFieldsCommand } from '@/commands/fields'
 import { pullWorkflowsCommand } from '@/commands/workflows'
 import { pullWebhooksCommand } from '@/commands/webhooks'
 import { pullWorkflowActionsCommand } from '@/commands/workflow-actions'
+import { pullGlobalPicklistsCommand } from '@/commands/global-picklists'
 
 const program = new Command()
 
@@ -27,6 +28,7 @@ program.addCommand(pullFieldsCommand)
 program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
+program.addCommand(pullGlobalPicklistsCommand)
 
 try {
     await program.parseAsync()
