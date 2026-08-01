@@ -141,5 +141,43 @@ Project Office documentation is a context source, not a mandatory workflow step.
 
 ## Project-specific conventions
 
-Rules unique to this project that aren't covered above — for example, how tasks are routed
-between the repositories linked to this project, or a required shape for task descriptions.
+### Checkpoint the assembled workflow
+
+`/composable-pipeline:run-task` opens by assembling the steps the task will actually run and having
+the user confirm them. That sequence is a decision about how the work is done, and it belongs in the
+task rather than only in a chat window nobody can read later.
+
+**When the user confirms the workflow**, record it before the first step runs:
+
+```bash
+project-office task:checkpoint --task ZS-<n> --subject "Workflow" --comment @/tmp/workflow.md
+```
+
+Write the confirmed sequence, and the reasoning that is not visible from the list itself:
+
+```text
+Lane: standard — why this size.
+
+Steps:
+1. block-id — what it is for here.
+2. ...
+
+Not selected:
+- block-id — why it was ruled out.
+```
+
+"Not selected" is the part worth keeping. A step that was deliberately skipped looks identical to
+one nobody thought of, unless the reason was written down.
+
+**When the workflow changes mid-run**, checkpoint that too, with subject `Workflow change`. A
+deviation is already reportable in chat; this makes it survive the session:
+
+```text
+Changed: what was added, dropped, or reordered.
+Because: what made it necessary.
+```
+
+Both are cheap. Neither replaces the `Implementation plan` checkpoint, which is about what the code
+will do; these are about how the work is run.
+
+A conditional step whose condition never fired is not a deviation and needs no checkpoint.

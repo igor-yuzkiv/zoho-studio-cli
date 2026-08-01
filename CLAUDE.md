@@ -93,3 +93,6 @@ explain what was blocked and why it is needed.
 When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
 CLI workflow for task context, durable checkpoints, and handoff. Project Office records the work;
 `/composable-pipeline:run-task` governs how the work is performed.
+
+The assembled workflow is part of that record. Checkpoint it once the user confirms it, and
+checkpoint every later deviation — see the conventions at the end of `.project-office/AGENTS.md`.
