@@ -36,12 +36,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Oh My Claude Code
 .omc
 
-/_tmp/
-
-# personal Claude Code rules
-CLAUDE.local.md
-
-# Project Office (personal repo link)
-.project-office/
+_tmp
 .claude/settings.local.json
-/.zoho-studio/
+.zoho-studio
+.project-office/repo-settings.json
