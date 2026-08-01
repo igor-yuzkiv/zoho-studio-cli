@@ -34,3 +34,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio modules:pull`
 - [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio fields:pull`
 - [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio workflows:pull`
+- [10-webhooks-pull-command.md](10-webhooks-pull-command.md) — downloading webhooks with `zoho-studio webhooks:pull`
