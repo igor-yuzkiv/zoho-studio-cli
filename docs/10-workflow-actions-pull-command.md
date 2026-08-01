@@ -11,7 +11,7 @@ zoho-studio workflow-actions:pull
 Pulling workflow actions |████████████████████| 92/92 | webhooks: SRV.Shipping_Packages.Delete
 Workflow actions found: 92
 Workflow actions saved: 92
-Saved from the list, without details: 0
+Saved from the list, because Zoho returned no details: 0
 Failures: 0
 ```
 
@@ -61,17 +61,16 @@ small number of actions it otherwise lists normally; those files hold the list e
 the run says which ones:
 
 ```text
-Saved from the list, without details: 1
-  - field_updates: Fill Submitted At: Zoho CRM returned no details for this action.
+Saved from the list, because Zoho returned no details: 1
+  - field_updates: Fill Submitted At
 ```
 
 For a field update or a task that loses nothing, since the list entry is already the whole record.
 For the other three types the file is a partial record — which is why it is reported rather than
 passed over.
 
-A `functions` action records which
-function it calls and with what arguments; the Deluge source itself comes from
-[`functions:pull`](6-functions-pull-command.md).
+A `functions` action records which function it calls and with what arguments; the Deluge source
+itself comes from [`functions:pull`](6-functions-pull-command.md).
 
 The folder is always `src/workflow-actions/`; no setting moves it.
 

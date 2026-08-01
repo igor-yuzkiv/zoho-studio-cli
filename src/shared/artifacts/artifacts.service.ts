@@ -93,8 +93,7 @@ export function resolveArtifactFileName(name: string, id: string, takenFileNames
 /**
  * Drops the records of one module from a flat directory and reports the file names left behind.
  * The owning module is read back out of each file, because the file is named after the record
- * rather than the module. A file that cannot be read as a record is left alone rather than guessed
- * about.
+ * rather than the module.
  */
 export async function removeModuleArtifactFiles(dirPath: string, module: string): Promise<Set<string>> {
     const entries = await readdir(dirPath, { withFileTypes: true })

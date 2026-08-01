@@ -20,13 +20,15 @@ import {
     writeArtifactJson,
 } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { assertModuleName } from '@/shared/utils'
+import { assertModuleName, delay } from '@/shared/utils'
 
 const delayBetweenActionRequestsMs = 300
 
 type PendingAction = {
     type: WorkflowActionType
     action: ZohoWorkflowAction
+    /** The file names its directory already holds, so a collision resolves against them. */
+    takenFileNames: Set<string>
 }
 
 /** One line of the run summary: a failure, or an action saved without its details. */
@@ -48,8 +50,7 @@ export const pullWorkflowActionsCommand = new Command('workflow-actions:pull')
         const types = options.type ? [assertWorkflowActionType(options.type)] : [...workflowActionTypes]
 
         const failed: PullNote[] = []
-        const pending: PendingAction[] = []
-        const fetchedTypes: WorkflowActionType[] = []
+        const listedByType = new Map<WorkflowActionType, ZohoWorkflowAction[]>()
 
         for (const [index, type] of types.entries()) {
             if (index > 0) {
@@ -57,26 +58,25 @@ export const pullWorkflowActionsCommand = new Command('workflow-actions:pull')
             }
 
             try {
-                const actions = sortForStableFileNames(await getWorkflowActionsList(type, module))
-
-                pending.push(...actions.map((action) => ({ type, action })))
-                fetchedTypes.push(type)
+                listedByType.set(type, sortForStableFileNames(await getWorkflowActionsList(type, module)))
             } catch (error) {
                 failed.push({ name: type, message: describePullError(error) })
                 logger.error({ err: error, type }, 'Failed to fetch a workflow actions list')
             }
         }
 
-        logger.info({ total: pending.length, types: fetchedTypes.length }, 'Workflow actions found')
-
         // Only a type Zoho answered for is rewritten, so a failed list keeps the previous snapshot.
-        const takenFileNames = new Map<WorkflowActionType, Set<string>>()
+        const pending: PendingAction[] = []
 
-        for (const type of fetchedTypes) {
-            takenFileNames.set(type, await prepareTypeDir(projectPath, type, module))
+        for (const [type, actions] of listedByType) {
+            const takenFileNames = await prepareTypeDir(projectPath, type, module)
+
+            pending.push(...actions.map((action) => ({ type, action, takenFileNames })))
         }
 
-        const savedFromList: PullNote[] = []
+        logger.info({ total: pending.length, types: listedByType.size }, 'Workflow actions found')
+
+        const savedFromList: string[] = []
         let savedActions = 0
         const progressBar = new cliProgress.SingleBar(
             {
@@ -90,28 +90,23 @@ export const pullWorkflowActionsCommand = new Command('workflow-actions:pull')
         progressBar.start(pending.length, 0, { name: 'Starting...' })
 
         try {
-            for (const [index, { type, action }] of pending.entries()) {
+            for (const [index, { type, action, takenFileNames }] of pending.entries()) {
                 if (index > 0) {
                     await delay(delayBetweenActionRequestsMs)
                 }
 
                 progressBar.update({ name: `${type}: ${action.name}` })
 
-                const taken = takenFileNames.get(type) ?? new Set<string>()
-
                 try {
                     // The list omits what an action actually does, so the full record is fetched per action.
                     const details = await getWorkflowAction(type, action.id)
-                    const fileName = resolveArtifactFileName(action.name, action.id, taken)
+                    const fileName = resolveArtifactFileName(action.name, action.id, takenFileNames)
 
                     // Zoho reports no details for some actions it lists quite normally. Keeping the
                     // list entry loses nothing for a field update or a task, and for the other types
                     // it keeps a partial record rather than dropping the action from the project.
                     if (!details) {
-                        savedFromList.push({
-                            name: `${type}: ${action.name}`,
-                            message: 'Zoho CRM returned no details for this action.',
-                        })
+                        savedFromList.push(`${type}: ${action.name}`)
                         logger.warn({ type, action: action.name }, 'Saved a workflow action from the list')
                     }
 
@@ -121,7 +116,7 @@ export const pullWorkflowActionsCommand = new Command('workflow-actions:pull')
                         details ?? action
                     )
 
-                    taken.add(fileName)
+                    takenFileNames.add(fileName)
                     savedActions += 1
                 } catch (error) {
                     failed.push({ name: `${type}: ${action.name}`, message: describePullError(error) })
@@ -146,10 +141,10 @@ export const pullWorkflowActionsCommand = new Command('workflow-actions:pull')
 
         console.log(`Workflow actions found: ${pending.length}`)
         console.log(`Workflow actions saved: ${savedActions}`)
-        console.log(`Saved from the list, without details: ${savedFromList.length}`)
+        console.log(`Saved from the list, because Zoho returned no details: ${savedFromList.length}`)
 
-        for (const warning of savedFromList) {
-            console.log(`  - ${warning.name}: ${warning.message}`)
+        for (const name of savedFromList) {
+            console.log(`  - ${name}`)
         }
 
         console.log(`Failures: ${failed.length}`)
@@ -202,8 +197,4 @@ async function prepareTypeDir(
     }
 
     return removeModuleArtifactFiles(await ensureArtifactDir(projectPath, segments), module)
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }

@@ -6,6 +6,7 @@ import { getFunctionCode, getFunctionsList, type ZohoFunction } from '@/entities
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, toPathSegment, writeArtifactJson, writeArtifactText } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
+import { delay } from '@/shared/utils'
 
 const delayBetweenCodeRequestsMs = 300
 
@@ -108,8 +109,4 @@ export function resolveCodeSegments(zohoFunction: NamedFunction): string[] {
 
 function resolveFunctionDirSegments(zohoFunction: NamedFunction): string[] {
     return [functionsDirName, toPathSegment(zohoFunction.api_name)]
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }

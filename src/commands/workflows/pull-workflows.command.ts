@@ -14,7 +14,7 @@ import {
     writeArtifactJson,
 } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { assertModuleName } from '@/shared/utils'
+import { assertModuleName, delay } from '@/shared/utils'
 
 const delayBetweenRuleRequestsMs = 300
 
@@ -108,8 +108,4 @@ async function emptyWorkflowsDir(projectPath: string): Promise<Set<string>> {
     await replaceArtifactDir(projectPath, [workflowsDirName])
 
     return new Set()
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }

@@ -8,7 +8,7 @@ import { getFieldsList } from '@/entities/field'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
-import { assertModuleName } from '@/shared/utils'
+import { assertModuleName, delay } from '@/shared/utils'
 
 const delayBetweenModuleRequestsMs = 300
 
@@ -126,8 +126,4 @@ async function resolveRequestedModule(modulesPath: string, requested: string): P
     }
 
     return moduleName
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
