@@ -31,7 +31,7 @@ and was left alone.
 ```text
 my-project/
   .zoho-studio/
-    .gitignore           # keeps settings.json out of git
+    .gitignore           # keeps settings.json and org.json out of git
     settings.json        # your credentials, chmod 0600
   logs/
     .gitignore           # keeps *.log out of git
@@ -46,7 +46,8 @@ overwritten** — with or without `--force`. Edit the files you were given; a la
 in what is missing. Delete one and re-run `init` to get it back.
 
 Your project's root `.gitignore` is not touched. The two `.gitignore` files above travel with the
-folders they protect, so the settings file and the logs stay out of git wherever the project sits.
+folders they protect, so the settings file, the organization snapshot, and the logs stay out of git
+wherever the project sits.
 
 Next, fill in `auth.clientId` and `auth.clientSecret` from your client in the Zoho API console. See
 [2-settings.md](2-settings.md) for the rest of the file.

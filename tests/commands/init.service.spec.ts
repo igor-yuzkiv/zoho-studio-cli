@@ -29,7 +29,7 @@ describe('initializeProject', () => {
         expect(await Bun.file(resolveProjectSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
         expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
-        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\n')
+        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\n')
         expect(result.templateFiles.every(({ outcome }) => outcome === 'created')).toBe(true)
     })
 
