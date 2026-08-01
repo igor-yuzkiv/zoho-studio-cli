@@ -24,6 +24,7 @@ export const logsDirName = 'logs'
 export const functionsDirName = 'functions'
 export const modulesDirName = 'modules'
 export const workflowsDirName = 'workflows'
+export const workflowActionsDirName = 'workflow-actions'
 export const fieldsDirName = 'fields'
 
 /** Deluge sources are saved under this extension; map the editor to it rather than it to the editor. */

@@ -17,6 +17,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
 - [fields:pull](docs/8-fields-pull-command.md) — downloading module fields
 - [workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
+- [workflow-actions:pull](docs/10-workflow-actions-pull-command.md) — downloading workflow actions
 - [org:info](docs/10-org-info-command.md) — reading the organization and storing it in the project
 
 ## Editor support

@@ -9,6 +9,7 @@ import { pullFunctionsCommand } from '@/commands/functions'
 import { pullModulesCommand } from '@/commands/modules'
 import { pullFieldsCommand } from '@/commands/fields'
 import { pullWorkflowsCommand } from '@/commands/workflows'
+import { pullWorkflowActionsCommand } from '@/commands/workflow-actions'
 
 const program = new Command()
 
@@ -23,6 +24,7 @@ program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
 program.addCommand(pullWorkflowsCommand)
+program.addCommand(pullWorkflowActionsCommand)
 
 try {
     await program.parseAsync()
