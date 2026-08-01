@@ -20,8 +20,19 @@ The code is valid for 5 min. Waiting for approval...
 Authorized. Tokens stored in the project settings.
   access token valid for 60 min
 
+Organization: Acme Inc
+  id: 7000000012345
+  type: sandbox
+  primary email: owner@acme.test
+
+Saved to /projects/acme/.zoho-studio/org.json
+
 The project is authorized.
 ```
+
+Once the tokens are stored, `login` reads the organization and writes it to
+`.zoho-studio/org.json` — the same thing [`zoho-studio org:info`](10-org-info-command.md) does. The
+tokens are already saved by then, so a failure there is reported and the login still succeeds.
 
 The token values are never printed. `login` finds the project by walking up from the current
 folder, so it works from any subfolder, and it overwrites the tokens of a previous login without

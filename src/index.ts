@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/commands/status'
+import { orgInfoCommand } from '@/commands/org'
 import { debugCommand } from '@/commands/debug'
 import { pullFunctionsCommand } from '@/commands/functions'
 import { pullModulesCommand } from '@/commands/modules'
@@ -17,6 +18,7 @@ program.name('zoho-studio')
 program.addCommand(initCommand)
 program.addCommand(loginCommand)
 program.addCommand(statusCommand)
+program.addCommand(orgInfoCommand)
 program.addCommand(debugCommand);
 program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)

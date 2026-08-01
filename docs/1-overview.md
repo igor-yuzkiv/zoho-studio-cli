@@ -35,3 +35,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio fields:pull`
 - [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio workflows:pull`
 - [10-workflow-actions-pull-command.md](10-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio workflow-actions:pull`
+- [10-org-info-command.md](10-org-info-command.md) — reading and storing the organization with `zoho-studio org:info`
