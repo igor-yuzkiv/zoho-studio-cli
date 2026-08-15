@@ -12,6 +12,7 @@ import { pullWorkflowsCommand } from '@/commands/workflows'
 import { pullWebhooksCommand } from '@/commands/webhooks'
 import { pullWorkflowActionsCommand } from '@/commands/workflow-actions'
 import { pullGlobalPicklistsCommand } from '@/commands/global-picklists'
+import { browserCommand } from '@/commands/browser'
 
 const program = new Command()
 
@@ -29,6 +30,7 @@ program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
 program.addCommand(pullGlobalPicklistsCommand)
+program.addCommand(browserCommand)
 
 try {
     await program.parseAsync()
