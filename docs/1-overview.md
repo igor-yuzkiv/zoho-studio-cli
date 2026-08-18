@@ -38,3 +38,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [11-workflow-actions-pull-command.md](11-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio workflow-actions:pull`
 - [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio webhooks:pull`
 - [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio global-picklists:pull`
+- [14-sync-command.md](14-sync-command.md) — running several pull commands in one go with `zoho-studio sync`
