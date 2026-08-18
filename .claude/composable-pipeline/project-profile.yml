@@ -8,6 +8,8 @@
 artifacts:
   progress_update: project-office
   client_update: none
+  test_plan: project-office:comments
+  workflow_record: project-office
 
 language:
   chat: Ukrainian
@@ -25,8 +27,8 @@ exemplars:
   client: src/shared/api/crm/crm.client.ts
   entity_types: src/entities/field/field.types.ts
   settings: src/settings/settings.store.ts
-  utils: src/shared/utils/path.utils.ts
-  test_command: tests/commands/pull-fields.command.spec.ts
+  utils: src/shared/utils/cli.utils.ts
+  test_command: tests/commands/init.service.spec.ts
   test_unit: tests/settings/settings.loader.spec.ts
   test_fixture: tests/support/temp-project.ts
   docs_page: docs/8-fields-pull-command.md
