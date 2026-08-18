@@ -12,6 +12,7 @@ Run `bun run check` before handing off a change.
 - `.claude/rules/architecture.md` — folder layout, file naming, exports, tests, CLI option style
 - `.claude/rules/git.md` — commit format and `ZS-<number>` task references
 - `.claude/rules/documentation.md` — `docs/` is flat, numbered, and describes only shipped behavior
+- `.claude/rules/skills.md` — `skills/` is agent-facing prompt that runs in a pulled project, not code
 
 A new command needs a page in `docs/`, an entry in `docs/1-overview.md`, and an entry in
 `README.md` — in the same change as the command itself.

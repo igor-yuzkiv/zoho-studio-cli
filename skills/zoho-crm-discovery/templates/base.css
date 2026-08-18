@@ -1,0 +1,427 @@
+/*
+ * Shared look for every HTML output of this skill.
+ *
+ * The templates link this file so they can be previewed from the repository. Inline it into
+ * a <style> block when writing a real report — the output must be one self-contained file
+ * that opens offline, with no request leaving the page.
+ */
+
+:root {
+    color-scheme: light dark;
+
+    --bg: #fbfbfd;
+    --surface: #ffffff;
+    --surface-sunken: #f4f5f8;
+    --border: #e3e5ea;
+    --border-strong: #c9ccd4;
+    --text: #1a1c21;
+    --text-muted: #5f646e;
+    --text-faint: #8b909b;
+    --accent: #3b5bdb;
+    --accent-soft: #e8ecfb;
+    --warn: #b45309;
+    --warn-soft: #fdf3e3;
+
+    --radius: 10px;
+    --gap: 1.5rem;
+    --measure: 74ch;
+
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #101216;
+        --surface: #171a20;
+        --surface-sunken: #1d2027;
+        --border: #282c35;
+        --border-strong: #3a3f4a;
+        --text: #e8eaee;
+        --text-muted: #a0a6b2;
+        --text-faint: #767d8a;
+        --accent: #8ba4ff;
+        --accent-soft: #1e2436;
+        --warn: #e0a458;
+        --warn-soft: #2a2318;
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 5vw, 3rem) 5rem;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+main {
+    max-width: 68rem;
+    margin: 0 auto;
+}
+
+/* --- masthead ------------------------------------------------------------ */
+
+.masthead {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+}
+
+h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2.3rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+}
+
+.lede {
+    max-width: var(--measure);
+    font-size: 1.075rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Provenance: which pull the findings describe. Never omit it. */
+.provenance {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--border);
+    font-size: 0.82rem;
+    color: var(--text-faint);
+}
+
+.provenance b {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* --- structure ----------------------------------------------------------- */
+
+section {
+    margin-bottom: 3rem;
+}
+
+h2 {
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+h3 {
+    font-size: 1rem;
+    margin: 2rem 0 0.5rem;
+}
+
+p,
+li {
+    max-width: var(--measure);
+}
+
+/* --- evidence ------------------------------------------------------------ */
+
+code,
+.path {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+}
+
+.path {
+    color: var(--text-muted);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.1em 0.4em;
+    overflow-wrap: anywhere;
+}
+
+.evidence {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.evidence li {
+    max-width: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+    align-items: baseline;
+}
+
+@media (max-width: 46rem) {
+    .evidence li {
+        grid-template-columns: 1fr;
+    }
+}
+
+.evidence .claim {
+    font-weight: 500;
+    grid-column: 2;
+}
+
+.evidence .path {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* --- callouts ------------------------------------------------------------ */
+
+.note {
+    max-width: var(--measure);
+    background: var(--surface-sunken);
+    border-left: 3px solid var(--border-strong);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.9rem 1.15rem;
+    margin: 1.25rem 0;
+    font-size: 0.94rem;
+    color: var(--text-muted);
+}
+
+/* Anything unproven — inference, text-search hit, unread artifact — wears this. */
+.note--limit {
+    background: var(--warn-soft);
+    border-left-color: var(--warn);
+    color: var(--text);
+}
+
+.tag {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15em 0.5em;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    vertical-align: 0.1em;
+}
+
+.tag--inferred {
+    background: var(--warn-soft);
+    color: var(--warn);
+}
+
+/* --- tables -------------------------------------------------------------- */
+
+.scroll-x {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.92rem;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+th {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    border-bottom-color: var(--border-strong);
+}
+
+/* --- diagram ------------------------------------------------------------- */
+
+figure {
+    margin: 1.5rem 0;
+}
+
+.diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    overflow-x: auto;
+}
+
+.diagram svg {
+    display: block;
+    min-width: 30rem;
+    max-width: 100%;
+    height: auto;
+}
+
+.node-box {
+    fill: var(--surface-sunken);
+    stroke: var(--border-strong);
+}
+
+.node-box--subject {
+    fill: var(--accent-soft);
+    stroke: var(--accent);
+}
+
+.node-box--external {
+    fill: none;
+    stroke: var(--warn);
+    stroke-dasharray: 5 3;
+}
+
+.node-label {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--text);
+}
+
+.node-kind {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    fill: var(--text-faint);
+}
+
+.edge {
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+/* Traced through a JSON key: solid. Found by text search: dashed. Never the same line. */
+.edge--searched {
+    stroke-dasharray: 5 4;
+}
+
+.arrow-head {
+    fill: var(--border-strong);
+    stroke: none;
+}
+
+.edge-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--text-faint);
+}
+
+figcaption {
+    max-width: var(--measure);
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-faint);
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.legend span::before {
+    content: "";
+    display: inline-block;
+    width: 1.5rem;
+    height: 0;
+    margin-right: 0.4rem;
+    vertical-align: 0.25em;
+    border-top: 2px solid var(--border-strong);
+}
+
+.legend .is-searched::before {
+    border-top-style: dashed;
+}
+
+.legend .is-external::before {
+    border-top-color: var(--warn);
+    border-top-style: dashed;
+}
+
+@media print {
+    body {
+        padding: 0;
+    }
+
+    .diagram,
+    .evidence li {
+        break-inside: avoid;
+    }
+}
+
+/* --- counts -------------------------------------------------------------- */
+
+/*
+ * A labelled bar row, for the one chart this skill actually needs: how a count is
+ * distributed — rules per module, actions per rule, fields per type. Set --value as a
+ * percentage of the largest row. Anything richer than this belongs in a real chart, not here.
+ */
+
+.bars {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.bars li {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(6rem, 14rem) minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.bars .bar {
+    height: 0.55rem;
+    border-radius: 3px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.bars .bar::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: var(--value, 0%);
+    background: var(--accent);
+}
+
+.bars .count {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}

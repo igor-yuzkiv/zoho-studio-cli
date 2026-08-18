@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  Template: connections map.
+
+  One page whose subject is the shape itself — how a set of artifacts relate — rather than a
+  written investigation. Use it when the reader wants to see the wiring; use report.html when
+  they want to read what it does.
+
+  Inline base.css into a <style> block on output. Keep the diagram under roughly fifteen
+  nodes: past that it stops explaining and starts needing an explanation. When the honest
+  picture is bigger, split it by question rather than dropping edges silently.
+-->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SUBJECT — connections</title>
+        <link rel="stylesheet" href="base.css" />
+    </head>
+    <body>
+        <main>
+            <header class="masthead">
+                <p class="eyebrow">Connections</p>
+                <h1>SUBJECT</h1>
+                <p class="lede">
+                    What the map answers, in one sentence. If it answers more than one question, it
+                    should have been two maps.
+                </p>
+                <div class="provenance">
+                    <span><b>Org</b> ORG_NAME</span>
+                    <span><b>Pulled state</b> COMMIT_OR_PULL_DATE</span>
+                </div>
+            </header>
+
+            <section>
+                <figure>
+                    <div class="diagram">
+                        <svg viewBox="0 0 720 320" role="img" aria-label="DESCRIBE THE DIAGRAM">
+                            <!-- Subject in the centre, what reaches it on the left, what it reaches on the right. -->
+                            <rect class="node-box node-box--subject" x="285" y="134" width="150" height="52" rx="8" />
+                            <text class="node-kind" x="299" y="156">KIND</text>
+                            <text class="node-label" x="299" y="174">SUBJECT</text>
+
+                            <rect class="node-box" x="24" y="60" width="150" height="52" rx="8" />
+                            <text class="node-kind" x="38" y="82">workflow rule</text>
+                            <text class="node-label" x="38" y="100">UPSTREAM</text>
+                            <path class="edge" d="M174 86 H 285 V 140" marker-end="url(#arrow)" />
+                            <text class="edge-label" x="186" y="78">function.api_name</text>
+
+                            <rect class="node-box" x="546" y="60" width="150" height="52" rx="8" />
+                            <text class="node-kind" x="560" y="82">module</text>
+                            <text class="node-label" x="560" y="100">DOWNSTREAM</text>
+                            <path class="edge edge--searched" d="M435 150 H 510 V 86 H 546" marker-end="url(#arrow)" />
+                            <text class="edge-label" x="446" y="142">text search</text>
+
+                            <rect class="node-box node-box--external" x="546" y="208" width="150" height="52" rx="8" />
+                            <text class="node-kind" x="560" y="230">external</text>
+                            <text class="node-label" x="560" y="248">SERVICE</text>
+                            <path class="edge" d="M435 170 H 510 V 234 H 546" marker-end="url(#arrow)" />
+                            <text class="edge-label" x="446" y="190">webhook url</text>
+
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path class="arrow-head" d="M0 0 L10 5 L0 10 z" />
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="legend">
+                        <span>traced through a JSON key</span>
+                        <span class="is-searched">found by text search in Deluge</span>
+                        <span class="is-external">outside the org</span>
+                    </div>
+                    <figcaption>What is on the map, and what was left off it on purpose.</figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <h2>Nodes</h2>
+                <p>Every node on the map, so the reader can open the file behind it.</p>
+                <ul class="evidence">
+                    <li>
+                        <span class="path">src/functions/API_NAME/NAME.deluge</span>
+                        <span class="claim">What this node is, in one line.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Distribution</h2>
+                <!-- Optional. Keep it only when a count is part of the answer. -->
+                <ul class="bars">
+                    <li>
+                        <span>MODULE</span>
+                        <span class="bar" style="--value: 100%"></span>
+                        <span class="count">12</span>
+                    </li>
+                    <li>
+                        <span>MODULE</span>
+                        <span class="bar" style="--value: 42%"></span>
+                        <span class="count">5</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>What is not on the map</h2>
+                <div class="note note--limit">
+                    Anything left off, and why — a branch not traced, a search that would have been
+                    unbounded, an area the question did not reach.
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

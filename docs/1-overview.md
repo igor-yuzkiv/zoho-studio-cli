@@ -39,3 +39,4 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio webhooks:pull`
 - [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio global-picklists:pull`
 - [14-sync-command.md](14-sync-command.md) — running several pull commands in one go with `zoho-studio sync`
+- [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them

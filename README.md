@@ -22,6 +22,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
 - [global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
 - [sync](docs/14-sync-command.md) — running several pull commands in one go
+- [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Editor support
 
@@ -41,4 +42,5 @@ bun test                # tests
 bun run check           # lint + typecheck + tests
 bun run build           # bun-targeted bundle → dist/
 bun run compile         # standalone executable → dist/
+bun run deploy-skills   # install skills/ into ~/.claude/skills/
 ```
