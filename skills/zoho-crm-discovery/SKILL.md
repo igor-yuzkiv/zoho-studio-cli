@@ -104,8 +104,8 @@ a diagram that helps needs no permission.
 **An HTML report or map is a deliverable of its own.** Build one when the user asks, or offer
 it in one line and build it after they agree. Do not build one unasked for a two-hop answer.
 
-`references/visualizations.md` says which form fits which result, and `templates/` carries the
-page so the time goes into the content.
+`references/visualizations.md` says which form fits which result, and what an HTML page has to
+hold to. Its shape follows the investigation, not a template.
 
 ## Step 7 — the document, when one is owed
 

@@ -24,9 +24,9 @@ investigates an artifact, a set of them, or a process spanning several, and prod
 worth writing down.
 
 Results can be visual. Inside a markdown document it draws mermaid without asking. For a
-standing deliverable it builds a self-contained HTML page — an investigation report or a
-connections map — from the templates the skill ships, with the diagrams as inline SVG so the
-file opens offline with no external request.
+standing deliverable it builds a self-contained HTML page — a report or a connections map —
+whose shape follows the investigation, with the diagrams as inline SVG so the file opens
+offline with no external request.
 
 The skill is read-only. `src/` is a mirror the next pull overwrites, so the skill explains
 what it reads and never edits it, and it does not run the CLI to refresh it.

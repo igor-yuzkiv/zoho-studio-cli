@@ -15,8 +15,7 @@ tooling are present where it runs.
 ## Structure
 
 One folder per skill, named as the skill is: `skills/<skill-name>/SKILL.md`, plus
-`references/` for material the skill loads only when it needs it, and `templates/` for files
-it fills in rather than reads.
+`references/` for material the skill loads only when it needs it.
 
 `SKILL.md` is read every time the skill fires, so it carries the method and nothing else.
 Anything long, tabular, or consulted occasionally — a layout table, a set of conventions —
@@ -24,6 +23,10 @@ belongs in `references/`.
 
 Keep the family focused. A skill answers one kind of request; a second kind is a second
 skill, not another section.
+
+Prefer stating what an output has to hold to over shipping a file to fill in. A template fixes
+the shape of an answer before the question is known, and situations differ more than a template
+can.
 
 ## What a skill may state as fact
 
