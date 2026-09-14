@@ -4,6 +4,7 @@ import type { MilestoneResolver } from '@/zoho-projects/entities/milestone'
 import type { TaskListResolver } from '@/zoho-projects/entities/task-list'
 import { writeArtifactJson } from '@/shared/artifacts'
 
+import { decodeHtmlEntities } from './services/html-to-markdown.service'
 import type { ZohoTask, ZohoTaskComment } from './task.types'
 
 export interface TaskPeriod {
@@ -83,4 +84,25 @@ export async function writeTask(
     await writeArtifactJson(projectPath, [...segments, `${task.id}.comments.json`], comments)
 
     return segments
+}
+
+const slugMaxLength = 80
+
+/** Lower-case, everything but letters and digits collapsed to one dash, cut to 80 characters — the Obsidian file and folder names. */
+export function toSlug(name: string): string {
+    return decodeHtmlEntities(name)
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, slugMaxLength)
+        .replace(/-$/, '')
+}
+
+/** `SS5-T580` → `580`; a task without a prefix falls back to its id, which is unique as well. */
+export function prefixNumber(task: Pick<ZohoTask, 'id' | 'prefix'>): string {
+    return task.prefix?.match(/(\d+)$/)?.[1] ?? task.id
+}
+
+export function taskFileBaseName(task: Pick<ZohoTask, 'id' | 'prefix' | 'name'>): string {
+    return `${prefixNumber(task)}-${toSlug(task.name)}`
 }
