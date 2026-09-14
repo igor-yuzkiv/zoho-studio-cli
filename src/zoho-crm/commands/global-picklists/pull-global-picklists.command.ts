@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { globalPicklistsDirName, zohoCrmDirName } from '@/config'
+import { globalPicklistsDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import {
     getGlobalPicklist,
     getGlobalPicklistsList,

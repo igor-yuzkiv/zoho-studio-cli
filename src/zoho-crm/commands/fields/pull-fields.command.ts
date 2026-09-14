@@ -3,7 +3,7 @@ import { readdir } from 'node:fs/promises'
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { fieldsDirName, modulesDirName, zohoCrmDirName } from '@/config'
+import { fieldsDirName, modulesDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { getFieldsList, resolveFieldFileName } from '@/zoho-crm/entities/field'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'

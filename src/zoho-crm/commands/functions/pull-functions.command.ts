@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { functionsDirName, zohoCrmDirName } from '@/config'
+import { functionsDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import {
     getFunctionCode,
     getFunctionsList,

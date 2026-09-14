@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { workflowActionsDirName, zohoCrmDirName } from '@/config'
+import { workflowActionsDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import {
     assertWorkflowActionType,
     describePullError,

@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { workflowsDirName, zohoCrmDirName } from '@/config'
+import { workflowsDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { getWorkflowRule, getWorkflowRulesList, type ZohoWorkflowRule } from '@/zoho-crm/entities/workflow-rule'
 import { getProjectSettings } from '@/settings'
 import { describeRequestError } from '@/shared/api/crm'

@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { webhooksDirName, zohoCrmDirName } from '@/config'
+import { webhooksDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { getWebhook, getWebhooksList, type ZohoWebhook } from '@/zoho-crm/entities/webhook'
 import { describeRequestError } from '@/shared/api/crm'
 import { getProjectSettings } from '@/settings'

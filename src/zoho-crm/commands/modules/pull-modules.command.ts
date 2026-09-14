@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { modulesDirName, zohoCrmDirName } from '@/config'
+import { modulesDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { getModulesList, resolveMetadataSegments, type ZohoModule } from '@/zoho-crm/entities/module'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'

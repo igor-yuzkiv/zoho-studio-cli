@@ -1,4 +1,4 @@
-import { modulesDirName, zohoCrmDirName } from '@/config'
+import { modulesDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { toPathSegment } from '@/shared/artifacts'
 
 /** Both the directory and the file are named after the API name, which is what the fields reuse. */

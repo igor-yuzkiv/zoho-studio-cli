@@ -1,4 +1,4 @@
-import { functionCodeExtension, functionsDirName, zohoCrmDirName } from '@/config'
+import { functionCodeExtension, functionsDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
 import { toPathSegment } from '@/shared/artifacts'
 
 import type { ZohoFunction } from './function.types'

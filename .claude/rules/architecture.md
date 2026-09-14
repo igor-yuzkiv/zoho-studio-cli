@@ -9,10 +9,11 @@ Do not introduce new architectural layers, generic abstractions, or shared folde
 ```text
 src/
   index.ts      # CLI entry point, registers the commands
-  config.ts     # names and path resolvers for the .zoho-studio/ project directory
+  config.ts     # names and path resolvers shared by every area: .zoho-studio/, src/, logs/
   commands/     # commands that belong to no Zoho product: init, login, debug, browser
   settings/     # project settings: types, defaults, loading, and storage
   zoho-crm/     # one folder per Zoho product area; zoho-projects/ sits next to it
+    zoho-crm.config.ts  # names and constants that belong to this area only
     commands/   # CLI command definitions of this area, one folder per command
     entities/   # domain entities of this area (e.g.: field, function, module)
       <entity>/

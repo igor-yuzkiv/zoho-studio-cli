@@ -122,7 +122,8 @@ and write the result back — do not hand it a partial object.
 
 | File | Role |
 | --- | --- |
-| `src/config.ts` | File and folder names, including the fixed artifact paths, and path helpers |
+| `src/config.ts` | File and folder names shared by every area, and path helpers |
+| `src/zoho-crm/zoho-crm.config.ts` | The fixed CRM artifact folder names |
 | `src/settings/types.ts` | The `ProjectSettings` shape |
 | `src/settings/default.settings.ts` | The defaults every read merges into |
 | `src/settings/settings.loader.ts` | `loadProjectSettings()`, `findProjectPath()` |
