@@ -5,7 +5,7 @@ import axios, { isAxiosError } from 'axios'
 import { Command } from 'commander'
 
 import { tokenService } from '@/shared/api/auth'
-import { projectsClient } from '@/shared/api/projects'
+import { describeProjectsRequestError, projectsClient, resolveProjectsBaseUrl } from '@/shared/api/projects'
 import { getProjectSettings } from '@/settings'
 import { createCommandLogger } from '@/shared/logger'
 
@@ -96,16 +96,15 @@ async function request(path: string, authorization: Sample['authorization']): Pr
             authorization,
             status: null,
             headers: {},
-            body: { error: error instanceof Error ? error.message : String(error) },
+            body: { error: describeProjectsRequestError(error) },
         }
     }
 }
 
 async function resolveProbeUrl(path: string): Promise<string> {
     const { settings } = await getProjectSettings()
-    const { baseUrl, portalId, projectId } = settings.projects
 
-    return `${baseUrl}/api/v3/portal/${portalId}/projects/${projectId}/${path}`
+    return `${resolveProjectsBaseUrl(settings.projects)}/${path}`
 }
 
 function toSampleFileName(path: string): string {

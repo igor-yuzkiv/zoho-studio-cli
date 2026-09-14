@@ -1,11 +1,10 @@
 import { afterEach, describe, expect, test } from 'bun:test'
-import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { pullMilestonesCommand } from '@/zoho-projects/commands/milestones'
 import { pullTaskListsCommand } from '@/zoho-projects/commands/task-lists'
 
-import { listPage, startProjectsStub, type ProjectsStub } from '../../support/projects-stub'
+import { answerProjectsLists, readRawDirs, startProjectsStub, type ProjectsStub } from '../../support/projects-stub'
 
 let stub: ProjectsStub | null = null
 
@@ -27,25 +26,14 @@ const general = {
 }
 const orphan = { id: '24', name: 'Orphan', milestone: { id: '99', name: 'Gone' } }
 
-function answerLists(milestones: unknown[], taskLists: unknown[]): (request: Request) => Response {
-    return (request) =>
-        new URL(request.url).pathname.endsWith('/phases')
-            ? listPage('milestones', milestones)
-            : listPage('tasklists', taskLists)
-}
-
-async function readDirs(projectPath: string, relativePath: string): Promise<string[]> {
-    return (await readdir(join(projectPath, 'src/zoho-projects/raw', relativePath)).catch(() => [])).sort()
-}
-
 describe('z-projects:task-lists:pull', () => {
     test('writes a task list under the milestone folder an earlier pull created', async () => {
-        stub = await startProjectsStub(answerLists([discovery], [research]))
+        stub = await startProjectsStub(answerProjectsLists({ milestones: [discovery], taskLists: [research] }))
         await pullMilestonesCommand.parseAsync([], { from: 'user' })
 
         await pullTaskListsCommand.parseAsync([], { from: 'user' })
 
-        expect(await readDirs(stub.projectPath, 'Discovery/task-lists')).toEqual(['Research'])
+        expect(await readRawDirs(stub.projectPath, 'Discovery/task-lists')).toEqual(['Research'])
         expect(
             await Bun.file(join(stub.projectPath, 'src/zoho-projects/raw/Discovery/task-lists/Research/21.json')).json()
         ).toEqual(research)
@@ -53,34 +41,36 @@ describe('z-projects:task-lists:pull', () => {
     })
 
     test('fetches and writes a milestone that is not local yet', async () => {
-        stub = await startProjectsStub(answerLists([discovery, delivery], [research, rollout]))
+        stub = await startProjectsStub(
+            answerProjectsLists({ milestones: [discovery, delivery], taskLists: [research, rollout] })
+        )
 
         await pullTaskListsCommand.parseAsync([], { from: 'user' })
 
-        expect(await readDirs(stub.projectPath, '.')).toEqual(['Delivery', 'Discovery'])
+        expect(await readRawDirs(stub.projectPath, '.')).toEqual(['Delivery', 'Discovery'])
         expect(await Bun.file(join(stub.projectPath, 'src/zoho-projects/raw/Delivery/12.json')).json()).toEqual(
             delivery
         )
-        expect(await readDirs(stub.projectPath, 'Delivery/task-lists')).toEqual(['Rollout'])
+        expect(await readRawDirs(stub.projectPath, 'Delivery/task-lists')).toEqual(['Rollout'])
         expect(stub.requestedUrls.filter((url) => url.pathname.endsWith('/phases'))).toHaveLength(1)
     })
 
     test('puts a task list outside any milestone under _no-milestone', async () => {
-        stub = await startProjectsStub(answerLists([], [general]))
+        stub = await startProjectsStub(answerProjectsLists({ milestones: [], taskLists: [general] }))
 
         await pullTaskListsCommand.parseAsync([], { from: 'user' })
 
-        expect(await readDirs(stub.projectPath, '_no-milestone/task-lists')).toEqual(['General'])
+        expect(await readRawDirs(stub.projectPath, '_no-milestone/task-lists')).toEqual(['General'])
         expect(stub.requestedUrls.filter((url) => url.pathname.endsWith('/phases'))).toHaveLength(0)
     })
 
     test('skips a task list whose milestone cannot be found, writes the rest and exits non-zero', async () => {
-        stub = await startProjectsStub(answerLists([discovery], [orphan, research]))
+        stub = await startProjectsStub(answerProjectsLists({ milestones: [discovery], taskLists: [orphan, research] }))
 
         await pullTaskListsCommand.parseAsync([], { from: 'user' })
 
-        expect(await readDirs(stub.projectPath, '.')).toEqual(['Discovery'])
-        expect(await readDirs(stub.projectPath, 'Discovery/task-lists')).toEqual(['Research'])
+        expect(await readRawDirs(stub.projectPath, '.')).toEqual(['Discovery'])
+        expect(await readRawDirs(stub.projectPath, 'Discovery/task-lists')).toEqual(['Research'])
         expect(process.exitCode).toBe(1)
     })
 
@@ -88,6 +78,6 @@ describe('z-projects:task-lists:pull', () => {
         stub = await startProjectsStub(() => Response.json({ error: { code: 6401 } }, { status: 401 }))
 
         await expect(pullTaskListsCommand.parseAsync([], { from: 'user' })).rejects.toThrow(/401/)
-        expect(await readDirs(stub.projectPath, '.')).toEqual([])
+        expect(await readRawDirs(stub.projectPath, '.')).toEqual([])
     })
 })

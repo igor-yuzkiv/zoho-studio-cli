@@ -2,6 +2,5 @@
 export interface ZohoMilestone {
     id: string
     name: string
-    last_modified_time?: string
     [field: string]: unknown
 }

@@ -1,8 +1,12 @@
 import { readdir } from 'node:fs/promises'
 
 import { taskListsDirName } from '@/zoho-projects/zoho-projects.config'
-import { findRawEntityDir, writeRawEntity } from '@/zoho-projects/raw'
-import { MilestoneResolver, milestonesParentSegments, noMilestoneSegments } from '@/zoho-projects/entities/milestone'
+import { findRawEntitySegments, RawEntityResolver, writeRawEntity } from '@/zoho-projects/raw'
+import {
+    type MilestoneResolver,
+    milestonesParentSegments,
+    noMilestoneSegments,
+} from '@/zoho-projects/entities/milestone'
 import { resolveArtifactPath } from '@/shared/artifacts'
 
 import { getTaskListsList } from './api'
@@ -25,85 +29,42 @@ export async function resolveTaskListParentSegments(
     return [...milestoneSegments, taskListsDirName]
 }
 
-/** Returns the segments of the task list's folder, written or updated in place under its parent. */
-export function writeTaskList(
-    projectPath: string,
-    parentSegments: string[],
-    taskList: ZohoTaskList
-): Promise<string[]> {
-    return writeRawEntity(projectPath, parentSegments, taskList)
-}
-
-/** Returns the segments of the task list's folder when a previous pull already wrote it under this parent. */
-export async function findTaskListSegments(
-    projectPath: string,
-    parentSegments: string[],
-    taskListId: string
-): Promise<string[] | null> {
-    const dirName = await findRawEntityDir(projectPath, parentSegments, taskListId)
-
-    return dirName ? [...parentSegments, dirName] : null
-}
+export type TaskListResolver = RawEntityResolver<ZohoTaskList>
 
 /**
- * Returns the task list's folder, fetching and writing the task list (and its milestone) when no
- * earlier pull has it. Local lookup scans every milestone folder, because a task alone does not
- * say whether its milestone is a real one or Zoho's "None".
+ * Returns task list folders by id, fetching and writing a task list (and its milestone) no earlier
+ * pull has. A task alone does not say whether its milestone is real or Zoho's "None", so the local
+ * lookup scans every milestone folder. A task list moved between milestones leaves its old folder
+ * behind; two local hits are therefore ambiguous, and Zoho's current parent decides.
  */
-export class TaskListResolver {
-    private remoteTaskLists: Promise<Map<string, ZohoTaskList>> | null = null
+export function createTaskListResolver(projectPath: string, milestones: MilestoneResolver): TaskListResolver {
+    return new RawEntityResolver<ZohoTaskList>({
+        entityName: 'Task list',
+        fetchList: getTaskListsList,
+        findLocal: (id) => findLocalTaskListSegments(projectPath, id),
+        write: async (taskList) =>
+            writeRawEntity(projectPath, await resolveTaskListParentSegments(taskList, milestones), taskList),
+    })
+}
 
-    constructor(
-        private readonly projectPath: string,
-        private readonly milestones: MilestoneResolver
-    ) {}
+async function findLocalTaskListSegments(projectPath: string, taskListId: string): Promise<string[] | null> {
+    const milestonesPath = resolveArtifactPath(projectPath, milestonesParentSegments)
+    const entries = await readdir(milestonesPath, { withFileTypes: true }).catch(() => [])
+    const hits: string[][] = []
 
-    async resolveSegments(taskListId: string): Promise<string[]> {
-        const local = await this.findLocalSegments(taskListId)
+    for (const entry of entries) {
+        const found = entry.isDirectory()
+            ? await findRawEntitySegments(
+                  projectPath,
+                  [...milestonesParentSegments, entry.name, taskListsDirName],
+                  taskListId
+              )
+            : null
 
-        if (local) {
-            return local
+        if (found) {
+            hits.push(found)
         }
-
-        const taskList = (await this.fetchRemoteTaskLists()).get(taskListId)
-
-        if (!taskList) {
-            throw new Error(`Task list "${taskListId}" is not in the project.`)
-        }
-
-        const parentSegments = await resolveTaskListParentSegments(taskList, this.milestones)
-
-        return writeTaskList(this.projectPath, parentSegments, taskList)
     }
 
-    private async findLocalSegments(taskListId: string): Promise<string[] | null> {
-        const milestonesPath = resolveArtifactPath(this.projectPath, milestonesParentSegments)
-        const entries = await readdir(milestonesPath, { withFileTypes: true }).catch(() => [])
-
-        for (const entry of entries) {
-            if (!entry.isDirectory()) {
-                continue
-            }
-
-            const found = await findTaskListSegments(
-                this.projectPath,
-                [...milestonesParentSegments, entry.name, taskListsDirName],
-                taskListId
-            )
-
-            if (found) {
-                return found
-            }
-        }
-
-        return null
-    }
-
-    private fetchRemoteTaskLists(): Promise<Map<string, ZohoTaskList>> {
-        this.remoteTaskLists ??= getTaskListsList().then(
-            (taskLists) => new Map(taskLists.map((taskList) => [taskList.id, taskList]))
-        )
-
-        return this.remoteTaskLists
-    }
+    return hits.length === 1 ? hits[0]! : null
 }

@@ -1,7 +1,7 @@
 import { noTaskListDirName, taskListsDirName, tasksDirName } from '@/zoho-projects/zoho-projects.config'
 import { writeRawEntity } from '@/zoho-projects/raw'
-import { MilestoneResolver } from '@/zoho-projects/entities/milestone'
-import { TaskListResolver } from '@/zoho-projects/entities/task-list'
+import type { MilestoneResolver } from '@/zoho-projects/entities/milestone'
+import type { TaskListResolver } from '@/zoho-projects/entities/task-list'
 import { writeArtifactJson } from '@/shared/artifacts'
 
 import type { ZohoTask, ZohoTaskComment } from './task.types'
@@ -60,11 +60,15 @@ export async function resolveTaskParentSegments(
     taskLists: TaskListResolver,
     milestones: MilestoneResolver
 ): Promise<string[]> {
-    const taskListSegments = task.tasklist?.id
-        ? await taskLists.resolveSegments(task.tasklist.id)
-        : [...(await milestones.resolveSegments(requireMilestoneId(task))), taskListsDirName, noTaskListDirName]
+    if (task.tasklist?.id) {
+        return [...(await taskLists.resolveSegments(task.tasklist.id)), tasksDirName]
+    }
 
-    return [...taskListSegments, tasksDirName]
+    if (!task.milestone?.id) {
+        throw new Error(`Task "${task.id}" has neither a task list nor a milestone.`)
+    }
+
+    return [...(await milestones.resolveSegments(task.milestone.id)), taskListsDirName, noTaskListDirName, tasksDirName]
 }
 
 /** Writes `<task>/<id>.json` and `<task>/<id>.comments.json` — the comments file always, so every task folder looks alike. */
@@ -79,12 +83,4 @@ export async function writeTask(
     await writeArtifactJson(projectPath, [...segments, `${task.id}.comments.json`], comments)
 
     return segments
-}
-
-function requireMilestoneId(task: ZohoTask): string {
-    if (!task.milestone?.id) {
-        throw new Error(`Task "${task.id}" has neither a task list nor a milestone.`)
-    }
-
-    return task.milestone.id
 }

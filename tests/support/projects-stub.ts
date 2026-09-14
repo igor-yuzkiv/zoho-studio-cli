@@ -1,58 +1,64 @@
-import { buildSettings, createTempProject, removeTempProject } from './temp-project'
+import { readdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
-export interface ProjectsStub {
-    projectPath: string
-    requestedUrls: URL[]
-    stop: () => Promise<void>
+import type { ProjectSettings } from '@/settings'
+
+import { type ApiStub, startApiStub } from './api-stub'
+
+export type ProjectsStub = ApiStub
+
+interface ProjectsStubOptions {
+    projects?: Partial<Omit<ProjectSettings['projects'], 'baseUrl'>>
+    tokens?: Partial<ProjectSettings['auth']['tokens']>
 }
 
-/**
- * Runs a project whose Projects and accounts hosts are local stubs, so a request test exercises the
- * real client — base path, token refresh, and error handling included.
- */
-export async function startProjectsStub(answer: (request: Request) => Response): Promise<ProjectsStub> {
-    const requestedUrls: URL[] = []
-
-    const projectsServer = Bun.serve({
-        port: 0,
-        fetch(request) {
-            requestedUrls.push(new URL(request.url))
-
-            return answer(request)
-        },
-    })
-
-    const accountsServer = Bun.serve({
-        port: 0,
-        fetch: () => Response.json({ access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' }),
-    })
-
-    const projectPath = await createTempProject(
-        buildSettings({
-            auth: {
-                baseUrl: accountsServer.url.origin,
-                tokens: {
-                    accessToken: 'access',
-                    refreshToken: 'refresh',
-                    accessTokenExpiresAt: Date.now() + 3_600_000,
-                },
-            },
-            projects: { baseUrl: projectsServer.url.origin, portalId: '100', projectId: '200' },
-        })
+/** A project whose Zoho Projects host is a local stub — see `startApiStub`. */
+export function startProjectsStub(
+    answer: (request: Request) => Response,
+    { projects = {}, tokens = {} }: ProjectsStubOptions = {}
+): Promise<ProjectsStub> {
+    return startApiStub(
+        answer,
+        (origin) => ({ projects: { baseUrl: origin, portalId: '100', projectId: '200', ...projects } }),
+        tokens
     )
-
-    return {
-        projectPath,
-        requestedUrls,
-        stop: async () => {
-            projectsServer.stop(true)
-            accountsServer.stop(true)
-            await removeTempProject(projectPath)
-        },
-    }
 }
 
 /** Answers one Projects list page the way the live API shapes it. */
 export function listPage(key: string, items: unknown[], { page = 1, hasNextPage = false } = {}): Response {
     return Response.json({ [key]: items, page_info: { page, per_page: 200, has_next_page: hasNextPage } })
+}
+
+interface ProjectsLists {
+    milestones?: unknown[]
+    taskLists?: unknown[]
+    tasks?: unknown[]
+    comments?: (taskId: string) => Response
+}
+
+/** Routes the four Projects endpoints the pull commands call to the lists a test hands in. */
+export function answerProjectsLists({ milestones = [], taskLists = [], tasks = [], comments }: ProjectsLists) {
+    return (request: Request): Response => {
+        const { pathname } = new URL(request.url)
+        const commentsMatch = pathname.match(/\/tasks\/([^/]+)\/comments$/)
+
+        if (commentsMatch) {
+            return comments ? comments(commentsMatch[1]!) : listPage('comments', [])
+        }
+
+        if (pathname.endsWith('/phases')) {
+            return listPage('milestones', milestones)
+        }
+
+        if (pathname.endsWith('/tasklists')) {
+            return listPage('tasklists', taskLists)
+        }
+
+        return listPage('tasks', tasks)
+    }
+}
+
+/** The sorted folder names under `src/zoho-projects/raw/<relativePath>`, or `[]` when it does not exist. */
+export async function readRawDirs(projectPath: string, relativePath = '.'): Promise<string[]> {
+    return (await readdir(join(projectPath, 'src/zoho-projects/raw', relativePath)).catch(() => [])).sort()
 }

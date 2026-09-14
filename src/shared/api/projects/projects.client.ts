@@ -1,5 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 
+import type { ProjectSettings } from '@/settings'
+
 import { tokenService } from '@/shared/api/auth'
 import { getProjectSettings } from '@/settings'
 import { logger } from '@/shared/logger'
@@ -17,11 +19,18 @@ const pauseBetweenRequestsMs = 650
 
 let lastRequestFinishedAt = 0
 
-type RetriedConfig = InternalAxiosRequestConfig & { throttleRetried?: boolean }
+/** One retry after `Retry-After` is enough for a rolling window; a second refusal is reported instead of waited out. */
+const maxThrottleRetries = 1
+
+type RetriedConfig = InternalAxiosRequestConfig & { throttleRetries?: number }
+
+export function resolveProjectsBaseUrl({ baseUrl, portalId, projectId }: ProjectSettings['projects']): string {
+    return `${baseUrl}/api/v3/portal/${portalId}/projects/${projectId}`
+}
 
 projectsClient.interceptors.request.use(async (config) => {
     const { settings } = await getProjectSettings()
-    const { baseUrl, portalId, projectId } = settings.projects
+    const { portalId, projectId } = settings.projects
 
     if (!portalId) {
         throw new Error('projects.portalId is empty in .zoho-studio/settings.json.')
@@ -31,7 +40,7 @@ projectsClient.interceptors.request.use(async (config) => {
         throw new Error('projects.projectId is empty in .zoho-studio/settings.json.')
     }
 
-    config.baseURL = `${baseUrl}/api/v3/portal/${portalId}/projects/${projectId}`
+    config.baseURL = resolveProjectsBaseUrl(settings.projects)
     config.headers.set('Authorization', `Zoho-oauthtoken ${await tokenService.getAccessToken()}`)
 
     await delay(Math.max(0, lastRequestFinishedAt + pauseBetweenRequestsMs - Date.now()))
@@ -51,7 +60,9 @@ projectsClient.interceptors.response.use(
         const config = error?.config as RetriedConfig | undefined
         const retryAfterMs = resolveThrottleRetryAfterMs(error)
 
-        if (!config || config.throttleRetried || retryAfterMs === null) {
+        const throttleRetries = config?.throttleRetries ?? 0
+
+        if (!config || throttleRetries >= maxThrottleRetries || retryAfterMs === null) {
             throw error
         }
 
@@ -59,7 +70,7 @@ projectsClient.interceptors.response.use(
         console.log(`Zoho Projects asked to wait ${Math.ceil(retryAfterMs / 1000)}s before the next request...`)
         await delay(retryAfterMs)
 
-        return projectsClient.request({ ...config, throttleRetried: true } as RetriedConfig)
+        return projectsClient.request({ ...config, throttleRetries: throttleRetries + 1 } as RetriedConfig)
     }
 )
 

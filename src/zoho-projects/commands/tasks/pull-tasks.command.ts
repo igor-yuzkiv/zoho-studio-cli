@@ -1,8 +1,8 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { MilestoneResolver } from '@/zoho-projects/entities/milestone'
-import { TaskListResolver } from '@/zoho-projects/entities/task-list'
+import { createMilestoneResolver } from '@/zoho-projects/entities/milestone'
+import { createTaskListResolver } from '@/zoho-projects/entities/task-list'
 import {
     getTaskCommentsList,
     getTasksList,
@@ -13,13 +13,8 @@ import {
 } from '@/zoho-projects/entities/task'
 import { getProjectSettings } from '@/settings'
 import { describeProjectsRequestError } from '@/shared/api/projects'
+import { reportSkipped, type SkippedEntity } from '@/zoho-projects/raw'
 import { createCommandLogger } from '@/shared/logger'
-
-type SkippedTask = {
-    id: string
-    name: string
-    message: string
-}
 
 export const pullTasksCommand = new Command('z-projects:tasks:pull')
     .description(
@@ -36,13 +31,13 @@ export const pullTasksCommand = new Command('z-projects:tasks:pull')
         const { projectPath } = await getProjectSettings()
         const allTasks = await getTasksList()
         const tasks = allTasks.filter((task) => isTaskInPeriod(task, period))
+        const totalTasks = allTasks.length
 
-        logger.info({ tasks: allTasks.length, inPeriod: tasks.length }, 'Tasks found')
+        logger.info({ tasks: totalTasks, inPeriod: tasks.length }, 'Tasks found')
 
-        const milestones = new MilestoneResolver(projectPath)
-        const taskLists = new TaskListResolver(projectPath, milestones)
-        const skipped: SkippedTask[] = []
-        let savedTasks = 0
+        const milestones = createMilestoneResolver(projectPath)
+        const taskLists = createTaskListResolver(projectPath, milestones)
+        const skipped: SkippedEntity[] = []
         let savedComments = 0
         const progressBar = new cliProgress.SingleBar(
             {
@@ -64,7 +59,6 @@ export const pullTasksCommand = new Command('z-projects:tasks:pull')
                     const comments = await getTaskCommentsList(task.id)
                     const segments = await writeTask(projectPath, parentSegments, task, comments)
 
-                    savedTasks += 1
                     savedComments += comments.length
                     logger.debug({ id: task.id, comments: comments.length, path: segments.join('/') }, 'Task saved')
                 } catch (error) {
@@ -80,18 +74,12 @@ export const pullTasksCommand = new Command('z-projects:tasks:pull')
             progressBar.stop()
         }
 
+        const savedTasks = tasks.length - skipped.length
+
         logger.info({ tasks: tasks.length, savedTasks, savedComments, skipped: skipped.length }, 'Tasks pull finished')
-        console.log(`Tasks found: ${allTasks.length}`)
+        console.log(`Tasks found: ${totalTasks}`)
         console.log(`Tasks in period: ${tasks.length}`)
         console.log(`Tasks saved: ${savedTasks}`)
         console.log(`Comments saved: ${savedComments}`)
-        console.log(`Tasks skipped: ${skipped.length}`)
-
-        for (const task of skipped) {
-            console.log(`  - ${task.name} (${task.id}): ${task.message}`)
-        }
-
-        if (skipped.length > 0) {
-            process.exitCode = 1
-        }
+        reportSkipped('Tasks', skipped)
     })

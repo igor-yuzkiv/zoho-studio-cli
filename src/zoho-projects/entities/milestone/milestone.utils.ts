@@ -1,5 +1,5 @@
 import { noMilestoneDirName, rawDirName, zohoProjectsDirName } from '@/zoho-projects/zoho-projects.config'
-import { findRawEntityDir, writeRawEntity } from '@/zoho-projects/raw'
+import { findRawEntitySegments, RawEntityResolver, writeRawEntity } from '@/zoho-projects/raw'
 
 import { getMilestonesList } from './api'
 import type { ZohoMilestone } from './milestone.types'
@@ -14,43 +14,14 @@ export function writeMilestone(projectPath: string, milestone: ZohoMilestone): P
     return writeRawEntity(projectPath, milestonesParentSegments, milestone)
 }
 
-/** Returns the segments of the milestone's folder when a previous pull already wrote it. */
-export async function findMilestoneSegments(projectPath: string, milestoneId: string): Promise<string[] | null> {
-    const dirName = await findRawEntityDir(projectPath, milestonesParentSegments, milestoneId)
+export type MilestoneResolver = RawEntityResolver<ZohoMilestone>
 
-    return dirName ? [...milestonesParentSegments, dirName] : null
-}
-
-/**
- * Returns the milestone's folder, fetching and writing the milestone when no earlier pull has it.
- * The API offers the list only, so it is fetched once per run and kept for the next lookup.
- */
-export class MilestoneResolver {
-    private remoteMilestones: Promise<Map<string, ZohoMilestone>> | null = null
-
-    constructor(private readonly projectPath: string) {}
-
-    async resolveSegments(milestoneId: string): Promise<string[]> {
-        const local = await findMilestoneSegments(this.projectPath, milestoneId)
-
-        if (local) {
-            return local
-        }
-
-        const milestone = (await this.fetchRemoteMilestones()).get(milestoneId)
-
-        if (!milestone) {
-            throw new Error(`Milestone "${milestoneId}" is not in the project.`)
-        }
-
-        return writeMilestone(this.projectPath, milestone)
-    }
-
-    private fetchRemoteMilestones(): Promise<Map<string, ZohoMilestone>> {
-        this.remoteMilestones ??= getMilestonesList().then(
-            (milestones) => new Map(milestones.map((milestone) => [milestone.id, milestone]))
-        )
-
-        return this.remoteMilestones
-    }
+/** Returns milestone folders by id, fetching and writing a milestone no earlier pull has. */
+export function createMilestoneResolver(projectPath: string): MilestoneResolver {
+    return new RawEntityResolver<ZohoMilestone>({
+        entityName: 'Milestone',
+        fetchList: getMilestonesList,
+        findLocal: (id) => findRawEntitySegments(projectPath, milestonesParentSegments, id),
+        write: (milestone) => writeMilestone(projectPath, milestone),
+    })
 }
