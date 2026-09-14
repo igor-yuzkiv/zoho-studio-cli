@@ -1,10 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { loadRawTree } from '@/zoho-projects/entities/task'
 
-import { createTempProject, removeTempProject } from '../../../../support/temp-project'
+import { createTempProject, removeTempProject, writeRawFile } from '../../../../support/temp-project'
 
 let projectPath: string
 
@@ -36,21 +35,14 @@ const report = {
 }
 const comment = { id: '41', comment: '<p>Done</p>' }
 
-async function writeRaw(relativePath: string, content: unknown): Promise<void> {
-    const filePath = join(projectPath, 'src/zoho-projects/raw', relativePath)
-
-    await mkdir(join(filePath, '..'), { recursive: true })
-    await Bun.write(filePath, typeof content === 'string' ? content : JSON.stringify(content))
-}
-
 describe('loadRawTree', () => {
     test('builds milestones, task lists, statuses and tasks with their comments', async () => {
-        await writeRaw('Discovery/11.json', discovery)
-        await writeRaw('Discovery/task-lists/Research/21.json', research)
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview/31.json', interview)
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview/31.comments.json', [comment])
-        await writeRaw('Discovery/task-lists/Research/tasks/Report/32.json', report)
-        await writeRaw('Discovery/task-lists/Research/tasks/Report/32.comments.json', [])
+        await writeRawFile(projectPath, 'Discovery/11.json', discovery)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/21.json', research)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview/31.json', interview)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview/31.comments.json', [comment])
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Report/32.json', report)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Report/32.comments.json', [])
 
         const tree = await loadRawTree(projectPath)
 
@@ -71,8 +63,8 @@ describe('loadRawTree', () => {
 
     test('keeps one copy of a task found in two folders — the later modified one', async () => {
         const renamed = { ...interview, name: 'Interview the owner', last_modified_time: '2025-02-01T00:00:00.000Z' }
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview/31.json', interview)
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview the owner/31.json', renamed)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview/31.json', interview)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview the owner/31.json', renamed)
 
         const tree = await loadRawTree(projectPath)
         const tasks = tree.milestones[0]!.taskLists[0]!.statuses[0]!.tasks
@@ -81,7 +73,7 @@ describe('loadRawTree', () => {
     })
 
     test('names a parent from the task when its own JSON was never pulled', async () => {
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview/31.json', interview)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview/31.json', interview)
 
         const tree = await loadRawTree(projectPath)
 
@@ -92,8 +84,8 @@ describe('loadRawTree', () => {
     test('puts a task without a task list under _no-task-list and without a milestone under _no-milestone', async () => {
         const loose = { ...interview, id: '33', tasklist: undefined }
         const lost = { ...interview, id: '34', tasklist: undefined, milestone: undefined }
-        await writeRaw('Discovery/task-lists/_no-task-list/tasks/Loose/33.json', loose)
-        await writeRaw('_no-milestone/task-lists/_no-task-list/tasks/Lost/34.json', lost)
+        await writeRawFile(projectPath, 'Discovery/task-lists/_no-task-list/tasks/Loose/33.json', loose)
+        await writeRawFile(projectPath, '_no-milestone/task-lists/_no-task-list/tasks/Lost/34.json', lost)
 
         const tree = await loadRawTree(projectPath)
 
@@ -103,8 +95,8 @@ describe('loadRawTree', () => {
     })
 
     test('lists a milestone and a task list that have no tasks yet', async () => {
-        await writeRaw('Discovery/11.json', discovery)
-        await writeRaw('Discovery/task-lists/Research/21.json', research)
+        await writeRawFile(projectPath, 'Discovery/11.json', discovery)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/21.json', research)
 
         const tree = await loadRawTree(projectPath)
 
@@ -112,8 +104,8 @@ describe('loadRawTree', () => {
     })
 
     test('skips a file that is not JSON, flags it and keeps the rest', async () => {
-        await writeRaw('Discovery/task-lists/Research/tasks/Interview/31.json', interview)
-        await writeRaw('Discovery/task-lists/Research/tasks/Report/32.json', '{ broken')
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Interview/31.json', interview)
+        await writeRawFile(projectPath, 'Discovery/task-lists/Research/tasks/Report/32.json', '{ broken')
 
         const tree = await loadRawTree(projectPath)
 
@@ -124,6 +116,11 @@ describe('loadRawTree', () => {
     })
 
     test('returns an empty tree for a missing or empty raw folder', async () => {
-        expect(await loadRawTree(projectPath)).toEqual({ milestones: [], skippedFiles: [] })
+        expect(await loadRawTree(projectPath)).toEqual({
+            milestones: [],
+            tasksById: new Map(),
+            projectName: null,
+            skippedFiles: [],
+        })
     })
 })

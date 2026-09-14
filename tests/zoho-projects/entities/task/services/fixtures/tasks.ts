@@ -5,9 +5,10 @@ import type { TaskRenderContext, TreeStatus, TreeTask, ZohoTask } from '@/zoho-p
 export const projects = { portalId: '100', projectId: '200' }
 
 export const milestone: TreeMilestone = { id: '11', name: 'Pilot', record: null, taskLists: [] }
+// Tree names arrive decoded from the loader; the raw record below still carries Zoho's encoding.
 export const taskList: TreeTaskList = {
     id: '21',
-    name: 'Phase 22: Technical Maintenance &amp; Platform Updates',
+    name: 'Phase 22: Technical Maintenance & Platform Updates',
     milestoneId: '11',
     record: null,
     statuses: [],

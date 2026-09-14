@@ -1,7 +1,4 @@
-import { stringify } from 'yaml'
-
-import type { ProjectSettings } from '@/settings'
-import { decodeHtmlEntities, toDisplayName, toSlug } from '@/zoho-projects/entities/task'
+import { type ProjectRef, renderFrontmatter, toDisplayName, toSlug, zohoProjectsUrl } from '@/zoho-projects/md'
 
 import type { TreeMilestone } from '../milestone.types'
 
@@ -12,27 +9,25 @@ export interface RenderedIndex {
 }
 
 export interface IndexRenderContext {
-    projects: Pick<ProjectSettings['projects'], 'portalId' | 'projectId'>
+    projects: ProjectRef
     projectName: string | null
     /** The date of the run, `YYYY-MM-DD`. */
     renderedAt: string
 }
 
-export function milestoneUrl(projects: IndexRenderContext['projects'], milestoneId: string): string {
-    return `https://projects.zoho.com/portal/${projects.portalId}#zp/projects/${projects.projectId}/milestone-detail/${milestoneId}`
-}
-
-export function countTasks(taskLists: TreeMilestone['taskLists']): { total: number; open: number; closed: number } {
+export function countTasks(taskList: Pick<TreeMilestone['taskLists'][number], 'statuses'>): {
+    total: number
+    open: number
+    closed: number
+} {
     let open = 0
     let closed = 0
 
-    for (const taskList of taskLists) {
-        for (const status of taskList.statuses) {
-            if (status.isClosed) {
-                closed += status.tasks.length
-            } else {
-                open += status.tasks.length
-            }
+    for (const status of taskList.statuses) {
+        if (status.isClosed) {
+            closed += status.tasks.length
+        } else {
+            open += status.tasks.length
         }
     }
 
@@ -40,32 +35,28 @@ export function countTasks(taskLists: TreeMilestone['taskLists']): { total: numb
 }
 
 export function renderMilestoneIndex(milestone: TreeMilestone, context: IndexRenderContext): RenderedIndex {
-    const name = decodeHtmlEntities(milestone.name).trim()
-    const url = milestoneUrl(context.projects, milestone.id)
-    const counts = countTasks(milestone.taskLists)
-    const rows = [...milestone.taskLists]
-        .map((taskList) => ({ name: decodeHtmlEntities(taskList.name).trim(), counts: countTasks([taskList]) }))
-        .sort((left, right) => left.name.localeCompare(right.name))
+    const url = zohoProjectsUrl(context.projects, 'milestone-detail', milestone.id)
+    const rows = milestone.taskLists.map((taskList) => ({ name: taskList.name, counts: countTasks(taskList) }))
+    const total = rows.reduce((sum, row) => sum + row.counts.total, 0)
+    const open = rows.reduce((sum, row) => sum + row.counts.open, 0)
 
     const frontmatter = {
         type: 'milestone',
         id: milestone.id,
-        name,
+        name: milestone.name,
         url,
         project_id: context.projects.projectId,
         project: context.projectName,
-        tasks_rendered: counts.total,
-        tasks_open: counts.open,
-        tasks_closed: counts.closed,
+        tasks_rendered: total,
+        tasks_open: open,
+        tasks_closed: total - open,
         rendered_at: context.renderedAt,
     }
 
     const lines = [
-        '---',
-        stringify(frontmatter, { indentSeq: false, lineWidth: 0, singleQuote: true }).trimEnd(),
-        '---',
+        renderFrontmatter(frontmatter),
         '',
-        `# ${name}`,
+        `# ${milestone.name}`,
         '',
         `[Open in Zoho](${url})`,
         '',
@@ -75,5 +66,8 @@ export function renderMilestoneIndex(milestone: TreeMilestone, context: IndexRen
         '',
     ]
 
-    return { segments: [toSlug(name), `${toDisplayName(name)}.md`], content: lines.join('\n') }
+    return {
+        segments: [toSlug(milestone.name, milestone.id), `${toDisplayName(milestone.name)}.md`],
+        content: lines.join('\n'),
+    }
 }

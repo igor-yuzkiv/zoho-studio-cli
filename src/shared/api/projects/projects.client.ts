@@ -24,14 +24,11 @@ const maxThrottleRetries = 1
 
 type RetriedConfig = InternalAxiosRequestConfig & { throttleRetries?: number }
 
-export function resolveProjectsBaseUrl({ baseUrl, portalId, projectId }: ProjectSettings['projects']): string {
-    return `${baseUrl}/api/v3/portal/${portalId}/projects/${projectId}`
-}
-
-projectsClient.interceptors.request.use(async (config) => {
-    const { settings } = await getProjectSettings()
-    const { portalId, projectId } = settings.projects
-
+/** Both ids come from the user by hand, so an empty one is reported by name before any request. */
+export function assertProjectsConfigured({
+    portalId,
+    projectId,
+}: Pick<ProjectSettings['projects'], 'portalId' | 'projectId'>): void {
     if (!portalId) {
         throw new Error('projects.portalId is empty in .zoho-studio/settings.json.')
     }
@@ -39,6 +36,16 @@ projectsClient.interceptors.request.use(async (config) => {
     if (!projectId) {
         throw new Error('projects.projectId is empty in .zoho-studio/settings.json.')
     }
+}
+
+export function resolveProjectsBaseUrl({ baseUrl, portalId, projectId }: ProjectSettings['projects']): string {
+    return `${baseUrl}/api/v3/portal/${portalId}/projects/${projectId}`
+}
+
+projectsClient.interceptors.request.use(async (config) => {
+    const { settings } = await getProjectSettings()
+
+    assertProjectsConfigured(settings.projects)
 
     config.baseURL = resolveProjectsBaseUrl(settings.projects)
     config.headers.set('Authorization', `Zoho-oauthtoken ${await tokenService.getAccessToken()}`)

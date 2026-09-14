@@ -9,15 +9,20 @@ import {
     tasksDirName,
     zohoProjectsDirName,
 } from '@/zoho-projects/zoho-projects.config'
+import { cleanName } from '@/zoho-projects/md'
 import type { TreeMilestone, ZohoMilestone } from '@/zoho-projects/entities/milestone'
 import type { TreeTaskList, ZohoTaskList } from '@/zoho-projects/entities/task-list'
 import { resolveArtifactPath } from '@/shared/artifacts'
 import { logger } from '@/shared/logger'
 
 import type { TreeStatus, TreeTask, ZohoTask, ZohoTaskComment } from '../task.types'
+import { prefixNumber } from '../task.utils'
 
 export interface RawTree {
     milestones: TreeMilestone[]
+    tasksById: Map<string, TreeTask>
+    /** Every task names its project; the first one seen is as good as any. */
+    projectName: string | null
     /** Files under `raw/` that were not valid JSON; the render goes on without them and ends non-zero. */
     skippedFiles: string[]
 }
@@ -67,7 +72,7 @@ export async function loadRawTree(projectPath: string): Promise<RawTree> {
         }
     }
 
-    return { milestones: buildTree(milestones, taskLists, tasks, commentsByTaskId), skippedFiles }
+    return { ...buildTree(milestones, taskLists, tasks, commentsByTaskId), skippedFiles }
 }
 
 type RawLevel = 'milestone' | 'taskList' | 'task' | null
@@ -107,40 +112,59 @@ function keepLatest<Record extends { id: string }>(
     }
 }
 
+function getOrCreate<Value>(map: Map<string, Value>, key: string, create: () => Value): Value {
+    let value = map.get(key)
+
+    if (value === undefined) {
+        value = create()
+        map.set(key, value)
+    }
+
+    return value
+}
+
 function buildTree(
     milestones: Map<string, ZohoMilestone>,
     taskLists: Map<string, ZohoTaskList>,
     tasks: Map<string, ZohoTask>,
     commentsByTaskId: Map<string, ZohoTaskComment[]>
-): TreeMilestone[] {
+): Omit<RawTree, 'skippedFiles'> {
     const treeMilestones = new Map<string, TreeMilestone>()
     const treeTaskLists = new Map<string, TreeTaskList>()
+    const tasksById = new Map<string, TreeTask>()
 
-    const milestoneOf = (id: string, name: string): TreeMilestone => {
-        let milestone = treeMilestones.get(id)
-
-        if (!milestone) {
+    const milestoneOf = (id: string, name: string): TreeMilestone =>
+        getOrCreate(treeMilestones, id, () => {
             const record = milestones.get(id) ?? null
 
-            milestone = { id, name: record?.name ?? name, record, taskLists: [] }
-            treeMilestones.set(id, milestone)
-        }
+            return { id, name: cleanName(record?.name ?? name), record, taskLists: [] }
+        })
 
-        return milestone
-    }
-
-    const taskListOf = (id: string, name: string, milestone: TreeMilestone): TreeTaskList => {
-        let taskList = treeTaskLists.get(id)
-
-        if (!taskList) {
+    const taskListOf = (id: string, name: string, milestone: TreeMilestone): TreeTaskList =>
+        getOrCreate(treeTaskLists, id, () => {
             const record = taskLists.get(id) ?? null
+            const taskList = {
+                id,
+                name: cleanName(record?.name ?? name),
+                milestoneId: milestone.id,
+                record,
+                statuses: [],
+            }
 
-            taskList = { id, name: record?.name ?? name, milestoneId: milestone.id, record, statuses: [] }
-            treeTaskLists.set(id, taskList)
             milestone.taskLists.push(taskList)
-        }
 
-        return taskList
+            return taskList
+        })
+
+    const statusOf = (taskList: TreeTaskList, task: ZohoTask): TreeStatus => {
+        const name = task.status?.name ?? 'Unknown'
+
+        return (
+            taskList.statuses.find((status) => status.name === name) ??
+            taskList.statuses[
+                taskList.statuses.push({ name, isClosed: task.status?.is_closed_type === true, tasks: [] }) - 1
+            ]!
+        )
     }
 
     for (const task of tasks.values()) {
@@ -150,8 +174,10 @@ function buildTree(
         const taskList = task.tasklist?.id
             ? taskListOf(task.tasklist.id, task.tasklist.name, milestone)
             : taskListOf(`${milestone.id}/${noTaskListDirName}`, noTaskListDirName, milestone)
+        const treeTask = { record: task, comments: commentsByTaskId.get(task.id) ?? [] }
 
-        statusOf(taskList, task).tasks.push({ record: task, comments: commentsByTaskId.get(task.id) ?? [] })
+        statusOf(taskList, task).tasks.push(treeTask)
+        tasksById.set(task.id, treeTask)
     }
 
     for (const milestone of milestones.values()) {
@@ -166,7 +192,9 @@ function buildTree(
         taskListOf(taskList.id, taskList.name, milestone)
     }
 
-    return sortTree([...treeMilestones.values()])
+    const projectName = [...tasks.values()].find((task) => task.project?.name)?.project?.name ?? null
+
+    return { milestones: sortTree([...treeMilestones.values()]), tasksById, projectName }
 }
 
 /** Folder listing order is not stable, so the tree is sorted: names, open statuses first, tasks by prefix number. */
@@ -195,21 +223,3 @@ function sortTree(milestones: TreeMilestone[]): TreeMilestone[] {
 function byName(left: { name: string }, right: { name: string }): number {
     return Number(left.name.startsWith('_')) - Number(right.name.startsWith('_')) || left.name.localeCompare(right.name)
 }
-
-function prefixNumber(task: ZohoTask): number {
-    return Number(task.prefix?.match(/(\d+)$/)?.[1] ?? 0)
-}
-
-function statusOf(taskList: TreeTaskList, task: ZohoTask): TreeStatus {
-    const name = task.status?.name ?? 'Unknown'
-    let status = taskList.statuses.find((candidate) => candidate.name === name)
-
-    if (!status) {
-        status = { name, isClosed: task.status?.is_closed_type === true, tasks: [] }
-        taskList.statuses.push(status)
-    }
-
-    return status
-}
-
-export type { TreeTask }

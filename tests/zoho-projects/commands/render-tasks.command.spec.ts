@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdir, readdir } from 'node:fs/promises'
+import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { renderTasksCommand } from '@/zoho-projects/commands/tasks-render'
 
-import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
+import { buildSettings, createTempProject, removeTempProject, writeRawFile } from '../../support/temp-project'
 import { routeShift, routeShiftComments, upgrade } from '../entities/task/services/fixtures/tasks'
 
 let projectPath: string
@@ -22,20 +22,19 @@ const pilot = { id: '11', name: 'Pilot' }
 const phase22 = { id: '21', name: 'Phase 22: Technical Maintenance &amp; Platform Updates', milestone: pilot }
 const withProject = { project: { id: '200', name: 'Acme Direct' } }
 
-async function writeRaw(relativePath: string, content: unknown): Promise<void> {
-    const filePath = join(projectPath, 'src/zoho-projects/raw', relativePath)
-
-    await mkdir(join(filePath, '..'), { recursive: true })
-    await Bun.write(filePath, typeof content === 'string' ? content : JSON.stringify(content))
-}
-
 async function writeFixtureRaw(): Promise<void> {
-    await writeRaw('Pilot/11.json', pilot)
-    await writeRaw('Pilot/task-lists/Phase 22/21.json', phase22)
-    await writeRaw('Pilot/task-lists/Phase 22/tasks/Upgrade/580000.json', { ...upgrade, ...withProject })
-    await writeRaw('Pilot/task-lists/Phase 22/tasks/Upgrade/580000.comments.json', [])
-    await writeRaw('Pilot/task-lists/Phase 22/tasks/Route/697000.json', { ...routeShift, ...withProject })
-    await writeRaw('Pilot/task-lists/Phase 22/tasks/Route/697000.comments.json', routeShiftComments)
+    await writeRawFile(projectPath, 'Pilot/11.json', pilot)
+    await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/21.json', phase22)
+    await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Upgrade/580000.json', {
+        ...upgrade,
+        ...withProject,
+    })
+    await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Upgrade/580000.comments.json', [])
+    await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Route/697000.json', {
+        ...routeShift,
+        ...withProject,
+    })
+    await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Route/697000.comments.json', routeShiftComments)
 }
 
 async function run(): Promise<void> {
@@ -94,7 +93,7 @@ describe('z-projects:tasks:render', () => {
         await writeFixtureRaw()
         await run()
 
-        await writeRaw('Pilot/task-lists/Phase 22/tasks/Upgrade/580000.json', {
+        await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Upgrade/580000.json', {
             ...upgrade,
             ...withProject,
             status: { name: 'Closed', is_closed_type: true },
@@ -116,11 +115,20 @@ describe('z-projects:tasks:render', () => {
 
     test('renders the rest when a raw file is broken and exits non-zero', async () => {
         await writeFixtureRaw()
-        await writeRaw('Pilot/task-lists/Phase 22/tasks/Broken/1.json', '{ broken')
+        await writeRawFile(projectPath, 'Pilot/task-lists/Phase 22/tasks/Broken/1.json', '{ broken')
 
         await run()
 
         expect(await listMd()).toHaveLength(4)
+        expect(process.exitCode).toBe(1)
+    })
+
+    test('lists broken files and exits non-zero even when nothing else could be read', async () => {
+        await writeRawFile(projectPath, 'Pilot/11.json', '{ broken')
+
+        await run()
+
+        expect(await listMd()).toEqual([])
         expect(process.exitCode).toBe(1)
     })
 

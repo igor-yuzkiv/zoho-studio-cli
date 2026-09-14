@@ -1,1 +1,1 @@
-export { renderTaskListIndex, taskListUrl } from './task-list-markdown.service'
+export { renderTaskListIndex } from './task-list-markdown.service'

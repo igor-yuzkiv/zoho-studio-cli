@@ -3,8 +3,10 @@ import { Command } from 'commander'
 import { mdDirName, zohoProjectsDirName } from '@/zoho-projects/zoho-projects.config'
 import { renderMilestoneIndex, type IndexRenderContext } from '@/zoho-projects/entities/milestone'
 import { renderTaskListIndex } from '@/zoho-projects/entities/task-list'
-import { loadRawTree, renderTask, type TreeTask } from '@/zoho-projects/entities/task'
+import { loadRawTree, renderTask } from '@/zoho-projects/entities/task'
+import { reportSkipped } from '@/zoho-projects/raw'
 import { getProjectSettings } from '@/settings'
+import { assertProjectsConfigured } from '@/shared/api/projects'
 import { replaceArtifactDir, writeArtifactText } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
 
@@ -17,35 +19,19 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         logger.info('Starting tasks render')
 
         const { projectPath, settings } = await getProjectSettings()
-        const { portalId, projectId } = settings.projects
 
-        for (const [field, value] of Object.entries({ portalId, projectId })) {
-            if (!value) {
-                throw new Error(`projects.${field} is empty in .zoho-studio/settings.json.`)
-            }
-        }
+        assertProjectsConfigured(settings.projects)
 
         const tree = await loadRawTree(projectPath)
-        const tasksById = new Map<string, TreeTask>()
 
-        for (const milestone of tree.milestones) {
-            for (const taskList of milestone.taskLists) {
-                for (const status of taskList.statuses) {
-                    for (const task of status.tasks) {
-                        tasksById.set(task.record.id, task)
-                    }
-                }
-            }
-        }
-
-        if (tree.milestones.length === 0) {
+        if (tree.milestones.length === 0 && tree.skippedFiles.length === 0) {
             console.log('Nothing to render: src/zoho-projects/raw/ is empty. Run the z-projects:*:pull commands first.')
             return
         }
 
         const context: IndexRenderContext = {
-            projects: { portalId, projectId },
-            projectName: resolveProjectName(tasksById),
+            projects: settings.projects,
+            projectName: tree.projectName,
             renderedAt: new Date().toISOString().slice(0, 10),
         }
         let taskLists = 0
@@ -68,11 +54,11 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
                 for (const status of taskList.statuses) {
                     for (const task of status.tasks) {
                         const rendered = renderTask(task, {
-                            projects: context.projects,
+                            projects: settings.projects,
                             milestone,
                             taskList,
                             status,
-                            tasksById,
+                            tasksById: tree.tasksById,
                         })
 
                         await writeArtifactText(projectPath, [...mdSegments, ...rendered.segments], rendered.content)
@@ -85,7 +71,7 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         const summary = {
             milestones: tree.milestones.length,
             taskLists,
-            tasks: tasksById.size,
+            tasks: tree.tasksById.size,
             comments,
             skippedFiles: tree.skippedFiles.length,
         }
@@ -95,26 +81,5 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         console.log(`Task lists rendered: ${summary.taskLists}`)
         console.log(`Tasks rendered: ${summary.tasks}`)
         console.log(`Comments rendered: ${summary.comments}`)
-        console.log(`Raw files skipped: ${summary.skippedFiles}`)
-
-        for (const file of tree.skippedFiles) {
-            console.log(`  - ${file}`)
-        }
-
-        if (tree.skippedFiles.length > 0) {
-            process.exitCode = 1
-        }
+        reportSkipped('Raw files', tree.skippedFiles)
     })
-
-/** Every task names its project; the first one seen is as good as any. */
-function resolveProjectName(tasksById: Map<string, TreeTask>): string | null {
-    for (const task of tasksById.values()) {
-        const project = task.record.project as { name?: string } | undefined
-
-        if (project?.name) {
-            return project.name
-        }
-    }
-
-    return null
-}

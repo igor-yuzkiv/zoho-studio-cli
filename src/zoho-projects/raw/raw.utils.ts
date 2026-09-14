@@ -122,12 +122,12 @@ export interface SkippedEntity {
     message: string
 }
 
-/** Prints the skipped entities of a pull and makes the exit code non-zero when there are any. */
-export function reportSkipped(label: string, skipped: SkippedEntity[]): void {
+/** Prints what a command skipped and makes the exit code non-zero when there is anything. */
+export function reportSkipped(label: string, skipped: (SkippedEntity | string)[]): void {
     console.log(`${label} skipped: ${skipped.length}`)
 
-    for (const entity of skipped) {
-        console.log(`  - ${entity.name} (${entity.id}): ${entity.message}`)
+    for (const entry of skipped) {
+        console.log(typeof entry === 'string' ? `  - ${entry}` : `  - ${entry.name} (${entry.id}): ${entry.message}`)
     }
 
     if (skipped.length > 0) {

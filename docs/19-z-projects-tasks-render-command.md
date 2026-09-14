@@ -40,8 +40,9 @@ src/zoho-projects/md/
 ```
 
 Folders are slugs: lower case, anything but letters and digits collapsed to a dash, at most 80
-characters. A task file is `<number from the prefix>-<slug of the name>.md`, so `SS5-T580` becomes
-`580-…`. An index is named after the display name of its milestone or task list — `:`, `|`, `/`,
+characters; the fixed `_no-milestone` and `_no-task-list` folders keep their name, and a name with
+no letters or digits at all is replaced by the entity id. A task file is `<number from the prefix>-<slug of the name>.md`, so `SS5-T580` becomes
+`580-…`. An index is named after the display name of its milestone or task list — `:`, `|`, `/`, `\`,
 `[`, `]` replaced by ` -`, spaces collapsed, nothing cut — because the wikilinks point at it.
 
 `md/` is derived and rebuilt from scratch on every run: a task whose status changed in Zoho moves
@@ -80,7 +81,7 @@ Zoho stores descriptions and comments as HTML. They are converted with these rul
 | `<code>` / `<pre>` | `` `…` `` / a fenced block |
 | `<img src>` | `![](src)` |
 | `<a href>` | `[text](href)` |
-| bare URL in text | `<https://…>` |
+| bare URL in text | `<https://…>`; URLs inside code are left alone |
 | `zp[@zpuser#<id>#<Name>]zp` | `@Name` |
 | `<h1>`…`<h6>` | demoted two levels (`###`…`######`), so they stay under the file's own sections |
 | `<ul>`/`<ol>` | `- item` |

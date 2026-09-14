@@ -1,44 +1,31 @@
-import { stringify } from 'yaml'
-
 import {
     countTasks,
     type IndexRenderContext,
     type RenderedIndex,
     type TreeMilestone,
 } from '@/zoho-projects/entities/milestone'
-import {
-    decodeHtmlEntities,
-    prefixNumber,
-    taskFileBaseName,
-    toDisplayName,
-    toSlug,
-} from '@/zoho-projects/entities/task'
+import { prefixNumber, taskFileBaseName } from '@/zoho-projects/entities/task'
+import { cleanName, renderFrontmatter, toDisplayName, toSlug, zohoProjectsUrl } from '@/zoho-projects/md'
 
 import type { TreeTaskList } from '../task-list.types'
-
-export function taskListUrl(projects: IndexRenderContext['projects'], taskListId: string): string {
-    return `https://projects.zoho.com/portal/${projects.portalId}#zp/projects/${projects.projectId}/tasklist-detail/${taskListId}`
-}
 
 export function renderTaskListIndex(
     taskList: TreeTaskList,
     milestone: TreeMilestone,
     context: IndexRenderContext
 ): RenderedIndex {
-    const name = decodeHtmlEntities(taskList.name).trim()
-    const milestoneName = decodeHtmlEntities(milestone.name).trim()
-    const url = taskListUrl(context.projects, taskList.id)
-    const counts = countTasks([taskList])
+    const url = zohoProjectsUrl(context.projects, 'tasklist-detail', taskList.id)
+    const counts = countTasks(taskList)
     const rows = taskList.statuses
         .flatMap((status) => status.tasks.map((task) => ({ status: status.name, task: task.record })))
-        .sort((left, right) => Number(prefixNumber(left.task)) - Number(prefixNumber(right.task)))
+        .sort((left, right) => prefixNumber(left.task) - prefixNumber(right.task))
 
     const frontmatter = {
         type: 'tasklist',
         id: taskList.id,
-        name,
+        name: taskList.name,
         url,
-        milestone: milestoneName,
+        milestone: milestone.name,
         milestone_id: milestone.id,
         tasks_rendered: counts.total,
         tasks_open: counts.open,
@@ -46,25 +33,30 @@ export function renderTaskListIndex(
     }
 
     const lines = [
-        '---',
-        stringify(frontmatter, { indentSeq: false, lineWidth: 0, singleQuote: true }).trimEnd(),
-        '---',
+        renderFrontmatter(frontmatter),
         '',
-        `# ${name}`,
+        `# ${taskList.name}`,
         '',
         `[Open in Zoho](${url})`,
         '',
-        `Milestone: [[${toDisplayName(milestoneName)}]]`,
+        `Milestone: [[${toDisplayName(milestone.name)}]]`,
         '',
         '| Task | Status | Priority | Created |',
         '|---|---|---|---|',
         ...rows.map(({ status, task }) => {
-            const label = `${task.prefix ?? task.id} ${decodeHtmlEntities(task.name).trim()}`.replace(/\|/g, '-')
+            const label = `${task.prefix ?? task.id} ${cleanName(task.name)}`.replace(/\|/g, '-')
 
             return `| [[${taskFileBaseName(task)}\\|${label}]] | ${status} | ${task.priority ?? 'none'} | ${task.created_time?.slice(0, 10) ?? ''} |`
         }),
         '',
     ]
 
-    return { segments: [toSlug(milestoneName), toSlug(name), `${toDisplayName(name)}.md`], content: lines.join('\n') }
+    return {
+        segments: [
+            toSlug(milestone.name, milestone.id),
+            toSlug(taskList.name, taskList.id),
+            `${toDisplayName(taskList.name)}.md`,
+        ],
+        content: lines.join('\n'),
+    }
 }

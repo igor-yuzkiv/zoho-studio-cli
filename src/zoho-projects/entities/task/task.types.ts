@@ -10,6 +10,7 @@ export interface ZohoTask {
     id: string
     name: string
     prefix?: string
+    project?: { id?: string; name?: string }
     description?: string
     tasklist?: { id: string; name: string }
     milestone?: { id: string; name: string }

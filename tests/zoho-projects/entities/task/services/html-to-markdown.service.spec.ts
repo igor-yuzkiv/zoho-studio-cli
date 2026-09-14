@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
-import { decodeHtmlEntities, htmlToMarkdown } from '@/zoho-projects/entities/task'
+import { htmlToMarkdown } from '@/zoho-projects/entities/task'
+import { decodeHtmlEntities } from '@/zoho-projects/md'
 
 describe('htmlToMarkdown', () => {
     test('returns an empty string for empty or blank HTML', () => {
@@ -39,6 +40,13 @@ describe('htmlToMarkdown', () => {
         )
         expect(htmlToMarkdown('<a href="https://x.test/a">https://x.test/a</a>')).toBe(
             '[https://x.test/a](https://x.test/a)'
+        )
+    })
+
+    test('leaves URLs inside code spans and fenced blocks alone', () => {
+        expect(htmlToMarkdown('<p>Run <code>https://x.test/a</code> now</p>')).toBe('Run `https://x.test/a` now')
+        expect(htmlToMarkdown('<pre>curl https://x.test/a   \nnext</pre>')).toBe(
+            '```\ncurl https://x.test/a   \nnext\n```'
         )
     })
 
