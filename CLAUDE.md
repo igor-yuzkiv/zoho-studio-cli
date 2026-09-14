@@ -28,3 +28,15 @@ CLI workflow for task context, durable checkpoints, and handoff. Project Office 
 
 The assembled workflow is part of that record. Checkpoint it once the user confirms it, and
 checkpoint every later deviation — see the conventions at the end of `.project-office/AGENTS.md`.
+
+## What leaves this machine
+
+The agent commits; the person pushes. A push, a pull request, a release, or a message to a
+client happens on an explicit instruction and is announced before it is sent.
+
+A commit carries no agent attribution: no `Co-Authored-By` trailer, no session link.
+
+Task and document keys of the internal task board, checkpoints, session names, and local paths
+stay in the board and the chat. They do not appear in commit messages, code comments,
+client-facing documents, or mockups. Where an external tracker exists, its keys are the ones
+that go into commits.
