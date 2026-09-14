@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, readdir, rm } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
 import { stringify } from 'yaml'
@@ -79,30 +79,11 @@ export function zohoProjectsUrl(projects: ProjectRef, kind: ZohoEntityKind, id: 
     return `https://projects.zoho.com/portal/${projects.portalId}#zp/projects/${projects.projectId}/${kind}/${id}`
 }
 
-/**
- * The catalogue folder: `src/zoho-projects/md` inside the workspace unless `projects.mdPath` names
- * another one. A custom folder is wiped on every render, so the workspace itself, anything above
- * it, and `.zoho-studio` are refused.
- */
+/** The catalogue folder: `src/zoho-projects/md` inside the workspace unless `projects.mdPath` names another one. */
 export function resolveMdPath(projectPath: string, mdPath: string): string {
     const workspacePath = resolve(projectPath)
-    const target = mdPath.trim()
-        ? resolve(workspacePath, mdPath.trim())
-        : join(workspacePath, 'src', 'zoho-projects', 'md')
-    const settingsPath = join(workspacePath, '.zoho-studio')
 
-    if (
-        target === workspacePath ||
-        workspacePath.startsWith(target + sep) ||
-        target === settingsPath ||
-        target.startsWith(settingsPath + sep)
-    ) {
-        throw new Error(
-            `projects.mdPath "${mdPath}" points at the workspace itself or its settings; choose a folder the render may empty.`
-        )
-    }
-
-    return target
+    return mdPath.trim() ? resolve(workspacePath, mdPath.trim()) : join(workspacePath, 'src', 'zoho-projects', 'md')
 }
 
 /** Writes one catalogue file below the md folder; every segment is sanitized so a Zoho name cannot leave it. */
@@ -115,4 +96,20 @@ export async function writeMdFile(mdPath: string, segments: string[], content: s
 
     await mkdir(dirname(filePath), { recursive: true })
     await Bun.write(filePath, content)
+}
+
+/**
+ * A task changes folder when its status changes; the copy under the previous status of the same
+ * task list is removed so the vault does not show the task twice. Nothing else is ever deleted.
+ */
+export async function removeTaskFileFromOtherStatuses(mdPath: string, taskSegments: string[]): Promise<void> {
+    const [milestoneDir, taskListDir, statusDir, fileName] = taskSegments.map(toPathSegment)
+    const taskListPath = join(mdPath, milestoneDir!, taskListDir!)
+    const entries = await readdir(taskListPath, { withFileTypes: true }).catch(() => [])
+
+    for (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== statusDir) {
+            await rm(join(taskListPath, entry.name, fileName!), { force: true })
+        }
+    }
 }

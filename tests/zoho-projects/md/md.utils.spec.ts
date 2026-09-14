@@ -34,10 +34,4 @@ describe('resolveMdPath', () => {
         expect(resolveMdPath('/ws', 'notes/zoho')).toBe('/ws/notes/zoho')
         expect(resolveMdPath('/ws', '../vault')).toBe('/vault')
     })
-
-    test('refuses the workspace itself, its parents and its settings folder', () => {
-        expect(() => resolveMdPath('/ws/app', '.')).toThrow('points at the workspace itself')
-        expect(() => resolveMdPath('/ws/app', '..')).toThrow('points at the workspace itself')
-        expect(() => resolveMdPath('/ws/app', '.zoho-studio/md')).toThrow('points at the workspace itself')
-    })
 })

@@ -132,7 +132,7 @@ describe('z-projects:tasks:render', () => {
         expect(process.exitCode).toBe(1)
     })
 
-    test('writes into the folder projects.mdPath names and wipes it first', async () => {
+    test('writes into the folder projects.mdPath names and keeps what else is there', async () => {
         await removeTempProject(projectPath)
         projectPath = await createTempProject(
             buildSettings({ projects: { portalId: '100', projectId: '200', mdPath: 'vault/zoho' } })
@@ -140,11 +140,11 @@ describe('z-projects:tasks:render', () => {
         await writeFixtureRaw()
         const stale = join(projectPath, 'vault/zoho/old-note.md')
         await mkdir(join(stale, '..'), { recursive: true })
-        await Bun.write(stale, 'gone after the render')
+        await Bun.write(stale, 'my own note')
 
         await run()
 
-        expect(await Bun.file(stale).exists()).toBe(false)
+        expect(await Bun.file(stale).text()).toBe('my own note')
         expect(await Bun.file(join(projectPath, 'vault/zoho/pilot/Pilot.md')).exists()).toBe(true)
         expect(await listMd()).toEqual([])
     })

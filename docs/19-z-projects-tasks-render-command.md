@@ -47,11 +47,11 @@ no letters or digits at all is replaced by the entity id. A task file is `<numbe
 `580-…`. An index is named after the display name of its milestone or task list — `:`, `|`, `/`, `\`,
 `[`, `]` replaced by ` -`, spaces collapsed, nothing cut — because the wikilinks point at it.
 
-The catalogue folder is derived and rebuilt from scratch on every run — whatever else is in it is
-deleted, so give it a folder of its own; the workspace itself, its parents and `.zoho-studio` are
-refused. A task whose status changed in Zoho moves
-to its new status folder and the old file disappears. Do not edit the files by hand; edit
-`raw/` sources by pulling again. Two fields change on every run even when nothing else did —
+Every run writes or overwrites the files of what is in `raw/` and leaves everything else in the
+folder alone — your own notes next to the catalogue survive. The one thing removed is the previous
+copy of a task whose status changed: it moves to its new status folder and the old file goes, so
+the vault never shows a task twice. A task or task list deleted in Zoho stays until you remove its
+file yourself. Do not edit the generated files by hand; they are overwritten on the next render. Two fields change on every run even when nothing else did —
 `rendered_at` and the task counters in the indexes — so expect that noise if `md/` is in git.
 
 ## The task file

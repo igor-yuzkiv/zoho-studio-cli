@@ -1,11 +1,9 @@
 import { Command } from 'commander'
 
-import { rm } from 'node:fs/promises'
-
 import { renderMilestoneIndex, type IndexRenderContext } from '@/zoho-projects/entities/milestone'
 import { renderTaskListIndex } from '@/zoho-projects/entities/task-list'
 import { loadRawTree, renderTask } from '@/zoho-projects/entities/task'
-import { resolveMdPath, writeMdFile } from '@/zoho-projects/md'
+import { removeTaskFileFromOtherStatuses, resolveMdPath, writeMdFile } from '@/zoho-projects/md'
 import { reportSkipped } from '@/zoho-projects/raw'
 import { getProjectSettings } from '@/settings'
 import { assertProjectsConfigured } from '@/shared/api/projects'
@@ -40,9 +38,6 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         let taskLists = 0
         let comments = 0
 
-        // md/ is derived from raw/ and a task moves folders when its status changes, so it is rebuilt whole.
-        await rm(mdPath, { recursive: true, force: true })
-
         for (const milestone of tree.milestones) {
             const index = renderMilestoneIndex(milestone, context)
 
@@ -64,6 +59,7 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
                             tasksById: tree.tasksById,
                         })
 
+                        await removeTaskFileFromOtherStatuses(mdPath, rendered.segments)
                         await writeMdFile(mdPath, rendered.segments, rendered.content)
                         comments += task.comments.length
                     }
