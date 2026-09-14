@@ -21,6 +21,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-crm:workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
 - [z-crm:webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
 - [z-crm:global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
+- [z-projects:milestones:pull](docs/16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON
 - [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Editor support

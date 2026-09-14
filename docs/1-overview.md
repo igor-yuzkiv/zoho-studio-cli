@@ -10,7 +10,18 @@ do it with. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
 and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
-`src/zoho-crm/workflow-actions`.
+`src/zoho-crm/workflow-actions`, and `src/zoho-projects/raw/` for the raw Zoho Projects tree:
+
+```text
+src/zoho-projects/raw/
+  <milestone>/
+    <milestone-id>.json
+    task-lists/<task-list>/
+      <task-list-id>.json
+      tasks/<task>/
+        <task-id>.json
+        <task-id>.comments.json
+```
 
 A project pulled before the CRM artifacts moved under `src/zoho-crm/` still has the old
 `src/functions`, `src/modules` and similar folders. The CLI neither moves nor deletes them: run the
@@ -43,4 +54,5 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [11-workflow-actions-pull-command.md](11-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio z-crm:workflow-actions:pull`
 - [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio z-crm:webhooks:pull`
 - [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio z-crm:global-picklists:pull`
+- [16-z-projects-milestones-pull-command.md](16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON with `zoho-studio z-projects:milestones:pull`
 - [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them
