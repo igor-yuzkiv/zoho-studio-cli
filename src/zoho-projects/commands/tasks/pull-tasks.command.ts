@@ -22,7 +22,10 @@ type SkippedTask = {
 }
 
 export const pullTasksCommand = new Command('z-projects:tasks:pull')
-    .description('Download the tasks of the configured Zoho Projects project, with their comments, as raw JSON')
+    .description(
+        'Download the tasks of the configured Zoho Projects project, with their comments, as raw JSON. ' +
+            'Without --from/--to every task is pulled; with them only the tasks last modified in that period (dates as YYYY-MM-DD, inclusive, UTC)'
+    )
     .option('--from <YYYY-MM-DD>', 'Only tasks last modified on or after this UTC date')
     .option('--to <YYYY-MM-DD>', 'Only tasks last modified on or before this UTC date')
     .action(async (options: { from?: string; to?: string }) => {
