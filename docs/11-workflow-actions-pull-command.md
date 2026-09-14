@@ -1,10 +1,10 @@
-# `zoho-studio workflow-actions:pull`
+# `zoho-studio z-crm:workflow-actions:pull`
 
 Downloads every Zoho CRM workflow action into `src/workflow-actions/` — one JSON file per action,
 grouped by action type, including the configuration that the action list alone does not carry.
 
 ```bash
-zoho-studio workflow-actions:pull
+zoho-studio z-crm:workflow-actions:pull
 ```
 
 ```text
@@ -20,7 +20,7 @@ the `ZohoCRM.settings.automation_actions.READ` scope granted. Projects created b
 existed have to add it to `auth.scopes` in [`.zoho-studio/settings.json`](2-settings.md) and log in
 again; the command says so when Zoho refuses the request.
 
-It does not depend on any other pull command. [`workflows:pull`](9-workflows-pull-command.md)
+It does not depend on any other pull command. [`z-crm:workflows:pull`](9-workflows-pull-command.md)
 downloads the rules that *use* these actions, and the two write to separate folders — a rule refers
 to its actions by name and id, and this command is what fills those references in.
 
@@ -70,7 +70,7 @@ For the other three types the file is a partial record, which is why it is repor
 passed over.
 
 A `functions` action records which function it calls and with what arguments; the Deluge source
-itself comes from [`functions:pull`](6-functions-pull-command.md).
+itself comes from [`z-crm:functions:pull`](6-functions-pull-command.md).
 
 The folder is always `src/workflow-actions/`; no setting moves it.
 
@@ -89,8 +89,8 @@ fixed order, so a full run always names them the same way.
 `--type` pulls a single action type, and accepts either the folder name or the name Zoho uses:
 
 ```bash
-zoho-studio workflow-actions:pull --type=webhooks
-zoho-studio workflow-actions:pull --type=email-notifications
+zoho-studio z-crm:workflow-actions:pull --type=webhooks
+zoho-studio z-crm:workflow-actions:pull --type=email-notifications
 ```
 
 Only that type's folder is rewritten; the other four are left alone.
@@ -98,7 +98,7 @@ Only that type's folder is rewritten; the other four are left alone.
 `--module` narrows the run to the actions of a single module:
 
 ```bash
-zoho-studio workflow-actions:pull --module=Deals
+zoho-studio z-crm:workflow-actions:pull --module=Deals
 ```
 
 This run does **not** wipe any folder. In each type's folder it removes only the files whose action
@@ -110,7 +110,7 @@ The two options combine, and each is validated before anything is deleted: `--mo
 module API name, `--type` one of the five types above.
 
 ```bash
-zoho-studio workflow-actions:pull --module=Deals --type=webhooks
+zoho-studio z-crm:workflow-actions:pull --module=Deals --type=webhooks
 ```
 
 ## Failures
@@ -130,6 +130,6 @@ Failures: 1
 ## Logs
 
 The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
-default. `workflow-actions:pull` records the start of the run, how many actions were found across
+default. `z-crm:workflow-actions:pull` records the start of the run, how many actions were found across
 how many types, the final counts, and every failure with its stack trace. Individual successful
 actions are not logged — the progress bar already shows them.

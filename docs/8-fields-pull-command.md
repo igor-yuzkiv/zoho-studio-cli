@@ -1,10 +1,10 @@
-# `zoho-studio fields:pull`
+# `zoho-studio z-crm:fields:pull`
 
 Downloads the fields of every locally stored module into a `fields/` subfolder of that module — one
 JSON file per field.
 
 ```bash
-zoho-studio fields:pull
+zoho-studio z-crm:fields:pull
 ```
 
 ```text
@@ -15,10 +15,10 @@ Modules failed: 1
   - Ghost_Module: Request failed with status code 400
 ```
 
-**Run [`zoho-studio modules:pull`](7-modules-pull-command.md) first, and re-run this command after
-every `modules:pull`.** The list of modules to walk comes from the local modules folder, not from
-the API, and `modules:pull` deletes and recreates that folder — which throws away the fields pulled
-earlier. The correct order is always `modules:pull` → `fields:pull`.
+**Run [`zoho-studio z-crm:modules:pull`](7-modules-pull-command.md) first, and re-run this command after
+every `z-crm:modules:pull`.** The list of modules to walk comes from the local modules folder, not from
+the API, and `z-crm:modules:pull` deletes and recreates that folder — which throws away the fields pulled
+earlier. The correct order is always `z-crm:modules:pull` → `z-crm:fields:pull`.
 
 The command also needs a project that has been through [`zoho-studio login`](4-login-command.md),
 with the `ZohoCRM.settings.fields.READ` scope granted.
@@ -40,7 +40,7 @@ Each file is named after the field's API name and holds the full field record ex
 characters a path segment cannot contain are replaced; nothing else about the name is changed.
 
 The `fields/` folder is fixed — it is not configurable. Its parent is
-`src/modules/`, the same folder `modules:pull` writes to.
+`src/modules/`, the same folder `z-crm:modules:pull` writes to.
 
 **The `fields/` folder of every pulled module is deleted and recreated on each run**, so a field
 removed in Zoho disappears locally and any local edit inside it is lost. Nothing else is touched:
@@ -53,7 +53,7 @@ fields.
 walking the whole organization:
 
 ```bash
-zoho-studio fields:pull --module=Leads
+zoho-studio z-crm:fields:pull --module=Leads
 ```
 
 The value is a module API name — the name of its local directory. A value that is not a plain
@@ -68,7 +68,7 @@ module is listed in the summary with a short error, and the remaining modules ar
 command still succeeds.
 
 Running with an empty or missing modules folder is fatal: there is nothing to walk, and the error
-points at `modules:pull`.
+points at `z-crm:modules:pull`.
 
 Modules are requested one at a time with a short delay between them to stay clear of Zoho's API
 limits, so an organization with many modules takes a while. The progress bar shows the module
@@ -77,6 +77,6 @@ currently being pulled.
 ## Logs
 
 The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
-default. `fields:pull` records the start of the run, how many local modules were found, the final
+default. `z-crm:fields:pull` records the start of the run, how many local modules were found, the final
 counts, and every failure with its stack trace. Individual successful modules are not logged — the
 progress bar already shows them.

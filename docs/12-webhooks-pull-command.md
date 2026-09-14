@@ -1,11 +1,11 @@
-# `zoho-studio webhooks:pull`
+# `zoho-studio z-crm:webhooks:pull`
 
 Downloads every Zoho CRM webhook into a flat `src/webhooks/` folder — one JSON file per webhook,
 including the request body, headers, URL parameters, and authentication that the webhook list alone
 does not carry.
 
 ```bash
-zoho-studio webhooks:pull
+zoho-studio z-crm:webhooks:pull
 ```
 
 ```text
@@ -59,7 +59,7 @@ The command pulls the whole organization; there is no `--module` option.
 
 Not pulled. Zoho reports that separately, through
 `settings/automation/webhooks/{id}/actions/associations`, and this command does not call it. The
-reverse direction is available: a rule file from [`workflows:pull`](9-workflows-pull-command.md)
+reverse direction is available: a rule file from [`z-crm:workflows:pull`](9-workflows-pull-command.md)
 lists the webhooks it invokes.
 
 ## Failures
@@ -77,6 +77,6 @@ Failing to fetch the webhook *list* is fatal — there is nothing to write.
 ## Logs
 
 The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
-default. `webhooks:pull` records the start of the run, how many webhooks were found, the final
+default. `z-crm:webhooks:pull` records the start of the run, how many webhooks were found, the final
 counts, and every failure with its stack trace. Individual successful webhooks are not logged — the
 progress bar already shows them.

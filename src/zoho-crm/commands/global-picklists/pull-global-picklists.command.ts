@@ -21,10 +21,10 @@ type FailedPicklist = {
     message: string
 }
 
-export const pullGlobalPicklistsCommand = new Command('global-picklists:pull')
+export const pullGlobalPicklistsCommand = new Command('z-crm:global-picklists:pull')
     .description('Download every Zoho CRM global picklist, with its values, into the project')
     .action(async () => {
-        const logger = await createCommandLogger('global-picklists:pull')
+        const logger = await createCommandLogger('z-crm:global-picklists:pull')
         logger.info('Starting global picklists pull')
 
         const { projectPath } = await getProjectSettings()

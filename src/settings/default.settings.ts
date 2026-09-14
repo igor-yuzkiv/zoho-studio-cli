@@ -32,7 +32,4 @@ export const defaultProjectSettings: ProjectSettings = {
     logs: {
         file: `${logsDirName}/zoho-studio-cli.log`,
     },
-    sync: {
-        commands: ['modules:pull', 'fields:pull', 'functions:pull', 'workflows:pull'],
-    },
 }

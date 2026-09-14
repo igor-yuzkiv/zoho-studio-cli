@@ -2,7 +2,7 @@ import { Command } from 'commander'
 
 import { getOrganization } from '@/zoho-crm/entities/organization'
 
-export const statusCommand = new Command('status')
+export const statusCommand = new Command('z-crm:status')
     .description('Show the Zoho organization the project is connected to')
     .option('--json', 'print the organization exactly as Zoho returned it', false)
     .action(async (options: { json: boolean }) => {

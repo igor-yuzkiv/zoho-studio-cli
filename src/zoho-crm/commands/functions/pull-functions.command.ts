@@ -22,10 +22,10 @@ type FailedFunction = {
     message: string
 }
 
-export const pullFunctionsCommand = new Command('functions:pull')
+export const pullFunctionsCommand = new Command('z-crm:functions:pull')
     .description('Download every Zoho function into the project functions directory')
     .action(async () => {
-        const logger = await createCommandLogger('functions:pull')
+        const logger = await createCommandLogger('z-crm:functions:pull')
         logger.info('Starting functions pull')
 
         const { projectPath } = await getProjectSettings()

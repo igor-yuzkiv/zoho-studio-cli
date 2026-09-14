@@ -29,14 +29,13 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [2-settings.md](2-settings.md) — the settings file, and how the CLI reads and writes it
 - [3-init-command.md](3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`
-- [5-status-command.md](5-status-command.md) — checking the connection with `zoho-studio status`
-- [6-functions-pull-command.md](6-functions-pull-command.md) — downloading functions with `zoho-studio functions:pull`
-- [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio modules:pull`
-- [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio fields:pull`
-- [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio workflows:pull`
-- [10-org-info-command.md](10-org-info-command.md) — reading and storing the organization with `zoho-studio org:info`
-- [11-workflow-actions-pull-command.md](11-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio workflow-actions:pull`
-- [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio webhooks:pull`
-- [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio global-picklists:pull`
-- [14-sync-command.md](14-sync-command.md) — running several pull commands in one go with `zoho-studio sync`
+- [5-status-command.md](5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
+- [6-functions-pull-command.md](6-functions-pull-command.md) — downloading functions with `zoho-studio z-crm:functions:pull`
+- [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio z-crm:modules:pull`
+- [8-fields-pull-command.md](8-fields-pull-command.md) — downloading module fields with `zoho-studio z-crm:fields:pull`
+- [9-workflows-pull-command.md](9-workflows-pull-command.md) — downloading workflow rules with `zoho-studio z-crm:workflows:pull`
+- [10-org-info-command.md](10-org-info-command.md) — reading and storing the organization with `zoho-studio z-crm:org:info`
+- [11-workflow-actions-pull-command.md](11-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio z-crm:workflow-actions:pull`
+- [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio z-crm:webhooks:pull`
+- [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio z-crm:global-picklists:pull`
 - [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them

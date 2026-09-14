@@ -21,10 +21,10 @@ type FailedWebhook = {
     message: string
 }
 
-export const pullWebhooksCommand = new Command('webhooks:pull')
+export const pullWebhooksCommand = new Command('z-crm:webhooks:pull')
     .description('Download every Zoho CRM webhook, with its request body and authentication, into the project')
     .action(async () => {
-        const logger = await createCommandLogger('webhooks:pull')
+        const logger = await createCommandLogger('z-crm:webhooks:pull')
         logger.info('Starting webhooks pull')
 
         const { projectPath } = await getProjectSettings()

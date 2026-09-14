@@ -34,9 +34,6 @@ and treat a leak as if a password leaked.
     },
     "logs": {
         "file": "logs/zoho-studio-cli.log"
-    },
-    "sync": {
-        "commands": ["modules:pull", "fields:pull", "functions:pull", "workflows:pull"]
     }
 }
 ```
@@ -47,8 +44,8 @@ See [`zoho-studio init`](3-init-command.md) for the whole tree.
 
 There are two kinds of values in there, and the difference matters when you edit the file by hand:
 
-- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `logs.*`,
-  `sync.*` — **yours**. You fill them in, the CLI only reads them.
+- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `logs.*` —
+  **yours**. You fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
   `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
@@ -59,24 +56,21 @@ created on the first line written. The default is `logs/zoho-studio-cli.log`, an
 folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Point this somewhere
 else and that no longer applies — add the new path to your `.gitignore` yourself.
 
-`sync.commands` is what [`zoho-studio sync`](14-sync-command.md) runs, in that order — command
-names only, no arguments. The order matters, because a step reads what the step before it wrote.
-An empty list runs nothing.
-
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
 `clientId` and `clientSecret` is a valid project. A key you do write **replaces** the default rather
-than adding to it — that holds for the lists too, so a shortened `auth.scopes` or `sync.commands`
+than adding to it — that holds for the lists too, so a shortened `auth.scopes`
 stays exactly as short as you wrote it. That also means you can delete a key to return to
 the default instead of hunting for the original value.
 
 A key the CLI does not know is kept and ignored. A project created before the paths were fixed
-still carries its `crm` section, which now does nothing — delete it when it bothers you. Such a
+still carries its `crm` section, and one created before the `sync` command was removed carries a
+`sync` section — both now do nothing, delete them when they bother you. Such a
 project also saved its Deluge files under whatever `code_extension` said; the next
-`functions:pull` writes `.deluge` files and leaves the old ones beside them.
+`z-crm:functions:pull` writes `.deluge` files and leaves the old ones beside them.
 
 ## How reading works
 

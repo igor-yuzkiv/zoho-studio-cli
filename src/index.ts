@@ -13,7 +13,6 @@ import { pullWebhooksCommand } from '@/zoho-crm/commands/webhooks'
 import { pullWorkflowActionsCommand } from '@/zoho-crm/commands/workflow-actions'
 import { pullGlobalPicklistsCommand } from '@/zoho-crm/commands/global-picklists'
 import { browserCommand } from '@/commands/browser'
-import { syncCommand } from '@/zoho-crm/commands/sync'
 
 const program = new Command()
 
@@ -32,7 +31,6 @@ program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
 program.addCommand(pullGlobalPicklistsCommand)
 program.addCommand(browserCommand)
-program.addCommand(syncCommand)
 
 try {
     await program.parseAsync()

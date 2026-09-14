@@ -1,10 +1,10 @@
-# `zoho-studio workflows:pull`
+# `zoho-studio z-crm:workflows:pull`
 
 Downloads every Zoho CRM workflow rule into a flat `src/workflows/` folder — one JSON file per rule,
 including the conditions and actions that the rule list alone does not carry.
 
 ```bash
-zoho-studio workflows:pull
+zoho-studio z-crm:workflows:pull
 ```
 
 ```text
@@ -17,7 +17,7 @@ Workflow rules failed: 0
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md), with
 the `ZohoCRM.settings.workflow_rules.READ` scope granted. It does not depend on any other pull
 command: the rules come from the API, and they are written to their own folder, so
-[`modules:pull`](7-modules-pull-command.md) neither feeds it nor overwrites it.
+[`z-crm:modules:pull`](7-modules-pull-command.md) neither feeds it nor overwrites it.
 
 Rules are fetched one at a time — a list request, then one request per rule for its full record —
 with a short delay between them to stay clear of Zoho's API limits. An organization with a hundred
@@ -55,7 +55,7 @@ by a full one — both rules are kept either way, but the pair shows up as a ren
 `--module` narrows the run to the rules of a single module:
 
 ```bash
-zoho-studio workflows:pull --module=Deals
+zoho-studio z-crm:workflows:pull --module=Deals
 ```
 
 This run does **not** wipe the folder. It removes only the files whose rule belongs to that module —
@@ -80,6 +80,6 @@ Failing to fetch the rule *list* is fatal — there is nothing to write.
 ## Logs
 
 The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
-default. `workflows:pull` records the start of the run, how many rules were found, the final counts,
+default. `z-crm:workflows:pull` records the start of the run, how many rules were found, the final counts,
 and every failure with its stack trace. Individual successful rules are not logged — the progress
 bar already shows them.

@@ -23,11 +23,11 @@ type FailedRule = {
     message: string
 }
 
-export const pullWorkflowsCommand = new Command('workflows:pull')
+export const pullWorkflowsCommand = new Command('z-crm:workflows:pull')
     .description('Download every Zoho CRM workflow rule, with its conditions and actions, into the project')
     .option('--module <api_name>', 'Pull the workflow rules of a single module')
     .action(async (options: { module?: string }) => {
-        const logger = await createCommandLogger('workflows:pull')
+        const logger = await createCommandLogger('z-crm:workflows:pull')
         logger.info({ module: options.module ?? null }, 'Starting workflow rules pull')
 
         const { projectPath } = await getProjectSettings()

@@ -132,7 +132,6 @@ command's folder is flattened away — command specs sit directly under `tests/c
 src/settings/settings.loader.ts             ->  tests/settings/settings.loader.spec.ts
 src/shared/api/auth/token.service.ts        ->  tests/shared/api/auth/token.service.spec.ts
 src/commands/init/init.service.ts           ->  tests/commands/init.service.spec.ts
-src/zoho-crm/commands/sync/sync.service.ts  ->  tests/zoho-crm/commands/sync.service.spec.ts
 src/zoho-crm/entities/field/field.utils.ts  ->  tests/zoho-crm/entities/field/field.utils.spec.ts
 ```
 
@@ -148,14 +147,17 @@ Run `bun run check` (lint + typecheck + tests) before handing off a change.
 ## CLI command and option style
 
 - Binary name: `zoho-studio` (`program.name()`; the build produces `dist/zoho-studio`).
-- Use `namespace:action` for grouped commands, with the namespace in the plural: `functions:pull`, `modules:pull`, `fields:pull`.
-- Simple top-level commands stay bare: `init`, `login`, `status`.
+- A command that belongs to a Zoho product area carries the area prefix: `z-crm:` for Zoho CRM,
+  `z-projects:` for Zoho Projects. Only commands that belong to no product stay bare: `init`,
+  `login`, `debug`, `browser`.
+- Use `namespace:action` for grouped commands, with the namespace in the plural:
+  `z-crm:functions:pull`, `z-crm:modules:pull`, `z-crm:fields:pull`.
 - Use explicit named options with full names: `--module <api_name>`, `--force`, `--json`.
 - A short alias must be declared in the option spec and used with a single dash (`-m`). Commander does not abbreviate long options — `--m=Leads` fails at runtime.
 - Prefer a named option over a positional argument, unless the argument is the command's whole subject (`init [name]`).
 
 ```bash
 zoho-studio init example-project-name
-zoho-studio status --json
-zoho-studio fields:pull --module=Leads
+zoho-studio z-crm:status --json
+zoho-studio z-crm:fields:pull --module=Leads
 ```

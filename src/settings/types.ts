@@ -20,10 +20,6 @@ export interface ProjectSettings {
         /** The file every command logs to, relative to the project root. */
         file: string
     }
-    sync: {
-        /** The commands `zoho-studio sync` runs, in this order. An empty list runs nothing. */
-        commands: string[]
-    }
 }
 
 /** The settings together with the project root they were found in. */

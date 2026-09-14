@@ -1,11 +1,11 @@
-# `zoho-studio status`
+# `zoho-studio z-crm:status`
 
 Asks Zoho which organization the project is connected to. It is the fastest way to confirm that
 the credentials, the stored tokens, and `api.baseUrl` all work together.
 
 ```bash
-zoho-studio status          # the fields you usually want
-zoho-studio status --json   # the org record exactly as Zoho returned it
+zoho-studio z-crm:status          # the fields you usually want
+zoho-studio z-crm:status --json   # the org record exactly as Zoho returned it
 ```
 
 ```text
@@ -14,7 +14,7 @@ Organization: Acme Inc
   primary email: owner@acme.test
 ```
 
-The access token is refreshed on the way if the stored one has expired, so a successful `status`
+The access token is refreshed on the way if the stored one has expired, so a successful `z-crm:status`
 also means the refresh token still works. Nothing is printed about the tokens themselves.
 
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md). Run it

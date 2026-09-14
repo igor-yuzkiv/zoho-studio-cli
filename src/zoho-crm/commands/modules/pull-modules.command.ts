@@ -6,10 +6,10 @@ import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
 
-export const pullModulesCommand = new Command('modules:pull')
+export const pullModulesCommand = new Command('z-crm:modules:pull')
     .description('Download the metadata of every Zoho CRM module into the project modules directory')
     .action(async () => {
-        const logger = await createCommandLogger('modules:pull')
+        const logger = await createCommandLogger('z-crm:modules:pull')
         logger.info('Starting modules pull')
 
         const { projectPath } = await getProjectSettings()

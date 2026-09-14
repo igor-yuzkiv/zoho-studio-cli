@@ -12,16 +12,15 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [Project settings](docs/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
 - [init](docs/3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [login](docs/4-login-command.md) — authorizing a project with `zoho-studio login`
-- [status](docs/5-status-command.md) — checking the connection with `zoho-studio status`
-- [functions:pull](docs/6-functions-pull-command.md) — downloading functions
-- [modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
-- [fields:pull](docs/8-fields-pull-command.md) — downloading module fields
-- [workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
-- [org:info](docs/10-org-info-command.md) — reading the organization and storing it in the project
-- [workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
-- [webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
-- [global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
-- [sync](docs/14-sync-command.md) — running several pull commands in one go
+- [z-crm:status](docs/5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
+- [z-crm:functions:pull](docs/6-functions-pull-command.md) — downloading functions
+- [z-crm:modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
+- [z-crm:fields:pull](docs/8-fields-pull-command.md) — downloading module fields
+- [z-crm:workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
+- [z-crm:org:info](docs/10-org-info-command.md) — reading the organization and storing it in the project
+- [z-crm:workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
+- [z-crm:webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
+- [z-crm:global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
 - [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Editor support

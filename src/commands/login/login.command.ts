@@ -44,7 +44,7 @@ async function reportOrganization(): Promise<void> {
     } catch (error) {
         console.log(
             `Could not read the organization: ${error instanceof Error ? error.message : String(error)}. ` +
-                'Run "zoho-studio org:info" once the cause is fixed.'
+                'Run "zoho-studio z-crm:org:info" once the cause is fixed.'
         )
     }
 }

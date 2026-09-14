@@ -17,11 +17,11 @@ type FailedModule = {
     message: string
 }
 
-export const pullFieldsCommand = new Command('fields:pull')
+export const pullFieldsCommand = new Command('z-crm:fields:pull')
     .description('Download the fields of every local module into its own fields directory')
     .option('--module <api_name>', 'Pull the fields of a single module')
     .action(async (options: { module?: string }) => {
-        const logger = await createCommandLogger('fields:pull')
+        const logger = await createCommandLogger('z-crm:fields:pull')
         logger.info({ module: options.module ?? null }, 'Starting fields pull')
 
         const { projectPath } = await getProjectSettings()
@@ -106,7 +106,7 @@ async function readLocalModuleNames(modulesPath: string): Promise<string[]> {
         .sort()
 
     if (moduleNames.length === 0) {
-        throw new Error(`No modules found in "${modulesPath}". Run "zoho-studio modules:pull" first.`)
+        throw new Error(`No modules found in "${modulesPath}". Run "zoho-studio z-crm:modules:pull" first.`)
     }
 
     return moduleNames
@@ -118,7 +118,7 @@ async function resolveRequestedModule(modulesPath: string, requested: string): P
     const exists = (entries ?? []).some((entry) => entry.isDirectory() && entry.name === moduleName)
 
     if (!exists) {
-        throw new Error(`Module "${moduleName}" is not in "${modulesPath}". Run "zoho-studio modules:pull" first.`)
+        throw new Error(`Module "${moduleName}" is not in "${modulesPath}". Run "zoho-studio z-crm:modules:pull" first.`)
     }
 
     return moduleName

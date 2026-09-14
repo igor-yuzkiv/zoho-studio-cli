@@ -1,10 +1,10 @@
-# `zoho-studio modules:pull`
+# `zoho-studio z-crm:modules:pull`
 
 Downloads the metadata of every Zoho CRM module of the organization into `src/modules/` —
 one directory per module, holding its metadata file.
 
 ```bash
-zoho-studio modules:pull
+zoho-studio z-crm:modules:pull
 ```
 
 ```text
@@ -38,9 +38,9 @@ four-space indent and a trailing newline.
 **The target directory is deleted and recreated on every run.** It always reflects the current pull,
 so a module removed in Zoho disappears locally, and any local edit inside it is lost.
 
-That includes the fields [`zoho-studio fields:pull`](8-fields-pull-command.md) writes into
+That includes the fields [`zoho-studio z-crm:fields:pull`](8-fields-pull-command.md) writes into
 `<module>/fields/`: this command wipes them along with everything else. The order is always
-`modules:pull` first, `fields:pull` after.
+`z-crm:modules:pull` first, `z-crm:fields:pull` after.
 
 The location is fixed: `src/modules/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.
@@ -54,5 +54,5 @@ list arrives.
 ## Logs
 
 The CLI writes structured JSON logs to [`logs.file`](2-settings.md), `logs/zoho-studio-cli.log` by
-default, created on the first line written. `modules:pull` records the start of the run, how many
+default, created on the first line written. `z-crm:modules:pull` records the start of the run, how many
 modules were found, and the final count. Tokens and authorization headers are never logged.

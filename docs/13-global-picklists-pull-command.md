@@ -1,10 +1,10 @@
-# `zoho-studio global-picklists:pull`
+# `zoho-studio z-crm:global-picklists:pull`
 
 Downloads every Zoho CRM global picklist into a flat `src/global-picklists/` folder — one JSON file
 per picklist, including the `pick_list_values` that the picklist list alone does not carry.
 
 ```bash
-zoho-studio global-picklists:pull
+zoho-studio z-crm:global-picklists:pull
 ```
 
 ```text
@@ -52,4 +52,4 @@ and nothing has been deleted yet.
 
 Which fields use a global picklist is not part of this command — that association endpoint needs a
 scope Zoho has not granted here. What each module's fields hold comes from
-[`fields:pull`](8-fields-pull-command.md).
+[`z-crm:fields:pull`](8-fields-pull-command.md).

@@ -31,7 +31,7 @@ The project is authorized.
 ```
 
 Once the tokens are stored, `login` reads the organization and writes it to
-`.zoho-studio/org.json` — the same thing [`zoho-studio org:info`](10-org-info-command.md) does. The
+`.zoho-studio/org.json` — the same thing [`zoho-studio z-crm:org:info`](10-org-info-command.md) does. The
 tokens are already saved by then, so a failure there is reported and the login still succeeds.
 
 The token values are never printed. `login` finds the project by walking up from the current
@@ -67,7 +67,7 @@ console or the client was replaced; that shows up as
 
 ## Checking the result
 
-[`zoho-studio status`](5-status-command.md) asks Zoho which organization the project is connected
+[`zoho-studio z-crm:status`](5-status-command.md) asks Zoho which organization the project is connected
 to — the quickest confirmation that the credentials and `api.baseUrl` are right.
 
 ## When it fails
