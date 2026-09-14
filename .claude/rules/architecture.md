@@ -10,14 +10,16 @@ Do not introduce new architectural layers, generic abstractions, or shared folde
 src/
   index.ts      # CLI entry point, registers the commands
   config.ts     # names and path resolvers for the .zoho-studio/ project directory
-  commands/     # CLI command definitions, one folder per command
+  commands/     # commands that belong to no Zoho product: init, login, debug, browser
   settings/     # project settings: types, defaults, loading, and storage
-  entities/     # domain entities (e.g.: field, function, module)
-    <entity>/
-      <entity>.types.ts   # the shape the CLI depends on
-      <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
-      api/                # requests belonging to this entity, one per file
-      services/           # work built on top of the entity, when more than one caller needs it
+  zoho-crm/     # one folder per Zoho product area; zoho-projects/ sits next to it
+    commands/   # CLI command definitions of this area, one folder per command
+    entities/   # domain entities of this area (e.g.: field, function, module)
+      <entity>/
+        <entity>.types.ts   # the shape the CLI depends on
+        <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
+        api/                # requests belonging to this entity, one per file
+        services/           # work built on top of the entity, when more than one caller needs it
   shared/       # reusable infrastructure and utilities
     logger/     # pino logger, createCommandLogger per command
     utils/      # standalone helpers, exposed through index.ts
@@ -28,17 +30,18 @@ src/
 
 A command folder exposes the command and nothing else: its `index.ts` exports only the `Command`,
 and whatever the command needs is either its own private file or lives in an entity. A command
-never imports from another command — logic two commands share belongs in `entities/<entity>/`.
+never imports from another command — logic two commands share belongs in the area's
+`entities/<entity>/`.
 
 `shared/api/` holds only infrastructure that belongs to no single entity: base clients, HTTP
 configuration, authentication, and error handling. An endpoint that belongs to a domain entity
-lives in `entities/<entity>/api/` instead.
+lives in `<area>/entities/<entity>/api/` instead.
 
 The two folders differ in one more way. Inside `shared/api/`, each area keeps its requests in a
 `requests/` subfolder; inside `entities/<entity>/`, requests sit directly in `api/`.
 
 ```text
-shared/api/                          entities/field/
+shared/api/                          zoho-crm/entities/field/
   auth/                                field.types.ts
     requests/                          api/
       refresh-access-token.request.ts     get-fields-list.request.ts
@@ -81,7 +84,7 @@ Add a new suffix only when an existing one does not fit the responsibility.
 Use `index.ts` to expose a clear public interface for a folder when it improves imports.
 
 ```ts
-import { getFunctionsList } from '@/entities/function'
+import { getFunctionsList } from '@/zoho-crm/entities/function'
 import { crmClient } from '@/shared/api/crm'
 import { getProjectSettings } from '@/settings/settings.store'
 ```
@@ -122,12 +125,15 @@ const taskId = options.task
 ## Tests
 
 Tests live in `tests/` and use the `.spec.ts` suffix. The path mirrors `src/`, except that a
-command's folder is flattened away — command specs sit directly under `tests/commands/`.
+command's folder is flattened away — command specs sit directly under `tests/commands/` or
+`tests/<area>/commands/`.
 
 ```text
 src/settings/settings.loader.ts             ->  tests/settings/settings.loader.spec.ts
 src/shared/api/auth/token.service.ts        ->  tests/shared/api/auth/token.service.spec.ts
 src/commands/init/init.service.ts           ->  tests/commands/init.service.spec.ts
+src/zoho-crm/commands/sync/sync.service.ts  ->  tests/zoho-crm/commands/sync.service.spec.ts
+src/zoho-crm/entities/field/field.utils.ts  ->  tests/zoho-crm/entities/field/field.utils.spec.ts
 ```
 
 Use the built-in Bun test runner (`import { describe, expect, test } from 'bun:test'`).

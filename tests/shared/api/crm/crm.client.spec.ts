@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@/entities/organization'
+import { getOrganization } from '@/zoho-crm/entities/organization'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
 

@@ -32,11 +32,11 @@ task_labels:
   - SKILL
 
 exemplars:
-  command: src/commands/fields/pull-fields.command.ts
+  command: src/zoho-crm/commands/fields/pull-fields.command.ts
   service: src/commands/init/init.service.ts
-  request: src/entities/field/api/get-fields-list.request.ts
+  request: src/zoho-crm/entities/field/api/get-fields-list.request.ts
   client: src/shared/api/crm/crm.client.ts
-  entity_types: src/entities/field/field.types.ts
+  entity_types: src/zoho-crm/entities/field/field.types.ts
   settings: src/settings/settings.store.ts
   utils: src/shared/utils/cli.utils.ts
   test_command: tests/commands/init.service.spec.ts

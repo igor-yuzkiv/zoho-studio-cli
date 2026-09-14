@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { printOrganization, pullOrganization } from '@/entities/organization'
+import { printOrganization, pullOrganization } from '@/zoho-crm/entities/organization'
 
 import { login } from '@/shared/api/auth'
 
