@@ -10,15 +10,26 @@ artifacts:
   client_update: none
   test_plan: project-office:comments
   workflow_record: project-office
+  list_flow: project-office
+  coverage_pass:
+  options:
+  architecture:
 
 language:
   chat: Ukrainian
   code: English
   git: English
   repo_docs: English
+  office_docs: Ukrainian
   tasks: Ukrainian
-  client: none
+  client_docs: none
+  client_messages: none
   local_notes: Ukrainian
+
+task_labels:
+  - CLI
+  - DOC
+  - SKILL
 
 exemplars:
   command: src/commands/fields/pull-fields.command.ts
