@@ -1,4 +1,4 @@
-import { functionCodeExtension, functionsDirName } from '@/config'
+import { functionCodeExtension, functionsDirName, zohoCrmDirName } from '@/config'
 import { toPathSegment } from '@/shared/artifacts'
 
 import type { ZohoFunction } from './function.types'
@@ -15,5 +15,5 @@ export function resolveCodeSegments(zohoFunction: NamedFunction): string[] {
 }
 
 function resolveFunctionDirSegments(zohoFunction: NamedFunction): string[] {
-    return [functionsDirName, toPathSegment(zohoFunction.api_name)]
+    return [zohoCrmDirName, functionsDirName, toPathSegment(zohoFunction.api_name)]
 }

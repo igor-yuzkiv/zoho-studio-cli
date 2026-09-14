@@ -8,14 +8,14 @@ pulled project.
 
 | Artifact | Path | Contents |
 |---|---|---|
-| Function | `src/functions/<api_name>/` | `<Name>.deluge` (source) and `<Name>.metadata.json` (arguments, return type, category, `rest_api_mode`, id) |
-| Module | `src/modules/<Module>/<Module>.metadata.json` | module definition |
-| Field | `src/modules/<Module>/fields/<Field_api_name>.json` | full field definition — type, picklist values, permissions |
-| Workflow rule | `src/workflows/<Name>.json` | trigger, conditions, and the actions each condition fires |
-| Workflow action | `src/workflow-actions/<type>/<Name>.json` | the action's own configuration |
-| Webhook | `src/webhooks/<Name>.json` | url, method, headers, body template, authentication |
-| Global picklist | `src/global-picklists/<api_name>.json` | the picklist and its values |
-| Organization | `.zoho-studio/org.json` | org snapshot, outside `src/` |
+| Function | `src/zoho-crm/functions/<api_name>/` | `<Name>.deluge` (source) and `<Name>.metadata.json` (arguments, return type, category, `rest_api_mode`, id) |
+| Module | `src/zoho-crm/modules/<Module>/<Module>.metadata.json` | module definition |
+| Field | `src/zoho-crm/modules/<Module>/fields/<Field_api_name>.json` | full field definition — type, picklist values, permissions |
+| Workflow rule | `src/zoho-crm/workflows/<Name>.json` | trigger, conditions, and the actions each condition fires |
+| Workflow action | `src/zoho-crm/workflow-actions/<type>/<Name>.json` | the action's own configuration |
+| Webhook | `src/zoho-crm/webhooks/<Name>.json` | url, method, headers, body template, authentication |
+| Global picklist | `src/zoho-crm/global-picklists/<api_name>.json` | the picklist and its values |
+| Organization | `.zoho-studio/org.json` | org snapshot, outside `src/zoho-crm/` |
 
 Workflow-action subdirectories: `email-notifications`, `field-updates`, `tasks`,
 `functions`, `webhooks`.
@@ -29,17 +29,17 @@ Each row is a key you can read and follow. Nothing here is a guess from a name.
 
 | From | Key | To |
 |---|---|---|
-| Workflow rule | `module.api_name` | `src/modules/<Module>/` |
+| Workflow rule | `module.api_name` | `src/zoho-crm/modules/<Module>/` |
 | Workflow rule | `execute_when.details.trigger_module.api_name` | the module whose records fire it |
-| Workflow rule | `conditions[].instant_actions.actions[]` → `{name, id, type}` | `src/workflow-actions/<type>/<name>.json`, with `_` in `type` becoming `-` in the directory name |
-| Workflow action | `module.api_name` | `src/modules/<Module>/` |
-| Workflow action (functions) | `function.api_name` | `src/functions/<api_name>/` |
+| Workflow rule | `conditions[].instant_actions.actions[]` → `{name, id, type}` | `src/zoho-crm/workflow-actions/<type>/<name>.json`, with `_` in `type` becoming `-` in the directory name |
+| Workflow action | `module.api_name` | `src/zoho-crm/modules/<Module>/` |
+| Workflow action (functions) | `function.api_name` | `src/zoho-crm/functions/<api_name>/` |
 | Workflow action (functions) | `arguments[].value` — `${!Module.Field}` | the module field supplying the argument |
-| Webhook | `module.api_name` | `src/modules/<Module>/` |
+| Webhook | `module.api_name` | `src/zoho-crm/modules/<Module>/` |
 | Webhook | `url` | an external system — outside this repository |
 | Webhook | `body.raw_data_content` — `${!Module.Field}` | the fields it sends |
 | Field | `lookup.module.api_name` | the module it points at |
-| Field | `global_picklist` → `{api_name, id}` | `src/global-picklists/<api_name>.json` |
+| Field | `global_picklist` → `{api_name, id}` | `src/zoho-crm/global-picklists/<api_name>.json` |
 
 This table is what has been confirmed, not a proof of completeness. The field rows cover
 lookups and global picklists; other data types — formula, rollup summary — may carry
@@ -62,7 +62,7 @@ probably called from a workflow. Probably is not evidence: confirm with the work
 file that names it. The project's own instructions describe its conventions.
 
 **There is no reverse index.** Every edge above points one way. Answering "what uses this"
-is a search across `src/` for the `api_name`, in each of the spellings it appears under.
+is a search across `src/zoho-crm/` for the `api_name`, in each of the spellings it appears under.
 
 ## What the files will not tell you
 
@@ -78,7 +78,7 @@ Always quote paths.
 unfiltered. Read the file to learn what a record carries; do not conclude a key is absent
 because some type definition omits it.
 
-**`src/` is the last pull, not the org.** Each pull replaces its directory wholesale, so an
+**`src/zoho-crm/` is the last pull, not the org.** Each pull replaces its directory wholesale, so an
 artifact deleted upstream disappears rather than lingering, and a finding is only true for
 the state it was made against. Fields require modules to have been pulled first, so a module
 with no `fields/` directory may mean the fields were never pulled — not that it has none.

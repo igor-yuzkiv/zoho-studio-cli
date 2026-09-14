@@ -24,7 +24,7 @@ from what was found, not from a template.
   `prefers-color-scheme: dark`. Give the page an explicit background rather than inheriting one.
 - **Wide things scroll inside themselves.** Tables and diagrams get their own
   `overflow-x: auto`; the page body must never scroll sideways.
-- **Say which pull it describes.** A commit or a date, near the top. `src/` is replaced
+- **Say which pull it describes.** A commit or a date, near the top. `src/zoho-crm/` is replaced
   wholesale by the next pull, so a page that does not say what state it describes cannot be
   checked later.
 

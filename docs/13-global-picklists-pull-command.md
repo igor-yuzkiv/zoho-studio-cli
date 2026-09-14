@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:global-picklists:pull`
 
-Downloads every Zoho CRM global picklist into a flat `src/global-picklists/` folder — one JSON file
+Downloads every Zoho CRM global picklist into a flat `src/zoho-crm/global-picklists/` folder — one JSON file
 per picklist, including the `pick_list_values` that the picklist list alone does not carry.
 
 ```bash
@@ -22,7 +22,7 @@ before it existed has to add it to `auth.scopes` and log in again.
 ## What you get
 
 ```text
-src/global-picklists/
+src/zoho-crm/global-picklists/
   Industry.json
   Source.json
   Time_Zone.json

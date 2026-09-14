@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { workflowsDirName } from '@/config'
+import { workflowsDirName, zohoCrmDirName } from '@/config'
 import { getWorkflowRule, getWorkflowRulesList, type ZohoWorkflowRule } from '@/zoho-crm/entities/workflow-rule'
 import { getProjectSettings } from '@/settings'
 import { describeRequestError } from '@/shared/api/crm'
@@ -46,7 +46,7 @@ export const pullWorkflowsCommand = new Command('z-crm:workflows:pull')
 
         // A full pull mirrors what Zoho returned; a single-module pull may only drop that module.
         const takenFileNames = module
-            ? await removeModuleArtifactFiles(await ensureArtifactDir(projectPath, [workflowsDirName]), module)
+            ? await removeModuleArtifactFiles(await ensureArtifactDir(projectPath, [zohoCrmDirName, workflowsDirName]), module)
             : await emptyWorkflowsDir(projectPath)
 
         const failed: FailedRule[] = []
@@ -75,7 +75,7 @@ export const pullWorkflowsCommand = new Command('z-crm:workflows:pull')
                     const details = await getWorkflowRule(workflowRule.id)
                     const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
 
-                    await writeArtifactJson(projectPath, [workflowsDirName, fileName], details)
+                    await writeArtifactJson(projectPath, [zohoCrmDirName, workflowsDirName, fileName], details)
 
                     takenFileNames.add(fileName)
                     savedRules += 1
@@ -105,7 +105,7 @@ export const pullWorkflowsCommand = new Command('z-crm:workflows:pull')
     })
 
 async function emptyWorkflowsDir(projectPath: string): Promise<Set<string>> {
-    await replaceArtifactDir(projectPath, [workflowsDirName])
+    await replaceArtifactDir(projectPath, [zohoCrmDirName, workflowsDirName])
 
     return new Set()
 }

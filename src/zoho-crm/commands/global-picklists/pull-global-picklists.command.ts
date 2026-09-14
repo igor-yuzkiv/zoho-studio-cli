@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { globalPicklistsDirName } from '@/config'
+import { globalPicklistsDirName, zohoCrmDirName } from '@/config'
 import {
     getGlobalPicklist,
     getGlobalPicklistsList,
@@ -41,7 +41,7 @@ export const pullGlobalPicklistsCommand = new Command('z-crm:global-picklists:pu
         logger.info({ total: globalPicklists.length }, 'Global picklists found')
 
         // Rewritten only once the list arrived, so a failed pull keeps the previous snapshot.
-        await replaceArtifactDir(projectPath, [globalPicklistsDirName])
+        await replaceArtifactDir(projectPath, [zohoCrmDirName, globalPicklistsDirName])
 
         const takenFileNames = new Set<string>()
         const failed: FailedPicklist[] = []
@@ -70,7 +70,7 @@ export const pullGlobalPicklistsCommand = new Command('z-crm:global-picklists:pu
                     const details = await getGlobalPicklist(globalPicklist.id)
                     const fileName = resolveArtifactFileName(globalPicklist.api_name, globalPicklist.id, takenFileNames)
 
-                    await writeArtifactJson(projectPath, [globalPicklistsDirName, fileName], details)
+                    await writeArtifactJson(projectPath, [zohoCrmDirName, globalPicklistsDirName, fileName], details)
 
                     takenFileNames.add(fileName)
                     savedPicklists += 1

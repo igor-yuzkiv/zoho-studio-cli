@@ -21,6 +21,9 @@ export const projectSourceDirName = 'src'
 
 export const logsDirName = 'logs'
 
+/** Every CRM artifact sits under this folder inside `src/`, so the Projects area can sit next to it. */
+export const zohoCrmDirName = 'zoho-crm'
+
 export const functionsDirName = 'functions'
 export const modulesDirName = 'modules'
 export const workflowsDirName = 'workflows'

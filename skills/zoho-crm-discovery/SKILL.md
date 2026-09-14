@@ -14,7 +14,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 # Zoho CRM discovery
 
 Answer one question about how a Zoho CRM org actually behaves — what runs when, what is wired
-to what — from the configuration the `zoho-studio` CLI pulled into `src/`.
+to what — from the configuration the `zoho-studio` CLI pulled into `src/zoho-crm/`.
 
 The subject is the org's logic and its connections. The files are only where that logic is
 recorded, so they are the evidence, never the point.
@@ -23,7 +23,7 @@ recorded, so they are the evidence, never the point.
 explanation of Zoho behaviour is not a finding. What you could not establish is
 reported, not omitted — silence reads as coverage.
 
-`src/` is a mirror. The next pull overwrites it, so editing a file there changes nothing in
+`src/zoho-crm/` is a mirror. The next pull overwrites it, so editing a file there changes nothing in
 the org. Where a project allows new work, its own instructions say where it goes.
 
 ## Step 1 — confirm the ground
@@ -34,7 +34,7 @@ external systems consume its webhooks. `references/artifact-graph.md` carries th
 the reference shapes, which are the CLI's contract and the same in every project. When the
 two disagree about layout, the files on disk decide.
 
-`src/` reflects the last pull, not the org. Before concluding that something is absent,
+`src/zoho-crm/` reflects the last pull, not the org. Before concluding that something is absent,
 check whether it was ever pulled — `logs/zoho-studio-cli.log`, when the project keeps one,
 records what ran and what failed.
 
@@ -64,7 +64,7 @@ Two traversals answer almost everything:
 - **downstream** — what does this artifact reach? Rule → its actions → the function or
   webhook each action binds → what that code touches.
 - **upstream** — what reaches this artifact? Given a function or module, search for its
-  `api_name` across `src/`. This is the one direction with no index, so it is a search, and
+  `api_name` across `src/zoho-crm/`. This is the one direction with no index, so it is a search, and
   its completeness is only as good as the patterns you tried.
 
 A function appears under its `api_name`, its display name, and its file name, and these
@@ -78,7 +78,7 @@ hint about intent, never proof of a caller.
 ## Step 4 — spend context deliberately
 
 A real org is larger than it looks: a module directory can hold a hundred field files, and
-`src/modules/` several thousand. The reference keys are few and these files are JSON, so a
+`src/zoho-crm/modules/` several thousand. The reference keys are few and these files are JSON, so a
 grep across many usually beats opening any of them.
 
 When the sweep grows past what fits comfortably, the scope was too wide. Report the boundary
@@ -121,7 +121,7 @@ Update an existing document when one covers this artifact; create a new one only
 does. Follow the naming and format the project's existing documents already use.
 
 **Date the investigation against what it was made from.** Record the commit or the pull the
-findings came from. A pull replaces `src/` wholesale, so a document that does not say which
+findings came from. A pull replaces `src/zoho-crm/` wholesale, so a document that does not say which
 state it describes cannot be checked later.
 
 ## Boundary

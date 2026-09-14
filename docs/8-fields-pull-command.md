@@ -26,7 +26,7 @@ with the `ZohoCRM.settings.fields.READ` scope granted.
 ## What lands on disk
 
 ```text
-src/modules/
+src/zoho-crm/modules/
 └── Leads/
     ├── Leads.metadata.json
     └── fields/
@@ -40,7 +40,7 @@ Each file is named after the field's API name and holds the full field record ex
 characters a path segment cannot contain are replaced; nothing else about the name is changed.
 
 The `fields/` folder is fixed — it is not configurable. Its parent is
-`src/modules/`, the same folder `z-crm:modules:pull` writes to.
+`src/zoho-crm/modules/`, the same folder `z-crm:modules:pull` writes to.
 
 **The `fields/` folder of every pulled module is deleted and recreated on each run**, so a field
 removed in Zoho disappears locally and any local edit inside it is lost. Nothing else is touched:

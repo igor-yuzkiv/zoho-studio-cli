@@ -39,7 +39,7 @@ and treat a leak as if a password leaked.
 ```
 
 **Where the pulled files go is not configurable.** Every artifact lands under `src/` at a fixed
-path — `src/functions`, `src/modules`, `src/workflows` — so that the CLI can rely on the layout.
+path — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows` — so that the CLI can rely on the layout.
 See [`zoho-studio init`](3-init-command.md) for the whole tree.
 
 There are two kinds of values in there, and the difference matters when you edit the file by hand:

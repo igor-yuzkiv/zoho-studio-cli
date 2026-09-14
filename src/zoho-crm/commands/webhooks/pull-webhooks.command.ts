@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { webhooksDirName } from '@/config'
+import { webhooksDirName, zohoCrmDirName } from '@/config'
 import { getWebhook, getWebhooksList, type ZohoWebhook } from '@/zoho-crm/entities/webhook'
 import { describeRequestError } from '@/shared/api/crm'
 import { getProjectSettings } from '@/settings'
@@ -40,7 +40,7 @@ export const pullWebhooksCommand = new Command('z-crm:webhooks:pull')
 
         logger.info({ total: webhooks.length }, 'Webhooks found')
 
-        await replaceArtifactDir(projectPath, [webhooksDirName])
+        await replaceArtifactDir(projectPath, [zohoCrmDirName, webhooksDirName])
 
         const takenFileNames = new Set<string>()
         const failed: FailedWebhook[] = []
@@ -70,7 +70,7 @@ export const pullWebhooksCommand = new Command('z-crm:webhooks:pull')
                     const details = await getWebhook(webhook.id)
                     const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
 
-                    await writeArtifactJson(projectPath, [webhooksDirName, fileName], details)
+                    await writeArtifactJson(projectPath, [zohoCrmDirName, webhooksDirName, fileName], details)
 
                     takenFileNames.add(fileName)
                     savedWebhooks += 1

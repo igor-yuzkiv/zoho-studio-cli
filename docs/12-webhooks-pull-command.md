@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:webhooks:pull`
 
-Downloads every Zoho CRM webhook into a flat `src/webhooks/` folder — one JSON file per webhook,
+Downloads every Zoho CRM webhook into a flat `src/zoho-crm/webhooks/` folder — one JSON file per webhook,
 including the request body, headers, URL parameters, and authentication that the webhook list alone
 does not carry.
 
@@ -31,7 +31,7 @@ the webhook currently being pulled.
 ## What lands on disk
 
 ```text
-src/webhooks/
+src/zoho-crm/webhooks/
 ├── SRV.Programs.Delete.json
 ├── SRV.Shipping_Packages.Upsert.json
 └── Notify Billing.json
@@ -43,7 +43,7 @@ formatted with a four-space indent and a trailing newline. That record includes 
 what the webhook actually sends. Note that `authentication` names the connection Zoho uses; no
 secret is part of the response.
 
-The folder is always `src/webhooks/`; no setting moves it.
+The folder is always `src/zoho-crm/webhooks/`; no setting moves it.
 
 **The whole folder is deleted and recreated on each run**, so a webhook removed in Zoho disappears
 locally and any local edit is lost.

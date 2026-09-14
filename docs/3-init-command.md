@@ -38,7 +38,7 @@ my-project/
   src/
 ```
 
-`src/` is where every pull writes: `src/functions`, `src/modules`, `src/workflows`. Those paths are
+`src/` is where every pull writes: `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`. Those paths are
 fixed and no setting moves them. Each folder appears on the first pull that fills it.
 
 Everything except `settings.json` comes from the template, and **an existing file is never

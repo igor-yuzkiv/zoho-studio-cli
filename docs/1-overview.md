@@ -8,8 +8,13 @@ A **project** is any folder containing `.zoho-studio/settings.json`. That single
 everything the CLI needs: which Zoho account to talk to, which API to call, and the credentials to
 do it with. `zoho-studio init` scaffolds the project around it.
 
-Everything the CLI downloads lands under `src/`, at paths it fixes and no setting moves —
-`src/functions`, `src/modules`, `src/workflows`, `src/workflow-actions`.
+Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
+and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
+`src/zoho-crm/workflow-actions`.
+
+A project pulled before the CRM artifacts moved under `src/zoho-crm/` still has the old
+`src/functions`, `src/modules` and similar folders. The CLI neither moves nor deletes them: run the
+`z-crm:*:pull` commands again and remove the old folders yourself.
 
 ## Running the CLI
 

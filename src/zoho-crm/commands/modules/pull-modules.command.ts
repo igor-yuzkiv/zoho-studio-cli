@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { modulesDirName } from '@/config'
+import { modulesDirName, zohoCrmDirName } from '@/config'
 import { getModulesList, resolveMetadataSegments, type ZohoModule } from '@/zoho-crm/entities/module'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
@@ -26,7 +26,7 @@ export const pullModulesCommand = new Command('z-crm:modules:pull')
         logger.info({ total: modules.length }, 'Modules found')
 
         // The directory mirrors exactly what this pull returned, so stale modules are dropped.
-        await replaceArtifactDir(projectPath, [modulesDirName])
+        await replaceArtifactDir(projectPath, [zohoCrmDirName, modulesDirName])
 
         for (const module of modules) {
             await writeArtifactJson(projectPath, resolveMetadataSegments(module.api_name), module)

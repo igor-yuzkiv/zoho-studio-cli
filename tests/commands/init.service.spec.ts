@@ -77,7 +77,7 @@ describe('initializeProject', () => {
 
     test('never deletes pulled artifacts, even when forced', async () => {
         await initializeProject(workingPath)
-        const artifactPath = join(workingPath, 'src/functions/send_invoice/Send Invoice.deluge')
+        const artifactPath = join(workingPath, 'src/zoho-crm/functions/send_invoice/Send Invoice.deluge')
         await Bun.write(artifactPath, 'info "sent";')
 
         await initializeProject(workingPath, { force: true })

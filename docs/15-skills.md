@@ -28,7 +28,7 @@ standing deliverable it builds a self-contained HTML page — a report or a conn
 whose shape follows the investigation, with the diagrams as inline SVG so the file opens
 offline with no external request.
 
-The skill is read-only. `src/` is a mirror the next pull overwrites, so the skill explains
+The skill is read-only. `src/zoho-crm/` is a mirror the next pull overwrites, so the skill explains
 what it reads and never edits it, and it does not run the CLI to refresh it.
 
 Where a written-up investigation is stored is the pulled project's decision, not the skill's:

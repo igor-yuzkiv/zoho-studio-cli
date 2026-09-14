@@ -3,7 +3,7 @@ import { readdir } from 'node:fs/promises'
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { fieldsDirName, modulesDirName } from '@/config'
+import { fieldsDirName, modulesDirName, zohoCrmDirName } from '@/config'
 import { getFieldsList, resolveFieldFileName } from '@/zoho-crm/entities/field'
 import { getProjectSettings } from '@/settings'
 import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@/shared/artifacts'
@@ -25,7 +25,7 @@ export const pullFieldsCommand = new Command('z-crm:fields:pull')
         logger.info({ module: options.module ?? null }, 'Starting fields pull')
 
         const { projectPath } = await getProjectSettings()
-        const modulesPath = resolveArtifactPath(projectPath, [modulesDirName])
+        const modulesPath = resolveArtifactPath(projectPath, [zohoCrmDirName, modulesDirName])
 
         const moduleNames = options.module
             ? [await resolveRequestedModule(modulesPath, options.module)]
@@ -56,7 +56,7 @@ export const pullFieldsCommand = new Command('z-crm:fields:pull')
 
                 try {
                     const fields = await getFieldsList(moduleName)
-                    const fieldsSegments = [modulesDirName, moduleName, fieldsDirName]
+                    const fieldsSegments = [zohoCrmDirName, modulesDirName, moduleName, fieldsDirName]
 
                     // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
                     await replaceArtifactDir(projectPath, fieldsSegments)

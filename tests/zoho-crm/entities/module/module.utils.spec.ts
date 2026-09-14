@@ -4,10 +4,10 @@ import { resolveMetadataSegments } from '@/zoho-crm/entities/module'
 
 describe('resolveMetadataSegments', () => {
     test('names both the directory and the file after the module API name', () => {
-        expect(resolveMetadataSegments('Leads')).toEqual(['modules', 'Leads', 'Leads.metadata.json'])
+        expect(resolveMetadataSegments('Leads')).toEqual(['zoho-crm', 'modules', 'Leads', 'Leads.metadata.json'])
     })
 
     test('keeps each name a single path segment', () => {
-        expect(resolveMetadataSegments('crm/Leads')).toEqual(['modules', 'crm_Leads', 'crm_Leads.metadata.json'])
+        expect(resolveMetadataSegments('crm/Leads')).toEqual(['zoho-crm', 'modules', 'crm_Leads', 'crm_Leads.metadata.json'])
     })
 })

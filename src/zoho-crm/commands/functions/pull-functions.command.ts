@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { functionsDirName } from '@/config'
+import { functionsDirName, zohoCrmDirName } from '@/config'
 import {
     getFunctionCode,
     getFunctionsList,
@@ -42,7 +42,7 @@ export const pullFunctionsCommand = new Command('z-crm:functions:pull')
         logger.info({ total: functions.length }, 'Functions found')
 
         // The directory mirrors exactly what this pull returned, so stale functions are dropped.
-        await replaceArtifactDir(projectPath, [functionsDirName])
+        await replaceArtifactDir(projectPath, [zohoCrmDirName, functionsDirName])
 
         for (const zohoFunction of functions) {
             await writeArtifactJson(projectPath, resolveMetadataSegments(zohoFunction), zohoFunction)

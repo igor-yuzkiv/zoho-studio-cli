@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:functions:pull`
 
-Downloads every Zoho CRM function of the project into `src/functions/` — one directory
+Downloads every Zoho CRM function of the project into `src/zoho-crm/functions/` — one directory
 per function, holding its metadata and its Deluge source.
 
 ```bash
@@ -24,7 +24,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-src/functions/
+src/zoho-crm/functions/
 └── calculate_invoice_total/
     ├── Calculate Invoice Total.metadata.json
     └── Calculate Invoice Total.deluge
@@ -40,7 +40,7 @@ it is never formatted, wrapped, or parsed.
 **The target directory is deleted and recreated on every run.** It always reflects the current pull,
 so a function removed in Zoho disappears locally, and any local edit inside it is lost.
 
-The location is fixed: `src/functions/` under the project root, created if it is not there. No
+The location is fixed: `src/zoho-crm/functions/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.
 
 ## Failures

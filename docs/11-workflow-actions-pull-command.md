@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:workflow-actions:pull`
 
-Downloads every Zoho CRM workflow action into `src/workflow-actions/` — one JSON file per action,
+Downloads every Zoho CRM workflow action into `src/zoho-crm/workflow-actions/` — one JSON file per action,
 grouped by action type, including the configuration that the action list alone does not carry.
 
 ```bash
@@ -32,7 +32,7 @@ pulled, prefixed by its type.
 ## What lands on disk
 
 ```text
-src/workflow-actions/
+src/zoho-crm/workflow-actions/
 ├── email-notifications/
 │   └── Send Welcome Email.json
 ├── field-updates/
@@ -72,7 +72,7 @@ passed over.
 A `functions` action records which function it calls and with what arguments; the Deluge source
 itself comes from [`z-crm:functions:pull`](6-functions-pull-command.md).
 
-The folder is always `src/workflow-actions/`; no setting moves it.
+The folder is always `src/zoho-crm/workflow-actions/`; no setting moves it.
 
 **A type's folder is deleted and recreated on each full run**, so an action removed in Zoho
 disappears locally and any local edit is lost. A type whose list request failed keeps its previous

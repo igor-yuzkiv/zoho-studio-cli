@@ -1,7 +1,7 @@
 import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
-import { workflowActionsDirName } from '@/config'
+import { workflowActionsDirName, zohoCrmDirName } from '@/config'
 import {
     assertWorkflowActionType,
     describePullError,
@@ -114,7 +114,7 @@ export const pullWorkflowActionsCommand = new Command('z-crm:workflow-actions:pu
 
                     await writeArtifactJson(
                         projectPath,
-                        [workflowActionsDirName, toWorkflowActionDirName(type), fileName],
+                        [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type), fileName],
                         details ?? action
                     )
 
@@ -162,7 +162,7 @@ async function prepareTypeDir(
     type: WorkflowActionType,
     module: string | undefined
 ): Promise<Set<string>> {
-    const segments = [workflowActionsDirName, toWorkflowActionDirName(type)]
+    const segments = [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type)]
 
     if (!module) {
         await replaceArtifactDir(projectPath, segments)
