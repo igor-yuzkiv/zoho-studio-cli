@@ -9,7 +9,6 @@ export const milestonesParentSegments = [zohoProjectsDirName, rawDirName]
 /** Where task lists outside any milestone go — Zoho's "None" pseudo-milestone never comes back from `phases`. */
 export const noMilestoneSegments = [...milestonesParentSegments, noMilestoneDirName]
 
-/** Returns the segments of the milestone's folder, written or updated in place. */
 export function writeMilestone(projectPath: string, milestone: ZohoMilestone): Promise<string[]> {
     return writeRawEntity(projectPath, milestonesParentSegments, milestone)
 }

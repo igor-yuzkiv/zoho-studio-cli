@@ -58,7 +58,6 @@ export function answerProjectsLists({ milestones = [], taskLists = [], tasks = [
     }
 }
 
-/** The sorted folder names under `src/zoho-projects/raw/<relativePath>`, or `[]` when it does not exist. */
 export async function readRawDirs(projectPath: string, relativePath = '.'): Promise<string[]> {
     return (await readdir(join(projectPath, 'src/zoho-projects/raw', relativePath)).catch(() => [])).sort()
 }
