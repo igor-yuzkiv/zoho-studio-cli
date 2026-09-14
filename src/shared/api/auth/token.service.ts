@@ -1,4 +1,4 @@
-import { projectSettingsRelativePath } from '@/config'
+import { workspaceSettingsRelativePath } from '@/config'
 import { getProjectSettings, saveProjectSettings, type ProjectContext } from '@/settings'
 
 import { refreshAccessToken } from './requests'
@@ -33,7 +33,7 @@ export class TokenService {
         const { clientId, clientSecret, tokens } = settings.auth
 
         if (!tokens.refreshToken) {
-            throw new Error(`No refresh token in ${projectSettingsRelativePath}. Run "zoho-studio login" first.`)
+            throw new Error(`No refresh token in ${workspaceSettingsRelativePath}. Run "zoho-studio login" first.`)
         }
 
         const refreshed = await refreshAccessToken({ clientId, clientSecret, refreshToken: tokens.refreshToken })

@@ -1,38 +1,38 @@
 import { join } from 'node:path'
 
-export const projectSettingsDirName = '.zoho-studio'
+export const workspaceSettingsDirName = '.zoho-studio'
 
 // bunfig resolves a config file by base name, so the extension is kept separate.
-export const projectSettingsBaseName = 'settings'
-export const projectSettingsFileName = `${projectSettingsBaseName}.json`
+export const workspaceSettingsBaseName = 'settings'
+export const workspaceSettingsFileName = `${workspaceSettingsBaseName}.json`
 
-export const projectSettingsRelativePath = `${projectSettingsDirName}/${projectSettingsFileName}`
+export const workspaceSettingsRelativePath = `${workspaceSettingsDirName}/${workspaceSettingsFileName}`
 
 /** The organization snapshot describes the project itself, so it sits next to the settings. */
-export const projectOrganizationFileName = 'org.json'
+export const workspaceOrganizationFileName = 'org.json'
 
-export const projectOrganizationRelativePath = `${projectSettingsDirName}/${projectOrganizationFileName}`
+export const workspaceOrganizationRelativePath = `${workspaceSettingsDirName}/${workspaceOrganizationFileName}`
 
 /**
  * Every downloaded or generated artifact lives here. The layout is fixed rather than configurable
  * so that later features can rely on where things are.
  */
-export const projectSourceDirName = 'src'
+export const workspaceSourceDirName = 'src'
 
 export const logsDirName = 'logs'
 
-export function resolveProjectSettingsDirPath(projectPath: string): string {
-    return join(projectPath, projectSettingsDirName)
+export function resolveWorkspaceSettingsDirPath(projectPath: string): string {
+    return join(projectPath, workspaceSettingsDirName)
 }
 
-export function resolveProjectSettingsPath(projectPath: string): string {
-    return join(resolveProjectSettingsDirPath(projectPath), projectSettingsFileName)
+export function resolveWorkspaceSettingsPath(projectPath: string): string {
+    return join(resolveWorkspaceSettingsDirPath(projectPath), workspaceSettingsFileName)
 }
 
-export function resolveProjectOrganizationPath(projectPath: string): string {
-    return join(resolveProjectSettingsDirPath(projectPath), projectOrganizationFileName)
+export function resolveWorkspaceOrganizationPath(projectPath: string): string {
+    return join(resolveWorkspaceSettingsDirPath(projectPath), workspaceOrganizationFileName)
 }
 
-export function resolveProjectSourcePath(projectPath: string): string {
-    return join(projectPath, projectSourceDirName)
+export function resolveWorkspaceSourcePath(projectPath: string): string {
+    return join(projectPath, workspaceSourceDirName)
 }

@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { resolveProjectSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsPath } from '@/config'
 import { clearProjectCache, defaultProjectSettings, getProjectSettings, saveProjectSettings } from '@/settings'
 
 let projectPath: string
@@ -55,7 +55,7 @@ describe('project store reads and writes', () => {
     test('restricts settings.json to the owner', async () => {
         await saveProjectSettings(projectPath, defaultProjectSettings)
 
-        const mode = (await stat(resolveProjectSettingsPath(projectPath))).mode & 0o777
+        const mode = (await stat(resolveWorkspaceSettingsPath(projectPath))).mode & 0o777
 
         expect(mode).toBe(0o600)
     })
@@ -63,10 +63,10 @@ describe('project store reads and writes', () => {
 
 describe('project store caching', () => {
     test('serves settings from cache instead of re-reading the file', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
         expect(await readVersion(projectPath)).toBe('v9')
 
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'CHANGED' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'CHANGED' } }))
 
         expect(await readVersion(projectPath)).toBe('v9')
     })
@@ -81,7 +81,7 @@ describe('project store caching', () => {
     })
 
     test('a write refreshes the cached value', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
         await getProjectSettings(projectPath)
 
         const settings = { ...defaultProjectSettings, api: { ...defaultProjectSettings.api, version: 'v7' } }
@@ -94,8 +94,8 @@ describe('project store caching', () => {
         const otherProjectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-store-other-'))
 
         try {
-            await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
-            await Bun.write(resolveProjectSettingsPath(otherProjectPath), JSON.stringify({ api: { version: 'v7' } }))
+            await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
+            await Bun.write(resolveWorkspaceSettingsPath(otherProjectPath), JSON.stringify({ api: { version: 'v7' } }))
 
             expect(await readVersion(projectPath)).toBe('v9')
             expect(await readVersion(otherProjectPath)).toBe('v7')

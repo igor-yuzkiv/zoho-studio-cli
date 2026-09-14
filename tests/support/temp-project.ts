@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { resolveProjectSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsPath } from '@/config'
 import { clearProjectCache, defaultProjectSettings, type ProjectSettings } from '@/settings'
 
 const initialCwd = process.cwd()
@@ -31,7 +31,7 @@ export async function createTempProject(settings: ProjectSettings = buildSetting
     clearProjectCache()
 
     const projectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-'))
-    await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify(settings))
+    await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify(settings))
     process.chdir(projectPath)
 
     return projectPath
@@ -44,5 +44,5 @@ export async function removeTempProject(projectPath: string): Promise<void> {
 }
 
 export function readStoredSettings(projectPath: string): Promise<ProjectSettings> {
-    return Bun.file(resolveProjectSettingsPath(projectPath)).json()
+    return Bun.file(resolveWorkspaceSettingsPath(projectPath)).json()
 }

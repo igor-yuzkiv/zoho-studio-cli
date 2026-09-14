@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { writeJsonFile } from '@/shared/utils'
 
 import { findProjectPath, loadProjectSettings } from './settings.loader'
-import { projectSettingsRelativePath, resolveProjectSettingsPath } from '@/config'
+import { workspaceSettingsRelativePath, resolveWorkspaceSettingsPath } from '@/config'
 import type { ProjectContext, ProjectSettings } from './types'
 
 // Edits made outside the running CLI are not picked up.
@@ -16,7 +16,7 @@ export async function getProjectSettings(startPath: string = process.cwd()): Pro
 
     if (!projectPath) {
         throw new Error(
-            `No ${projectSettingsRelativePath} found in ${resolve(startPath)} or any parent. ` +
+            `No ${workspaceSettingsRelativePath} found in ${resolve(startPath)} or any parent. ` +
                 'Run "zoho-studio init" first.'
         )
     }
@@ -34,7 +34,7 @@ export async function getProjectSettings(startPath: string = process.cwd()): Pro
 }
 
 export async function saveProjectSettings(projectPath: string, settings: ProjectSettings): Promise<void> {
-    const settingsPath = resolveProjectSettingsPath(projectPath)
+    const settingsPath = resolveWorkspaceSettingsPath(projectPath)
 
     // bunfig only reads config, so the file is written by hand.
     await writeJsonFile(settingsPath, settings)

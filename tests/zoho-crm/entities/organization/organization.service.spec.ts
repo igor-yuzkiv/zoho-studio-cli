@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
 import { formatOrganization, pullOrganization } from '@/zoho-crm/entities/organization'
-import { resolveProjectOrganizationPath } from '@/config'
+import { resolveWorkspaceOrganizationPath } from '@/config'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
 
 function storedOrganizationFile(): ReturnType<typeof Bun.file> {
-    return Bun.file(resolveProjectOrganizationPath(projectPath!))
+    return Bun.file(resolveWorkspaceOrganizationPath(projectPath!))
 }
 
 let projectPath: string | null = null
@@ -53,7 +53,7 @@ describe('pullOrganization', () => {
         const snapshot = await pullOrganization()
 
         expect(snapshot.projectPath).toBe(projectPath!)
-        expect(snapshot.organizationPath).toBe(resolveProjectOrganizationPath(projectPath!))
+        expect(snapshot.organizationPath).toBe(resolveWorkspaceOrganizationPath(projectPath!))
         expect(snapshot.organization).toEqual(organization)
         expect(await storedOrganizationFile().json()).toEqual(organization)
     })

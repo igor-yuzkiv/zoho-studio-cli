@@ -1,7 +1,7 @@
 import { mkdir, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-import { projectSettingsFileName, resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
+import { workspaceSettingsFileName, resolveWorkspaceSettingsDirPath, resolveWorkspaceSettingsPath } from '@/config'
 import { defaultProjectSettings, saveProjectSettings } from '@/settings'
 
 import { templateFiles } from './template.manifest'
@@ -13,11 +13,11 @@ export async function initializeProject(
 ): Promise<InitializeProjectResult> {
     await assertPathIsNotAFile(projectPath)
     await mkdir(projectPath, { recursive: true })
-    await assertPathIsNotAFile(resolveProjectSettingsDirPath(projectPath))
+    await assertPathIsNotAFile(resolveWorkspaceSettingsDirPath(projectPath))
 
-    if ((await Bun.file(resolveProjectSettingsPath(projectPath)).exists()) && !force) {
+    if ((await Bun.file(resolveWorkspaceSettingsPath(projectPath)).exists()) && !force) {
         throw new Error(
-            `${projectSettingsFileName} already exists in ${projectPath}. ` +
+            `${workspaceSettingsFileName} already exists in ${projectPath}. ` +
                 'Re-run with --force to reset it, discarding the stored credentials and tokens.'
         )
     }

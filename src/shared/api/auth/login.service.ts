@@ -1,4 +1,4 @@
-import { projectSettingsRelativePath } from '@/config'
+import { workspaceSettingsRelativePath } from '@/config'
 import { getProjectSettings, saveProjectSettings } from '@/settings'
 
 import { pollDeviceToken, requestDeviceCode } from './requests'
@@ -11,13 +11,13 @@ export async function login({ onVerificationRequired }: LoginOptions = {}): Prom
 
     if (!clientId || !clientSecret) {
         throw new Error(
-            `auth.clientId and auth.clientSecret are required in ${projectSettingsRelativePath}. ` +
+            `auth.clientId and auth.clientSecret are required in ${workspaceSettingsRelativePath}. ` +
                 'Copy them from your client in the Zoho API Console — see docs/4-login-command.md.'
         )
     }
 
     if (scopes.length === 0) {
-        throw new Error(`auth.scopes is empty in ${projectSettingsRelativePath}. List the scopes the CLI may use.`)
+        throw new Error(`auth.scopes is empty in ${workspaceSettingsRelativePath}. List the scopes the CLI may use.`)
     }
 
     const deviceCode = await requestDeviceCode({ clientId, scopes })

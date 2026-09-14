@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { resolveProjectSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsPath } from '@/config'
 import { login } from '@/shared/api/auth'
 import type { ProjectSettings } from '@/settings'
 
@@ -81,7 +81,7 @@ describe('login', () => {
         expect(tokens.accessToken).toBe('access')
         expect(tokens.refreshToken).toBe('refresh')
         expect(tokens.accessTokenExpiresAt).toBe(result.accessTokenExpiresAt)
-        expect((await stat(resolveProjectSettingsPath(projectPath!))).mode & 0o777).toBe(0o600)
+        expect((await stat(resolveWorkspaceSettingsPath(projectPath!))).mode & 0o777).toBe(0o600)
         expect(result.projectPath).toBe(projectPath!)
         expect(result.apiDomainMismatch).toBeNull()
     })

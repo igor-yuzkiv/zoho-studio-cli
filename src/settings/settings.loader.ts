@@ -1,7 +1,7 @@
 import { loadConfig } from 'bunfig'
 import { dirname, resolve } from 'node:path'
 
-import { projectSettingsBaseName, resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
+import { workspaceSettingsBaseName, resolveWorkspaceSettingsDirPath, resolveWorkspaceSettingsPath } from '@/config'
 import { defaultProjectSettings } from './default.settings'
 import type { ProjectSettings } from './types'
 
@@ -11,8 +11,8 @@ import type { ProjectSettings } from './types'
  */
 export async function loadProjectSettings(projectPath: string = process.cwd()): Promise<ProjectSettings> {
     return loadConfig<ProjectSettings>({
-        name: projectSettingsBaseName,
-        cwd: resolveProjectSettingsDirPath(projectPath),
+        name: workspaceSettingsBaseName,
+        cwd: resolveWorkspaceSettingsDirPath(projectPath),
         defaultConfig: defaultProjectSettings,
         // bunfig derives a SETTINGS_* env prefix from the name and applies it to the defaults,
         // so a stray ambient SETTINGS_API_BASEURL would silently replace the fallback used for
@@ -26,7 +26,7 @@ export async function findProjectPath(startPath: string = process.cwd()): Promis
     let currentPath = resolve(startPath)
 
     for (;;) {
-        if (await Bun.file(resolveProjectSettingsPath(currentPath)).exists()) {
+        if (await Bun.file(resolveWorkspaceSettingsPath(currentPath)).exists()) {
             return currentPath
         }
 

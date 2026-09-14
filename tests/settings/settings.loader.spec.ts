@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
-import { resolveProjectSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsPath } from '@/config'
 import { defaultProjectSettings, findProjectPath, loadProjectSettings } from '@/settings'
 
 let projectPath: string
@@ -22,7 +22,7 @@ describe('project settings loader', () => {
     })
 
     test('merges a partial settings.json into the defaults', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
 
         const settings = await loadProjectSettings(projectPath)
 
@@ -33,7 +33,7 @@ describe('project settings loader', () => {
 
     test('merges credentials and tokens from the same file', async () => {
         await Bun.write(
-            resolveProjectSettingsPath(projectPath),
+            resolveWorkspaceSettingsPath(projectPath),
             JSON.stringify({ auth: { clientId: '1000.CLIENT', tokens: { refreshToken: 'refresh' } } })
         )
 
@@ -46,7 +46,7 @@ describe('project settings loader', () => {
     })
 
     test('ignores ambient SETTINGS_* environment variables for keys settings.json omits', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
         process.env.SETTINGS_API_BASEURL = 'https://hijacked.example'
 
         try {
@@ -57,7 +57,7 @@ describe('project settings loader', () => {
     })
 
     test('does not pick up a parent folder settings.json', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), JSON.stringify({ api: { version: 'v1' } }))
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v1' } }))
 
         const nestedPath = join(projectPath, 'nested')
 
@@ -67,13 +67,13 @@ describe('project settings loader', () => {
 
 describe('findProjectPath', () => {
     test('finds the project when started from the project folder itself', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), '{}')
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), '{}')
 
         expect(await findProjectPath(projectPath)).toBe(resolve(projectPath))
     })
 
     test('walks up from a nested folder', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), '{}')
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), '{}')
 
         const nestedPath = join(projectPath, 'functions', 'deals')
         await mkdir(nestedPath, { recursive: true })
@@ -82,10 +82,10 @@ describe('findProjectPath', () => {
     })
 
     test('returns the nearest project when they are nested', async () => {
-        await Bun.write(resolveProjectSettingsPath(projectPath), '{}')
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), '{}')
 
         const innerProjectPath = join(projectPath, 'inner')
-        await Bun.write(resolveProjectSettingsPath(innerProjectPath), '{}')
+        await Bun.write(resolveWorkspaceSettingsPath(innerProjectPath), '{}')
 
         expect(await findProjectPath(join(innerProjectPath, 'nested'))).toBe(resolve(innerProjectPath))
     })

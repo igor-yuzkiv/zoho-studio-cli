@@ -3,7 +3,7 @@ import { mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { resolveProjectSettingsDirPath, resolveProjectSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsDirPath, resolveWorkspaceSettingsPath } from '@/config'
 import { initializeProject } from '@/commands/init/init.service'
 import { clearProjectCache, defaultProjectSettings } from '@/settings'
 
@@ -26,7 +26,7 @@ describe('initializeProject', () => {
     test('scaffolds the project tree and writes the settings', async () => {
         const result = await initializeProject(workingPath)
 
-        expect(await Bun.file(resolveProjectSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
+        expect(await Bun.file(resolveWorkspaceSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
         expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
         expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\n')
@@ -36,7 +36,7 @@ describe('initializeProject', () => {
     test('keeps the settings readable by the owner only', async () => {
         await initializeProject(workingPath)
 
-        const mode = (await stat(resolveProjectSettingsPath(workingPath))).mode & 0o777
+        const mode = (await stat(resolveWorkspaceSettingsPath(workingPath))).mode & 0o777
 
         expect(mode).toBe(0o600)
     })
@@ -46,7 +46,7 @@ describe('initializeProject', () => {
 
         await initializeProject(projectPath)
 
-        expect(await Bun.file(resolveProjectSettingsPath(projectPath)).exists()).toBe(true)
+        expect(await Bun.file(resolveWorkspaceSettingsPath(projectPath)).exists()).toBe(true)
     })
 
     test('leaves the root .gitignore alone', async () => {
@@ -92,20 +92,20 @@ describe('initializeProject', () => {
     })
 
     test('fails when .zoho-studio exists as a file', async () => {
-        await Bun.write(resolveProjectSettingsDirPath(workingPath), 'content')
+        await Bun.write(resolveWorkspaceSettingsDirPath(workingPath), 'content')
 
         await expect(initializeProject(workingPath)).rejects.toThrow(/not a directory/)
     })
 
     test('resets settings.json to the defaults when forced', async () => {
         await Bun.write(
-            resolveProjectSettingsPath(workingPath),
+            resolveWorkspaceSettingsPath(workingPath),
             JSON.stringify({ api: { version: 'stale' }, auth: { clientId: '1000.CLIENT' } })
         )
 
         await initializeProject(workingPath, { force: true })
 
-        expect(await Bun.file(resolveProjectSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
+        expect(await Bun.file(resolveWorkspaceSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
     })
 
     test('fails when the target path is a file', async () => {

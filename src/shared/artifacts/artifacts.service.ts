@@ -1,7 +1,7 @@
 import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
-import { resolveProjectSourcePath } from '@/config'
+import { resolveWorkspaceSourcePath } from '@/config'
 import { writeJsonFile } from '@/shared/utils'
 
 /**
@@ -21,7 +21,7 @@ export function toPathSegment(value: string): string {
 
 /** Resolves a path under the project's `src`, refusing anything that would land outside it. */
 export function resolveArtifactPath(projectPath: string, segments: string[]): string {
-    const sourcePath = resolve(resolveProjectSourcePath(projectPath))
+    const sourcePath = resolve(resolveWorkspaceSourcePath(projectPath))
     const artifactPath = join(sourcePath, ...segments.map(toPathSegment))
 
     // Segments are sanitized above, so this holds unless that sanitizing is ever loosened.
