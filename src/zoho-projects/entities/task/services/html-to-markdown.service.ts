@@ -41,7 +41,6 @@ turndown.addRule('demotedHeading', {
 const zohoMentionPattern = /zp\[@zpuser#[^#\]]*#([^\]]*)\]zp/g
 const bareUrlPattern = /(?<![<(`])\b(https?:\/\/[^\s<>()[\]`'"]+?)(?=[.,;:]?(?:$|[\s)`'"]))/gm
 
-/** Converts the HTML Zoho Projects stores in task descriptions and comments to markdown. */
 export function htmlToMarkdown(html: string): string {
     if (!html.trim()) {
         return ''
