@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { MilestoneResolver } from '@/zoho-projects/entities/milestone'
 import { getTaskListsList, resolveTaskListParentSegments, writeTaskList } from '@/zoho-projects/entities/task-list'
 import { getProjectSettings } from '@/settings'
+import { describeProjectsRequestError } from '@/shared/api/projects'
 import { createCommandLogger } from '@/shared/logger'
 
 type SkippedTaskList = {
@@ -34,13 +35,10 @@ export const pullTaskListsCommand = new Command('z-projects:task-lists:pull')
                 saved += 1
                 logger.debug({ id: taskList.id, path: segments.join('/') }, 'Task list saved')
             } catch (error) {
-                const message = error instanceof Error ? error.message : String(error)
+                const message = describeProjectsRequestError(error)
 
                 skipped.push({ id: taskList.id, name: taskList.name, message })
-                logger.error(
-                    { err: error, taskList: taskList.id, milestone: taskList.milestone?.id },
-                    'Task list skipped'
-                )
+                logger.error({ message, taskList: taskList.id, milestone: taskList.milestone?.id }, 'Task list skipped')
             }
         }
 

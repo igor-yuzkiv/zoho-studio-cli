@@ -1,3 +1,4 @@
+import cliProgress from 'cli-progress'
 import { Command } from 'commander'
 
 import { MilestoneResolver } from '@/zoho-projects/entities/milestone'
@@ -11,6 +12,7 @@ import {
     writeTask,
 } from '@/zoho-projects/entities/task'
 import { getProjectSettings } from '@/settings'
+import { describeProjectsRequestError } from '@/shared/api/projects'
 import { createCommandLogger } from '@/shared/logger'
 
 type SkippedTask = {
@@ -39,22 +41,40 @@ export const pullTasksCommand = new Command('z-projects:tasks:pull')
         const skipped: SkippedTask[] = []
         let savedTasks = 0
         let savedComments = 0
+        const progressBar = new cliProgress.SingleBar(
+            {
+                format: 'Pulling tasks |{bar}| {value}/{total} | {name}',
+                hideCursor: true,
+                clearOnComplete: false,
+            },
+            cliProgress.Presets.shades_classic
+        )
 
-        for (const task of tasks) {
-            try {
-                const parentSegments = await resolveTaskParentSegments(task, taskLists, milestones)
-                const comments = await getTaskCommentsList(task.id)
-                const segments = await writeTask(projectPath, parentSegments, task, comments)
+        progressBar.start(tasks.length, 0, { name: 'Starting...' })
 
-                savedTasks += 1
-                savedComments += comments.length
-                logger.debug({ id: task.id, comments: comments.length, path: segments.join('/') }, 'Task saved')
-            } catch (error) {
-                const message = error instanceof Error ? error.message : String(error)
+        try {
+            for (const task of tasks) {
+                progressBar.update({ name: task.name })
 
-                skipped.push({ id: task.id, name: task.name, message })
-                logger.error({ err: error, task: task.id, taskList: task.tasklist?.id }, 'Task skipped')
+                try {
+                    const parentSegments = await resolveTaskParentSegments(task, taskLists, milestones)
+                    const comments = await getTaskCommentsList(task.id)
+                    const segments = await writeTask(projectPath, parentSegments, task, comments)
+
+                    savedTasks += 1
+                    savedComments += comments.length
+                    logger.debug({ id: task.id, comments: comments.length, path: segments.join('/') }, 'Task saved')
+                } catch (error) {
+                    const message = describeProjectsRequestError(error)
+
+                    skipped.push({ id: task.id, name: task.name, message })
+                    logger.error({ message, task: task.id, taskList: task.tasklist?.id }, 'Task skipped')
+                }
+
+                progressBar.increment()
             }
+        } finally {
+            progressBar.stop()
         }
 
         logger.info({ tasks: tasks.length, savedTasks, savedComments, skipped: skipped.length }, 'Tasks pull finished')

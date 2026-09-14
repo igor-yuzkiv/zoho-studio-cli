@@ -32,8 +32,11 @@ question a re-pull answers. Without options every task is pulled. A `--from` lat
 a date in another format, stops the command before any request.
 
 The whole task list is fetched and filtered locally; the comments are requested only for the tasks
-in the period, one task after another — Zoho limits the request rate, and comments are one request
-per task.
+in the period, one task after another, with a progress bar. Zoho allows 200 requests per API in a
+rolling two minutes, so the CLI pauses between requests — a period with hundreds of tasks takes
+minutes, not seconds. When Zoho still answers `URL_ROLLING_THROTTLES_LIMIT_EXCEEDED`, the CLI
+prints how long Zoho asked it to wait, waits, and repeats the request once; only a second refusal
+skips the task.
 
 ## What you get
 

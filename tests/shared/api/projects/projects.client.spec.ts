@@ -11,7 +11,12 @@ let requests: { path: string; authorization: string | null }[] = []
 
 const validTokens = { accessToken: 'access', refreshToken: 'refresh', accessTokenExpiresAt: Date.now() + 3_600_000 }
 
-async function startProject({ tokens = validTokens, portalId = '100', projectId = '200' } = {}): Promise<void> {
+async function startProject({
+    tokens = validTokens,
+    portalId = '100',
+    projectId = '200',
+    answer = (): Response => Response.json({ phases: [] }),
+} = {}): Promise<void> {
     projectsServer = Bun.serve({
         port: 0,
         fetch(request) {
@@ -20,7 +25,7 @@ async function startProject({ tokens = validTokens, portalId = '100', projectId 
                 authorization: request.headers.get('Authorization'),
             })
 
-            return Response.json({ phases: [] })
+            return answer()
         },
     })
 
@@ -56,7 +61,9 @@ describe('projectsClient', () => {
 
         await projectsClient.get('phases')
 
-        expect(requests).toEqual([{ path: '/api/v3/portal/100/projects/200/phases', authorization: 'Zoho-oauthtoken access' }])
+        expect(requests).toEqual([
+            { path: '/api/v3/portal/100/projects/200/phases', authorization: 'Zoho-oauthtoken access' },
+        ])
     })
 
     test('refreshes the token before the request when the stored one expired', async () => {
@@ -79,5 +86,38 @@ describe('projectsClient', () => {
 
         await expect(projectsClient.get('phases')).rejects.toThrow('projects.projectId is empty')
         expect(requests).toEqual([])
+    })
+
+    test('waits for Retry-After and repeats the request once when Zoho throttles it', async () => {
+        let answered = 0
+        await startProject({
+            answer: () =>
+                answered++ === 0
+                    ? Response.json(
+                          { error: { title: 'URL_ROLLING_THROTTLES_LIMIT_EXCEEDED', status_code: '400' } },
+                          { status: 400, headers: { 'Retry-After': '1' } }
+                      )
+                    : Response.json({ phases: [] }),
+        })
+
+        const startedAt = Date.now()
+        const response = await projectsClient.get('phases')
+
+        expect(response.status).toBe(200)
+        expect(requests).toHaveLength(2)
+        expect(Date.now() - startedAt).toBeGreaterThanOrEqual(1000)
+    })
+
+    test('gives up after one throttled retry', async () => {
+        await startProject({
+            answer: () =>
+                Response.json(
+                    { error: { title: 'URL_ROLLING_THROTTLES_LIMIT_EXCEEDED' } },
+                    { status: 400, headers: { 'Retry-After': '1' } }
+                ),
+        })
+
+        await expect(projectsClient.get('phases')).rejects.toThrow(/400/)
+        expect(requests).toHaveLength(2)
     })
 })
