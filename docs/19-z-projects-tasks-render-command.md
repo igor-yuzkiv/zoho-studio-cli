@@ -2,7 +2,9 @@
 
 Builds an Obsidian vault out of the raw Zoho Projects JSON the pull commands left in
 `src/zoho-projects/raw/`: one markdown file per task, an index per milestone and per task list,
-all under `src/zoho-projects/md/`. It reads the disk only — no request goes to Zoho.
+all under `src/zoho-projects/md/` — or under the folder `projects.mdPath` in the
+[settings](2-settings.md) names, absolute or relative to the workspace root, when you want the
+catalogue straight inside an Obsidian vault. It reads the disk only — no request goes to Zoho.
 
 ```bash
 zoho-studio z-projects:tasks:render
@@ -45,7 +47,9 @@ no letters or digits at all is replaced by the entity id. A task file is `<numbe
 `580-…`. An index is named after the display name of its milestone or task list — `:`, `|`, `/`, `\`,
 `[`, `]` replaced by ` -`, spaces collapsed, nothing cut — because the wikilinks point at it.
 
-`md/` is derived and rebuilt from scratch on every run: a task whose status changed in Zoho moves
+The catalogue folder is derived and rebuilt from scratch on every run — whatever else is in it is
+deleted, so give it a folder of its own; the workspace itself, its parents and `.zoho-studio` are
+refused. A task whose status changed in Zoho moves
 to its new status folder and the old file disappears. Do not edit the files by hand; edit
 `raw/` sources by pulling again. Two fields change on every run even when nothing else did —
 `rendered_at` and the task counters in the indexes — so expect that noise if `md/` is in git.

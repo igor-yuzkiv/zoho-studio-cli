@@ -19,7 +19,7 @@ export function startProjectsStub(
 ): Promise<ProjectsStub> {
     return startApiStub(
         answer,
-        (origin) => ({ projects: { baseUrl: origin, portalId: '100', projectId: '200', ...projects } }),
+        (origin) => ({ projects: { baseUrl: origin, portalId: '100', projectId: '200', mdPath: '', ...projects } }),
         tokens
     )
 }

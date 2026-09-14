@@ -25,6 +25,8 @@ export interface ProjectSettings {
         baseUrl: string
         portalId: string
         projectId: string
+        /** Where `z-projects:tasks:render` writes; empty means `src/zoho-projects/md` inside the workspace. */
+        mdPath: string
     }
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { toDisplayName, toSlug } from '@/zoho-projects/md'
+import { resolveMdPath, toDisplayName, toSlug } from '@/zoho-projects/md'
 
 describe('toSlug', () => {
     test('lower-cases, dashes and cuts a name', () => {
@@ -21,5 +21,23 @@ describe('toDisplayName', () => {
     test('replaces the characters Obsidian and the file system refuse', () => {
         expect(toDisplayName('Bugs | [Admin] Pilot')).toBe('Bugs - -Admin - Pilot')
         expect(toDisplayName('a/b\\c:d')).toBe('a -b -c -d')
+    })
+})
+
+describe('resolveMdPath', () => {
+    test('defaults to src/zoho-projects/md inside the workspace', () => {
+        expect(resolveMdPath('/ws', '')).toBe('/ws/src/zoho-projects/md')
+    })
+
+    test('takes an absolute path, or one relative to the workspace root', () => {
+        expect(resolveMdPath('/ws', '/vault/zoho')).toBe('/vault/zoho')
+        expect(resolveMdPath('/ws', 'notes/zoho')).toBe('/ws/notes/zoho')
+        expect(resolveMdPath('/ws', '../vault')).toBe('/vault')
+    })
+
+    test('refuses the workspace itself, its parents and its settings folder', () => {
+        expect(() => resolveMdPath('/ws/app', '.')).toThrow('points at the workspace itself')
+        expect(() => resolveMdPath('/ws/app', '..')).toThrow('points at the workspace itself')
+        expect(() => resolveMdPath('/ws/app', '.zoho-studio/md')).toThrow('points at the workspace itself')
     })
 })

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { readdir } from 'node:fs/promises'
+import { mkdir, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { renderTasksCommand } from '@/zoho-projects/commands/tasks-render'
@@ -130,6 +130,23 @@ describe('z-projects:tasks:render', () => {
 
         expect(await listMd()).toEqual([])
         expect(process.exitCode).toBe(1)
+    })
+
+    test('writes into the folder projects.mdPath names and wipes it first', async () => {
+        await removeTempProject(projectPath)
+        projectPath = await createTempProject(
+            buildSettings({ projects: { portalId: '100', projectId: '200', mdPath: 'vault/zoho' } })
+        )
+        await writeFixtureRaw()
+        const stale = join(projectPath, 'vault/zoho/old-note.md')
+        await mkdir(join(stale, '..'), { recursive: true })
+        await Bun.write(stale, 'gone after the render')
+
+        await run()
+
+        expect(await Bun.file(stale).exists()).toBe(false)
+        expect(await Bun.file(join(projectPath, 'vault/zoho/pilot/Pilot.md')).exists()).toBe(true)
+        expect(await listMd()).toEqual([])
     })
 
     test('stops before reading anything when the portal id is empty', async () => {

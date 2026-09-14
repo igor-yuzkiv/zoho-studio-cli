@@ -41,7 +41,8 @@ and treat a leak as if a password leaked.
     "projects": {
         "baseUrl": "https://projectsapi.zoho.com",
         "portalId": "",
-        "projectId": ""
+        "projectId": "",
+        "mdPath": ""
     }
 }
 ```
@@ -75,7 +76,11 @@ before any `z-projects:*` command works.
 `https://projects.zoho.com/portal/<portal name>#/projects/<projectId>/…` shows the project id, and
 the portal id is on the portal's settings page. `init` leaves both empty; a `z-projects:*` command
 stops with the name of the empty field before any request. `baseUrl` is the API host of your data
-center, separate from `api.baseUrl` because the two products live on different domains.
+center, separate from `api.baseUrl` because the two products live on different domains. `mdPath`
+is where [`z-projects:tasks:render`](19-z-projects-tasks-render-command.md) writes the markdown
+catalogue — empty for `src/zoho-projects/md/` inside the workspace, or a path (absolute, or
+relative to the workspace root) such as an Obsidian vault folder. The folder is wiped and rewritten
+on every render, so point it at a folder that holds nothing else.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
 `clientId` and `clientSecret` is a valid project. A key you do write **replaces** the default rather

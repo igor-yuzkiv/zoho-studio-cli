@@ -1,19 +1,20 @@
 import { Command } from 'commander'
 
-import { mdDirName, zohoProjectsDirName } from '@/zoho-projects/zoho-projects.config'
+import { rm } from 'node:fs/promises'
+
 import { renderMilestoneIndex, type IndexRenderContext } from '@/zoho-projects/entities/milestone'
 import { renderTaskListIndex } from '@/zoho-projects/entities/task-list'
 import { loadRawTree, renderTask } from '@/zoho-projects/entities/task'
+import { resolveMdPath, writeMdFile } from '@/zoho-projects/md'
 import { reportSkipped } from '@/zoho-projects/raw'
 import { getProjectSettings } from '@/settings'
 import { assertProjectsConfigured } from '@/shared/api/projects'
-import { replaceArtifactDir, writeArtifactText } from '@/shared/artifacts'
 import { createCommandLogger } from '@/shared/logger'
 
-const mdSegments = [zohoProjectsDirName, mdDirName]
-
 export const renderTasksCommand = new Command('z-projects:tasks:render')
-    .description('Build the Obsidian markdown catalogue in src/zoho-projects/md/ from the raw Zoho Projects JSON')
+    .description(
+        'Build the Obsidian markdown catalogue from the raw Zoho Projects JSON, in src/zoho-projects/md/ or the folder projects.mdPath names'
+    )
     .action(async () => {
         const logger = await createCommandLogger('z-projects:tasks:render')
         logger.info('Starting tasks render')
@@ -21,6 +22,8 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         const { projectPath, settings } = await getProjectSettings()
 
         assertProjectsConfigured(settings.projects)
+
+        const mdPath = resolveMdPath(projectPath, settings.projects.mdPath)
 
         const tree = await loadRawTree(projectPath)
 
@@ -38,17 +41,17 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         let comments = 0
 
         // md/ is derived from raw/ and a task moves folders when its status changes, so it is rebuilt whole.
-        await replaceArtifactDir(projectPath, mdSegments)
+        await rm(mdPath, { recursive: true, force: true })
 
         for (const milestone of tree.milestones) {
             const index = renderMilestoneIndex(milestone, context)
 
-            await writeArtifactText(projectPath, [...mdSegments, ...index.segments], index.content)
+            await writeMdFile(mdPath, index.segments, index.content)
 
             for (const taskList of milestone.taskLists) {
                 const taskListIndex = renderTaskListIndex(taskList, milestone, context)
 
-                await writeArtifactText(projectPath, [...mdSegments, ...taskListIndex.segments], taskListIndex.content)
+                await writeMdFile(mdPath, taskListIndex.segments, taskListIndex.content)
                 taskLists += 1
 
                 for (const status of taskList.statuses) {
@@ -61,7 +64,7 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
                             tasksById: tree.tasksById,
                         })
 
-                        await writeArtifactText(projectPath, [...mdSegments, ...rendered.segments], rendered.content)
+                        await writeMdFile(mdPath, rendered.segments, rendered.content)
                         comments += task.comments.length
                     }
                 }
@@ -77,6 +80,7 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
         }
 
         logger.info(summary, 'Tasks render finished')
+        console.log(`Catalogue written to: ${mdPath}`)
         console.log(`Milestones rendered: ${summary.milestones}`)
         console.log(`Task lists rendered: ${summary.taskLists}`)
         console.log(`Tasks rendered: ${summary.tasks}`)

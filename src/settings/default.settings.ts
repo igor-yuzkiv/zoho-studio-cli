@@ -39,5 +39,6 @@ export const defaultProjectSettings: ProjectSettings = {
         baseUrl: 'https://projectsapi.zoho.com',
         portalId: '',
         projectId: '',
+        mdPath: '',
     },
 }

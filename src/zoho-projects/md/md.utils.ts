@@ -1,6 +1,10 @@
+import { mkdir } from 'node:fs/promises'
+import { dirname, join, resolve, sep } from 'node:path'
+
 import { stringify } from 'yaml'
 
 import type { ProjectSettings } from '@/settings'
+import { toPathSegment } from '@/shared/artifacts'
 
 export type ProjectRef = Pick<ProjectSettings['projects'], 'portalId' | 'projectId'>
 
@@ -73,4 +77,42 @@ type ZohoEntityKind = 'task-detail' | 'tasklist-detail' | 'milestone-detail'
 
 export function zohoProjectsUrl(projects: ProjectRef, kind: ZohoEntityKind, id: string): string {
     return `https://projects.zoho.com/portal/${projects.portalId}#zp/projects/${projects.projectId}/${kind}/${id}`
+}
+
+/**
+ * The catalogue folder: `src/zoho-projects/md` inside the workspace unless `projects.mdPath` names
+ * another one. A custom folder is wiped on every render, so the workspace itself, anything above
+ * it, and `.zoho-studio` are refused.
+ */
+export function resolveMdPath(projectPath: string, mdPath: string): string {
+    const workspacePath = resolve(projectPath)
+    const target = mdPath.trim()
+        ? resolve(workspacePath, mdPath.trim())
+        : join(workspacePath, 'src', 'zoho-projects', 'md')
+    const settingsPath = join(workspacePath, '.zoho-studio')
+
+    if (
+        target === workspacePath ||
+        workspacePath.startsWith(target + sep) ||
+        target === settingsPath ||
+        target.startsWith(settingsPath + sep)
+    ) {
+        throw new Error(
+            `projects.mdPath "${mdPath}" points at the workspace itself or its settings; choose a folder the render may empty.`
+        )
+    }
+
+    return target
+}
+
+/** Writes one catalogue file below the md folder; every segment is sanitized so a Zoho name cannot leave it. */
+export async function writeMdFile(mdPath: string, segments: string[], content: string): Promise<void> {
+    const filePath = join(mdPath, ...segments.map(toPathSegment))
+
+    if (!filePath.startsWith(mdPath + sep)) {
+        throw new Error(`Catalogue path escapes ${mdPath}: ${filePath}`)
+    }
+
+    await mkdir(dirname(filePath), { recursive: true })
+    await Bun.write(filePath, content)
 }
