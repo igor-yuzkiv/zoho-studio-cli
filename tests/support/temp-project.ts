@@ -11,15 +11,18 @@ export function buildSettings({
     auth = {},
     api = {},
     logs = {},
+    projects = {},
 }: {
     auth?: Partial<ProjectSettings['auth']>
     api?: Partial<ProjectSettings['api']>
     logs?: Partial<ProjectSettings['logs']>
+    projects?: Partial<ProjectSettings['projects']>
 } = {}): ProjectSettings {
     return {
         auth: { ...defaultProjectSettings.auth, clientId: '1000.CLIENT', clientSecret: 'secret', ...auth },
         api: { ...defaultProjectSettings.api, ...api },
         logs: { ...defaultProjectSettings.logs, ...logs },
+        projects: { ...defaultProjectSettings.projects, ...projects },
     }
 }
 

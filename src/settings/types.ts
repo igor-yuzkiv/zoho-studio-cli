@@ -20,6 +20,12 @@ export interface ProjectSettings {
         /** The file every command logs to, relative to the project root. */
         file: string
     }
+    /** The one Zoho Projects project the `z-projects:*` commands work with. */
+    projects: {
+        baseUrl: string
+        portalId: string
+        projectId: string
+    }
 }
 
 /** The settings together with the project root they were found in. */

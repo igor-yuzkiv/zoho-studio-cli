@@ -16,6 +16,9 @@ export const defaultProjectSettings: ProjectSettings = {
             'ZohoCRM.settings.automation_actions.READ',
             'ZohoCRM.settings.global_picklist.READ',
             'ZohoCRM.settings.ALL',
+            'ZohoProjects.milestones.READ',
+            'ZohoProjects.tasklists.READ',
+            'ZohoProjects.tasks.READ',
         ],
         clientId: '',
         clientSecret: '',
@@ -31,5 +34,10 @@ export const defaultProjectSettings: ProjectSettings = {
     },
     logs: {
         file: `${logsDirName}/zoho-studio-cli.log`,
+    },
+    projects: {
+        baseUrl: 'https://projectsapi.zoho.com',
+        portalId: '',
+        projectId: '',
     },
 }
