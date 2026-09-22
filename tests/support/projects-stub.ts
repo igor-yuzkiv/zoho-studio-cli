@@ -34,16 +34,31 @@ interface ProjectsLists {
     taskLists?: unknown[]
     tasks?: unknown[]
     comments?: (taskId: string) => Response
+    issues?: unknown[]
+    issueComments?: (issueId: string) => Response
 }
 
-/** Routes the four Projects endpoints the pull commands call to the lists a test hands in. */
-export function answerProjectsLists({ milestones = [], taskLists = [], tasks = [], comments }: ProjectsLists) {
+/** Routes the Projects endpoints the pull commands call to the lists a test hands in. */
+export function answerProjectsLists({
+    milestones = [],
+    taskLists = [],
+    tasks = [],
+    comments,
+    issues = [],
+    issueComments,
+}: ProjectsLists) {
     return (request: Request): Response => {
         const { pathname } = new URL(request.url)
-        const commentsMatch = pathname.match(/\/tasks\/([^/]+)\/comments$/)
+        const commentsMatch = pathname.match(/\/(tasks|bugs)\/([^/]+)\/comments$/)
 
         if (commentsMatch) {
-            return comments ? comments(commentsMatch[1]!) : listPage('comments', [])
+            const answer = commentsMatch[1] === 'bugs' ? issueComments : comments
+
+            return answer ? answer(commentsMatch[2]!) : listPage('comments', [])
+        }
+
+        if (pathname.endsWith('/issues')) {
+            return listPage('issues', issues)
         }
 
         if (pathname.endsWith('/phases')) {

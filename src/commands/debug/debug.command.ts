@@ -21,7 +21,7 @@ const probePaths = [
     'issues?page=1&per_page=200',
     'issues/<ISSUE_ID>',
     'issues/<ISSUE_ID>/description',
-    'issues/<ISSUE_ID>/comments',
+    'bugs/<ISSUE_ID>/comments',
 ]
 
 const samplesDirName = '_tmp/zoho-projects-api'

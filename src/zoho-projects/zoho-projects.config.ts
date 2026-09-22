@@ -5,6 +5,8 @@ export const zohoProjectsDirName = 'zoho-projects'
 export const rawDirName = 'raw'
 export const taskListsDirName = 'task-lists'
 export const tasksDirName = 'tasks'
+/** Issues have no parent in Zoho, so they sit directly under `raw/`. */
+export const issuesDirName = 'issues'
 
 /** Fixed folder names for entities without a parent; the underscore keeps them apart from Zoho names. */
 export const noMilestoneDirName = '_no-milestone'

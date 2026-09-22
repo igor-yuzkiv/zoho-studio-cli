@@ -7,11 +7,11 @@ import {
     getTaskCommentsList,
     getTasksList,
     isTaskInPeriod,
-    parseTaskPeriod,
     resolveTaskParentSegments,
     writeTask,
 } from '@/zoho-projects/entities/task'
 import { getProjectSettings } from '@/settings'
+import { parsePeriod } from '@/zoho-projects/period.utils'
 import { describeProjectsRequestError } from '@/shared/api/projects'
 import { reportSkipped, type SkippedEntity } from '@/zoho-projects/raw'
 import { createCommandLogger } from '@/shared/logger'
@@ -24,7 +24,7 @@ export const pullTasksCommand = new Command('z-projects:tasks:pull')
     .option('--from <YYYY-MM-DD>', 'Only tasks last modified on or after this UTC date')
     .option('--to <YYYY-MM-DD>', 'Only tasks last modified on or before this UTC date')
     .action(async (options: { from?: string; to?: string }) => {
-        const period = parseTaskPeriod(options)
+        const period = parsePeriod(options)
         const logger = await createCommandLogger('z-projects:tasks:pull')
         logger.info({ from: options.from ?? null, to: options.to ?? null }, 'Starting tasks pull')
 
