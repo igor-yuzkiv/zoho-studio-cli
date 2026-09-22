@@ -59,4 +59,5 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [18-z-projects-tasks-pull-command.md](18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments, with `zoho-studio z-projects:tasks:pull`
 - [19-z-projects-tasks-render-command.md](19-z-projects-tasks-render-command.md) — building an Obsidian markdown catalogue from the raw Zoho Projects JSON with `zoho-studio z-projects:tasks:render`
 - [20-z-projects-issues-pull-command.md](20-z-projects-issues-pull-command.md) — downloading Zoho Projects issues by period, with their comments, with `zoho-studio z-projects:issues:pull`
+- [21-z-projects-issues-render-command.md](21-z-projects-issues-render-command.md) — building the issues part of the Obsidian catalogue from the raw Zoho Projects JSON with `zoho-studio z-projects:issues:render`
 - [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them

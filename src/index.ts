@@ -18,6 +18,7 @@ import { pullTaskListsCommand } from '@/zoho-projects/commands/task-lists'
 import { pullTasksCommand } from '@/zoho-projects/commands/tasks'
 import { pullIssuesCommand } from '@/zoho-projects/commands/issues'
 import { renderTasksCommand } from '@/zoho-projects/commands/tasks-render'
+import { renderIssuesCommand } from '@/zoho-projects/commands/issues-render'
 
 const program = new Command()
 
@@ -40,6 +41,7 @@ program.addCommand(pullTaskListsCommand)
 program.addCommand(pullTasksCommand)
 program.addCommand(pullIssuesCommand)
 program.addCommand(renderTasksCommand)
+program.addCommand(renderIssuesCommand)
 program.addCommand(browserCommand)
 
 try {

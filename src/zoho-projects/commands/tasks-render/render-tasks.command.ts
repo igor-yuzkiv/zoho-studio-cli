@@ -3,7 +3,7 @@ import { Command } from 'commander'
 import { renderMilestoneIndex, type IndexRenderContext } from '@/zoho-projects/entities/milestone'
 import { renderTaskListIndex } from '@/zoho-projects/entities/task-list'
 import { loadRawTree, renderTask } from '@/zoho-projects/entities/task'
-import { removeTaskFileFromOtherStatuses, resolveMdPath, writeMdFile } from '@/zoho-projects/md'
+import { removeFileFromOtherStatuses, resolveMdPath, writeMdFile } from '@/zoho-projects/md'
 import { reportSkipped } from '@/zoho-projects/raw'
 import { getProjectSettings } from '@/settings'
 import { assertProjectsConfigured } from '@/shared/api/projects'
@@ -59,7 +59,7 @@ export const renderTasksCommand = new Command('z-projects:tasks:render')
                             tasksById: tree.tasksById,
                         })
 
-                        await removeTaskFileFromOtherStatuses(mdPath, rendered.segments)
+                        await removeFileFromOtherStatuses(mdPath, rendered.segments)
                         await writeMdFile(mdPath, rendered.segments, rendered.content)
                         comments += task.comments.length
                     }

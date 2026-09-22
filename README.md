@@ -26,6 +26,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-projects:tasks:pull](docs/18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments
 - [z-projects:tasks:render](docs/19-z-projects-tasks-render-command.md) — building an Obsidian markdown catalogue from the raw Zoho Projects JSON
 - [z-projects:issues:pull](docs/20-z-projects-issues-pull-command.md) — downloading Zoho Projects issues by period, with their comments
+- [z-projects:issues:render](docs/21-z-projects-issues-render-command.md) — building the issues part of the Obsidian catalogue from the raw Zoho Projects JSON
 - [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Editor support

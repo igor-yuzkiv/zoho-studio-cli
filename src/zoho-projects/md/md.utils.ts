@@ -100,17 +100,24 @@ export async function writeMdFile(mdPath: string, segments: string[], content: s
 }
 
 /**
- * A task changes folder when its status changes; the copy under the previous status of the same
- * task list is removed so the vault does not show the task twice. Nothing else is ever deleted.
+ * A task or an issue changes folder when its status changes; the copy under the previous status of
+ * the same parent is removed so the vault does not show it twice. The status folder is the
+ * second-to-last segment, the file the last. Nothing else is ever deleted.
  */
-export async function removeTaskFileFromOtherStatuses(mdPath: string, taskSegments: string[]): Promise<void> {
-    const [milestoneDir, taskListDir, statusDir, fileName] = taskSegments.map(toPathSegment)
-    const taskListPath = join(mdPath, milestoneDir!, taskListDir!)
-    const entries = await readdir(taskListPath, { withFileTypes: true }).catch(() => [])
+export async function removeFileFromOtherStatuses(mdPath: string, segments: string[]): Promise<void> {
+    if (segments.length < 2) {
+        throw new Error(`A catalogue file needs a status folder and a file name, got: ${segments.join('/')}`)
+    }
+
+    const safeSegments = segments.map(toPathSegment)
+    const fileName = safeSegments.at(-1)!
+    const statusDir = safeSegments.at(-2)!
+    const parentPath = join(mdPath, ...safeSegments.slice(0, -2))
+    const entries = await readdir(parentPath, { withFileTypes: true }).catch(() => [])
 
     for (const entry of entries) {
         if (entry.isDirectory() && entry.name !== statusDir) {
-            await rm(join(taskListPath, entry.name, fileName!), { force: true })
+            await rm(join(parentPath, entry.name, fileName), { force: true })
         }
     }
 }
