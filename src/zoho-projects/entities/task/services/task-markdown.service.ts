@@ -2,14 +2,19 @@ import type { TreeMilestone } from '@/zoho-projects/entities/milestone'
 import type { TreeTaskList } from '@/zoho-projects/entities/task-list'
 import {
     cleanName,
+    type CrossLinkSource,
     type ProjectRef,
+    renderCommentBlock,
     renderFrontmatter,
+    resolveCrossLinks,
+    sortCommentsNewestFirst,
     toDisplayName,
+    toPersonEntry,
     toSlug,
     zohoProjectsUrl,
 } from '@/zoho-projects/md'
 
-import type { TreeStatus, TreeTask, ZohoPerson, ZohoTask } from '../task.types'
+import type { TreeStatus, TreeTask, ZohoTask } from '../task.types'
 import { taskFileBaseName } from '../task.utils'
 import { htmlToMarkdown } from './html-to-markdown.service'
 
@@ -33,11 +38,11 @@ export function renderTask(treeTask: TreeTask, context: TaskRenderContext): Rend
     const name = cleanName(task.name)
     const url = zohoProjectsUrl(context.projects, 'task-detail', task.id)
     const description = htmlToMarkdown(task.description ?? '')
-    const comments = [...treeTask.comments].sort((left, right) =>
-        String(right.created_time ?? '').localeCompare(String(left.created_time ?? ''))
-    )
+    const comments = sortCommentsNewestFirst(treeTask.comments)
     const commentBodies = comments.map((comment) => htmlToMarkdown(comment.comment ?? ''))
-    const crossLinks = resolveCrossLinks(task, [description, ...commentBodies], context.tasksById)
+    const crossLinks = resolveCrossLinks(task, [description, ...commentBodies], taskDependencies(task), [
+        tasksCrossLinkSource(context.tasksById),
+    ])
 
     const frontmatter = {
         type: 'task',
@@ -66,7 +71,7 @@ export function renderTask(treeTask: TreeTask, context: TaskRenderContext): Rend
         has_comments: task.association_info?.has_comments ?? treeTask.comments.length > 0,
         has_subtasks: task.association_info?.has_subtasks ?? false,
         comments_count: treeTask.comments.length,
-        related_tasks: crossLinks.flatMap((link) => (link.fileBaseName ? [link.fileBaseName] : [])),
+        related_tasks: crossLinks.flatMap((link) => (link.target ? [link.target.fileBaseName] : [])),
     }
 
     const lines = [
@@ -89,7 +94,9 @@ export function renderTask(treeTask: TreeTask, context: TaskRenderContext): Rend
         '## Comments',
         '',
         comments.length > 0
-            ? comments.map((comment, index) => renderComment(comment, commentBodies[index]!)).join('\n\n')
+            ? comments
+                  .map((comment, index) => renderCommentBlock(comment.created_time, comment.created_by, commentBodies[index]!))
+                  .join('\n\n')
             : '_(no comments)_',
         '',
     ]
@@ -105,93 +112,25 @@ export function renderTask(treeTask: TreeTask, context: TaskRenderContext): Rend
     }
 }
 
-function renderComment(comment: TreeTask['comments'][number], body: string): string {
-    const author = comment.created_by
-    const authorName = author?.full_name ?? author?.name ?? 'Unknown'
-    const heading = `### ${formatCommentTime(comment.created_time)} — ${authorName}${author?.is_client_user ? ' (client)' : ''}`
-
-    return `${heading}\n\n\`\`\`markdown\n${body}\n\`\`\``
+/** Every pulled task as a cross-link target; the task file of an issue points at these too. */
+export function tasksCrossLinkSource(tasksById: Map<string, TreeTask>): CrossLinkSource {
+    return {
+        label: 'task',
+        prefixLetter: 'T',
+        urlKind: 'task-detail',
+        targets: [...tasksById.values()].map(({ record }) => ({
+            id: record.id,
+            prefix: record.prefix ?? null,
+            name: record.name,
+            status: record.status?.name ?? null,
+            fileBaseName: taskFileBaseName(record),
+        })),
+    }
 }
 
-interface CrossLink {
-    line: string
-    fileBaseName: string | null
-}
-
-/** Dependencies first, then every task mentioned by id or prefix in the description and comments, each once. */
-function resolveCrossLinks(task: ZohoTask, texts: string[], tasksById: Map<string, TreeTask>): CrossLink[] {
-    const links = new Map<string, CrossLink>()
-    const prefixLetters = task.prefix?.match(/^(.*?)\d+$/)?.[1]
-    const tasksByPrefix = new Map<string, TreeTask>()
-
-    for (const candidate of tasksById.values()) {
-        if (candidate.record.prefix) {
-            tasksByPrefix.set(candidate.record.prefix, candidate)
-        }
-    }
-
-    const add = (key: string, found: TreeTask | undefined, fallbackLabel: string, relation?: string): void => {
-        if (key === task.id || key === task.prefix || links.has(key)) {
-            return
-        }
-
-        if (!found) {
-            links.set(key, { line: `${fallbackLabel} — not pulled`, fileBaseName: null })
-            return
-        }
-
-        const fileBaseName = taskFileBaseName(found.record)
-        const label = found.record.prefix ?? found.record.id
-        const detail = relation
-            ? `(${relation})`
-            : `${cleanName(found.record.name)} (${found.record.status?.name ?? 'Unknown'})`
-
-        links.set(key, { line: `[[${fileBaseName}]] — ${label} ${detail}`, fileBaseName })
-    }
-
-    for (const [relation, related] of [
-        ['predecessor', task.dependency_info?.predecessor ?? []],
-        ['successor', task.dependency_info?.successor ?? []],
-    ] as const) {
-        for (const { id } of related) {
-            add(id, tasksById.get(id), `task ${id}`, relation)
-        }
-    }
-
-    const text = texts.join('\n')
-
-    // An id-only mention has no readable label, so it is listed only when the task is in the tree.
-    for (const [, id] of text.matchAll(/task-detail\/(\d+)/g)) {
-        const found = tasksById.get(id!)
-
-        if (found) {
-            add(id!, found, `task ${id}`)
-        }
-    }
-
-    if (prefixLetters) {
-        const escaped = prefixLetters.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-        for (const [, prefix] of text.matchAll(new RegExp(`\\b(${escaped}\\d+)\\b`, 'g'))) {
-            const found = tasksByPrefix.get(prefix!)
-
-            add(found?.record.id ?? prefix!, found, prefix!)
-        }
-    }
-
-    return [...links.values()]
-}
-
-function toPersonEntry(person: ZohoPerson): { name: string | null; email: string | null } {
-    return { name: person.name ?? person.full_name ?? null, email: person.email ?? null }
-}
-
-function formatCommentTime(time: string | undefined): string {
-    const date = time ? new Date(time) : null
-
-    if (!date || Number.isNaN(date.getTime())) {
-        return 'unknown time'
-    }
-
-    return `${date.toISOString().slice(0, 10)} ${date.toISOString().slice(11, 16)} UTC`
+function taskDependencies(task: ZohoTask): { relation: string; id: string }[] {
+    return [
+        ...(task.dependency_info?.predecessor ?? []).map(({ id }) => ({ relation: 'predecessor', id })),
+        ...(task.dependency_info?.successor ?? []).map(({ id }) => ({ relation: 'successor', id })),
+    ]
 }

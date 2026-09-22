@@ -2,6 +2,7 @@ import { readdir } from 'node:fs/promises'
 import { join, sep } from 'node:path'
 
 import {
+    issuesDirName,
     noMilestoneDirName,
     noTaskListDirName,
     rawDirName,
@@ -49,6 +50,13 @@ export async function loadRawTree(projectPath: string): Promise<RawTree> {
         }
 
         const filePath = join(file.parentPath, file.name)
+        const relativePath = filePath.slice(rawPath.length + 1)
+
+        // Issues keep their own loader; their comments files must not be read as task comments.
+        if (relativePath.split(sep)[0] === issuesDirName) {
+            continue
+        }
+
         const parsed = await Bun.file(filePath)
             .json()
             .catch(() => undefined)
@@ -59,7 +67,7 @@ export async function loadRawTree(projectPath: string): Promise<RawTree> {
             continue
         }
 
-        const level = resolveLevel(filePath.slice(rawPath.length + 1))
+        const level = resolveLevel(relativePath)
 
         if (file.name.endsWith(commentsSuffix)) {
             commentsByTaskId.set(file.name.slice(0, -commentsSuffix.length), Array.isArray(parsed) ? parsed : [])

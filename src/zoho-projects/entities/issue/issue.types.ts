@@ -42,3 +42,8 @@ export interface ZohoIssueComment {
     added_by?: ZohoPerson
     [field: string]: unknown
 }
+
+export interface TreeIssue {
+    record: ZohoIssue
+    comments: ZohoIssueComment[]
+}

@@ -73,7 +73,8 @@ export function renderFrontmatter(fields: Record<string, unknown>): string {
     return `---\n${stringify(fields, { indentSeq: false, lineWidth: 0, singleQuote: true }).trimEnd()}\n---`
 }
 
-type ZohoEntityKind = 'task-detail' | 'tasklist-detail' | 'milestone-detail'
+/** `bug-detail` is Zoho's fragment for an issue — the product renamed bugs to issues, the URLs did not. */
+type ZohoEntityKind = 'task-detail' | 'tasklist-detail' | 'milestone-detail' | 'bug-detail'
 
 export function zohoProjectsUrl(projects: ProjectRef, kind: ZohoEntityKind, id: string): string {
     return `https://projects.zoho.com/portal/${projects.portalId}#zp/projects/${projects.projectId}/${kind}/${id}`

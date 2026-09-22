@@ -22,6 +22,11 @@ export async function writeIssue(projectPath: string, issue: ZohoIssue, comments
     return segments
 }
 
+/** `SS5-I14` → 14; an issue without a prefix sorts first. */
+export function issuePrefixNumber(issue: Pick<ZohoIssue, 'prefix'>): number {
+    return Number(issue.prefix?.match(/(\d+)$/)?.[1] ?? 0)
+}
+
 /** `SS5-I14` → `14-<slug>`; an issue without a prefix names its file after its id. */
 export function issueFileBaseName(issue: Pick<ZohoIssue, 'id' | 'prefix' | 'name'>): string {
     return `${issue.prefix?.match(/(\d+)$/)?.[1] ?? issue.id}-${toSlug(issue.name, issue.id)}`
