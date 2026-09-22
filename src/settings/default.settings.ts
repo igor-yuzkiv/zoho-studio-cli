@@ -19,6 +19,7 @@ export const defaultProjectSettings: ProjectSettings = {
             'ZohoProjects.milestones.READ',
             'ZohoProjects.tasklists.READ',
             'ZohoProjects.tasks.READ',
+            'ZohoProjects.bugs.READ',
         ],
         clientId: '',
         clientSecret: '',

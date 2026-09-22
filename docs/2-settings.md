@@ -21,7 +21,8 @@ and treat a leak as if a password leaked.
             "ZohoCRM.org.READ",
             "ZohoProjects.milestones.READ",
             "ZohoProjects.tasklists.READ",
-            "ZohoProjects.tasks.READ"
+            "ZohoProjects.tasks.READ",
+            "ZohoProjects.bugs.READ"
         ],
         "clientId": "",
         "clientSecret": "",

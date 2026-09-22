@@ -11,13 +11,17 @@ import { createCommandLogger } from '@/shared/logger'
 
 /**
  * Probe paths, relative to the Projects client base URL. Edit by hand: after the first run,
- * replace <TASK_ID> with a real id from the tasks answer and run again.
+ * replace <TASK_ID> and <ISSUE_ID> with real ids from the tasks and issues answers and run again.
  */
 const probePaths = [
     'phases?page=1&per_page=200',
     'tasklists?page=1&per_page=200',
     'tasks?page=1&per_page=200',
     'tasks/<TASK_ID>/comments',
+    'issues?page=1&per_page=200',
+    'issues/<ISSUE_ID>',
+    'issues/<ISSUE_ID>/description',
+    'issues/<ISSUE_ID>/comments',
 ]
 
 const samplesDirName = '_tmp/zoho-projects-api'
