@@ -15,7 +15,7 @@ import {
 import { issuesDirName } from '@/zoho-projects/zoho-projects.config'
 
 import type { TreeIssue, ZohoIssueChoice } from '../issue.types'
-import { issueFileBaseName } from '../issue.utils'
+import { issueFileBaseName, unassignedPlaceholder } from '../issue.utils'
 
 export interface RenderedIssue {
     /** Path segments below `md/`: `issues`, status slug, `<n>-<slug>.md`. */
@@ -29,9 +29,6 @@ export interface IssueRenderContext {
     issuesById: Map<string, TreeIssue>
     tasksById: Map<string, TreeTask>
 }
-
-/** Zoho fills an unassigned issue with a placeholder person instead of leaving the field out. */
-const unassignedPlaceholder = 'Unassigned User'
 
 export function renderIssue(treeIssue: TreeIssue, context: IssueRenderContext): RenderedIssue {
     const issue = treeIssue.record

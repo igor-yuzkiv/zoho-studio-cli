@@ -6,6 +6,9 @@ import { writeArtifactJson } from '@/shared/artifacts'
 
 import type { ZohoIssue, ZohoIssueComment } from './issue.types'
 
+/** Zoho fills an unassigned issue with a placeholder person instead of leaving the field out. */
+export const unassignedPlaceholder = 'Unassigned User'
+
 export const issuesParentSegments = [zohoProjectsDirName, rawDirName, issuesDirName]
 
 /** An issue is in the period by its last update. */

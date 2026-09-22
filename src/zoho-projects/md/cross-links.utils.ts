@@ -26,7 +26,7 @@ export interface CrossLink {
     target: CrossLinkTarget | null
 }
 
-export interface CrossLinkDependency {
+interface CrossLinkDependency {
     relation: string
     id: string
 }

@@ -17,7 +17,7 @@ export function renderCommentBlock(time: string | undefined, author: ZohoPersonL
     return `${heading}\n\n\`\`\`markdown\n${body}\n\`\`\``
 }
 
-export function formatCommentTime(time: string | undefined): string {
+function formatCommentTime(time: string | undefined): string {
     const date = time ? new Date(time) : null
 
     if (!date || Number.isNaN(date.getTime())) {

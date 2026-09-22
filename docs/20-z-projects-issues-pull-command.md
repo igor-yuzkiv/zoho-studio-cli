@@ -50,7 +50,9 @@ sends the description with the list, as HTML, and leaves the field out when it i
 `<id>.comments.json` is the list of its comments from `bugs/<id>/comments`, written even when it
 is empty (`[]`) so that every issue folder has the same two files. The folder rules are those of
 [`raw/`](16-z-projects-milestones-pull-command.md#raw-accumulates): named after the issue, found
-again by id on a rerun, the id appended when the name is already taken, nothing deleted.
+again by id on a rerun, the id appended when the name is already taken, nothing deleted. The
+`issues/` folder name is reserved: a milestone called `issues` would share it, and
+`z-projects:tasks:render` would then leave that milestone out.
 
 ## When a single issue fails
 

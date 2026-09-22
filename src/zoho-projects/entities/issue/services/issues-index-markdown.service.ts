@@ -3,7 +3,7 @@ import { cleanName, renderFrontmatter } from '@/zoho-projects/md'
 import { issuesDirName } from '@/zoho-projects/zoho-projects.config'
 
 import type { TreeIssue } from '../issue.types'
-import { issueFileBaseName } from '../issue.utils'
+import { issueFileBaseName, unassignedPlaceholder } from '../issue.utils'
 
 export const issuesIndexFileName = 'Issues.md'
 
@@ -30,7 +30,7 @@ export function renderIssuesIndex(issues: TreeIssue[], context: IndexRenderConte
         '|---|---|---|---|---|',
         ...issues.map(({ record }) => {
             const label = `${record.prefix ? `${record.prefix} ` : ''}${cleanName(record.name)}`.replace(/\|/g, '-')
-            const assignee = record.assignee?.name === 'Unassigned User' ? '' : (record.assignee?.name ?? '')
+            const assignee = record.assignee?.name === unassignedPlaceholder ? '' : (record.assignee?.name ?? '')
 
             return `| [[${issueFileBaseName(record)}\\|${label}]] | ${record.status?.name ?? 'Unknown'} | ${record.severity?.value ?? ''} | ${assignee} | ${record.created_time?.slice(0, 10) ?? ''} |`
         }),
