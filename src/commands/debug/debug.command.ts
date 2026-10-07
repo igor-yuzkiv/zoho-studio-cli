@@ -27,15 +27,10 @@ const projectsProbePaths = [
 
 /**
  * Probe paths, relative to the CRM client base URL. Edit by hand: the ids come from the
- * client_script_pages and client_scripts answers of an earlier run.
+ * client_script_pages and client_scripts answers of an earlier run. When a client script answer
+ * carries a hosting url, that url is probed too.
  */
-const crmProbePaths = [
-    'settings/client_script_pages',
-    'settings/client_script_pages/6640142000000521215',
-    'settings/client_scripts?client_script_page_id=6640142000000521215',
-    'settings/client_scripts/6640142000000521219',
-    'settings/client_scripts/6640142000000521219/code',
-]
+const crmProbePaths = ['settings/client_scripts/6640142000000521219']
 
 type Area = 'crm' | 'projects'
 
@@ -66,15 +61,58 @@ export const debugCommand = new Command('debug')
 
             await Bun.write(samplePath, JSON.stringify(sample, null, 4) + '\n')
             console.log(`${sample.status ?? 'ERR'} ${path} -> ${samplePath}`)
+
+            const hostingUrl = area === 'crm' ? findHostingUrl(sample.body) : undefined
+
+            if (hostingUrl) {
+                const hostingSamplePath = join(samplesPath, `${toSampleFileName(path)}_hosting.json`)
+                const hostingSample = await probeHosting(hostingUrl)
+
+                await Bun.write(hostingSamplePath, JSON.stringify(hostingSample, null, 4) + '\n')
+                console.log(`${hostingSample.status ?? 'ERR'} ${hostingUrl} -> ${hostingSamplePath}`)
+            }
         }
     })
 
 type Sample = {
     path: string
-    authorization: 'Zoho-oauthtoken' | 'Bearer'
+    authorization: 'Zoho-oauthtoken' | 'Bearer' | 'none'
     status: number | null
     headers: Record<string, unknown>
     body: unknown
+}
+
+function findHostingUrl(body: unknown): string | undefined {
+    const scripts = (body as { client_scripts?: { hosting?: { url?: string } }[] } | null)?.client_scripts
+
+    return scripts?.[0]?.hosting?.url
+}
+
+// The hosting url lives outside Zoho CRM, as in the browser, so it is requested without the OAuth token.
+async function probeHosting(url: string): Promise<Sample> {
+    try {
+        const response = await axios.get(url, { responseType: 'text' })
+
+        return {
+            path: url,
+            authorization: 'none',
+            status: response.status,
+            headers: response.headers as Record<string, unknown>,
+            body: response.data,
+        }
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            return {
+                path: url,
+                authorization: 'none',
+                status: error.response.status,
+                headers: error.response.headers as Record<string, unknown>,
+                body: error.response.data,
+            }
+        }
+
+        return { path: url, authorization: 'none', status: null, headers: {}, body: { error: describeRequestError(error) } }
+    }
 }
 
 async function probeCrm(path: string): Promise<Sample> {
