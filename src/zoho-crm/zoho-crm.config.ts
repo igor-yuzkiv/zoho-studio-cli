@@ -15,3 +15,4 @@ export const clientScriptsDirName = 'client-scripts'
 
 /** Client script pages that belong to no module, such as `commands`, are grouped under this folder. */
 export const clientScriptsWithoutModuleDirName = '_no-module'
+export const staticResourcesDirName = 'static-resources'

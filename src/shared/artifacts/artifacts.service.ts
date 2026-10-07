@@ -126,6 +126,13 @@ export async function writeArtifactText(projectPath: string, segments: string[],
     await Bun.write(filePath, content)
 }
 
+export async function writeArtifactBytes(projectPath: string, segments: string[], content: Uint8Array): Promise<void> {
+    const filePath = resolveArtifactPath(projectPath, segments)
+
+    await mkdir(dirname(filePath), { recursive: true })
+    await Bun.write(filePath, content)
+}
+
 function toFileBaseName(name: string, id: string): string {
     const baseName = name.replace(/[/\\\0]/g, '_').trim()
 

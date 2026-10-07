@@ -19,6 +19,8 @@ and treat a leak as if a password leaked.
             "ZohoCRM.settings.workflow_rules.READ",
             "ZohoCRM.settings.functions.READ",
             "ZohoCRM.org.READ",
+            "ZohoCRM.settings.client_scripts.READ",
+            "ZohoCRM.settings.static_resources.READ",
             "ZohoProjects.milestones.READ",
             "ZohoProjects.tasklists.READ",
             "ZohoProjects.tasks.READ",
@@ -70,7 +72,8 @@ else and that no longer applies — add the new path to your `.gitignore` yourse
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
 so a project authorized before the `ZohoProjects.*` scopes were added has to run `login` again
-before any `z-projects:*` command works.
+before any `z-projects:*` command works, and the same holds for the client script and static
+resource scopes and their `z-crm:*:pull` commands.
 
 `projects` names the one Zoho Projects project the `z-projects:*` commands read. `portalId` and
 `projectId` are both in the browser URL of the project —
