@@ -27,10 +27,10 @@ const projectsProbePaths = [
 
 /**
  * Probe paths, relative to the CRM client base URL. Edit by hand: the ids come from the
- * client_script_pages and client_scripts answers of an earlier run. When a client script answer
- * carries a hosting url, that url is probed too.
+ * client_script_pages and client_scripts answers of an earlier run. When an answer carries a
+ * client script hosting url or a user static resource uri, that url is probed too.
  */
-const crmProbePaths = ['settings/client_scripts/6640142000000521219']
+const crmProbePaths = ['settings/static_resources?page=1&per_page=200']
 
 type Area = 'crm' | 'projects'
 
@@ -83,9 +83,15 @@ type Sample = {
 }
 
 function findHostingUrl(body: unknown): string | undefined {
-    const scripts = (body as { client_scripts?: { hosting?: { url?: string } }[] } | null)?.client_scripts
+    const payload = body as {
+        client_scripts?: { hosting?: { url?: string } }[]
+        static_resources?: { source?: string; uri?: string }[]
+    } | null
 
-    return scripts?.[0]?.hosting?.url
+    return (
+        payload?.client_scripts?.[0]?.hosting?.url ??
+        payload?.static_resources?.find((resource) => resource.source === 'user')?.uri
+    )
 }
 
 // The hosting url lives outside Zoho CRM, as in the browser, so it is requested without the OAuth token.
@@ -111,7 +117,13 @@ async function probeHosting(url: string): Promise<Sample> {
             }
         }
 
-        return { path: url, authorization: 'none', status: null, headers: {}, body: { error: describeRequestError(error) } }
+        return {
+            path: url,
+            authorization: 'none',
+            status: null,
+            headers: {},
+            body: { error: describeRequestError(error) },
+        }
     }
 }
 
@@ -137,7 +149,13 @@ async function probeCrm(path: string): Promise<Sample> {
             }
         }
 
-        return { path, authorization: 'Zoho-oauthtoken', status: null, headers: {}, body: { error: describeRequestError(error) } }
+        return {
+            path,
+            authorization: 'Zoho-oauthtoken',
+            status: null,
+            headers: {},
+            body: { error: describeRequestError(error) },
+        }
     }
 }
 
