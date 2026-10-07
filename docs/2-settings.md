@@ -46,6 +46,10 @@ and treat a leak as if a password leaked.
         "portalId": "",
         "projectId": "",
         "mdPath": ""
+    },
+    "presets": {
+        "pull-crm": ["z-crm:org:info", "z-crm:modules:pull", "…"],
+        "pull-render-projects": ["z-projects:milestones:pull", "…"]
     }
 }
 ```
@@ -57,7 +61,7 @@ See [`zoho-studio init`](3-init-command.md) for the whole tree.
 There are two kinds of values in there, and the difference matters when you edit the file by hand:
 
 - `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `logs.*`,
-  `projects.*` — **yours**. You fill them in, the CLI only reads them.
+  `projects.*`, `presets` — **yours**. You fill them in, the CLI only reads them.
 - `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
   `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
   `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
@@ -85,6 +89,10 @@ is where [`z-projects:tasks:render`](19-z-projects-tasks-render-command.md) writ
 catalogue — empty for `src/zoho-projects/md/` inside the workspace, or a path (absolute, or
 relative to the workspace root) such as an Obsidian vault folder. Renders add to the folder and
 overwrite their own files; anything else in it is left alone.
+
+`presets` names command sequences for [`zoho-studio preset`](24-preset-command.md). Like any other
+section, it merges with the built-in one by key, so a preset you add sits next to
+`pull-crm` and `pull-render-projects` instead of removing them.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
 `clientId` and `clientSecret` is a valid project. A key you do write **replaces** the default rather

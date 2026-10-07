@@ -12,17 +12,20 @@ export function buildSettings({
     api = {},
     logs = {},
     projects = {},
+    presets = defaultProjectSettings.presets,
 }: {
     auth?: Partial<ProjectSettings['auth']>
     api?: Partial<ProjectSettings['api']>
     logs?: Partial<ProjectSettings['logs']>
     projects?: Partial<ProjectSettings['projects']>
+    presets?: ProjectSettings['presets']
 } = {}): ProjectSettings {
     return {
         auth: { ...defaultProjectSettings.auth, clientId: '1000.CLIENT', clientSecret: 'secret', ...auth },
         api: { ...defaultProjectSettings.api, ...api },
         logs: { ...defaultProjectSettings.logs, ...logs },
         projects: { ...defaultProjectSettings.projects, ...projects },
+        presets,
     }
 }
 

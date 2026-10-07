@@ -5,6 +5,7 @@ import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/zoho-crm/commands/status'
 import { orgInfoCommand } from '@/zoho-crm/commands/org'
 import { debugCommand } from '@/commands/debug'
+import { presetCommand } from '@/commands/preset'
 import { pullFunctionsCommand } from '@/zoho-crm/commands/functions'
 import { pullModulesCommand } from '@/zoho-crm/commands/modules'
 import { pullFieldsCommand } from '@/zoho-crm/commands/fields'
@@ -47,6 +48,7 @@ program.addCommand(pullIssuesCommand)
 program.addCommand(renderTasksCommand)
 program.addCommand(renderIssuesCommand)
 program.addCommand(browserCommand)
+program.addCommand(presetCommand)
 
 try {
     await program.parseAsync()

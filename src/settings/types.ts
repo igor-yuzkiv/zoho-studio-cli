@@ -28,6 +28,8 @@ export interface ProjectSettings {
         /** Where `z-projects:tasks:render` writes; empty means `src/zoho-projects/md` inside the workspace. */
         mdPath: string
     }
+    /** Named command sequences for `zoho-studio preset`; each entry is a command line without the binary name. */
+    presets: Record<string, string[]>
 }
 
 /** The settings together with the project root they were found in. */

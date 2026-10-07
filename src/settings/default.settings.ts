@@ -44,4 +44,26 @@ export const defaultProjectSettings: ProjectSettings = {
         projectId: '',
         mdPath: '',
     },
+    presets: {
+        'pull-crm': [
+            'z-crm:org:info',
+            'z-crm:modules:pull',
+            'z-crm:fields:pull',
+            'z-crm:functions:pull',
+            'z-crm:workflows:pull',
+            'z-crm:workflow-actions:pull',
+            'z-crm:webhooks:pull',
+            'z-crm:global-picklists:pull',
+            'z-crm:client-scripts:pull',
+            'z-crm:static-resources:pull',
+        ],
+        'pull-render-projects': [
+            'z-projects:milestones:pull',
+            'z-projects:task-lists:pull',
+            'z-projects:tasks:pull',
+            'z-projects:issues:pull',
+            'z-projects:tasks:render',
+            'z-projects:issues:render',
+        ],
+    },
 }
