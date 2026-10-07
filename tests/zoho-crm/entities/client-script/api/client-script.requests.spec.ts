@@ -87,7 +87,7 @@ describe('getClientScriptsList', () => {
 
 describe('getClientScriptSource', () => {
     test('returns the source verbatim and sends no token', async () => {
-        const source = 'const field = ZDK.Page.getField("Contractor");\n'
+        const source = 'const field = ZDK.Page.getField("Contact_Name");\n'
         await startProject(() => new Response(source, { headers: { 'Content-Type': 'application/javascript' } }))
 
         expect(await getClientScriptSource(`${crmServer!.url.origin}/appfiles/script.js`)).toBe(source)

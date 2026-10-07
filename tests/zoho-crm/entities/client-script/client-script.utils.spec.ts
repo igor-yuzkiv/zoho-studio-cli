@@ -6,21 +6,21 @@ import {
     type ClientScriptPage,
 } from '@/zoho-crm/entities/client-script'
 
-const programs = { api_name: 'CustomModule3', display_label: 'Programs' }
+const opportunities = { api_name: 'Deals', display_label: 'Opportunities' }
 
 describe('resolvePageDirSegments', () => {
     test('names a page after its module label, definition and layout', () => {
         const page: ClientScriptPage = {
             id: '1',
             definition: 'module_create',
-            selectors: { module: programs, layout: { api_name: 'Weekend_Awareness' } },
+            selectors: { module: opportunities, layout: { api_name: 'Retail' } },
         }
 
         expect(resolvePageDirSegments([page]).get('1')).toEqual([
             'zoho-crm',
             'client-scripts',
-            'Programs',
-            'module_create.Weekend_Awareness',
+            'Opportunities',
+            'module_create.Retail',
         ])
     })
 
@@ -29,15 +29,13 @@ describe('resolvePageDirSegments', () => {
             id: '1',
             definition: 'module_view_canvas',
             selectors: {
-                module: programs,
-                layout: { api_name: 'Standard__s' },
-                canvas: { name: 'Weekend Directions' },
+                module: opportunities,
+                layout: { api_name: 'Standard' },
+                canvas: { name: 'Retail Overview' },
             },
         }
 
-        expect(resolvePageDirSegments([page]).get('1')?.at(-1)).toBe(
-            'module_view_canvas.Standard__s.Weekend Directions'
-        )
+        expect(resolvePageDirSegments([page]).get('1')?.at(-1)).toBe('module_view_canvas.Standard.Retail Overview')
     })
 
     test('groups a page without a module under the no-module folder', () => {

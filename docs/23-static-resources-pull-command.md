@@ -8,7 +8,7 @@ zoho-studio z-crm:static-resources:pull
 ```
 
 ```text
-Pulling static resources |████████████████████| 15/15 | billingDefault
+Pulling static resources |████████████████████| 15/15 | pricingHelpers
 Static resources found: 15
 Metadata saved: 15
 Files downloaded: 15
@@ -26,14 +26,14 @@ directory.
 ```text
 src/zoho-crm/static-resources/
 ├── user/
-│   └── billingDefault.6640142000053904403/
-│       ├── billingDefault.metadata.json
-│       └── billingDefault.js
+│   └── pricingHelpers.1000000000053904403/
+│       ├── pricingHelpers.metadata.json
+│       └── pricingHelpers.js
 ├── crm/
-│   └── ZDK-1.0.6640142000000476013/
+│   └── ZDK-1.0.1000000000000476013/
 │       └── …
 └── internal/
-    └── DotSDK-2.0.6640142000000476015/
+    └── DotSDK-2.0.1000000000000476015/
         ├── DotSDK-2.0.metadata.json
         └── crm_dot_sdk.js.gzip
 ```

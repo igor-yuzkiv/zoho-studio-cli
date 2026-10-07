@@ -13,7 +13,7 @@ Pages found: 39
 Scripts found: 61
 Source downloaded: 60
 Failed: 1
-  - Programs/module_edit.Standard__s/Validate Shifts (6640142000002968001): Request failed with status code 404
+  - Deals/module_edit.Standard/Validate Amount (1000000000002968001): Request failed with status code 404
 ```
 
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md). It
@@ -26,15 +26,15 @@ directory.
 
 ```text
 src/zoho-crm/client-scripts/
-├── Programs/
-│   ├── module_create.Weekend_Awareness/
+├── Deals/
+│   ├── module_create.Retail/
 │   │   ├── page.metadata.json
-│   │   ├── WA.FilterContractorByLayout.6640142000000521219/
-│   │   │   ├── WA.FilterContractorByLayout.metadata.json
-│   │   │   └── WA.FilterContractorByLayout.js
-│   │   └── Programs Create Populate Human.6640142000001000061/
+│   │   ├── Filter Contacts By Layout.1000000000000521219/
+│   │   │   ├── Filter Contacts By Layout.metadata.json
+│   │   │   └── Filter Contacts By Layout.js
+│   │   └── Set Default Owner.1000000000001000061/
 │   │       └── …
-│   └── module_view_canvas.Standard__s.Weekend Directions/
+│   └── module_view_canvas.Standard.Retail Overview/
 │       └── …
 └── _no-module/
     └── commands/
