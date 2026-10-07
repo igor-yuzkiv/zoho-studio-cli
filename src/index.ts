@@ -12,6 +12,7 @@ import { pullWorkflowsCommand } from '@/zoho-crm/commands/workflows'
 import { pullWebhooksCommand } from '@/zoho-crm/commands/webhooks'
 import { pullWorkflowActionsCommand } from '@/zoho-crm/commands/workflow-actions'
 import { pullGlobalPicklistsCommand } from '@/zoho-crm/commands/global-picklists'
+import { pullClientScriptsCommand } from '@/zoho-crm/commands/client-scripts'
 import { browserCommand } from '@/commands/browser'
 import { pullMilestonesCommand } from '@/zoho-projects/commands/milestones'
 import { pullTaskListsCommand } from '@/zoho-projects/commands/task-lists'
@@ -36,6 +37,7 @@ program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
 program.addCommand(pullGlobalPicklistsCommand)
+program.addCommand(pullClientScriptsCommand)
 program.addCommand(pullMilestonesCommand)
 program.addCommand(pullTaskListsCommand)
 program.addCommand(pullTasksCommand)

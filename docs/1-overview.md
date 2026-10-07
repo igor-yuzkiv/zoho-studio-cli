@@ -10,7 +10,7 @@ do it with. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
 and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
-`src/zoho-crm/workflow-actions`, and `src/zoho-projects/raw/` for the raw Zoho Projects tree:
+`src/zoho-crm/workflow-actions`, `src/zoho-crm/client-scripts`, and `src/zoho-projects/raw/` for the raw Zoho Projects tree:
 
 ```text
 src/zoho-projects/raw/
@@ -54,6 +54,7 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [11-workflow-actions-pull-command.md](11-workflow-actions-pull-command.md) — downloading workflow actions with `zoho-studio z-crm:workflow-actions:pull`
 - [12-webhooks-pull-command.md](12-webhooks-pull-command.md) — downloading webhooks with `zoho-studio z-crm:webhooks:pull`
 - [13-global-picklists-pull-command.md](13-global-picklists-pull-command.md) — downloading global picklists with `zoho-studio z-crm:global-picklists:pull`
+- [22-client-scripts-pull-command.md](22-client-scripts-pull-command.md) — downloading client scripts with `zoho-studio z-crm:client-scripts:pull`
 - [16-z-projects-milestones-pull-command.md](16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON with `zoho-studio z-projects:milestones:pull`
 - [17-z-projects-task-lists-pull-command.md](17-z-projects-task-lists-pull-command.md) — downloading Zoho Projects task lists under their milestones with `zoho-studio z-projects:task-lists:pull`
 - [18-z-projects-tasks-pull-command.md](18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments, with `zoho-studio z-projects:tasks:pull`
