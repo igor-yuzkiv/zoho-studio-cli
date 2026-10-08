@@ -10,7 +10,7 @@
         "types": ["bun"],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/cli/*"]
         },
 
         // Bundler mode

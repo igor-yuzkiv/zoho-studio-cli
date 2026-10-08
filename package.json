@@ -1,6 +1,6 @@
 {
   "name": "zoho-studio-cli",
-  "module": "src/index.ts",
+  "module": "src/cli/index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
@@ -32,9 +32,9 @@
     "yaml": "^2.9.1"
   },
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --target=bun --outfile=dist/zoho-studio",
-    "compile": "bun build src/index.ts --compile --outfile=dist/zoho-studio",
+    "dev": "bun run src/cli/index.ts",
+    "build": "bun build src/cli/index.ts --target=bun --outfile=dist/zoho-studio",
+    "compile": "bun build src/cli/index.ts --compile --outfile=dist/zoho-studio",
     "deploy-skills": "for d in skills/*/; do n=$(basename \"$d\"); rm -rf \"$HOME/.claude/skills/$n\"; mkdir -p \"$HOME/.claude/skills\"; cp -R \"$d\" \"$HOME/.claude/skills/$n\"; done",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",

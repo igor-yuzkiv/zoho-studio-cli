@@ -1,6 +1,6 @@
-import sourceKeep from '../../../template/src/.gitkeep' with { type: 'file' }
-import logsGitignore from '../../../template/logs/.gitignore' with { type: 'file' }
-import settingsGitignore from '../../../template/.zoho-studio/.gitignore' with { type: 'file' }
+import sourceKeep from '../../../../template/src/.gitkeep' with { type: 'file' }
+import logsGitignore from '../../../../template/logs/.gitignore' with { type: 'file' }
+import settingsGitignore from '../../../../template/.zoho-studio/.gitignore' with { type: 'file' }
 
 import { logsDirName, workspaceSettingsDirName, workspaceSourceDirName } from '@/config'
 

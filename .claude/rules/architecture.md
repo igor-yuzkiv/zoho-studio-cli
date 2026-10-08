@@ -8,25 +8,27 @@ Do not introduce new architectural layers, generic abstractions, or shared folde
 
 ```text
 src/
-  index.ts      # CLI entry point, registers the commands
-  config.ts     # names and path resolvers shared by every area: .zoho-studio/, src/, logs/
-  commands/     # commands that belong to no Zoho product: init, login, debug, browser
-  settings/     # project settings: types, defaults, loading, and storage
-  zoho-crm/     # one folder per Zoho product area; zoho-projects/ sits next to it
-    zoho-crm.config.ts  # names and constants that belong to this area only
-    commands/   # CLI command definitions of this area, one folder per command
-    entities/   # domain entities of this area (e.g.: field, function, module)
-      <entity>/
-        <entity>.types.ts   # the shape the CLI depends on
-        <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
-        api/                # requests belonging to this entity, one per file
-        services/           # work built on top of the entity, when more than one caller needs it
-  shared/       # reusable infrastructure and utilities
-    logger/     # pino logger, createCommandLogger per command
-    utils/      # standalone helpers, exposed through index.ts
-    api/        # shared API infrastructure only — no entity endpoints
-      auth/     # authentication, OAuth, tokens, and the login flow
-      crm/      # Zoho CRM client and request error handling
+  cli/          # the CLI; `@/` resolves here
+    index.ts      # CLI entry point, registers the commands
+    config.ts     # names and path resolvers shared by every area: .zoho-studio/, src/, logs/
+    commands/     # commands that belong to no Zoho product: init, login, debug, browser
+    settings/     # project settings: types, defaults, loading, and storage
+    zoho-crm/     # one folder per Zoho product area; zoho-projects/ sits next to it
+      zoho-crm.config.ts  # names and constants that belong to this area only
+      commands/   # CLI command definitions of this area, one folder per command
+      entities/   # domain entities of this area (e.g.: field, function, module)
+        <entity>/
+          <entity>.types.ts   # the shape the CLI depends on
+          <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
+          api/                # requests belonging to this entity, one per file
+          services/           # work built on top of the entity, when more than one caller needs it
+    shared/       # reusable infrastructure and utilities
+      logger/     # pino logger, createCommandLogger per command
+      utils/      # standalone helpers, exposed through index.ts
+      api/        # shared API infrastructure only — no entity endpoints
+        auth/     # authentication, OAuth, tokens, and the login flow
+        crm/      # Zoho CRM client and request error handling
+  web/          # the SPA served by `browser`; built by Vite into dist/web
 ```
 
 A command folder exposes the command and nothing else: its `index.ts` exports only the `Command`,
@@ -125,15 +127,15 @@ const taskId = options.task
 
 ## Tests
 
-Tests live in `tests/` and use the `.spec.ts` suffix. The path mirrors `src/`, except that a
+Tests live in `tests/` and use the `.spec.ts` suffix. The path mirrors `src/cli/`, except that a
 command's folder is flattened away — command specs sit directly under `tests/commands/` or
 `tests/<area>/commands/`.
 
 ```text
-src/settings/settings.loader.ts             ->  tests/settings/settings.loader.spec.ts
-src/shared/api/auth/token.service.ts        ->  tests/shared/api/auth/token.service.spec.ts
-src/commands/init/init.service.ts           ->  tests/commands/init.service.spec.ts
-src/zoho-crm/entities/field/field.utils.ts  ->  tests/zoho-crm/entities/field/field.utils.spec.ts
+src/cli/settings/settings.loader.ts             ->  tests/settings/settings.loader.spec.ts
+src/cli/shared/api/auth/token.service.ts        ->  tests/shared/api/auth/token.service.spec.ts
+src/cli/commands/init/init.service.ts           ->  tests/commands/init.service.spec.ts
+src/cli/zoho-crm/entities/field/field.utils.ts  ->  tests/zoho-crm/entities/field/field.utils.spec.ts
 ```
 
 Use the built-in Bun test runner (`import { describe, expect, test } from 'bun:test'`).
