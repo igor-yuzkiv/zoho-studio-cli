@@ -30,5 +30,6 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false
-    }
+    },
+    "exclude": ["src/web", "vite.config.ts", "node_modules", "dist"]
 }

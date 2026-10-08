@@ -7,28 +7,40 @@
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.0.1",
     "@eslint/markdown": "^8.0.3",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/bun": "latest",
     "@types/cli-progress": "^3.11.6",
     "@types/turndown": "^5.0.6",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.11.1",
     "globals": "^17.7.0",
     "jiti": "^2.7.0",
     "prettier": "3.9.6",
-    "typescript-eslint": "^8.65.0"
+    "tailwindcss": "^4.3.3",
+    "typescript-eslint": "^8.65.0",
+    "vite": "^8.3.3",
+    "vue-tsc": "^3.3.12"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@inquirer/prompts": "^8.5.2",
     "axios": "^1.18.1",
     "bunfig": "^0.15.15",
     "cli-progress": "^3.12.0",
     "commander": "^15.0.0",
     "open": "^11.0.1",
+    "pinia": "^4.0.3",
     "pino": "^10.3.1",
     "turndown": "^7.2.4",
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0",
     "yaml": "^2.9.1"
   },
   "scripts": {
@@ -36,10 +48,12 @@
     "build": "bun build src/cli/index.ts --target=bun --outfile=dist/zoho-studio",
     "compile": "bun build src/cli/index.ts --compile --outfile=dist/zoho-studio",
     "deploy-skills": "for d in skills/*/; do n=$(basename \"$d\"); rm -rf \"$HOME/.claude/skills/$n\"; mkdir -p \"$HOME/.claude/skills\"; cp -R \"$d\" \"$HOME/.claude/skills/$n\"; done",
-    "lint": "eslint src tests",
-    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests vite.config.ts",
+    "typecheck": "tsc --noEmit && vue-tsc --noEmit -p src/web/tsconfig.json",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "check": "bun run lint && bun run typecheck && bun test"
+    "check": "bun run lint && bun run typecheck && bun test",
+    "dev:web": "vite",
+    "build:web": "vite build"
   }
 }

@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+    --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+    --color-bg: var(--zs-bg);
+    --color-surface: var(--zs-surface);
+    --color-surface-2: var(--zs-surface-2);
+    --color-hover: var(--zs-hover);
+    --color-fg: var(--zs-fg);
+    --color-muted: var(--zs-muted);
+    --color-faint: var(--zs-faint);
+    --color-line: var(--zs-line);
+    --color-accent: var(--zs-accent);
+    --color-accent-soft: var(--zs-accent-soft);
+    --color-crm: var(--zs-crm);
+    --color-projects: var(--zs-projects);
+    --color-ok: var(--zs-ok);
+    --color-warn: var(--zs-warn);
+    --color-err: var(--zs-err);
+    --color-code-keyword: var(--zs-code-keyword);
+    --color-code-string: var(--zs-code-string);
+    --color-code-function: var(--zs-code-function);
+    --color-code-comment: var(--zs-code-comment);
+    --color-code-number: var(--zs-code-number);
+}
+
+:root {
+    --zs-bg: #fafaf9;
+    --zs-surface: #ffffff;
+    --zs-surface-2: #f4f4f5;
+    --zs-hover: #ececee;
+    --zs-fg: #18181b;
+    --zs-muted: #52525b;
+    --zs-faint: #71717a;
+    --zs-line: #e4e4e7;
+    --zs-accent: #ea580c;
+    --zs-accent-soft: rgb(234 88 12 / 0.1);
+    --zs-crm: #0284c7;
+    --zs-projects: #4d7c0f;
+    --zs-ok: #16a34a;
+    --zs-warn: #a16207;
+    --zs-err: #dc2626;
+    --zs-code-keyword: #7e22ce;
+    --zs-code-string: #15803d;
+    --zs-code-function: #0369a1;
+    --zs-code-comment: #71717a;
+    --zs-code-number: #c2410c;
+}
+
+[data-theme='dark'] {
+    color-scheme: dark;
+    --zs-bg: #09090b;
+    --zs-surface: #111114;
+    --zs-surface-2: #18181c;
+    --zs-hover: #1f1f24;
+    --zs-fg: #f4f4f5;
+    --zs-muted: #a1a1aa;
+    --zs-faint: #71717a;
+    --zs-line: #26262b;
+    --zs-accent: #f97316;
+    --zs-accent-soft: rgb(249 115 22 / 0.12);
+    --zs-crm: #38bdf8;
+    --zs-projects: #a3e635;
+    --zs-ok: #4ade80;
+    --zs-warn: #facc15;
+    --zs-err: #f87171;
+    --zs-code-keyword: #c084fc;
+    --zs-code-string: #86efac;
+    --zs-code-function: #7dd3fc;
+    --zs-code-comment: #71717a;
+    --zs-code-number: #fdba74;
+}
+
+@layer base {
+    html,
+    body,
+    #app {
+        height: 100%;
+    }
+
+    body {
+        @apply bg-bg text-fg font-sans text-sm antialiased;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-accent rounded-md;
+    }
+}
