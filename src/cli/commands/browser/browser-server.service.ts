@@ -1,4 +1,4 @@
-import { basename, join } from 'node:path'
+import { basename } from 'node:path'
 
 import { resolveWorkspaceOrganizationPath, resolveWorkspaceSourcePath } from '@/config'
 import { getProjectSettings } from '@/settings'
@@ -12,12 +12,13 @@ import { PullBusyError, PullRunner } from './pull-runner.service'
 export type BrowserServerOptions = {
     projectPath: string
     port: number
-    webAssetsPath: string
+    /** Serves the page; the browser command passes resolveWebAsset. */
+    resolveAsset: (pathname: string) => Promise<Blob | null>
 }
 
 const maxTreeDepth = 8
 
-export function startBrowserServer({ projectPath, port, webAssetsPath }: BrowserServerOptions) {
+export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserServerOptions) {
     const pullRunner = new PullRunner()
 
     return Bun.serve({
@@ -79,7 +80,11 @@ export function startBrowserServer({ projectPath, port, webAssetsPath }: Browser
             '/api/*': () => apiError('Not found', 404),
         },
 
-        fetch: (request) => serveWebAsset(webAssetsPath, new URL(request.url).pathname),
+        fetch: async (request) => {
+            const asset = await resolveAsset(new URL(request.url).pathname)
+
+            return asset ? new Response(asset) : new Response('Not found', { status: 404 })
+        },
 
         error: (error) => apiError(error.message, 400),
     })
@@ -118,21 +123,6 @@ function streamEvents(request: Request, pullRunner: PullRunner): Response {
     return new Response(stream, {
         headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' },
     })
-}
-
-async function serveWebAsset(webAssetsPath: string, pathname: string): Promise<Response> {
-    const assetPath = join(webAssetsPath, pathname === '/' ? 'index.html' : pathname)
-
-    // join() normalizes `..`, so anything still inside the assets folder is safe to serve.
-    if (assetPath.startsWith(webAssetsPath)) {
-        const asset = Bun.file(assetPath)
-
-        if (await asset.exists()) {
-            return new Response(asset)
-        }
-    }
-
-    return new Response('Not found', { status: 404 })
 }
 
 function apiError(message: string, status: number): Response {

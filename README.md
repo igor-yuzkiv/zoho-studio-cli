@@ -50,7 +50,7 @@ bun run typecheck       # tsc --noEmit
 bun test                # tests
 bun run check           # lint + typecheck + tests
 bun run build           # bun-targeted bundle → dist/
-bun run compile         # standalone executable → dist/
+bun run compile         # web app + standalone executable with the page embedded → dist/
 bun run dev:web         # web app dev server (Vite)
 bun run build:web       # web app build → dist/web
 bun run deploy-skills   # install skills/ into ~/.claude/skills/

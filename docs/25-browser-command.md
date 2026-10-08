@@ -27,7 +27,9 @@ command prints.
 
 ## Running from source
 
-When the CLI runs from source, the page is served from `dist/web`, so build it first:
+The executable from `bun run compile` carries the page inside it, so `zoho-studio browser` works
+wherever the file is copied. When the CLI runs from source, the page is served from `dist/web`
+instead, so build it first:
 
 ```bash
 bun run build:web

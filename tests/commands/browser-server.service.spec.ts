@@ -24,9 +24,12 @@ const twoFunctions = [
 
 async function startProject(answer: (request: Request) => Response = () => Response.json({})) {
     stub = await startCrmStub(answer)
-    const webAssetsPath = join(stub.projectPath, 'web-assets')
-    await Bun.write(join(webAssetsPath, 'index.html'), '<div id="app"></div>')
-    server = startBrowserServer({ projectPath: stub.projectPath, port: 0, webAssetsPath })
+    const page = new Blob(['<div id="app"></div>'], { type: 'text/html' })
+    server = startBrowserServer({
+        projectPath: stub.projectPath,
+        port: 0,
+        resolveAsset: async (pathname) => (pathname === '/' ? page : null),
+    })
 
     return { projectPath: stub.projectPath, origin: server.url.origin }
 }
@@ -184,10 +187,10 @@ describe('browser server', () => {
         expect(response.status).toBe(404)
     })
 
-    test('serves the page and nothing outside its folder', async () => {
+    test('serves the page through the asset resolver', async () => {
         const { origin } = await startProject()
 
         expect(await (await fetch(`${origin}/`)).text()).toBe('<div id="app"></div>')
-        expect((await fetch(`${origin}/%2e%2e/.zoho-studio/settings.json`)).status).toBe(404)
+        expect((await fetch(`${origin}/missing.js`)).status).toBe(404)
     })
 })
