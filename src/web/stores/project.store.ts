@@ -9,7 +9,7 @@ import type {
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import { api, subscribeToServerEvents } from '@web/api/api.client'
+import { api, ApiRequestError, subscribeToServerEvents } from '@web/api/api.client'
 
 export const areaLabels: Record<AreaId, string> = {
     crm: 'Zoho CRM',
@@ -76,11 +76,22 @@ export const useProjectStore = defineStore('project', () => {
         await startNextAreaPull()
     }
 
+    /** Started from a finished run; a group the server refused stays first in the queue for the next one. */
     async function startNextAreaPull() {
-        const next = pendingAreaPulls.value.shift()
+        const next = pendingAreaPulls.value[0]
 
-        if (next) {
+        if (!next || currentRun.value) {
+            return
+        }
+
+        try {
             await startPull(next)
+            pendingAreaPulls.value.shift()
+        } catch (error) {
+            if (!(error instanceof ApiRequestError && error.status === 409)) {
+                pendingAreaPulls.value = []
+                throw error
+            }
         }
     }
 
@@ -89,7 +100,8 @@ export const useProjectStore = defineStore('project', () => {
 
         if (index === -1) {
             runs.value.unshift(run)
-        } else {
+        } else if (!runs.value[index]?.finishedAt || run.finishedAt) {
+            // The answer to a POST can arrive after the event that finished the same run; it must not revive it.
             runs.value[index] = run
         }
     }
@@ -122,7 +134,9 @@ export const useProjectStore = defineStore('project', () => {
             if (event.run.status !== 'running' && previousStatus !== event.run.status) {
                 await refreshGroups()
                 dataVersion.value++
-                await startNextAreaPull()
+                await startNextAreaPull().catch((error) => {
+                    loadError.value = error instanceof Error ? error.message : String(error)
+                })
             }
         })
     }

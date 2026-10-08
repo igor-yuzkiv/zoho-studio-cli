@@ -27,7 +27,7 @@ export class LoginSession {
     }
 
     start(): LoginState {
-        if (this.currentState.status === 'waiting') {
+        if (this.currentState.status === 'starting' || this.currentState.status === 'waiting') {
             throw new LoginBusyError()
         }
 

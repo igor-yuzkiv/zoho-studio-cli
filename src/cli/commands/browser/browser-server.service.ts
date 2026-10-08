@@ -23,12 +23,12 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
     const pullRunner = new PullRunner()
     const loginSession = new LoginSession()
 
-    return Bun.serve({
+    const server: ReturnType<typeof Bun.serve> = Bun.serve({
         hostname: '127.0.0.1',
         port,
         // Server-sent event streams stay open for as long as the page does.
         idleTimeout: 0,
-        routes: {
+        routes: guardRoutes(() => server.port, {
             '/api/project': async () => Response.json(await readProjectInfo(projectPath)),
 
             '/api/groups': async () =>
@@ -49,7 +49,12 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
                     resolveRequestedPath(projectPath, new URL(request.url).searchParams.get('path') ?? '')
                 )
 
-                return (await file.exists()) ? new Response(file) : apiError('Not found', 404)
+                // Served as text: an .html or .svg artifact must not run as a page on this origin.
+                return (await file.exists())
+                    ? new Response(file, {
+                          headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-Content-Type-Options': 'nosniff' },
+                      })
+                    : apiError('Not found', 404)
             },
 
             '/api/json': async (request) =>
@@ -95,7 +100,7 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
             '/api/events': (request) => streamEvents(request, pullRunner, loginSession),
 
             '/api/*': () => apiError('Not found', 404),
-        },
+        }),
 
         fetch: async (request) => {
             const asset = await resolveAsset(new URL(request.url).pathname)
@@ -105,6 +110,58 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
 
         error: (error) => apiError(error.message, 400),
     })
+
+    return server
+}
+
+type RouteHandler = (request: Bun.BunRequest) => Response | Promise<Response>
+type Route = RouteHandler | Partial<Record<'GET' | 'POST', RouteHandler>>
+
+/**
+ * The API can empty folders under src/ and start a login, and any page open in the same browser can
+ * send requests to 127.0.0.1. Only the app's own page is answered: the Host must name this server
+ * (which defeats DNS rebinding), a cross-site Origin is refused, and a POST must declare JSON, which
+ * a cross-site form or no-preflight fetch cannot do.
+ */
+function guardRoutes<TRoutes extends Record<string, Route>>(
+    currentPort: () => number | undefined,
+    routes: TRoutes
+): TRoutes {
+    const guard =
+        (handler: RouteHandler): RouteHandler =>
+        (request) => {
+            const refusal = refuseForeignRequest(request, currentPort())
+
+            return refusal ?? handler(request)
+        }
+
+    return Object.fromEntries(
+        Object.entries(routes).map(([path, route]) => [
+            path,
+            typeof route === 'function'
+                ? guard(route)
+                : Object.fromEntries(Object.entries(route).map(([method, handler]) => [method, guard(handler)])),
+        ])
+    ) as TRoutes
+}
+
+export function refuseForeignRequest(request: Request, port: number | undefined): Response | null {
+    const ownHosts = [`127.0.0.1:${port}`, `localhost:${port}`]
+    const origin = request.headers.get('Origin')
+
+    if (!ownHosts.includes(request.headers.get('Host') ?? '')) {
+        return apiError('Unknown host', 403)
+    }
+
+    if (origin && !ownHosts.some((host) => origin === `http://${host}`)) {
+        return apiError('Cross-origin requests are refused', 403)
+    }
+
+    if (request.method === 'POST' && !request.headers.get('Content-Type')?.startsWith('application/json')) {
+        return apiError('Expected a JSON request', 415)
+    }
+
+    return null
 }
 
 async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {

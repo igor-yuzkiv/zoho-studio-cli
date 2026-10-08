@@ -16,7 +16,14 @@ export default defineConfig({
     base: './',
     server: {
         // `zoho-studio browser --port 4321 --no-open` serves the API while Vite serves the page.
-        proxy: { '/api': 'http://127.0.0.1:4321' },
+        // The server answers only requests addressed to itself, so the proxy rewrites Host and drops Origin.
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:4321',
+                changeOrigin: true,
+                configure: (proxy) => proxy.on('proxyReq', (proxyRequest) => proxyRequest.removeHeader('origin')),
+            },
+        },
     },
     build: {
         outDir: '../../dist/web',

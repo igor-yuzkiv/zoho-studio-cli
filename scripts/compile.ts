@@ -21,7 +21,9 @@ const importPath = (filePath: string) => relative(entryDirPath, join(webPath, fi
 
 const entrySource = [
     "import { registerEmbeddedWebAssets } from '../src/cli/commands/browser/web-assets.service'",
-    ...webFiles.map((filePath, index) => `import asset${index} from '${importPath(filePath)}' with { type: 'file' }`),
+    ...webFiles.map(
+        (filePath, index) => `import asset${index} from ${JSON.stringify(importPath(filePath))} with { type: 'file' }`
+    ),
     '',
     'registerEmbeddedWebAssets({',
     ...webFiles.map((filePath, index) => `    ${JSON.stringify(filePath)}: asset${index},`),
@@ -34,6 +36,8 @@ const entrySource = [
 await mkdir(entryDirPath, { recursive: true })
 await Bun.write(entryPath, entrySource)
 
+let buildExitCode: number
+
 try {
     const build = Bun.spawnSync(
         ['bun', 'build', entryPath, '--compile', '--outfile', join(rootPath, 'dist/zoho-studio')],
@@ -43,11 +47,13 @@ try {
         }
     )
 
-    if (build.exitCode !== 0) {
-        process.exit(build.exitCode)
-    }
+    buildExitCode = build.exitCode
 } finally {
     await rm(entryDirPath, { recursive: true, force: true })
+}
+
+if (buildExitCode !== 0) {
+    process.exit(buildExitCode)
 }
 
 console.log(`Embedded ${webFiles.length} web files.`)

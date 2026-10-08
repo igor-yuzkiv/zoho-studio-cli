@@ -18,6 +18,8 @@ afterEach(async () => {
     stub = null
 })
 
+const jsonHeaders = { 'Content-Type': 'application/json' }
+
 const twoFunctions = [
     { id: '1', name: 'first', api_name: 'first' },
     { id: '2', name: 'second', api_name: 'second' },
@@ -125,6 +127,7 @@ describe('browser server', () => {
 
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
+            headers: jsonHeaders,
             body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
         })
         const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
@@ -146,6 +149,7 @@ describe('browser server', () => {
         const pull = () =>
             fetch(`${origin}/api/pulls`, {
                 method: 'POST',
+                headers: jsonHeaders,
                 body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
             })
 
@@ -161,6 +165,7 @@ describe('browser server', () => {
 
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
+            headers: jsonHeaders,
             body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
         })
         const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
@@ -178,6 +183,7 @@ describe('browser server', () => {
 
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
+            headers: jsonHeaders,
             body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
         })
         const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
@@ -190,6 +196,7 @@ describe('browser server', () => {
 
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
+            headers: jsonHeaders,
             body: JSON.stringify({ area: 'projects', group: 'tasks', options: { from: 'not-a-date' } }),
         })
         const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
@@ -203,10 +210,53 @@ describe('browser server', () => {
 
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
+            headers: jsonHeaders,
             body: JSON.stringify({ area: 'crm', group: 'nothing', options: {} }),
         })
 
         expect(response.status).toBe(404)
+    })
+
+    test('serves artifact files as plain text', async () => {
+        const { origin, projectPath } = await startProject()
+        await writeSourceFile(projectPath, 'zoho-crm/static-resources/crm/page.html', '<script>alert(1)</script>')
+
+        const response = await fetch(`${origin}/api/file?path=zoho-crm/static-resources/crm/page.html`)
+
+        expect(response.headers.get('Content-Type')).toStartWith('text/plain')
+        expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    })
+
+    test('refuses a request from another site', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: { ...jsonHeaders, Origin: 'https://evil.example' },
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+
+        expect(response.status).toBe(403)
+    })
+
+    test('refuses a request addressed to another host name', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/project`, { headers: { Host: 'attacker.example' } })
+
+        expect(response.status).toBe(403)
+    })
+
+    test('refuses a pull posted without a JSON content type', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+
+        expect(response.status).toBe(415)
     })
 
     test('serves the page through the asset resolver', async () => {

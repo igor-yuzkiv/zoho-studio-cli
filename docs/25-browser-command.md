@@ -15,7 +15,8 @@ Press Ctrl+C to stop.
 ```
 
 The server listens on `127.0.0.1` only. It can run pulls with the project's stored tokens, so it
-is never reachable from other machines. It keeps running until you stop it with Ctrl+C.
+is never reachable from other machines, and it answers only its own page: a request from another
+site open in the same browser, or one addressed to another host name, is refused. It keeps running until you stop it with Ctrl+C.
 
 ## Pulling from the page
 
@@ -53,7 +54,7 @@ bun run dev:web                                # in this repository
 
 ## HTTP API
 
-The page talks to the server over JSON. Paths are relative to the project's `src/`; a path that
+The page talks to the server over JSON; a `POST` must send `Content-Type: application/json`. Paths are relative to the project's `src/`; a path that
 would leave `src/` is refused.
 
 | Method and path | Returns |
@@ -61,7 +62,7 @@ would leave `src/` is refused.
 | `GET /api/project` | project name and paths, the stored organization, whether a refresh token is stored |
 | `GET /api/groups` | every artifact group with its pull command, options, folder, artifact count and newest file time |
 | `GET /api/tree?path=&depth=` | the files and folders below a path |
-| `GET /api/file?path=` | one file as it is on disk |
+| `GET /api/file?path=` | one file as it is on disk, always as plain text |
 | `GET /api/json?path=` | every JSON file below a path, parsed, keyed by its path |
 | `GET /api/pulls` | the recent pulls, newest first |
 | `POST /api/pulls` | starts a pull: `{ "area": "crm", "group": "fields", "options": { "module": "Leads" } }`; `409` while another one runs |

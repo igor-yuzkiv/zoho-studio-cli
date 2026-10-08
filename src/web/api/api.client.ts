@@ -30,6 +30,9 @@ async function request<TResult>(path: string, init?: RequestInit): Promise<TResu
     return response.json() as Promise<TResult>
 }
 
+// The server refuses a POST that does not declare JSON; see refuseForeignRequest.
+const jsonHeaders = { 'Content-Type': 'application/json' }
+
 function withPath(endpoint: string, path: string, extra: Record<string, string> = {}): string {
     return `${endpoint}?${new URLSearchParams({ path, ...extra })}`
 }
@@ -50,9 +53,9 @@ export const api = {
     },
     getPulls: () => request<PullRun[]>('api/pulls'),
     getLogin: () => request<LoginState>('api/login'),
-    startLogin: () => request<LoginState>('api/login', { method: 'POST' }),
+    startLogin: () => request<LoginState>('api/login', { method: 'POST', headers: jsonHeaders, body: '{}' }),
     startPull: (pullRequest: PullRequest) =>
-        request<PullRun>('api/pulls', { method: 'POST', body: JSON.stringify(pullRequest) }),
+        request<PullRun>('api/pulls', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(pullRequest) }),
 }
 
 export function subscribeToServerEvents(listener: (event: ServerEvent) => void): () => void {
