@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { useCatalogStore } from '@web/stores/catalog.store'
+import { useProjectStore } from '@web/stores/project.store'
 
 const props = defineProps<{ area: string; group: string }>()
-const catalog = useCatalogStore()
-const artifactGroup = computed(() => catalog.findGroup(props.area, props.group))
+const projectStore = useProjectStore()
+const artifactGroup = computed(() => projectStore.findGroup(props.area, props.group))
 </script>
 
 <template>
     <section class="px-7 py-6">
         <h1 class="text-[22px] font-semibold tracking-tight">{{ artifactGroup?.label ?? 'Unknown group' }}</h1>
-        <p class="mt-0.5 text-muted">Artifacts of this group will appear here.</p>
+        <p class="mt-0.5 text-muted">{{ artifactGroup?.relativePath }}</p>
     </section>
 </template>

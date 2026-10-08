@@ -90,3 +90,19 @@
         @apply outline-2 outline-offset-2 outline-accent rounded-md;
     }
 }
+
+@layer components {
+    .field-input {
+        @apply h-[34px] w-full rounded-md border border-line bg-bg px-2.5 text-fg;
+    }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}

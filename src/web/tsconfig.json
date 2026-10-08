@@ -3,7 +3,8 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@web/*": ["./*"]
+            "@web/*": ["./*"],
+            "@cli/*": ["../cli/*"]
         },
         "types": ["vite/client"],
         "noUncheckedIndexedAccess": true
