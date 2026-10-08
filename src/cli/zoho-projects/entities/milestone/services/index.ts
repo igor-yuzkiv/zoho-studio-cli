@@ -4,3 +4,4 @@ export {
     type IndexRenderContext,
     type RenderedIndex,
 } from './milestone-markdown.service'
+export { pullMilestones } from './pull-milestones.service'

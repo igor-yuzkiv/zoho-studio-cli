@@ -1,39 +1,10 @@
 import { Command } from 'commander'
 
-import { modulesDirName, zohoCrmDirName } from '@/zoho-crm/zoho-crm.config'
-import { getModulesList, resolveMetadataSegments, type ZohoModule } from '@/zoho-crm/entities/module'
-import { getProjectSettings } from '@/settings'
-import { replaceArtifactDir, writeArtifactJson } from '@/shared/artifacts'
-import { createCommandLogger } from '@/shared/logger'
+import { printPullResult, silentPullProgress } from '@/shared/pull'
+import { pullModules } from '@/zoho-crm/entities/module'
 
 export const pullModulesCommand = new Command('z-crm:modules:pull')
     .description('Download the metadata of every Zoho CRM module into the project modules directory')
     .action(async () => {
-        const logger = await createCommandLogger('z-crm:modules:pull')
-        logger.info('Starting modules pull')
-
-        const { projectPath } = await getProjectSettings()
-
-        let modules: ZohoModule[]
-
-        try {
-            modules = await getModulesList()
-        } catch (error) {
-            logger.error({ err: error }, 'Failed to fetch the modules list')
-            throw error
-        }
-
-        logger.info({ total: modules.length }, 'Modules found')
-
-        // The directory mirrors exactly what this pull returned, so stale modules are dropped.
-        await replaceArtifactDir(projectPath, [zohoCrmDirName, modulesDirName])
-
-        for (const module of modules) {
-            await writeArtifactJson(projectPath, resolveMetadataSegments(module.api_name), module)
-        }
-
-        logger.info({ total: modules.length }, 'Modules pull finished')
-
-        console.log(`Modules found: ${modules.length}`)
-        console.log(`Metadata saved: ${modules.length}`)
+        printPullResult(await pullModules(silentPullProgress))
     })

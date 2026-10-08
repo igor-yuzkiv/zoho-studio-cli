@@ -123,11 +123,18 @@ export interface SkippedEntity {
 }
 
 /** Prints what a command skipped and makes the exit code non-zero when there is anything. */
-export function reportSkipped(label: string, skipped: (SkippedEntity | string)[]): void {
-    console.log(`${label} skipped: ${skipped.length}`)
+export function describeSkipped(label: string, skipped: (SkippedEntity | string)[]): string[] {
+    return [
+        `${label} skipped: ${skipped.length}`,
+        ...skipped.map((entry) =>
+            typeof entry === 'string' ? `  - ${entry}` : `  - ${entry.name} (${entry.id}): ${entry.message}`
+        ),
+    ]
+}
 
-    for (const entry of skipped) {
-        console.log(typeof entry === 'string' ? `  - ${entry}` : `  - ${entry.name} (${entry.id}): ${entry.message}`)
+export function reportSkipped(label: string, skipped: (SkippedEntity | string)[]): void {
+    for (const line of describeSkipped(label, skipped)) {
+        console.log(line)
     }
 
     if (skipped.length > 0) {
