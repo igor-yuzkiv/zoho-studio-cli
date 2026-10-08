@@ -14,6 +14,10 @@ export default defineConfig({
     },
     // Relative asset URLs let the CLI serve the build from any origin and port.
     base: './',
+    server: {
+        // `zoho-studio browser --port 4321 --no-open` serves the API while Vite serves the page.
+        proxy: { '/api': 'http://127.0.0.1:4321' },
+    },
     build: {
         outDir: '../../dist/web',
         emptyOutDir: true,

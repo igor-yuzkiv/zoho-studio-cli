@@ -24,6 +24,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-crm:client-scripts:pull](docs/22-client-scripts-pull-command.md) — downloading client scripts
 - [z-crm:static-resources:pull](docs/23-static-resources-pull-command.md) — downloading static resources
 - [preset](docs/24-preset-command.md) — running a named sequence of commands
+- [browser](docs/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
 - [z-projects:milestones:pull](docs/16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON
 - [z-projects:task-lists:pull](docs/17-z-projects-task-lists-pull-command.md) — downloading Zoho Projects task lists under their milestones
 - [z-projects:tasks:pull](docs/18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments
@@ -50,5 +51,7 @@ bun test                # tests
 bun run check           # lint + typecheck + tests
 bun run build           # bun-targeted bundle → dist/
 bun run compile         # standalone executable → dist/
+bun run dev:web         # web app dev server (Vite)
+bun run build:web       # web app build → dist/web
 bun run deploy-skills   # install skills/ into ~/.claude/skills/
 ```

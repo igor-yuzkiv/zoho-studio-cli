@@ -57,6 +57,7 @@ are invoked as `zoho-studio`, which is the name used throughout these documents.
 - [22-client-scripts-pull-command.md](22-client-scripts-pull-command.md) — downloading client scripts with `zoho-studio z-crm:client-scripts:pull`
 - [23-static-resources-pull-command.md](23-static-resources-pull-command.md) — downloading static resources with `zoho-studio z-crm:static-resources:pull`
 - [24-preset-command.md](24-preset-command.md) — running a named sequence of commands with `zoho-studio preset`
+- [25-browser-command.md](25-browser-command.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`
 - [16-z-projects-milestones-pull-command.md](16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON with `zoho-studio z-projects:milestones:pull`
 - [17-z-projects-task-lists-pull-command.md](17-z-projects-task-lists-pull-command.md) — downloading Zoho Projects task lists under their milestones with `zoho-studio z-projects:task-lists:pull`
 - [18-z-projects-tasks-pull-command.md](18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments, with `zoho-studio z-projects:tasks:pull`
