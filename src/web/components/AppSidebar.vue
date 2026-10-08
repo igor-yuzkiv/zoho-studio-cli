@@ -3,9 +3,11 @@ import type { AreaId } from '@cli/commands/browser/browser.types'
 import { RouterLink } from 'vue-router'
 
 import { areaLabels, useProjectStore } from '@web/stores/project.store'
+import { useUiStore } from '@web/stores/ui.store'
 import { formatCount } from '@web/utils/time.utils'
 
 const projectStore = useProjectStore()
+const ui = useUiStore()
 const areas: AreaId[] = ['crm', 'projects']
 const linkClass =
     'flex items-center gap-2 rounded-md px-2 py-1.5 text-muted transition-colors hover:bg-hover hover:text-fg'
@@ -60,6 +62,13 @@ const linkClass =
                 :class="projectStore.project?.auth === 'authorized' ? 'bg-ok' : 'bg-err'"
             />
             {{ projectStore.project?.auth === 'authorized' ? 'Authorized' : 'Not logged in' }}
+            <button
+                type="button"
+                class="ml-auto rounded-md border border-line px-2 py-0.5 text-muted transition-colors hover:border-accent hover:text-accent"
+                @click="ui.loginDialogOpen = true"
+            >
+                {{ projectStore.project?.auth === 'authorized' ? 'Log in again' : 'Log in' }}
+            </button>
         </div>
     </aside>
 </template>

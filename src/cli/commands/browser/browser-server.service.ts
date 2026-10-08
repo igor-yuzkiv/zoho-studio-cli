@@ -7,6 +7,7 @@ import { workflowActionTypes } from '@/zoho-crm/entities/workflow-action'
 import { readFileTree, readJsonBundle, resolveRequestedPath } from './artifact-files.service'
 import { artifactGroups, findArtifactGroup, summarizeArtifactGroup } from './artifact-groups.service'
 import type { ApiError, ProjectInfo, PullRequest, ServerEvent } from './browser.types'
+import { LoginBusyError, LoginSession } from './login-session.service'
 import { PullBusyError, PullRunner } from './pull-runner.service'
 
 export type BrowserServerOptions = {
@@ -20,6 +21,7 @@ const maxTreeDepth = 8
 
 export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserServerOptions) {
     const pullRunner = new PullRunner()
+    const loginSession = new LoginSession()
 
     return Bun.serve({
         hostname: '127.0.0.1',
@@ -75,7 +77,22 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
                 },
             },
 
-            '/api/events': (request) => streamEvents(request, pullRunner),
+            '/api/login': {
+                GET: () => Response.json(loginSession.state),
+                POST: () => {
+                    try {
+                        return Response.json(loginSession.start(), { status: 202 })
+                    } catch (error) {
+                        if (error instanceof LoginBusyError) {
+                            return apiError(error.message, 409)
+                        }
+
+                        throw error
+                    }
+                },
+            },
+
+            '/api/events': (request) => streamEvents(request, pullRunner, loginSession),
 
             '/api/*': () => apiError('Not found', 404),
         },
@@ -104,14 +121,20 @@ async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
     }
 }
 
-function streamEvents(request: Request, pullRunner: PullRunner): Response {
+function streamEvents(request: Request, pullRunner: PullRunner, loginSession: LoginSession): Response {
     let unsubscribe = () => {}
 
     const stream = new ReadableStream<string>({
         start(controller) {
             const send = (event: ServerEvent) => controller.enqueue(`data: ${JSON.stringify(event)}\n\n`)
 
-            unsubscribe = pullRunner.subscribe((run) => send({ type: 'pull', run }))
+            const unsubscribeFromPulls = pullRunner.subscribe((run) => send({ type: 'pull', run }))
+            const unsubscribeFromLogin = loginSession.subscribe((state) => send({ type: 'login', state }))
+
+            unsubscribe = () => {
+                unsubscribeFromPulls()
+                unsubscribeFromLogin()
+            }
             request.signal.addEventListener('abort', () => {
                 unsubscribe()
                 controller.close()

@@ -25,6 +25,13 @@ at a time: the pulls share the project folders and the token store, so a second 
 until the first finishes. The page shows the progress and, at the end, the same summary the
 command prints.
 
+## Logging in from the page
+
+The footer of the sidebar shows whether the project has a refresh token stored, with a button that
+starts the same device flow as [`zoho-studio login`](4-login-command.md): the page shows the
+verification link and the code to enter, waits for the approval, and stores the tokens in the
+project settings. A pull that fails because the project is not logged in offers the same button.
+
 ## Running from source
 
 The executable from `bun run compile` carries the page inside it, so `zoho-studio browser` works
@@ -58,4 +65,6 @@ would leave `src/` is refused.
 | `GET /api/json?path=` | every JSON file below a path, parsed, keyed by its path |
 | `GET /api/pulls` | the recent pulls, newest first |
 | `POST /api/pulls` | starts a pull: `{ "area": "crm", "group": "fields", "options": { "module": "Leads" } }`; `409` while another one runs |
-| `GET /api/events` | a server-sent event stream with every change to a pull |
+| `GET /api/login` | the state of the login started from the page |
+| `POST /api/login` | starts a login; `409` while one waits for approval |
+| `GET /api/events` | a server-sent event stream with every change to a pull or the login |

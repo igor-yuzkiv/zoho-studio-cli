@@ -3,6 +3,7 @@ import type {
     ArtifactGroupSummary,
     FileEntry,
     JsonBundle,
+    LoginState,
     ProjectInfo,
     PullRequest,
     PullRun,
@@ -48,6 +49,8 @@ export const api = {
         return response.text()
     },
     getPulls: () => request<PullRun[]>('api/pulls'),
+    getLogin: () => request<LoginState>('api/login'),
+    startLogin: () => request<LoginState>('api/login', { method: 'POST' }),
     startPull: (pullRequest: PullRequest) =>
         request<PullRun>('api/pulls', { method: 'POST', body: JSON.stringify(pullRequest) }),
 }

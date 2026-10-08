@@ -1,6 +1,7 @@
 import type {
     AreaId,
     ArtifactGroupSummary,
+    LoginState,
     ProjectInfo,
     PullOptionName,
     PullRun,
@@ -26,6 +27,7 @@ export const useProjectStore = defineStore('project', () => {
     /** Bumped after every finished pull, so open views know to reload their files. */
     const dataVersion = ref(0)
     const pendingAreaPulls = ref<ArtifactGroupSummary[]>([])
+    const loginState = ref<LoginState>({ status: 'idle' })
 
     const navigationGroups = computed(() => ({
         crm: groups.value.filter((group) => group.area === 'crm' && !groupsHiddenFromNavigation.has(group.id)),
@@ -37,14 +39,16 @@ export const useProjectStore = defineStore('project', () => {
 
     async function load() {
         try {
-            const [projectInfo, groupSummaries, recentRuns] = await Promise.all([
+            const [projectInfo, groupSummaries, recentRuns, currentLogin] = await Promise.all([
                 api.getProject(),
                 api.getGroups(),
                 api.getPulls(),
+                api.getLogin(),
             ])
             project.value = projectInfo
             groups.value = groupSummaries
             runs.value = recentRuns
+            loginState.value = currentLogin
             loadError.value = null
         } catch (error) {
             loadError.value = error instanceof Error ? error.message : String(error)
@@ -90,9 +94,25 @@ export const useProjectStore = defineStore('project', () => {
         }
     }
 
+    async function startLogin() {
+        const previousStatus = loginState.value.status
+        const state = await api.startLogin()
+
+        // The event stream may already have moved past `starting` by the time this answer arrives.
+        if (loginState.value.status === previousStatus) {
+            loginState.value = state
+        }
+    }
+
     function listen() {
         return subscribeToServerEvents(async (event) => {
-            if (event.type !== 'pull') {
+            if (event.type === 'login') {
+                loginState.value = event.state
+
+                if (event.state.status === 'done') {
+                    project.value = await api.getProject()
+                }
+
                 return
             }
 
@@ -114,6 +134,7 @@ export const useProjectStore = defineStore('project', () => {
         loadError,
         dataVersion,
         pendingAreaPulls,
+        loginState,
         navigationGroups,
         currentRun,
         latestRun,
@@ -122,5 +143,6 @@ export const useProjectStore = defineStore('project', () => {
         findGroup,
         startPull,
         startAreaPull,
+        startLogin,
     }
 })

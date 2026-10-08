@@ -81,6 +81,16 @@ watch(
                     }}<template v-if="run.currentItem"> · {{ run.currentItem }}</template>
                 </div>
                 <div v-for="(line, index) in run.log" :key="index" class="whitespace-pre-wrap">{{ line }}</div>
+                <div v-if="run.authRequired" class="mt-2 flex items-center gap-2 font-sans text-[13px] text-warn">
+                    The project needs a login before it can pull.
+                    <button
+                        type="button"
+                        class="ml-auto rounded-md border border-warn/50 px-2 py-0.5 hover:bg-warn/10"
+                        @click="ui.loginDialogOpen = true"
+                    >
+                        Log in
+                    </button>
+                </div>
                 <div v-if="projectStore.pendingAreaPulls.length" class="mt-1 text-faint">
                     Queued: {{ projectStore.pendingAreaPulls.map((group) => group.label).join(', ') }}
                 </div>

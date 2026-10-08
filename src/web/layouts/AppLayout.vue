@@ -4,6 +4,7 @@ import { RouterView } from 'vue-router'
 
 import AppSidebar from '@web/components/AppSidebar.vue'
 import AppTopbar from '@web/components/AppTopbar.vue'
+import LoginDialog from '@web/components/LoginDialog.vue'
 import PullDialog from '@web/components/PullDialog.vue'
 import PullPanel from '@web/components/PullPanel.vue'
 import { useProjectStore } from '@web/stores/project.store'
@@ -34,4 +35,5 @@ onUnmounted(() => stopListening())
     </div>
     <PullDialog />
     <PullPanel />
+    <LoginDialog />
 </template>

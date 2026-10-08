@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import type { ArtifactGroupSummary, FileEntry, PullRun } from '@/commands/browser/browser.types'
 import { startBrowserServer } from '@/commands/browser/browser-server.service'
 
+import { startApiStub } from '../support/api-stub'
 import { startCrmStub, type CrmStub } from '../support/crm-stub'
 
 let stub: CrmStub | null = null
@@ -22,8 +23,13 @@ const twoFunctions = [
     { id: '2', name: 'second', api_name: 'second' },
 ]
 
-async function startProject(answer: (request: Request) => Response = () => Response.json({})) {
-    stub = await startCrmStub(answer)
+async function startProject(
+    answer: (request: Request) => Response = () => Response.json({}),
+    tokens?: Parameters<typeof startApiStub>[2]
+) {
+    stub = tokens
+        ? await startApiStub(answer, (origin) => ({ api: { baseUrl: origin, version: 'v8' } }), tokens)
+        : await startCrmStub(answer)
     const page = new Blob(['<div id="app"></div>'], { type: 'text/html' })
     server = startBrowserServer({
         projectPath: stub.projectPath,
@@ -161,6 +167,22 @@ describe('browser server', () => {
 
         expect(run.status).toBe('failed')
         expect(run.log.length).toBeGreaterThan(0)
+    })
+
+    test('marks a pull that failed for lack of a login', async () => {
+        const { origin } = await startProject(() => Response.json({}), {
+            accessToken: '',
+            refreshToken: '',
+            accessTokenExpiresAt: 0,
+        })
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+        const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
+
+        expect(run).toMatchObject({ status: 'failed', authRequired: true })
     })
 
     test('passes options through to the pull', async () => {

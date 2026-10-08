@@ -69,12 +69,15 @@ export type PullRun = {
     log: string[]
     startedAt: string
     finishedAt: string | null
+    /** The pull failed because the project has no usable tokens; logging in again should fix it. */
+    authRequired: boolean
 }
 
 export type LoginState =
     | { status: 'idle' }
+    | { status: 'starting' }
     | { status: 'waiting'; verificationUrl: string; userCode: string; expiresAt: string }
-    | { status: 'done'; warning: string | null }
+    | { status: 'done'; warning: string | null; organizationError: string | null }
     | { status: 'failed'; message: string }
 
 /** Server-sent events on `/api/events`; `data` is the JSON of the matching payload. */

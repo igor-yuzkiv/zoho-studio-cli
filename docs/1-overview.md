@@ -38,8 +38,8 @@ bun run dev -- init my-project
 ```
 
 `bun run build` produces a bundle in `dist/`, and `bun run compile` a standalone executable with the
-web page of `zoho-studio browser` built in. Both
-are invoked as `zoho-studio`, which is the name used throughout these documents.
+web page of `zoho-studio browser` built in. Both are invoked as `zoho-studio`, which is the name
+used throughout these documents.
 
 ## Documents
 

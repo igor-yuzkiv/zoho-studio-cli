@@ -10,6 +10,7 @@ export type PullDialogTarget = {
 export const useUiStore = defineStore('ui', () => {
     const pullDialogTarget = ref<PullDialogTarget | null>(null)
     const pullPanelOpen = ref(false)
+    const loginDialogOpen = ref(false)
 
     function openPullDialog(group: ArtifactGroupSummary, presetOptions: PullDialogTarget['presetOptions'] = {}) {
         pullDialogTarget.value = { group, presetOptions }
@@ -19,5 +20,5 @@ export const useUiStore = defineStore('ui', () => {
         pullDialogTarget.value = null
     }
 
-    return { pullDialogTarget, pullPanelOpen, openPullDialog, closePullDialog }
+    return { pullDialogTarget, pullPanelOpen, loginDialogOpen, openPullDialog, closePullDialog }
 })

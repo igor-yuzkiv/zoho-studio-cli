@@ -1,3 +1,4 @@
+import { AuthError } from '@/shared/api/auth'
 import type { PullProgress } from '@/shared/pull'
 
 import type { ArtifactGroup } from './artifact-groups.service'
@@ -55,6 +56,7 @@ export class PullRunner {
             log: [],
             startedAt: new Date().toISOString(),
             finishedAt: null,
+            authRequired: false,
         }
 
         this.runs.push(run)
@@ -93,8 +95,11 @@ export class PullRunner {
             run.log.push(...result.summary)
             run.status = result.failedCount > 0 ? 'partial' : 'done'
         } catch (error) {
-            run.log.push(error instanceof Error ? error.message : String(error))
+            const message = error instanceof Error ? error.message : String(error)
+
+            run.log.push(message)
             run.status = 'failed'
+            run.authRequired = isAuthFailure(error, message)
         }
 
         run.finishedAt = new Date().toISOString()
@@ -112,4 +117,9 @@ function describeCommand(group: ArtifactGroup, options: Partial<Record<PullOptio
     const flags = group.options.filter((name) => options[name]).map((name) => `--${name}=${options[name]}`)
 
     return [group.command, ...flags].join(' ')
+}
+
+/** A missing refresh token surfaces as a plain error that tells the user to run `zoho-studio login`. */
+function isAuthFailure(error: unknown, message: string): boolean {
+    return error instanceof AuthError || message.includes('zoho-studio login')
 }
