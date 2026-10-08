@@ -245,7 +245,9 @@ const columns: { id: FieldColumn; label: string }[] = [
                                     <td class="px-3.5 py-2">
                                         <AppBadge v-if="field.custom_field" tone="accent">custom</AppBadge>
                                     </td>
-                                    <td class="px-3.5 py-2 whitespace-nowrap text-muted">{{ describeRelation(field) }}</td>
+                                    <td class="px-3.5 py-2 whitespace-nowrap text-muted">
+                                        {{ describeRelation(field) }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

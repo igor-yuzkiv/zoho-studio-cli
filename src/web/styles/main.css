@@ -106,3 +106,38 @@
 .fade-leave-to {
     opacity: 0;
 }
+
+.rich-text {
+    @apply leading-relaxed text-muted;
+
+    & p,
+    & ul,
+    & ol,
+    & pre,
+    & blockquote,
+    & table {
+        @apply my-2;
+    }
+
+    & ul {
+        @apply list-disc pl-5;
+    }
+
+    & ol {
+        @apply list-decimal pl-5;
+    }
+
+    & a {
+        @apply text-accent underline;
+    }
+
+    & code,
+    & pre {
+        @apply font-mono text-[13px];
+    }
+
+    & td,
+    & th {
+        @apply border border-line px-2 py-1;
+    }
+}
