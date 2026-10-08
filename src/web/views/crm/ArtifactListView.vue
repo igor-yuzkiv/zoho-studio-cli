@@ -9,10 +9,12 @@ import DetailHeader from '@web/components/DetailHeader.vue'
 import EmptyState from '@web/components/EmptyState.vue'
 import JsonViewer from '@web/components/JsonViewer.vue'
 import ListDetailLayout from '@web/components/ListDetailLayout.vue'
-import ListRow from '@web/components/ListRow.vue'
+import ExplorerItem from '@web/components/ExplorerItem.vue'
+import ExplorerSection from '@web/components/ExplorerSection.vue'
 import TabBar from '@web/components/TabBar.vue'
 import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
+import { groupIcon } from '@web/utils/group-icons'
 import { bundleEntries, formatDate, joinAbsolutePath, matchesFilter, type BundleEntry } from '@web/utils/bundle.utils'
 import type { CodeLanguage } from '@web/utils/highlight.utils'
 
@@ -38,6 +40,8 @@ export type ArtifactListConfig = {
     /** Lists artifacts under the folder they sit in, such as the action type or the module. */
     sectionOf?: (entry: BundleEntry<ArtifactRecord>) => string
     isArtifact?: (entry: BundleEntry<ArtifactRecord>) => boolean
+    /** A short hint shown at the end of the explorer row. */
+    metaOf?: (entry: BundleEntry<ArtifactRecord>) => string | undefined
 }
 
 const props = defineProps<{ config: ArtifactListConfig }>()
@@ -69,6 +73,8 @@ const sections = computed(() => {
     return [...bySection.entries()].sort(([left], [right]) => left.localeCompare(right))
 })
 
+const icon = computed(() => groupIcon(props.config.groupId))
+const visibleCount = computed(() => sections.value.reduce((sum, [, sectionEntries]) => sum + sectionEntries.length, 0))
 const selected = computed(() => entries.value.find(({ path }) => path === selectedPath.value) ?? null)
 const sourcePath = computed(() => (selected.value ? (props.config.sourcePathOf?.(selected.value) ?? null) : null))
 
@@ -130,29 +136,33 @@ function sourcePathOfEntry(entry: BundleEntry<ArtifactRecord>) {
 
 <template>
     <EmptyState v-if="group && group.count === null" :title="`${group.label} were never pulled`" :group="group" />
-    <ListDetailLayout
-        v-else
-        v-model:filter="filter"
-        :filter-placeholder="`Filter ${entries.length} ${group?.label.toLowerCase() ?? ''}`"
-    >
+    <ListDetailLayout v-else v-model:filter="filter" :item-count="visibleCount">
         <template #list>
             <p v-if="entries.length === 0" class="p-4 text-muted">Nothing here yet.</p>
             <template v-for="[section, sectionEntries] in sections" :key="section">
-                <h2
-                    v-if="section"
-                    class="sticky top-[55px] border-b border-line bg-surface-2 px-3.5 py-1.5 text-[11px] font-medium tracking-wider text-faint uppercase"
-                >
-                    {{ section }} · {{ sectionEntries.length }}
-                </h2>
-                <ListRow
-                    v-for="entry in sectionEntries"
-                    :key="entry.path"
-                    :active="entry.path === selectedPath"
-                    @click="selectedPath = entry.path"
-                >
-                    <b class="block truncate font-medium">{{ labelOf(entry) }}</b>
-                    <small class="block truncate text-xs text-faint">{{ formatDate(entry.value.modified_time) }}</small>
-                </ListRow>
+                <ExplorerSection v-if="section" :title="section" :count="sectionEntries.length">
+                    <ExplorerItem
+                        v-for="entry in sectionEntries"
+                        :key="entry.path"
+                        :label="labelOf(entry)"
+                        :icon="icon"
+                        :meta="config.metaOf?.(entry)"
+                        :active="entry.path === selectedPath"
+                        @click="selectedPath = entry.path"
+                    />
+                </ExplorerSection>
+                <template v-else>
+                    <ExplorerItem
+                        v-for="entry in sectionEntries"
+                        :key="entry.path"
+                        :label="labelOf(entry)"
+                        :icon="icon"
+                        :meta="config.metaOf?.(entry)"
+                        :active="entry.path === selectedPath"
+                        :indent="-1"
+                        @click="selectedPath = entry.path"
+                    />
+                </template>
             </template>
         </template>
         <template #detail>
@@ -174,7 +184,7 @@ function sourcePathOfEntry(entry: BundleEntry<ArtifactRecord>) {
                         </AppBadge>
                     </template>
                 </DetailHeader>
-                <p v-if="selected.value.description" class="border-b border-line px-6 py-3 text-muted">
+                <p v-if="selected.value.description" class="border-b border-line bg-surface px-6 py-3 text-muted">
                     {{ selected.value.description }}
                 </p>
                 <TabBar v-model="tab" :tabs="tabs" />

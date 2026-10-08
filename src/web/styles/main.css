@@ -29,10 +29,10 @@
 }
 
 :root {
-    --zs-bg: #fafaf9;
+    --zs-bg: #f1f1f3;
     --zs-surface: #ffffff;
-    --zs-surface-2: #f4f4f5;
-    --zs-hover: #ececee;
+    --zs-surface-2: #f6f6f7;
+    --zs-hover: #e9e9ec;
     --zs-fg: #18181b;
     --zs-muted: #52525b;
     --zs-faint: #71717a;
@@ -109,6 +109,8 @@
 
 .rich-text {
     @apply leading-relaxed text-muted;
+    /* Zoho comments often hold long bare links. */
+    overflow-wrap: anywhere;
 
     & p,
     & ul,
@@ -140,4 +142,17 @@
     & th {
         @apply border border-line px-2 py-1;
     }
+}
+
+.activity-tooltip {
+    @apply pointer-events-none absolute left-full z-50 ml-2 rounded-md bg-fg px-2 py-1 text-xs whitespace-nowrap text-bg opacity-0 shadow-lg transition-opacity;
+}
+
+.group:hover > .activity-tooltip,
+.group:focus-visible > .activity-tooltip {
+    @apply opacity-100;
+}
+
+.nav-link {
+    @apply relative flex h-9 shrink-0 items-center gap-2.5 rounded-md text-[13px] text-muted transition-colors hover:bg-hover hover:text-fg;
 }

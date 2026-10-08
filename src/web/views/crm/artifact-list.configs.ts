@@ -30,7 +30,13 @@ export const artifactListConfigs: Record<string, ArtifactListConfig> = {
         isArtifact: ({ fileName }) => fileName !== 'page.metadata.json',
         sourcePathOf: ({ path }) => path.replace(/\.metadata\.json$/, '.js'),
         sourceLanguage: 'javascript',
-        sectionOf: ({ path }) => path.split('/').slice(2, 4).join(' / '),
+        sectionOf: sectionFromFolder,
+        // The page folder is `<definition>.<layout>`, e.g. `module_create.Standard__s`.
+        metaOf: ({ path }) =>
+            path
+                .split('/')[3]
+                ?.split('.')[0]
+                ?.replace(/^module_/, ''),
     },
     'static-resources': {
         groupId: 'static-resources',

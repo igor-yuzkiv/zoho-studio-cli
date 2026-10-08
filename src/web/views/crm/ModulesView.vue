@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import type { FileEntry } from '@cli/commands/browser/browser.types'
-import { computed, ref, watch } from 'vue'
+import { Box } from '@lucide/vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 import { api } from '@web/api/api.client'
 import AppBadge from '@web/components/AppBadge.vue'
 import AppButton from '@web/components/AppButton.vue'
 import CopyPathButton from '@web/components/CopyPathButton.vue'
 import EmptyState from '@web/components/EmptyState.vue'
+import JsonDialog from '@web/components/JsonDialog.vue'
 import JsonViewer from '@web/components/JsonViewer.vue'
 import ListDetailLayout from '@web/components/ListDetailLayout.vue'
-import ListRow from '@web/components/ListRow.vue'
+import ExplorerItem from '@web/components/ExplorerItem.vue'
 import TabBar from '@web/components/TabBar.vue'
 import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
@@ -33,6 +35,16 @@ const selectedModule = ref<string | null>(null)
 const tab = ref<'fields' | 'settings' | 'workflows' | 'client-scripts'>('fields')
 const sortColumn = ref<FieldColumn>('field_label')
 const sortDescending = ref(false)
+const rawField = ref<FieldMetadata | null>(null)
+const expandedWorkflows = reactive(new Set<string>())
+
+function toggleWorkflow(path: string) {
+    if (expandedWorkflows.has(path)) {
+        expandedWorkflows.delete(path)
+    } else {
+        expandedWorkflows.add(path)
+    }
+}
 
 const { data: modulesTree } = useApiData(() => api.getTree('zoho-crm/modules', 3))
 const { data: workflowsBundle } = useApiData(() => api.getJson('zoho-crm/workflows').catch(() => ({})))
@@ -135,23 +147,18 @@ const columns: { id: FieldColumn; label: string }[] = [
         message="Pull the modules first, then their fields."
         :group="modulesGroup"
     />
-    <ListDetailLayout
-        v-else
-        v-model:filter="moduleFilter"
-        list-width="240px"
-        :filter-placeholder="`Filter ${modules.length} modules`"
-    >
+    <ListDetailLayout v-else v-model:filter="moduleFilter" list-width="260px" :item-count="visibleModules.length">
         <template #list>
-            <ListRow
+            <ExplorerItem
                 v-for="module in visibleModules"
                 :key="module.name"
+                :label="module.name"
+                :icon="Box"
+                :meta="String(module.fieldCount)"
+                :indent="-1"
                 :active="module.name === selectedModule"
-                class="!flex items-center !py-2"
                 @click="selectedModule = module.name"
-            >
-                <span class="truncate">{{ module.name }}</span>
-                <small class="ml-auto pl-2 font-mono text-xs text-faint">{{ module.fieldCount }}</small>
-            </ListRow>
+            />
         </template>
         <template #detail>
             <div v-if="currentModule" class="px-7 py-6">
@@ -172,7 +179,7 @@ const columns: { id: FieldColumn; label: string }[] = [
 
                 <TabBar
                     v-model="tab"
-                    class="mt-3.5 !px-0"
+                    class="mt-3.5 !bg-transparent !px-0"
                     :tabs="[
                         { id: 'fields', label: `Fields · ${fields.length}` },
                         { id: 'settings', label: 'Module settings' },
@@ -228,6 +235,9 @@ const columns: { id: FieldColumn; label: string }[] = [
                                     >
                                         Lookup / picklist
                                     </th>
+                                    <th class="border-b border-line bg-surface-2 px-3.5 py-2">
+                                        <span class="sr-only">Raw JSON</span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -248,18 +258,23 @@ const columns: { id: FieldColumn; label: string }[] = [
                                     <td class="px-3.5 py-2 whitespace-nowrap text-muted">
                                         {{ describeRelation(field) }}
                                     </td>
+                                    <td class="px-2 py-1 text-right">
+                                        <button
+                                            type="button"
+                                            class="rounded-md border border-line px-2 py-0.5 font-mono text-xs whitespace-nowrap text-muted transition-colors hover:border-accent hover:text-accent"
+                                            :aria-label="`Raw JSON of ${field.api_name}`"
+                                            @click="rawField = field"
+                                        >
+                                            { }
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </template>
 
-                <div
-                    v-else-if="tab === 'settings'"
-                    class="mt-3 overflow-hidden rounded-[10px] border border-line bg-surface"
-                >
-                    <JsonViewer :value="metadata" />
-                </div>
+                <JsonViewer v-else-if="tab === 'settings'" :value="metadata" class="!mx-0" />
 
                 <div v-else-if="tab === 'workflows'" class="mt-3 flex flex-col gap-4">
                     <p v-if="!moduleWorkflows.length" class="text-muted">No workflow rules for this module.</p>
@@ -268,13 +283,30 @@ const columns: { id: FieldColumn; label: string }[] = [
                         :key="workflow.path"
                         class="overflow-hidden rounded-[10px] border border-line bg-surface"
                     >
-                        <div class="flex items-center gap-2 border-b border-line px-4 py-2.5 font-medium">
+                        <button
+                            type="button"
+                            class="flex w-full items-center gap-2 px-4 py-2.5 text-left font-medium hover:bg-hover"
+                            :aria-expanded="expandedWorkflows.has(workflow.path)"
+                            @click="toggleWorkflow(workflow.path)"
+                        >
+                            <span
+                                class="w-3.5 text-faint transition-transform"
+                                :class="expandedWorkflows.has(workflow.path) && 'rotate-90'"
+                                >›</span
+                            >
                             {{ workflow.value.name }}
+                            <span class="text-xs font-normal text-faint">
+                                {{ workflow.value.execute_when?.type?.replace(/_/g, ' ') }}
+                            </span>
                             <AppBadge :tone="workflow.value.status?.active ? 'ok' : 'neutral'" class="ml-auto">
                                 {{ workflow.value.status?.active ? 'active' : 'inactive' }}
                             </AppBadge>
-                        </div>
-                        <WorkflowDetail :workflow="workflow.value" />
+                        </button>
+                        <WorkflowDetail
+                            v-if="expandedWorkflows.has(workflow.path)"
+                            class="border-t border-line"
+                            :workflow="workflow.value"
+                        />
                     </div>
                 </div>
 
@@ -299,4 +331,9 @@ const columns: { id: FieldColumn; label: string }[] = [
             <EmptyState v-else title="No module selected" />
         </template>
     </ListDetailLayout>
+    <JsonDialog
+        :value="rawField"
+        :title="rawField ? `${rawField.field_label} · ${rawField.api_name}` : ''"
+        @close="rawField = null"
+    />
 </template>

@@ -45,29 +45,40 @@ const record = computed(() => props.loaded.record)
         </template>
     </DetailHeader>
 
-    <div v-if="view === 'rendered'" class="max-w-[820px] px-7 py-5">
-        <dl
-            class="grid grid-cols-[120px_1fr] gap-x-4 gap-y-1.5 rounded-[9px] border border-line bg-surface px-4 py-3.5 text-[13px]"
-        >
-            <template v-for="property in properties" :key="property.label">
-                <dt class="text-faint">{{ property.label }}</dt>
-                <dd>{{ property.value }}</dd>
-            </template>
-        </dl>
+    <div v-if="view === 'rendered'" class="p-4">
+        <div class="mx-auto flex w-[90%] flex-col gap-4">
+            <article class="min-w-0 rounded-[10px] border border-line bg-surface px-6 py-5">
+                <dl
+                    class="grid grid-cols-[120px_1fr] gap-x-4 gap-y-1.5 rounded-[9px] border border-line bg-surface-2 px-4 py-3.5 text-[13px]"
+                >
+                    <template v-for="property in properties" :key="property.label">
+                        <dt class="text-faint">{{ property.label }}</dt>
+                        <dd>{{ property.value }}</dd>
+                    </template>
+                </dl>
 
-        <div v-if="record.tags?.length" class="mt-3 flex flex-wrap gap-1.5">
-            <AppBadge v-for="tag in record.tags" :key="tag.name">{{ tag.name }}</AppBadge>
-        </div>
+                <div v-if="record.tags?.length" class="mt-3 flex flex-wrap gap-1.5">
+                    <AppBadge v-for="tag in record.tags" :key="tag.name">{{ tag.name }}</AppBadge>
+                </div>
 
-        <h2 class="mt-5 mb-2 text-[15px] font-semibold">Description</h2>
-        <RichText v-if="record.description" :html="record.description" />
-        <p v-else class="text-faint">No description.</p>
+                <h2 class="mt-5 mb-2 text-[15px] font-semibold">Description</h2>
+                <RichText v-if="record.description" :html="record.description" />
+                <p v-else class="text-faint">No description.</p>
+            </article>
 
-        <h2 class="mt-5 mb-2 text-[15px] font-semibold">Comments · {{ loaded.comments.length }}</h2>
-        <div v-for="comment in loaded.comments" :key="comment.id" class="my-2.5 border-l-2 border-line py-1 pl-3">
-            <b class="font-medium">{{ personName(comment.created_by ?? comment.added_by) }}</b>
-            <small class="ml-1.5 text-faint">{{ formatDate(comment.created_time) }}</small>
-            <RichText :html="comment.comment ?? ''" />
+            <aside class="min-w-0 rounded-[10px] border border-line bg-surface px-5 py-4">
+                <h2 class="mb-2 text-[15px] font-semibold">Comments · {{ loaded.comments.length }}</h2>
+                <p v-if="!loaded.comments.length" class="text-faint">No comments.</p>
+                <div
+                    v-for="comment in loaded.comments"
+                    :key="comment.id"
+                    class="border-t border-line py-3 first-of-type:border-0"
+                >
+                    <b class="font-medium">{{ personName(comment.created_by ?? comment.added_by) }}</b>
+                    <small class="ml-1.5 text-faint">{{ formatDate(comment.created_time) }}</small>
+                    <RichText :html="comment.comment ?? ''" />
+                </div>
+            </aside>
         </div>
     </div>
     <JsonViewer v-else :value="{ ...record, comments: loaded.comments }" />

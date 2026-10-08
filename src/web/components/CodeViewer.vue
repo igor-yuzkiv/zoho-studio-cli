@@ -15,6 +15,6 @@ const lines = computed(() =>
 <template>
     <!-- eslint-disable vue/no-v-html -- highlightLines escapes every character it emits -->
     <pre
-        class="overflow-auto py-4 font-mono text-[13px] leading-[1.65]"
+        class="m-4 overflow-auto rounded-[10px] border border-line bg-surface py-4 font-mono text-[13px] leading-[1.65]"
     ><code><span v-for="(line, index) in lines" :key="index" class="flex"><span class="w-[52px] shrink-0 pr-4 text-right text-faint select-none">{{ index + 1 }}</span><span class="pr-6 whitespace-pre" v-html="line || ' '" /></span></code></pre>
 </template>

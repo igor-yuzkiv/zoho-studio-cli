@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ChevronRight, Flag, ListTodo } from '@lucide/vue'
 import { computed, reactive, ref, watch } from 'vue'
 
 import { api } from '@web/api/api.client'
 import EmptyState from '@web/components/EmptyState.vue'
+import ExplorerItem from '@web/components/ExplorerItem.vue'
 import ListDetailLayout from '@web/components/ListDetailLayout.vue'
 import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
@@ -41,6 +43,12 @@ const visibleTree = computed(() =>
         .filter((milestone) => milestone.taskLists.length > 0 || !filter.value)
 )
 
+const visibleTaskCount = computed(() =>
+    visibleTree.value.reduce(
+        (sum, milestone) => sum + milestone.taskLists.reduce((listSum, taskList) => listSum + taskList.tasks.length, 0),
+        0
+    )
+)
 const selected = computed(() => records.value.find(({ path }) => path === selectedPath.value) ?? null)
 
 watch(tree, (milestones) => {
@@ -96,7 +104,7 @@ function statusColor(loaded: LoadedRecord) {
         message="Pull the milestones, then task lists and tasks."
         :group="milestonesGroup"
     />
-    <ListDetailLayout v-else v-model:filter="filter" filter-placeholder="Filter tasks">
+    <ListDetailLayout v-else v-model:filter="filter" :item-count="visibleTaskCount">
         <template #list-tools>
             <div class="inline-flex overflow-hidden rounded-md border border-line text-xs">
                 <button
@@ -118,59 +126,68 @@ function statusColor(loaded: LoadedRecord) {
             </div>
         </template>
         <template #list>
-            <div class="px-1.5 py-2 text-[13px]" role="tree">
+            <div role="tree">
                 <template v-for="milestone in visibleTree" :key="milestone.name">
-                    <button
-                        type="button"
-                        class="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left hover:bg-hover"
-                        :class="selectedPath === milestone.record?.path ? 'bg-accent-soft text-fg' : 'text-muted'"
+                    <ExplorerItem
+                        :label="milestone.name"
+                        :indent="-1"
+                        :active="selectedPath === milestone.record?.path"
+                        class="font-medium"
                         :aria-expanded="!collapsed.has(milestone.name)"
                         @click="(toggle(milestone.name), milestone.record && (selectedPath = milestone.record.path))"
                     >
-                        <span
-                            class="w-3.5 text-faint transition-transform"
-                            :class="!collapsed.has(milestone.name) && 'rotate-90'"
-                            >›</span
-                        >
-                        ◆ <b class="truncate font-medium text-fg">{{ milestone.name }}</b>
-                    </button>
-                    <div v-if="!collapsed.has(milestone.name)" class="pl-4">
+                        <template #prefix>
+                            <ChevronRight
+                                :size="13"
+                                class="shrink-0 opacity-60 transition-transform"
+                                :class="!collapsed.has(milestone.name) && 'rotate-90'"
+                            />
+                            <Flag :size="14" class="shrink-0 opacity-70" />
+                        </template>
+                    </ExplorerItem>
+                    <template v-if="!collapsed.has(milestone.name)">
                         <template v-for="taskList in milestone.taskLists" :key="taskList.name">
-                            <button
-                                type="button"
-                                class="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left hover:bg-hover"
-                                :class="
-                                    selectedPath === taskList.record?.path ? 'bg-accent-soft text-fg' : 'text-muted'
-                                "
+                            <ExplorerItem
+                                :label="taskList.name"
+                                :meta="String(taskList.tasks.length)"
+                                :active="selectedPath === taskList.record?.path"
                                 :aria-expanded="!collapsed.has(`${milestone.name}/${taskList.name}`)"
                                 @click="
                                     (toggle(`${milestone.name}/${taskList.name}`),
                                     taskList.record && (selectedPath = taskList.record.path))
                                 "
                             >
-                                <span
-                                    class="w-3.5 text-faint transition-transform"
-                                    :class="!collapsed.has(`${milestone.name}/${taskList.name}`) && 'rotate-90'"
-                                    >›</span
-                                >
-                                <span class="truncate font-medium">{{ taskList.name }}</span>
-                                <small class="ml-auto font-mono text-xs text-faint">{{ taskList.tasks.length }}</small>
-                            </button>
-                            <div v-if="!collapsed.has(`${milestone.name}/${taskList.name}`)" class="pl-4">
-                                <button
+                                <template #prefix>
+                                    <ChevronRight
+                                        :size="13"
+                                        class="shrink-0 opacity-60 transition-transform"
+                                        :class="!collapsed.has(`${milestone.name}/${taskList.name}`) && 'rotate-90'"
+                                    />
+                                    <ListTodo :size="14" class="shrink-0 opacity-70" />
+                                </template>
+                            </ExplorerItem>
+                            <template v-if="!collapsed.has(`${milestone.name}/${taskList.name}`)">
+                                <ExplorerItem
                                     v-for="task in taskList.tasks"
                                     :key="task.path"
-                                    type="button"
-                                    class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-hover"
-                                    :class="selectedPath === task.path ? 'bg-accent-soft text-fg' : 'text-muted'"
+                                    :label="task.record.name"
+                                    :indent="2"
+                                    :active="selectedPath === task.path"
                                     @click="selectedPath = task.path"
                                 >
-                                    <span class="size-2 shrink-0 rounded-full" :class="statusColor(task)" />
-                                    <span class="truncate">{{ task.record.name }}</span>
-                                </button>
-                            </div>
+                                    <template #prefix>
+                                        <span class="size-2 shrink-0 rounded-full" :class="statusColor(task)" />
+                                        <span
+                                            v-if="task.record.prefix"
+                                            class="shrink-0 font-mono text-[11px] opacity-60"
+                                        >
+                                            {{ task.record.prefix }}
+                                        </span>
+                                    </template>
+                                </ExplorerItem>
+                            </template>
                         </template>
-                    </div>
+                    </template>
                 </template>
             </div>
         </template>

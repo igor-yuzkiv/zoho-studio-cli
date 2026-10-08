@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SquareFunction } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 
 import { api } from '@web/api/api.client'
@@ -8,7 +9,8 @@ import DetailHeader from '@web/components/DetailHeader.vue'
 import EmptyState from '@web/components/EmptyState.vue'
 import JsonViewer from '@web/components/JsonViewer.vue'
 import ListDetailLayout from '@web/components/ListDetailLayout.vue'
-import ListRow from '@web/components/ListRow.vue'
+import ExplorerItem from '@web/components/ExplorerItem.vue'
+import ExplorerSection from '@web/components/ExplorerSection.vue'
 import TabBar from '@web/components/TabBar.vue'
 import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
@@ -30,7 +32,6 @@ type FunctionMetadata = {
 const projectStore = useProjectStore()
 const group = computed(() => projectStore.findGroup('crm', 'functions'))
 const filter = ref('')
-const categoryFilter = ref<string | null>(null)
 const selectedPath = ref<string | null>(null)
 const tab = ref<'code' | 'arguments' | 'metadata'>('code')
 
@@ -41,14 +42,19 @@ const functions = computed(() =>
         left.value.name.localeCompare(right.value.name)
     )
 )
-const categories = computed(() => [...new Set(functions.value.map(({ value }) => value.category ?? 'other'))].sort())
-const visibleFunctions = computed(() =>
-    functions.value.filter(
-        ({ value }) =>
-            matchesFilter(filter.value, value.name, value.api_name) &&
-            (!categoryFilter.value || (value.category ?? 'other') === categoryFilter.value)
-    )
-)
+const sections = computed(() => {
+    const byCategory = new Map<string, typeof functions.value>()
+
+    for (const entry of functions.value) {
+        if (matchesFilter(filter.value, entry.value.name, entry.value.api_name)) {
+            const category = entry.value.category ?? 'other'
+            byCategory.set(category, [...(byCategory.get(category) ?? []), entry])
+        }
+    }
+
+    return [...byCategory.entries()].sort(([left], [right]) => left.localeCompare(right))
+})
+const visibleCount = computed(() => sections.value.reduce((sum, [, entries]) => sum + entries.length, 0))
 const selected = computed(() => functions.value.find(({ path }) => path === selectedPath.value) ?? null)
 const codePath = computed(() => selected.value?.path.replace(/\.metadata\.json$/, '.deluge') ?? null)
 
@@ -71,29 +77,23 @@ const { data: code } = useApiData(
         message="Pull them to browse their code here."
         :group="group"
     />
-    <ListDetailLayout v-else v-model:filter="filter" :filter-placeholder="`Filter ${functions.length} functions`">
-        <template #list-tools>
-            <select
-                v-model="categoryFilter"
-                class="h-[30px] w-28 rounded-md border border-line bg-surface px-1.5 text-xs"
-                aria-label="Category"
-            >
-                <option :value="null">All</option>
-                <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
-            </select>
-        </template>
+    <ListDetailLayout v-else v-model:filter="filter" :item-count="visibleCount">
         <template #list>
-            <ListRow
-                v-for="entry in visibleFunctions"
-                :key="entry.path"
-                :active="entry.path === selectedPath"
-                @click="selectedPath = entry.path"
+            <ExplorerSection
+                v-for="[category, entries] in sections"
+                :key="category"
+                :title="category"
+                :count="entries.length"
             >
-                <b class="block truncate font-mono text-[13px] font-medium">{{ entry.value.name }}</b>
-                <small class="text-xs text-faint">
-                    {{ entry.value.category ?? 'other' }} · {{ formatDate(entry.value.modified_time) }}
-                </small>
-            </ListRow>
+                <ExplorerItem
+                    v-for="entry in entries"
+                    :key="entry.path"
+                    :label="entry.value.name"
+                    :icon="SquareFunction"
+                    :active="entry.path === selectedPath"
+                    @click="selectedPath = entry.path"
+                />
+            </ExplorerSection>
         </template>
         <template #detail>
             <template v-if="selected">
@@ -116,7 +116,7 @@ const { data: code } = useApiData(
                         </AppBadge>
                     </template>
                 </DetailHeader>
-                <p v-if="selected.value.description" class="border-b border-line px-6 py-3 text-muted">
+                <p v-if="selected.value.description" class="border-b border-line bg-surface px-6 py-3 text-muted">
                     {{ selected.value.description }}
                 </p>
                 <TabBar
@@ -128,7 +128,7 @@ const { data: code } = useApiData(
                     ]"
                 />
                 <CodeViewer v-if="tab === 'code'" :source="code ?? ''" language="deluge" />
-                <div v-else-if="tab === 'arguments'" class="px-6 py-4">
+                <div v-else-if="tab === 'arguments'" class="m-4 rounded-[10px] border border-line bg-surface px-4 py-3">
                     <p v-if="!selected.value.arguments?.length" class="text-muted">No arguments.</p>
                     <table v-else class="w-full text-[13px]">
                         <thead>

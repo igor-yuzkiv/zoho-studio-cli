@@ -6,7 +6,7 @@ export type Theme = 'dark' | 'light'
 const storageKey = 'zoho-studio:theme'
 
 function readStoredTheme(): Theme {
-    return localStorage.getItem(storageKey) === 'light' ? 'light' : 'dark'
+    return localStorage.getItem(storageKey) === 'dark' ? 'dark' : 'light'
 }
 
 export const useThemeStore = defineStore('theme', () => {

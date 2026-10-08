@@ -4,7 +4,7 @@ const active = defineModel<TTab>({ required: true })
 </script>
 
 <template>
-    <div class="flex gap-0.5 border-b border-line px-6" role="tablist">
+    <div class="flex gap-0.5 border-b border-line bg-surface px-6" role="tablist">
         <button
             v-for="tab in tabs"
             :key="tab.id"
