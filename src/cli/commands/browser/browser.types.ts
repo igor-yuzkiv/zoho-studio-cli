@@ -83,4 +83,25 @@ export type LoginState =
 /** Server-sent events on `/api/events`; `data` is the JSON of the matching payload. */
 export type ServerEvent = { type: 'pull'; run: PullRun } | { type: 'login'; state: LoginState }
 
+export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'
+
+export type LogEntry = {
+    /** Line number in the log file, from 0; unique, so the page can key entries by it. */
+    line: number
+    time: string | null
+    level: LogLevel
+    command: string | null
+    message: string
+    /** Every other field of the pino line. */
+    details: Record<string, unknown>
+}
+
+export type LogPage = {
+    filePath: string
+    /** Newest first. */
+    entries: LogEntry[]
+    /** Pass as `before` to read the next, older page; null when the file has nothing older. */
+    nextCursor: number | null
+}
+
 export type ApiError = { error: string }

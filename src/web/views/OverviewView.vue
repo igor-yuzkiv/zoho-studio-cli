@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import AppBadge from '@web/components/AppBadge.vue'
 import AppButton from '@web/components/AppButton.vue'
 import CopyPathButton from '@web/components/CopyPathButton.vue'
+import LogList from '@web/components/LogList.vue'
 import { areaLabels, useProjectStore } from '@web/stores/project.store'
 import { useUiStore } from '@web/stores/ui.store'
 import { formatCount, formatTimeAgo } from '@web/utils/time.utils'
@@ -139,5 +140,8 @@ function groupsOf(area: AreaId) {
                 </div>
             </div>
         </template>
+
+        <div class="mt-6 mb-2.5 font-semibold">Log</div>
+        <LogList />
     </section>
 </template>

@@ -26,6 +26,12 @@ at a time: the pulls share the project folders and the token store, so a second 
 until the first finishes. The page shows the progress and, at the end, the same summary the
 command prints.
 
+## The log
+
+The overview ends with the project log — the file every command writes to, `logs.file` in the
+[settings](2-settings.md) — newest entry first. Older entries load as you scroll, and an entry
+opens to show the rest of its fields.
+
 ## Logging in from the page
 
 The footer of the sidebar shows whether the project has a refresh token stored, with a button that
@@ -66,6 +72,7 @@ would leave `src/` is refused.
 | `GET /api/json?path=` | every JSON file below a path, parsed, keyed by its path |
 | `GET /api/pulls` | the recent pulls, newest first |
 | `POST /api/pulls` | starts a pull: `{ "area": "crm", "group": "fields", "options": { "module": "Leads" } }`; `409` while another one runs |
+| `GET /api/logs?before=&limit=` | the project log, newest first, a page at a time; `nextCursor` reads the older page |
 | `GET /api/login` | the state of the login started from the page |
 | `POST /api/login` | starts a login; `409` while one waits for approval |
 | `GET /api/events` | a server-sent event stream with every change to a pull or the login |

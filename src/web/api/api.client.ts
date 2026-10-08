@@ -3,6 +3,7 @@ import type {
     ArtifactGroupSummary,
     FileEntry,
     JsonBundle,
+    LogPage,
     LoginState,
     ProjectInfo,
     PullRequest,
@@ -52,6 +53,10 @@ export const api = {
         return response.text()
     },
     getPulls: () => request<PullRun[]>('api/pulls'),
+    getLogs: (before: number | null, limit = 100) =>
+        request<LogPage>(
+            `api/logs?${new URLSearchParams({ limit: String(limit), ...(before === null ? {} : { before: String(before) }) })}`
+        ),
     getLogin: () => request<LoginState>('api/login'),
     startLogin: () => request<LoginState>('api/login', { method: 'POST', headers: jsonHeaders, body: '{}' }),
     startPull: (pullRequest: PullRequest) =>

@@ -7,6 +7,7 @@ import { workflowActionTypes } from '@/zoho-crm/entities/workflow-action'
 import { readFileTree, readJsonBundle, resolveRequestedPath } from './artifact-files.service'
 import { artifactGroups, findArtifactGroup, summarizeArtifactGroup } from './artifact-groups.service'
 import type { ApiError, ProjectInfo, PullRequest, ServerEvent } from './browser.types'
+import { readLogPage } from './log-reader.service'
 import { LoginBusyError, LoginSession } from './login-session.service'
 import { PullBusyError, PullRunner } from './pull-runner.service'
 
@@ -18,6 +19,7 @@ export type BrowserServerOptions = {
 }
 
 const maxTreeDepth = 8
+const maxLogPageSize = 500
 
 export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserServerOptions) {
     const pullRunner = new PullRunner()
@@ -80,6 +82,17 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
                         throw error
                     }
                 },
+            },
+
+            '/api/logs': async (request) => {
+                const url = new URL(request.url)
+                const before = url.searchParams.get('before')
+                const limit = Math.min(Number(url.searchParams.get('limit') ?? 100), maxLogPageSize)
+                const { settings } = await getProjectSettings(projectPath)
+
+                return Response.json(
+                    await readLogPage(projectPath, settings.logs.file, before === null ? null : Number(before), limit)
+                )
             },
 
             '/api/login': {
