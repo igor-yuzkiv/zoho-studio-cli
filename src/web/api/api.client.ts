@@ -1,10 +1,13 @@
 import type {
     ApiError,
     ArtifactGroupSummary,
+    CreateProfileRequest,
     FileEntry,
     JsonBundle,
     LogPage,
+    LoginRequest,
     LoginState,
+    ProfileSummary,
     ProjectInfo,
     PullRequest,
     PullRun,
@@ -58,7 +61,15 @@ export const api = {
             `api/logs?${new URLSearchParams({ limit: String(limit), ...(before === null ? {} : { before: String(before) }) })}`
         ),
     getLogin: () => request<LoginState>('api/login'),
-    startLogin: () => request<LoginState>('api/login', { method: 'POST', headers: jsonHeaders, body: '{}' }),
+    startLogin: (loginRequest: LoginRequest) =>
+        request<LoginState>('api/login', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(loginRequest) }),
+    getProfiles: () => request<ProfileSummary[]>('api/profiles'),
+    createProfile: (profile: CreateProfileRequest) =>
+        request<ProfileSummary>('api/profiles', {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify(profile),
+        }),
     startPull: (pullRequest: PullRequest) =>
         request<PullRun>('api/pulls', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(pullRequest) }),
 }

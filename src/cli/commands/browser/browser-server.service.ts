@@ -1,13 +1,23 @@
 import { basename } from 'node:path'
 
 import { resolveWorkspaceOrganizationPath, resolveWorkspaceSourcePath } from '@/config'
-import { readConnection } from '@/credentials'
+import { addProfile, listProfiles, readConnection } from '@/credentials'
 import { getProjectSettings } from '@/settings'
 import { workflowActionTypes } from '@/zoho-crm/entities/workflow-action'
 
 import { readFileTree, readJsonBundle, resolveRequestedPath } from './artifact-files.service'
 import { artifactGroups, findArtifactGroup, summarizeArtifactGroup } from './artifact-groups.service'
-import type { ApiError, ProjectInfo, PullRequest, ServerEvent } from './browser.types'
+import type {
+    ApiError,
+    AuthStatus,
+    ConnectionName,
+    CreateProfileRequest,
+    LoginRequest,
+    ProfileSummary,
+    ProjectInfo,
+    PullRequest,
+    ServerEvent,
+} from './browser.types'
 import { readLogPage } from './log-reader.service'
 import { LoginBusyError, LoginSession } from './login-session.service'
 import { PullBusyError, PullRunner } from './pull-runner.service'
@@ -96,11 +106,37 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
                 )
             },
 
+            '/api/profiles': {
+                GET: async () => Response.json(summarizeProfiles(await listProfiles())),
+                POST: async (request) => {
+                    const { name, clientId, clientSecret } = (await request.json()) as Partial<CreateProfileRequest>
+
+                    if (!isFilled(name) || !isFilled(clientId) || !isFilled(clientSecret)) {
+                        return apiError('A profile needs a name, a client id, and a client secret.', 400)
+                    }
+
+                    if ((await listProfiles()).some((profile) => profile.name === name.trim())) {
+                        return apiError(`A profile named "${name.trim()}" already exists.`, 409)
+                    }
+
+                    const profile = { name: name.trim(), clientId: clientId.trim(), clientSecret: clientSecret.trim() }
+                    await addProfile(profile)
+
+                    return Response.json(summarizeProfiles([profile])[0], { status: 201 })
+                },
+            },
+
             '/api/login': {
                 GET: () => Response.json(loginSession.state),
-                POST: () => {
+                POST: async (request) => {
+                    const { profile, connection } = (await request.json()) as Partial<LoginRequest>
+
+                    if (!isFilled(profile) || (connection !== 'default' && connection !== 'projects')) {
+                        return apiError('A login needs a profile and a connection: "default" or "projects".', 400)
+                    }
+
                     try {
-                        return Response.json(loginSession.start(), { status: 202 })
+                        return Response.json(loginSession.start({ profile, connection }), { status: 202 })
                     } catch (error) {
                         if (error instanceof LoginBusyError) {
                             return apiError(error.message, 409)
@@ -186,9 +222,27 @@ async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
         projectPath,
         sourcePath: resolveWorkspaceSourcePath(projectPath),
         organization: (await organizationFile.exists()) ? await organizationFile.json() : null,
-        auth: (await readConnection(projectPath).catch(() => null))?.refreshToken ? 'authorized' : 'missing',
+        auth: {
+            default: await readAuthStatus(projectPath, 'default'),
+            projects: await readAuthStatus(projectPath, 'projects'),
+        },
         workflowActionTypes: [...workflowActionTypes],
     }
+}
+
+/** A key shared with another project's path reads as not logged in rather than failing the whole page. */
+async function readAuthStatus(projectPath: string, connection: ConnectionName): Promise<AuthStatus> {
+    const tokens = await readConnection(projectPath, connection).catch(() => null)
+
+    return tokens?.refreshToken ? 'authorized' : 'missing'
+}
+
+function summarizeProfiles(profiles: ProfileSummary[]): ProfileSummary[] {
+    return profiles.map(({ name, clientId }) => ({ name, clientId }))
+}
+
+function isFilled(value: unknown): value is string {
+    return typeof value === 'string' && value.trim() !== ''
 }
 
 function streamEvents(request: Request, pullRunner: PullRunner, loginSession: LoginSession): Response {

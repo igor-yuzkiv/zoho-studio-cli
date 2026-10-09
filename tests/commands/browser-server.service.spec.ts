@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import type { ArtifactGroupSummary, FileEntry, PullRun } from '@/commands/browser/browser.types'
+import type { ArtifactGroupSummary, FileEntry, ProjectInfo, PullRun } from '@/commands/browser/browser.types'
 import { startBrowserServer } from '@/commands/browser/browser-server.service'
 
 import { startApiStub } from '../support/api-stub'
@@ -257,6 +257,61 @@ describe('browser server', () => {
         })
 
         expect(response.status).toBe(415)
+    })
+
+    test('lists profiles without their secrets', async () => {
+        const { origin } = await startProject()
+
+        expect(await (await fetch(`${origin}/api/profiles`)).json()).toEqual([
+            { name: 'test', clientId: '1000.CLIENT' },
+        ])
+    })
+
+    test('creates a profile and refuses a duplicate name', async () => {
+        const { origin } = await startProject()
+        const create = (name: string) =>
+            fetch(`${origin}/api/profiles`, {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({ name, clientId: '1000.NEW', clientSecret: 'new-secret' }),
+            })
+
+        const created = await create(' acme ')
+        expect(created.status).toBe(201)
+        expect(await created.json()).toEqual({ name: 'acme', clientId: '1000.NEW' })
+        expect((await create('acme')).status).toBe(409)
+        expect(await (await fetch(`${origin}/api/profiles`)).text()).not.toContain('new-secret')
+    })
+
+    test('refuses a profile with an empty field', async () => {
+        const { origin } = await startProject()
+        const response = await fetch(`${origin}/api/profiles`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ name: 'acme', clientId: '', clientSecret: 's' }),
+        })
+
+        expect(response.status).toBe(400)
+    })
+
+    test('refuses a login without a profile or with an unknown connection', async () => {
+        const { origin } = await startProject()
+        const post = (body: unknown) =>
+            fetch(`${origin}/api/login`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify(body) })
+
+        expect((await post({ connection: 'default' })).status).toBe(400)
+        expect((await post({ profile: 'test', connection: 'other' })).status).toBe(400)
+    })
+
+    test('reports the login state of each connection', async () => {
+        const { origin } = await startProject()
+
+        const project = (await (await fetch(`${origin}/api/project`)).json()) as ProjectInfo
+
+        expect(project.auth).toEqual({
+            default: 'authorized',
+            projects: 'missing',
+        })
     })
 
     test('serves the page through the asset resolver', async () => {

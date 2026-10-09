@@ -79,7 +79,7 @@ describe('LoginSession', () => {
         const session = new LoginSession()
         const states = collectStates(session)
 
-        session.start()
+        session.start({ profile: 'test', connection: 'default' })
         await waitForSettled(session)
 
         expect(states.map(({ status }) => status)).toEqual(['starting', 'waiting', 'done'])
@@ -87,11 +87,27 @@ describe('LoginSession', () => {
         expect((await readStoredTokens(projectPath!))?.refreshToken).toBe('refresh')
     })
 
+    test('logs in the Projects connection with the chosen profile', async () => {
+        await startProject([issuedTokens])
+        const session = new LoginSession()
+
+        session.start({ profile: 'test', connection: 'projects' })
+        await waitForSettled(session)
+
+        expect(session.state).toMatchObject({
+            status: 'done',
+            profile: 'test',
+            connection: 'projects',
+            organizationError: null,
+        })
+        expect((await readStoredTokens(projectPath!, 'projects'))?.refreshToken).toBe('refresh')
+    })
+
     test('reports a rejected login with the reason', async () => {
         await startProject([{ error: 'access_denied' }])
         const session = new LoginSession()
 
-        session.start()
+        session.start({ profile: 'test', connection: 'default' })
         await waitForSettled(session)
 
         expect(session.state).toMatchObject({ status: 'failed' })
@@ -102,11 +118,11 @@ describe('LoginSession', () => {
         await startProject(Array(50).fill({ error: 'authorization_pending' }))
         const session = new LoginSession()
 
-        session.start()
+        session.start({ profile: 'test', connection: 'default' })
         for (let attempt = 0; attempt < 50 && session.state.status !== 'waiting'; attempt++) {
             await Bun.sleep(10)
         }
 
-        expect(() => session.start()).toThrow(LoginBusyError)
+        expect(() => session.start({ profile: 'test', connection: 'default' })).toThrow(LoginBusyError)
     })
 })

@@ -1,7 +1,7 @@
 import { login } from '@/shared/api/auth'
 import { pullOrganization } from '@/zoho-crm/entities/organization'
 
-import type { LoginState } from './browser.types'
+import type { LoginRequest, LoginState } from './browser.types'
 
 type StateListener = (state: LoginState) => void
 
@@ -26,20 +26,22 @@ export class LoginSession {
         return () => this.listeners.delete(listener)
     }
 
-    start(): LoginState {
+    start(request: LoginRequest): LoginState {
         if (this.currentState.status === 'starting' || this.currentState.status === 'waiting') {
             throw new LoginBusyError()
         }
 
         this.publish({ status: 'starting' })
-        void this.run()
+        void this.run(request)
 
         return this.currentState
     }
 
-    private async run() {
+    private async run({ profile, connection }: LoginRequest) {
         try {
             const result = await login({
+                profile,
+                connection,
                 onVerificationRequired: ({ verificationUrl, userCode, expiresInMs }) =>
                     this.publish({
                         status: 'waiting',
@@ -54,7 +56,10 @@ export class LoginSession {
                   `${result.apiDomainMismatch.expected}. API calls will fail unless api.baseUrl matches your data center.`
                 : null
 
-            this.publish({ status: 'done', warning, organizationError: await refreshOrganization() })
+            // The organization belongs to the CRM side, which the default connection serves.
+            const organizationError = connection === 'default' ? await refreshOrganization() : null
+
+            this.publish({ status: 'done', profile: result.profile, connection, warning, organizationError })
         } catch (error) {
             this.publish({ status: 'failed', message: error instanceof Error ? error.message : String(error) })
         }

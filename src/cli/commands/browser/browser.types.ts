@@ -26,12 +26,32 @@ export type ArtifactGroupSummary = {
 /** Authorized means a refresh token is stored; whether Zoho still accepts it shows on the next request. */
 export type AuthStatus = 'authorized' | 'missing'
 
+/** `projects` is the optional separate login that the Zoho Projects pulls use instead of `default`. */
+export type ConnectionName = 'default' | 'projects'
+
+/** A stored credential profile as the page sees it; the client secret never leaves the server. */
+export type ProfileSummary = {
+    name: string
+    clientId: string
+}
+
+export type CreateProfileRequest = {
+    name: string
+    clientId: string
+    clientSecret: string
+}
+
+export type LoginRequest = {
+    profile: string
+    connection: ConnectionName
+}
+
 export type ProjectInfo = {
     name: string
     projectPath: string
     sourcePath: string
     organization: Record<string, unknown> | null
-    auth: AuthStatus
+    auth: Record<ConnectionName, AuthStatus>
     workflowActionTypes: string[]
 }
 
@@ -77,7 +97,13 @@ export type LoginState =
     | { status: 'idle' }
     | { status: 'starting' }
     | { status: 'waiting'; verificationUrl: string; userCode: string; expiresAt: string }
-    | { status: 'done'; warning: string | null; organizationError: string | null }
+    | {
+          status: 'done'
+          profile: string
+          connection: ConnectionName
+          warning: string | null
+          organizationError: string | null
+      }
     | { status: 'failed'; message: string }
 
 /** Server-sent events on `/api/events`; `data` is the JSON of the matching payload. */

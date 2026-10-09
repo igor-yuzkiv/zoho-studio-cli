@@ -35,9 +35,9 @@ const itemClass = 'flex h-full items-center gap-1.5 px-2.5 hover:bg-hover'
         <button type="button" :class="itemClass" @click="ui.loginDialogOpen = true">
             <span
                 class="size-1.5 rounded-full"
-                :class="projectStore.project?.auth === 'authorized' ? 'bg-ok' : 'bg-err'"
+                :class="projectStore.project?.auth.default === 'authorized' ? 'bg-ok' : 'bg-err'"
             />
-            {{ projectStore.project?.auth === 'authorized' ? 'Authorized' : 'Not logged in — log in' }}
+            {{ projectStore.project?.auth.default === 'authorized' ? 'Authorized' : 'Not logged in — log in' }}
         </button>
         <button v-if="run" type="button" :class="itemClass" @click="ui.pullPanelOpen = !ui.pullPanelOpen">
             <span

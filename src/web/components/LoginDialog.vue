@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
+import type { ConnectionName, ProfileSummary } from '@cli/commands/browser/browser.types'
+import { api } from '@web/api/api.client'
 import { useProjectStore } from '@web/stores/project.store'
 import { useUiStore } from '@web/stores/ui.store'
 import { formatTimeAgo } from '@web/utils/time.utils'
@@ -12,17 +14,63 @@ const projectStore = useProjectStore()
 const startError = ref<string | null>(null)
 const codeCopied = ref(false)
 
+const newProfileChoice = ''
+
+const profiles = ref<ProfileSummary[]>([])
+const connection = ref<ConnectionName>('default')
+const selectedProfile = ref(newProfileChoice)
+const newProfile = reactive({ name: '', clientId: '', clientSecret: '' })
+
 const state = computed(() => projectStore.loginState)
 const inProgress = computed(() => state.value.status === 'starting' || state.value.status === 'waiting')
+// A finished login keeps its state on the server, and the other connection may still need one.
+const showsForm = computed(() => !inProgress.value)
+const creatingProfile = computed(() => selectedProfile.value === newProfileChoice)
+const canStart = computed(
+    () =>
+        !creatingProfile.value ||
+        Boolean(newProfile.name.trim() && newProfile.clientId.trim() && newProfile.clientSecret.trim())
+)
+
+watch(
+    () => ui.loginDialogOpen,
+    async (open) => {
+        if (!open) {
+            return
+        }
+
+        try {
+            profiles.value = await api.getProfiles()
+            selectedProfile.value = profiles.value[0]?.name ?? newProfileChoice
+        } catch (error) {
+            startError.value = error instanceof Error ? error.message : String(error)
+        }
+    },
+    { immediate: true }
+)
 
 async function start() {
     startError.value = null
 
     try {
-        await projectStore.startLogin()
+        const profile = creatingProfile.value
+            ? (await api.createProfile({ ...newProfile })).name
+            : selectedProfile.value
+
+        if (creatingProfile.value) {
+            profiles.value = await api.getProfiles()
+            selectedProfile.value = profile
+            Object.assign(newProfile, { name: '', clientId: '', clientSecret: '' })
+        }
+
+        await projectStore.startLogin({ profile, connection: connection.value })
     } catch (error) {
         startError.value = error instanceof Error ? error.message : String(error)
     }
+}
+
+function describeStatus(name: ConnectionName): string {
+    return projectStore.project?.auth[name] === 'authorized' ? 'logged in' : 'not logged in'
 }
 
 async function copyCode(code: string) {
@@ -48,7 +96,7 @@ async function copyCode(code: string) {
                     <h2 id="login-dialog-title" class="text-[17px] font-semibold">Log in to Zoho</h2>
                     <p class="text-[13px] text-muted">
                         The same device flow as <code class="font-mono">zoho-studio login</code>; the tokens are stored
-                        in the project settings.
+                        in <code class="font-mono">~/.zoho-studio</code>.
                     </p>
                 </header>
 
@@ -88,7 +136,9 @@ async function copyCode(code: string) {
                     </p>
 
                     <template v-else-if="state.status === 'done'">
-                        <p class="text-ok">Authorized. The tokens are stored in the project settings.</p>
+                        <p class="text-ok">
+                            Authorized the {{ state.connection }} connection with the "{{ state.profile }}" profile.
+                        </p>
                         <p
                             v-if="state.warning"
                             class="rounded-md border border-warn/40 bg-warn/10 px-3 py-2 text-xs text-warn"
@@ -102,12 +152,51 @@ async function copyCode(code: string) {
 
                     <p v-else-if="state.status === 'failed'" class="text-err">{{ state.message }}</p>
 
-                    <p v-else class="text-muted">
-                        Project status:
-                        {{
-                            projectStore.project?.auth === 'authorized' ? 'a refresh token is stored' : 'not logged in'
-                        }}.
-                    </p>
+                    <template v-if="showsForm">
+                        <p class="text-muted">
+                            Default connection: {{ describeStatus('default') }} · Zoho Projects connection:
+                            {{ describeStatus('projects') }}
+                        </p>
+
+                        <div>
+                            <label for="login-connection" class="mb-1.5 block font-medium">Connection</label>
+                            <select id="login-connection" v-model="connection" class="field-input">
+                                <option value="default">Default — every command</option>
+                                <option value="projects">Zoho Projects only — a separate login</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="login-profile" class="mb-1.5 block font-medium">Credential profile</label>
+                            <select id="login-profile" v-model="selectedProfile" class="field-input">
+                                <option v-for="profile in profiles" :key="profile.name" :value="profile.name">
+                                    {{ profile.name }} · {{ profile.clientId }}
+                                </option>
+                                <option :value="newProfileChoice">Create a new profile…</option>
+                            </select>
+                        </div>
+
+                        <template v-if="creatingProfile">
+                            <div>
+                                <label for="login-profile-name" class="mb-1.5 block font-medium">Profile name</label>
+                                <input id="login-profile-name" v-model="newProfile.name" class="field-input" />
+                            </div>
+                            <div>
+                                <label for="login-client-id" class="mb-1.5 block font-medium">Client ID</label>
+                                <input id="login-client-id" v-model="newProfile.clientId" class="field-input" />
+                            </div>
+                            <div>
+                                <label for="login-client-secret" class="mb-1.5 block font-medium">Client Secret</label>
+                                <input
+                                    id="login-client-secret"
+                                    v-model="newProfile.clientSecret"
+                                    type="password"
+                                    autocomplete="off"
+                                    class="field-input"
+                                />
+                            </div>
+                        </template>
+                    </template>
 
                     <p v-if="startError" class="text-err">{{ startError }}</p>
                 </div>
@@ -116,8 +205,14 @@ async function copyCode(code: string) {
                     <AppButton @click="ui.loginDialogOpen = false">{{
                         state.status === 'done' ? 'Close' : 'Cancel'
                     }}</AppButton>
-                    <AppButton v-if="!inProgress && state.status !== 'done'" variant="primary" @click="start">
-                        {{ state.status === 'failed' ? 'Try again' : 'Start login' }}
+                    <AppButton v-if="showsForm" variant="primary" :disabled="!canStart" @click="start">
+                        {{
+                            state.status === 'failed'
+                                ? 'Try again'
+                                : state.status === 'done'
+                                  ? 'Log in again'
+                                  : 'Start login'
+                        }}
                     </AppButton>
                 </footer>
             </div>

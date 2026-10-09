@@ -1,6 +1,7 @@
 import type {
     AreaId,
     ArtifactGroupSummary,
+    LoginRequest,
     LoginState,
     ProjectInfo,
     PullOptionName,
@@ -117,9 +118,9 @@ export const useProjectStore = defineStore('project', () => {
         }
     }
 
-    async function startLogin() {
+    async function startLogin(loginRequest: LoginRequest) {
         const previousStatus = loginState.value.status
-        const state = await api.startLogin()
+        const state = await api.startLogin(loginRequest)
 
         // The event stream may already have moved past `starting` by the time this answer arrives.
         if (loginState.value.status === previousStatus) {
