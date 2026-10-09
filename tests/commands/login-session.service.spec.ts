@@ -3,7 +3,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import type { LoginState } from '@/commands/browser/browser.types'
 import { LoginBusyError, LoginSession } from '@/commands/browser/login-session.service'
 
-import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../support/temp-project'
+import { buildSettings, createTempProject, readStoredTokens, removeTempProject } from '../support/temp-project'
 
 let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
@@ -84,7 +84,7 @@ describe('LoginSession', () => {
 
         expect(states.map(({ status }) => status)).toEqual(['starting', 'waiting', 'done'])
         expect(states[1]).toMatchObject({ userCode: 'USER-CODE', verificationUrl: deviceCodeAnswer.verification_url })
-        expect((await readStoredSettings(projectPath!)).auth.tokens.refreshToken).toBe('refresh')
+        expect((await readStoredTokens(projectPath!))?.refreshToken).toBe('refresh')
     })
 
     test('reports a rejected login with the reason', async () => {

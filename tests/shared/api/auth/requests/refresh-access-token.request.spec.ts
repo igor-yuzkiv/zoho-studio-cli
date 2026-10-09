@@ -68,7 +68,7 @@ describe('refreshAccessToken', () => {
     test('explains a wrong client secret', async () => {
         await startZoho({ error: 'invalid_client_secret' })
 
-        await expect(refresh()).rejects.toThrow(/invalid_client_secret.*auth\.clientSecret/s)
+        await expect(refresh()).rejects.toThrow(/invalid_client_secret.*client secret of the profile/s)
     })
 
     test('fails when the response carries no access token', async () => {

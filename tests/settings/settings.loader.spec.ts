@@ -31,7 +31,7 @@ describe('project settings loader', () => {
         expect(settings.auth.scopes).toEqual(defaultProjectSettings.auth.scopes)
     })
 
-    test('merges credentials and tokens from the same file', async () => {
+    test('keeps legacy auth keys from an older file next to the defaults', async () => {
         await Bun.write(
             resolveWorkspaceSettingsPath(projectPath),
             JSON.stringify({ auth: { clientId: '1000.CLIENT', tokens: { refreshToken: 'refresh' } } })
@@ -39,9 +39,7 @@ describe('project settings loader', () => {
 
         const settings = await loadProjectSettings(projectPath)
 
-        expect(settings.auth.clientId).toBe('1000.CLIENT')
-        expect(settings.auth.tokens.refreshToken).toBe('refresh')
-        expect(settings.auth.tokens.accessTokenExpiresAt).toBe(0)
+        expect(settings.auth).toMatchObject({ clientId: '1000.CLIENT', tokens: { refreshToken: 'refresh' } })
         expect(settings.auth.baseUrl).toBe(defaultProjectSettings.auth.baseUrl)
     })
 

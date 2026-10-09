@@ -1,20 +1,25 @@
 import { workspaceSettingsRelativePath } from '@/config'
-import { getProjectSettings, saveProjectSettings } from '@/settings'
+import {
+    findProfile,
+    listProfiles,
+    resolveProfilesPath,
+    saveConnection,
+    warnAboutLegacyAuth,
+    type CredentialProfile,
+} from '@/credentials'
+import { getProjectSettings } from '@/settings'
 
 import { pollDeviceToken, requestDeviceCode } from './requests'
 import type { DeviceCode, TokenResponse } from './auth.types'
 import type { LoginOptions, LoginResult } from './login.types'
 
-export async function login({ onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
+export async function login({ profile: profileName, onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
     const { projectPath, settings } = await getProjectSettings()
-    const { clientId, clientSecret, scopes } = settings.auth
+    const { scopes } = settings.auth
+    warnAboutLegacyAuth(settings)
 
-    if (!clientId || !clientSecret) {
-        throw new Error(
-            `auth.clientId and auth.clientSecret are required in ${workspaceSettingsRelativePath}. ` +
-                'Copy them from your client in the Zoho API Console — see docs/4-login-command.md.'
-        )
-    }
+    const profile = await resolveProfile(profileName)
+    const { clientId, clientSecret } = profile
 
     if (scopes.length === 0) {
         throw new Error(`auth.scopes is empty in ${workspaceSettingsRelativePath}. List the scopes the CLI may use.`)
@@ -30,23 +35,49 @@ export async function login({ onVerificationRequired }: LoginOptions = {}): Prom
 
     const tokens = await waitForApproval({ clientId, clientSecret }, deviceCode)
 
-    await saveProjectSettings(projectPath, {
-        ...settings,
-        auth: {
-            ...settings.auth,
-            tokens: {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                accessTokenExpiresAt: tokens.accessTokenExpiresAt,
-            },
-        },
+    await saveConnection(projectPath, {
+        profile: profile.name,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        accessTokenExpiresAt: tokens.accessTokenExpiresAt,
     })
 
     return {
         projectPath,
+        profile: profile.name,
         accessTokenExpiresAt: tokens.accessTokenExpiresAt,
         apiDomainMismatch: buildApiDomainMismatch(settings.api.baseUrl, tokens.apiDomain),
     }
+}
+
+/** Without a name, the only stored profile is the unambiguous choice. */
+async function resolveProfile(name: string | undefined): Promise<CredentialProfile> {
+    if (name) {
+        const profile = await findProfile(name)
+
+        if (!profile) {
+            throw new Error(`There is no profile named "${name}".`)
+        }
+
+        return profile
+    }
+
+    const profiles = await listProfiles()
+
+    if (profiles.length === 1) {
+        return profiles[0]!
+    }
+
+    if (profiles.length === 0) {
+        throw new Error(
+            `There is no credential profile yet. Add your Zoho API Console client to ${resolveProfilesPath()} ` +
+                'as [{ "name": "…", "clientId": "…", "clientSecret": "…" }].'
+        )
+    }
+
+    throw new Error(
+        `Several profiles exist (${profiles.map((profile) => profile.name).join(', ')}). Choose one with --profile.`
+    )
 }
 
 async function waitForApproval(

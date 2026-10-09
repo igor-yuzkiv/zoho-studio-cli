@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
+import { resolveWorkspaceSettingsPath } from '@/config'
 import { TokenService } from '@/shared/api/auth'
-import type { ProjectSettings } from '@/settings'
 
-import { buildSettings, createTempProject, readStoredSettings, removeTempProject } from '../../../support/temp-project'
+import {
+    buildSettings,
+    createTempProject,
+    readStoredTokens as readConnection,
+    removeTempProject,
+    type StoredTokens,
+} from '../../../support/temp-project'
 
 let projectPath: string | null = null
 let server: ReturnType<typeof Bun.serve> | null = null
@@ -26,8 +32,9 @@ afterEach(async () => {
 const oneHourAhead = () => Date.now() + 3_600_000
 
 async function startProject(
-    tokens: Partial<ProjectSettings['auth']['tokens']>,
-    refreshAnswer: unknown = { access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' }
+    tokens: Partial<StoredTokens>,
+    refreshAnswer: unknown = { access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' },
+    client: { clientId?: string } = {}
 ): Promise<void> {
     server = Bun.serve({
         port: 0,
@@ -41,14 +48,15 @@ async function startProject(
         buildSettings({
             auth: {
                 baseUrl: server.url.origin,
+                ...client,
                 tokens: { accessToken: '', refreshToken: 'refresh', accessTokenExpiresAt: 0, ...tokens },
             },
         })
     )
 }
 
-function readStoredTokens(): Promise<ProjectSettings['auth']['tokens']> {
-    return readStoredSettings(projectPath!).then((settings) => settings.auth.tokens)
+async function readStoredTokens() {
+    return (await readConnection(projectPath!))!
 }
 
 describe('TokenService', () => {
@@ -68,6 +76,35 @@ describe('TokenService', () => {
         expect(stored.accessToken).toBe('fresh')
         expect(stored.refreshToken).toBe('refresh')
         expect(stored.accessTokenExpiresAt).toBeGreaterThan(Date.now())
+        expect(stored.profile).toBe('test')
+    })
+
+    test('refreshes with the client of the profile and leaves settings.json alone', async () => {
+        await startProject({ accessToken: 'stale', accessTokenExpiresAt: Date.now() - 1 })
+        const settingsBefore = await Bun.file(resolveWorkspaceSettingsPath(projectPath!)).text()
+        let refreshBody = ''
+        server!.reload({
+            fetch(request) {
+                refreshCallCount += 1
+                refreshBody = request.url
+                return Response.json({ access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' })
+            },
+        })
+
+        await new TokenService().getAccessToken()
+
+        expect(refreshBody).toContain('client_id=1000.CLIENT')
+        expect(refreshBody).toContain('client_secret=secret')
+        expect(await Bun.file(resolveWorkspaceSettingsPath(projectPath!)).text()).toBe(settingsBefore)
+    })
+
+    test('fails with a hint about login when the profile is gone', async () => {
+        await startProject({ accessToken: 'stale', accessTokenExpiresAt: Date.now() - 1 }, undefined, {
+            clientId: '',
+        })
+
+        await expect(new TokenService().getAccessToken()).rejects.toThrow(/profile "test".*zoho-studio login/s)
+        expect(refreshCallCount).toBe(0)
     })
 
     test('refreshes a token that is about to expire', async () => {
@@ -103,7 +140,7 @@ describe('TokenService', () => {
     test('fails with a hint about login when there is no refresh token', async () => {
         await startProject({ refreshToken: '' })
 
-        await expect(new TokenService().getAccessToken()).rejects.toThrow(/No refresh token.*zoho-studio login/s)
+        await expect(new TokenService().getAccessToken()).rejects.toThrow(/not authorized yet.*zoho-studio login/s)
         expect(refreshCallCount).toBe(0)
     })
 

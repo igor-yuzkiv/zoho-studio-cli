@@ -1,6 +1,7 @@
 import { basename } from 'node:path'
 
 import { resolveWorkspaceOrganizationPath, resolveWorkspaceSourcePath } from '@/config'
+import { readConnection } from '@/credentials'
 import { getProjectSettings } from '@/settings'
 import { workflowActionTypes } from '@/zoho-crm/entities/workflow-action'
 
@@ -178,7 +179,6 @@ export function refuseForeignRequest(request: Request, port: number | undefined)
 }
 
 async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
-    const { settings } = await getProjectSettings(projectPath)
     const organizationFile = Bun.file(resolveWorkspaceOrganizationPath(projectPath))
 
     return {
@@ -186,7 +186,7 @@ async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
         projectPath,
         sourcePath: resolveWorkspaceSourcePath(projectPath),
         organization: (await organizationFile.exists()) ? await organizationFile.json() : null,
-        auth: settings.auth.tokens.refreshToken ? 'authorized' : 'missing',
+        auth: (await readConnection(projectPath).catch(() => null))?.refreshToken ? 'authorized' : 'missing',
         workflowActionTypes: [...workflowActionTypes],
     }
 }

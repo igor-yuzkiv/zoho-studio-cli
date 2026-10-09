@@ -38,7 +38,7 @@ export async function saveProjectSettings(projectPath: string, settings: Project
 
     // bunfig only reads config, so the file is written by hand.
     await writeJsonFile(settingsPath, settings)
-    // Holds the client secret and refresh token, so keep it readable by the owner only.
+    // Projects created before the credential store may still hold secrets here.
     await chmod(settingsPath, 0o600)
 
     cachedSettings.set(resolve(projectPath), settings)

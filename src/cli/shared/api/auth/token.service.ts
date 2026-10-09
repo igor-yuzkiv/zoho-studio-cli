@@ -1,5 +1,5 @@
-import { workspaceSettingsRelativePath } from '@/config'
-import { getProjectSettings, saveProjectSettings, type ProjectContext } from '@/settings'
+import { findProfile, readConnection, saveConnection, warnAboutLegacyAuth, type ConnectionTokens } from '@/credentials'
+import { getProjectSettings } from '@/settings'
 
 import { refreshAccessToken } from './requests'
 
@@ -14,40 +14,47 @@ export class TokenService {
     private pendingRefresh: Promise<string> | null = null
 
     async getAccessToken(): Promise<string> {
-        const context = await getProjectSettings()
-        const { accessToken, accessTokenExpiresAt } = context.settings.auth.tokens
+        const { projectPath, settings } = await getProjectSettings()
+        warnAboutLegacyAuth(settings)
 
-        if (accessToken && Date.now() < accessTokenExpiresAt - expiryToleranceMs) {
-            return accessToken
+        const tokens = await readConnection(projectPath)
+
+        if (!tokens?.refreshToken) {
+            throw new Error('This project is not authorized yet. Run "zoho-studio login" first.')
+        }
+
+        if (tokens.accessToken && Date.now() < tokens.accessTokenExpiresAt - expiryToleranceMs) {
+            return tokens.accessToken
         }
 
         // A single run may ask for the token from several places, and Zoho caps refreshes per token.
-        this.pendingRefresh ??= this.refresh(context).finally(() => {
+        this.pendingRefresh ??= this.refresh(projectPath, tokens).finally(() => {
             this.pendingRefresh = null
         })
 
         return this.pendingRefresh
     }
 
-    private async refresh({ projectPath, settings }: ProjectContext): Promise<string> {
-        const { clientId, clientSecret, tokens } = settings.auth
+    private async refresh(projectPath: string, tokens: ConnectionTokens): Promise<string> {
+        const profile = await findProfile(tokens.profile)
 
-        if (!tokens.refreshToken) {
-            throw new Error(`No refresh token in ${workspaceSettingsRelativePath}. Run "zoho-studio login" first.`)
+        if (!profile) {
+            throw new Error(
+                `The profile "${tokens.profile}" this project was authorized with no longer exists. ` +
+                    'Run "zoho-studio login" again.'
+            )
         }
 
-        const refreshed = await refreshAccessToken({ clientId, clientSecret, refreshToken: tokens.refreshToken })
+        const refreshed = await refreshAccessToken({
+            clientId: profile.clientId,
+            clientSecret: profile.clientSecret,
+            refreshToken: tokens.refreshToken,
+        })
 
-        await saveProjectSettings(projectPath, {
-            ...settings,
-            auth: {
-                ...settings.auth,
-                tokens: {
-                    ...tokens,
-                    accessToken: refreshed.accessToken,
-                    accessTokenExpiresAt: refreshed.accessTokenExpiresAt,
-                },
-            },
+        await saveConnection(projectPath, {
+            ...tokens,
+            accessToken: refreshed.accessToken,
+            accessTokenExpiresAt: refreshed.accessTokenExpiresAt,
         })
 
         return refreshed.accessToken

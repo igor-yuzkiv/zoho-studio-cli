@@ -4,12 +4,13 @@ import { join } from 'node:path'
 import type { ProjectSettings } from '@/settings'
 
 import { type ApiStub, startApiStub } from './api-stub'
+import type { StoredTokens } from './temp-project'
 
 export type ProjectsStub = ApiStub
 
 interface ProjectsStubOptions {
     projects?: Partial<Omit<ProjectSettings['projects'], 'baseUrl'>>
-    tokens?: Partial<ProjectSettings['auth']['tokens']>
+    tokens?: Partial<StoredTokens>
 }
 
 /** A project whose Zoho Projects host is a local stub — see `startApiStub`. */

@@ -6,8 +6,10 @@ import { login } from '@/shared/api/auth'
 
 export const loginCommand = new Command('login')
     .description('Authorize the project with Zoho and store the resulting tokens')
-    .action(async () => {
+    .option('--profile <name>', 'the credential profile to log in with')
+    .action(async (options: { profile?: string }) => {
         const result = await login({
+            profile: options.profile,
             onVerificationRequired: ({ verificationUrl, userCode, expiresInMs }) => {
                 console.log(`Open ${verificationUrl} in a browser and enter this code:`)
                 console.log()
@@ -18,7 +20,7 @@ export const loginCommand = new Command('login')
         })
 
         console.log()
-        console.log('Authorized. Tokens stored in the project settings.')
+        console.log(`Authorized with the "${result.profile}" profile. Tokens stored in ~/.zoho-studio.`)
         console.log(`  access token valid for ${formatMinutes(result.accessTokenExpiresAt - Date.now())}`)
 
         if (result.apiDomainMismatch) {

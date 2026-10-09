@@ -1,6 +1,6 @@
 import type { ProjectSettings } from '@/settings'
 
-import { buildSettings, createTempProject, removeTempProject } from './temp-project'
+import { buildSettings, createTempProject, removeTempProject, type StoredTokens } from './temp-project'
 
 export interface ApiStub {
     projectPath: string
@@ -19,7 +19,7 @@ type SettingsForApi = (apiOrigin: string) => Partial<Pick<ProjectSettings, 'api'
 export async function startApiStub(
     answer: (request: Request) => Response,
     settingsForApi: SettingsForApi,
-    tokens: Partial<ProjectSettings['auth']['tokens']> = {}
+    tokens: Partial<StoredTokens> = {}
 ): Promise<ApiStub> {
     const requestedUrls: URL[] = []
     const authorizations: (string | null)[] = []

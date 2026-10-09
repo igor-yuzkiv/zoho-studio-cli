@@ -23,13 +23,6 @@ export const defaultProjectSettings: ProjectSettings = {
             'ZohoProjects.tasks.READ',
             'ZohoProjects.bugs.READ',
         ],
-        clientId: '',
-        clientSecret: '',
-        tokens: {
-            accessToken: '',
-            refreshToken: '',
-            accessTokenExpiresAt: 0,
-        },
     },
     api: {
         baseUrl: 'https://www.zohoapis.com',

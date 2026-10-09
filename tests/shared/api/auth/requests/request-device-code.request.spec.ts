@@ -72,7 +72,7 @@ describe('requestDeviceCode', () => {
     test('explains an unknown client', async () => {
         await startZoho({ error: 'invalid_client' })
 
-        await expect(request()).rejects.toThrow(/invalid_client.*auth\.clientId/s)
+        await expect(request()).rejects.toThrow(/invalid_client.*client id of the profile/s)
     })
 
     test('fails on an incomplete response', async () => {
