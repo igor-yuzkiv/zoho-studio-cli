@@ -48,7 +48,7 @@ projectsClient.interceptors.request.use(async (config) => {
     assertProjectsConfigured(settings.projects)
 
     config.baseURL = resolveProjectsBaseUrl(settings.projects)
-    config.headers.set('Authorization', `Zoho-oauthtoken ${await tokenService.getAccessToken()}`)
+    config.headers.set('Authorization', `Zoho-oauthtoken ${await tokenService.getAccessToken('projects')}`)
 
     await delay(Math.max(0, lastRequestFinishedAt + pauseBetweenRequestsMs - Date.now()))
 

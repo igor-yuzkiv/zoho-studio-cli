@@ -34,7 +34,7 @@ const oneHourAhead = () => Date.now() + 3_600_000
 async function startProject(
     tokens: Partial<StoredTokens>,
     refreshAnswer: unknown = { access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' },
-    client: { clientId?: string } = {}
+    client: { clientId?: string; projectsTokens?: StoredTokens } = {}
 ): Promise<void> {
     server = Bun.serve({
         port: 0,
@@ -162,5 +162,24 @@ describe('TokenService', () => {
         await expect(service.getAccessToken()).rejects.toThrow()
         await expect(service.getAccessToken()).rejects.toThrow()
         expect(refreshCallCount).toBe(2)
+    })
+
+    test('hands the default token to Projects while there is no separate connection', async () => {
+        await startProject({ accessToken: 'default', accessTokenExpiresAt: oneHourAhead() })
+
+        expect(await new TokenService().getAccessToken('projects')).toBe('default')
+    })
+
+    test('keeps the Projects connection apart from the default one', async () => {
+        await startProject({ accessToken: 'default', accessTokenExpiresAt: oneHourAhead() }, undefined, {
+            projectsTokens: { accessToken: 'stale', refreshToken: 'r2', accessTokenExpiresAt: Date.now() - 1 },
+        })
+        const service = new TokenService()
+
+        expect(await service.getAccessToken()).toBe('default')
+        expect(await service.getAccessToken('projects')).toBe('fresh')
+        expect((await readConnection(projectPath!, 'projects'))?.accessToken).toBe('fresh')
+        expect((await readStoredTokens()).accessToken).toBe('default')
+        expect(refreshCallCount).toBe(1)
     })
 })

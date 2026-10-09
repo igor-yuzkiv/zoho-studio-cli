@@ -5,24 +5,32 @@ import {
     resolveProfilesPath,
     saveConnection,
     warnAboutLegacyAuth,
+    type ConnectionName,
     type CredentialProfile,
 } from '@/credentials'
-import { getProjectSettings } from '@/settings'
+import { getProjectSettings, type AuthScopes } from '@/settings'
 
 import { pollDeviceToken, requestDeviceCode } from './requests'
 import type { DeviceCode, TokenResponse } from './auth.types'
 import type { LoginOptions, LoginResult } from './login.types'
 
-export async function login({ profile: profileName, onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
+export async function login({
+    profile: profileName,
+    connection = 'default',
+    onVerificationRequired,
+}: LoginOptions = {}): Promise<LoginResult> {
     const { projectPath, settings } = await getProjectSettings()
-    const { scopes } = settings.auth
+    const scopes = resolveConnectionScopes(settings.auth.scopes, connection)
     warnAboutLegacyAuth(settings)
 
     const profile = await resolveProfile(profileName)
     const { clientId, clientSecret } = profile
 
     if (scopes.length === 0) {
-        throw new Error(`auth.scopes is empty in ${workspaceSettingsRelativePath}. List the scopes the CLI may use.`)
+        throw new Error(
+            `auth.scopes${connection === 'projects' ? '.projects' : ''} is empty in ${workspaceSettingsRelativePath}. ` +
+                'List the scopes the CLI may use.'
+        )
     }
 
     const deviceCode = await requestDeviceCode({ clientId, scopes })
@@ -35,19 +43,29 @@ export async function login({ profile: profileName, onVerificationRequired }: Lo
 
     const tokens = await waitForApproval({ clientId, clientSecret }, deviceCode)
 
-    await saveConnection(projectPath, {
-        profile: profile.name,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        accessTokenExpiresAt: tokens.accessTokenExpiresAt,
-    })
+    await saveConnection(
+        projectPath,
+        {
+            profile: profile.name,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            accessTokenExpiresAt: tokens.accessTokenExpiresAt,
+        },
+        connection
+    )
 
     return {
         projectPath,
         profile: profile.name,
+        connection,
         accessTokenExpiresAt: tokens.accessTokenExpiresAt,
         apiDomainMismatch: buildApiDomainMismatch(settings.api.baseUrl, tokens.apiDomain),
     }
+}
+
+/** The default connection serves every product, so it asks for all scopes; a Projects one only for its own. */
+export function resolveConnectionScopes(scopes: AuthScopes, connection: ConnectionName): string[] {
+    return connection === 'projects' ? scopes.projects : [...new Set([...scopes.crm, ...scopes.projects])]
 }
 
 /** Without a name, the only stored profile is the unambiguous choice. */

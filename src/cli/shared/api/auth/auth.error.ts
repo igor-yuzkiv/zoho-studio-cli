@@ -1,7 +1,8 @@
 import { AxiosError } from 'axios'
 
 const errorHints: Record<string, string> = {
-    invalid_client: 'Check the client id of the profile, and that auth.baseUrl points to the data center your client was registered in.',
+    invalid_client:
+        'Check the client id of the profile, and that auth.baseUrl points to the data center your client was registered in.',
     invalid_client_secret: 'Check the client secret of the profile in ~/.zoho-studio/profiles.json.',
     invalid_scope: 'Check auth.scopes in settings.json — one of the scopes does not exist.',
     invalid_code: 'Start "zoho-studio login" again to request a new device code.',

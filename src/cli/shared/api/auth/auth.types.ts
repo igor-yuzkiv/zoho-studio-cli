@@ -37,6 +37,4 @@ export interface TokenResponse extends AccessToken {
 
 /** Zoho answers "not yet" as often as it answers with tokens, so waiting is not an error. */
 export type DeviceTokenPollResult =
-    | { status: 'pending' }
-    | { status: 'slow_down' }
-    | { status: 'authorized'; tokens: TokenResponse }
+    { status: 'pending' } | { status: 'slow_down' } | { status: 'authorized'; tokens: TokenResponse }

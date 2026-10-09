@@ -13,7 +13,8 @@ export interface ConnectionTokens {
     accessTokenExpiresAt: number
 }
 
-export type ConnectionName = 'default'
+/** `default` serves every command; `projects`, when logged in, takes over the Zoho Projects ones. */
+export type ConnectionName = 'default' | 'projects'
 
 export interface ProjectTokensFile {
     /** The original project root; the key encoding is lossy, so a read checks it against the caller. */

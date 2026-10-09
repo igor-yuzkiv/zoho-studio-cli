@@ -11,17 +11,19 @@ export type ProjectsStub = ApiStub
 interface ProjectsStubOptions {
     projects?: Partial<Omit<ProjectSettings['projects'], 'baseUrl'>>
     tokens?: Partial<StoredTokens>
+    projectsTokens?: StoredTokens
 }
 
 /** A project whose Zoho Projects host is a local stub — see `startApiStub`. */
 export function startProjectsStub(
     answer: (request: Request) => Response,
-    { projects = {}, tokens = {} }: ProjectsStubOptions = {}
+    { projects = {}, tokens = {}, projectsTokens }: ProjectsStubOptions = {}
 ): Promise<ProjectsStub> {
     return startApiStub(
         answer,
         (origin) => ({ projects: { baseUrl: origin, portalId: '100', projectId: '200', mdPath: '', ...projects } }),
-        tokens
+        tokens,
+        projectsTokens
     )
 }
 

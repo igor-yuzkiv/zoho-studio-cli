@@ -23,6 +23,20 @@ describe('projectsClient', () => {
         expect(stub.authorizations).toEqual(['Zoho-oauthtoken access'])
     })
 
+    test('sends the token of a separate Projects connection when there is one', async () => {
+        stub = await startProjectsStub(phasesAnswer, {
+            projectsTokens: {
+                accessToken: 'projects',
+                refreshToken: 'r',
+                accessTokenExpiresAt: Date.now() + 3_600_000,
+            },
+        })
+
+        await projectsClient.get('phases')
+
+        expect(stub.authorizations).toEqual(['Zoho-oauthtoken projects'])
+    })
+
     test('refreshes the token before the request when the stored one expired', async () => {
         stub = await startProjectsStub(phasesAnswer, {
             tokens: { accessToken: 'stale', accessTokenExpiresAt: Date.now() - 1 },

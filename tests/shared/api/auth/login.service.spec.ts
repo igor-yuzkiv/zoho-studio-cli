@@ -235,9 +235,33 @@ describe('login', () => {
     })
 
     test('fails on empty scopes without calling Zoho', async () => {
-        await startProject([], { auth: { scopes: [] } })
+        await startProject([], { auth: { scopes: { crm: [], projects: [] } } })
 
         await expect(login()).rejects.toThrow(/auth.scopes is empty/)
+    })
+
+    test('asks for every scope on the default connection and only Projects ones on a separate login', async () => {
+        await startProject([], { auth: { scopes: { crm: ['C'], projects: ['P'] } } })
+        const requestedScopes: (string | null)[] = []
+        server!.reload({
+            fetch(request) {
+                const url = new URL(request.url)
+
+                if (url.pathname.endsWith('/device/code')) {
+                    requestedScopes.push(url.searchParams.get('scope'))
+                    return Response.json(deviceCodeAnswer)
+                }
+
+                return Response.json(issuedTokens)
+            },
+        })
+
+        await login()
+        expect((await login({ connection: 'projects' })).connection).toBe('projects')
+
+        expect(requestedScopes).toEqual(['C,P', 'P'])
+        expect((await readConnection(projectPath!, 'projects'))?.refreshToken).toBe('refresh')
+        expect((await readStoredTokens()).refreshToken).toBe('refresh')
     })
 
     test('gives up when the device code expires before approval', async () => {

@@ -43,6 +43,17 @@ describe('project settings loader', () => {
         expect(settings.auth.baseUrl).toBe(defaultProjectSettings.auth.baseUrl)
     })
 
+    test('splits a flat scope list from an older file by product', async () => {
+        await Bun.write(
+            resolveWorkspaceSettingsPath(projectPath),
+            JSON.stringify({ auth: { scopes: ['ZohoCRM.org.READ', 'ZohoProjects.tasks.READ'] } })
+        )
+
+        const settings = await loadProjectSettings(projectPath)
+
+        expect(settings.auth.scopes).toEqual({ crm: ['ZohoCRM.org.READ'], projects: ['ZohoProjects.tasks.READ'] })
+    })
+
     test('ignores ambient SETTINGS_* environment variables for keys settings.json omits', async () => {
         await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v9' } }))
         process.env.SETTINGS_API_BASEURL = 'https://hijacked.example'

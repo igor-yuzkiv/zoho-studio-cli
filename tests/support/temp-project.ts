@@ -8,6 +8,7 @@ import {
     credentialsHomeEnvName,
     readConnection,
     saveConnection,
+    type ConnectionName,
     type ConnectionTokens,
 } from '@/credentials'
 import { clearProjectCache, defaultProjectSettings, type ProjectSettings } from '@/settings'
@@ -23,7 +24,13 @@ export type StoredTokens = Omit<ConnectionTokens, 'profile'>
  * "test" profile and the tokens its connection, so a spec reads like the project it describes.
  */
 export interface TestProjectSettings extends ProjectSettings {
-    auth: ProjectSettings['auth'] & { clientId?: string; clientSecret?: string; tokens?: StoredTokens }
+    auth: ProjectSettings['auth'] & {
+        clientId?: string
+        clientSecret?: string
+        tokens?: StoredTokens
+        /** A separate Projects connection, issued for the same "test" profile. */
+        projectsTokens?: StoredTokens
+    }
 }
 
 export function buildSettings({
@@ -61,7 +68,7 @@ export async function createTempProject(settings: TestProjectSettings = buildSet
     clearProjectCache()
     await useTempCredentialsHome()
 
-    const { clientId, clientSecret, tokens, ...auth } = settings.auth
+    const { clientId, clientSecret, tokens, projectsTokens, ...auth } = settings.auth
     const projectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-'))
     await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ ...settings, auth }))
 
@@ -71,6 +78,10 @@ export async function createTempProject(settings: TestProjectSettings = buildSet
 
     if (tokens) {
         await saveConnection(projectPath, { profile: testProfileName, ...tokens })
+    }
+
+    if (projectsTokens) {
+        await saveConnection(projectPath, { profile: testProfileName, ...projectsTokens }, 'projects')
     }
 
     process.chdir(projectPath)
@@ -92,8 +103,11 @@ export async function removeTempProject(projectPath: string): Promise<void> {
     clearProjectCache()
 }
 
-export async function readStoredTokens(projectPath: string): Promise<ConnectionTokens | null> {
-    return readConnection(projectPath)
+export async function readStoredTokens(
+    projectPath: string,
+    connection: ConnectionName = 'default'
+): Promise<ConnectionTokens | null> {
+    return readConnection(projectPath, connection)
 }
 
 export function readStoredSettings(projectPath: string): Promise<ProjectSettings> {
