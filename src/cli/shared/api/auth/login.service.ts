@@ -2,7 +2,6 @@ import { workspaceSettingsRelativePath } from '@/config'
 import {
     findProfile,
     listProfiles,
-    resolveProfilesPath,
     saveConnection,
     warnAboutLegacyAuth,
     type ConnectionName,
@@ -87,10 +86,7 @@ async function resolveProfile(name: string | undefined): Promise<CredentialProfi
     }
 
     if (profiles.length === 0) {
-        throw new Error(
-            `There is no credential profile yet. Add your Zoho API Console client to ${resolveProfilesPath()} ` +
-                'as [{ "name": "…", "clientId": "…", "clientSecret": "…" }].'
-        )
+        throw new Error('There is no credential profile yet. Run "zoho-studio login" in a terminal to create one.')
     }
 
     throw new Error(

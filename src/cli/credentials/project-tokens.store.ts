@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 
 import { resolveProjectTokensPath } from './credentials.config'
 import type { ConnectionName, ConnectionTokens, ProjectTokensFile } from './credentials.types'
-import { readJsonOrNull, writeSecretJson } from './secret-file'
+import { readJsonOrNull, writeSecretJson } from './secret-file.utils'
 
 export async function readConnection(
     projectPath: string,

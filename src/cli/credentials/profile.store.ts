@@ -1,6 +1,6 @@
 import { resolveProfilesPath } from './credentials.config'
 import type { CredentialProfile } from './credentials.types'
-import { readJsonOrNull, writeSecretJson } from './secret-file'
+import { readJsonOrNull, writeSecretJson } from './secret-file.utils'
 
 export async function listProfiles(): Promise<CredentialProfile[]> {
     return (await readJsonOrNull<CredentialProfile[]>(resolveProfilesPath())) ?? []

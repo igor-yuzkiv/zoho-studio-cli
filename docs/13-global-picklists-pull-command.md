@@ -17,7 +17,7 @@ Global picklists failed: 0
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md), with
 the `ZohoCRM.settings.global_picklist.READ` scope granted. Without it Zoho answers
 `OAUTH_SCOPE_MISMATCH`; the scope is in the default [settings](2-settings.md), so a project created
-before it existed has to add it to `auth.scopes` and log in again.
+before it existed has to add it to `auth.scopes.crm` and log in again.
 
 ## What you get
 

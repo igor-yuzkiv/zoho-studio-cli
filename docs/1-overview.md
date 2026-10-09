@@ -5,8 +5,9 @@ Zoho development fits normal software engineering workflows — version control,
 agent-driven automation.
 
 A **project** is any folder containing `.zoho-studio/settings.json`. That single file holds
-everything the CLI needs: which Zoho account to talk to, which API to call, and the credentials to
-do it with. `zoho-studio init` scaffolds the project around it.
+everything the CLI needs to know about the project: which data center to talk to, which API to
+call, and which scopes to ask for. The credentials stay outside the project, in `~/.zoho-studio`,
+where several projects can share one client. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
 and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,

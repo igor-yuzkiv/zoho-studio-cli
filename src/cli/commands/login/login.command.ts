@@ -1,15 +1,28 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
+
+import type { ConnectionName } from '@/credentials'
 
 import { printOrganization, pullOrganization } from '@/zoho-crm/entities/organization'
 
 import { login } from '@/shared/api/auth'
 
+import { promptForProfile } from './profile-prompt.service'
+
 export const loginCommand = new Command('login')
     .description('Authorize the project with Zoho and store the resulting tokens')
-    .option('--profile <name>', 'the credential profile to log in with')
-    .action(async (options: { profile?: string }) => {
+    .option('--profile <name>', 'the credential profile to log in with, instead of choosing from a list')
+    .addOption(
+        new Option('--connection <name>', 'log in the default connection, or a separate one for Zoho Projects')
+            .choices(['default', 'projects'])
+            .default('default')
+    )
+    .action(async (options: { profile?: string; connection: ConnectionName }) => {
+        // Without a terminal to ask in, login() still accepts the only stored profile.
+        const profile = options.profile ?? (process.stdin.isTTY ? await promptForProfile() : undefined)
+
         const result = await login({
-            profile: options.profile,
+            profile,
+            connection: options.connection,
             onVerificationRequired: ({ verificationUrl, userCode, expiresInMs }) => {
                 console.log(`Open ${verificationUrl} in a browser and enter this code:`)
                 console.log()
@@ -20,7 +33,9 @@ export const loginCommand = new Command('login')
         })
 
         console.log()
-        console.log(`Authorized with the "${result.profile}" profile. Tokens stored in ~/.zoho-studio.`)
+        console.log(
+            `Authorized with the "${result.profile}" profile. Tokens of the ${result.connection} connection stored in ~/.zoho-studio.`
+        )
         console.log(`  access token valid for ${formatMinutes(result.accessTokenExpiresAt - Date.now())}`)
 
         if (result.apiDomainMismatch) {
@@ -32,8 +47,11 @@ export const loginCommand = new Command('login')
             )
         }
 
-        console.log()
-        await reportOrganization()
+        // The organization belongs to the CRM side, which the default connection serves.
+        if (result.connection === 'default') {
+            console.log()
+            await reportOrganization()
+        }
 
         console.log()
         console.log('The project is authorized.')

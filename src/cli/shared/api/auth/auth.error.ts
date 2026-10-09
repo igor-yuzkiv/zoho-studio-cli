@@ -4,7 +4,8 @@ const errorHints: Record<string, string> = {
     invalid_client:
         'Check the client id of the profile, and that auth.baseUrl points to the data center your client was registered in.',
     invalid_client_secret: 'Check the client secret of the profile in ~/.zoho-studio/profiles.json.',
-    invalid_scope: 'Check auth.scopes in settings.json — one of the scopes does not exist.',
+    invalid_scope:
+        'Check auth.scopes.crm and auth.scopes.projects in settings.json — one of the scopes does not exist.',
     invalid_code: 'Start "zoho-studio login" again to request a new device code.',
     expired: 'The device code expired before it was approved. Run "zoho-studio login" again.',
     access_denied: 'The request was denied in the browser. Run "zoho-studio login" again to retry.',

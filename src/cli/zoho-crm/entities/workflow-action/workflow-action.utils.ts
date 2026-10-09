@@ -26,6 +26,6 @@ export function describePullError(error: unknown): string {
     const message = describeRequestError(error)
 
     return message.includes('OAUTH_SCOPE_MISMATCH')
-        ? `${message} — add "ZohoCRM.settings.automation_actions.READ" to auth.scopes in .zoho-studio/settings.json and run "zoho-studio login" again.`
+        ? `${message} — add "ZohoCRM.settings.automation_actions.READ" to auth.scopes.crm in .zoho-studio/settings.json and run "zoho-studio login" again.`
         : message
 }

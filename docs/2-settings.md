@@ -3,9 +3,9 @@
 A project keeps everything it needs in **one file**: `.zoho-studio/settings.json`. Every command
 reads it, and [`zoho-studio init`](3-init-command.md) creates it.
 
-**The file is a secret.** It stores the client secret and the refresh token, so `init` puts a
-`.gitignore` next to it that keeps it out of git, and writes it with `chmod 0600`. Never commit it,
-and treat a leak as if a password leaked.
+**The file holds no secrets.** Client secrets and tokens live outside the project, in
+`~/.zoho-studio` — see [`zoho-studio login`](4-login-command.md). `init` still puts a `.gitignore`
+next to the file, which keeps it and `org.json` out of git, and writes it with `chmod 0600`.
 
 ## The file
 
@@ -13,25 +13,23 @@ and treat a leak as if a password leaked.
 {
     "auth": {
         "baseUrl": "https://accounts.zoho.com",
-        "scopes": [
-            "ZohoCRM.settings.modules.READ",
-            "ZohoCRM.settings.fields.READ",
-            "ZohoCRM.settings.workflow_rules.READ",
-            "ZohoCRM.settings.functions.READ",
-            "ZohoCRM.org.READ",
-            "ZohoCRM.settings.client_scripts.READ",
-            "ZohoCRM.settings.static_resources.READ",
-            "ZohoProjects.milestones.READ",
-            "ZohoProjects.tasklists.READ",
-            "ZohoProjects.tasks.READ",
-            "ZohoProjects.bugs.READ"
-        ],
-        "clientId": "",
-        "clientSecret": "",
-        "tokens": {
-            "accessToken": "",
-            "refreshToken": "",
-            "accessTokenExpiresAt": 0
+        "scopes": {
+            "crm": [
+                "ZohoCRM.settings.modules.READ",
+                "ZohoCRM.settings.fields.READ",
+                "ZohoCRM.settings.workflow_rules.READ",
+                "ZohoCRM.settings.functions.READ",
+                "ZohoCRM.org.READ",
+                "ZohoCRM.settings.client_scripts.READ",
+                "ZohoCRM.settings.static_resources.READ",
+                "…"
+            ],
+            "projects": [
+                "ZohoProjects.milestones.READ",
+                "ZohoProjects.tasklists.READ",
+                "ZohoProjects.tasks.READ",
+                "ZohoProjects.bugs.READ"
+            ]
         }
     },
     "api": {
@@ -58,14 +56,7 @@ and treat a leak as if a password leaked.
 path — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows` — so that the CLI can rely on the layout.
 See [`zoho-studio init`](3-init-command.md) for the whole tree.
 
-There are two kinds of values in there, and the difference matters when you edit the file by hand:
-
-- `auth.baseUrl`, `auth.scopes`, `auth.clientId`, `auth.clientSecret`, `api.*`, `logs.*`,
-  `projects.*`, `presets` — **yours**. You fill them in, the CLI only reads them.
-- `auth.tokens.*` — **the CLI's**. [`zoho-studio login`](4-login-command.md) writes all three:
-  `accessToken`, `refreshToken`, and `accessTokenExpiresAt` (a Unix timestamp in milliseconds).
-  `accessToken` and `accessTokenExpiresAt` are rewritten on their own whenever the access token is
-  refreshed, so do not expect the values you saw last run.
+Every value in the file is **yours**: you fill it in, the CLI only reads it.
 
 `logs.file` is where every command writes its log, relative to the project root, and its folder is
 created on the first line written. The default is `logs/zoho-studio-cli.log`, and the `logs/`
@@ -73,7 +64,10 @@ folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Poin
 else and that no longer applies — add the new path to your `.gitignore` yourself.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
-the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
+the same list appears on the consent screen. It is split by product: the default login asks for
+`crm` and `projects` together, a separate Projects login only for `projects`. A file from before
+the split holds one flat list; the CLI sorts it on read, `ZohoProjects.*` into `projects` and
+everything else into `crm`. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
 so a project authorized before the `ZohoProjects.*` scopes were added has to run `login` again
 before any `z-projects:*` command works, and the same holds for the client script and static
@@ -94,13 +88,15 @@ overwrite their own files; anything else in it is left alone.
 section, it merges with the built-in one by key, so a preset you add sits next to
 `pull-crm` and `pull-render-projects` instead of removing them.
 
-Every key is optional. Anything you leave out falls back to a built-in default, so a file with only
-`clientId` and `clientSecret` is a valid project. A key you do write **replaces** the default rather
+Every key is optional. Anything you leave out falls back to a built-in default, so an empty object
+is a valid project. A key you do write **replaces** the default rather
 than adding to it — that holds for the lists too, so a shortened `auth.scopes`
 stays exactly as short as you wrote it. That also means you can delete a key to return to
 the default instead of hunting for the original value.
 
-A key the CLI does not know is kept and ignored. A project created before the paths were fixed
+A key the CLI does not know is kept and ignored. `auth.clientId`, `auth.clientSecret`, and
+`auth.tokens` from a project created before the credential store are ignored too, with a warning on
+every run. A project created before the paths were fixed
 still carries its `crm` section, and one created before the `sync` command was removed carries a
 `sync` section — both now do nothing, delete them when they bother you. Such a
 project also saved its Deluge files under whatever `code_extension` said; the next

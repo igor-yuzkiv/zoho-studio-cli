@@ -17,7 +17,7 @@ Failures: 0
 
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md), with
 the `ZohoCRM.settings.automation_actions.READ` scope granted. Projects created before that scope
-existed have to add it to `auth.scopes` in [`.zoho-studio/settings.json`](2-settings.md) and log in
+existed have to add it to `auth.scopes.crm` in [`.zoho-studio/settings.json`](2-settings.md) and log in
 again; the command says so when Zoho refuses the request.
 
 It does not depend on any other pull command. [`z-crm:workflows:pull`](9-workflows-pull-command.md)
@@ -124,7 +124,7 @@ still run.
 
 ```text
 Failures: 1
-  - tasks: permission denied (OAUTH_SCOPE_MISMATCH) — add "ZohoCRM.settings.automation_actions.READ" to auth.scopes in .zoho-studio/settings.json and run "zoho-studio login" again.
+  - tasks: permission denied (OAUTH_SCOPE_MISMATCH) — add "ZohoCRM.settings.automation_actions.READ" to auth.scopes.crm in .zoho-studio/settings.json and run "zoho-studio login" again.
 ```
 
 ## Logs

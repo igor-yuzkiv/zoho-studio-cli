@@ -23,6 +23,5 @@ export const initCommand = new Command('init')
 
         console.log()
         console.log('Next steps:')
-        console.log(`  1. Add auth.clientId and auth.clientSecret to ${workspaceSettingsRelativePath}`)
-        console.log('  2. Run "zoho-studio login"')
+        console.log('  Run "zoho-studio login" and choose or create a credential profile')
     })

@@ -36,8 +36,8 @@ opens to show the rest of its fields.
 
 The footer of the sidebar shows whether the project has a refresh token stored, with a button that
 starts the same device flow as [`zoho-studio login`](4-login-command.md): the page shows the
-verification link and the code to enter, waits for the approval, and stores the tokens in the
-project settings. A pull that fails because the project is not logged in offers the same button.
+verification link and the code to enter, waits for the approval, and stores the tokens in
+`~/.zoho-studio`, the same way the CLI does. A pull that fails because the project is not logged in offers the same button.
 
 ## Running from source
 

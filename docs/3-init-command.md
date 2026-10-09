@@ -19,8 +19,7 @@ Initialized Zoho Studio project in my-project
   .zoho-studio/.gitignore — created
 
 Next steps:
-  1. Add auth.clientId and auth.clientSecret to .zoho-studio/settings.json
-  2. Run "zoho-studio login"
+  Run "zoho-studio login" and choose or create a credential profile
 ```
 
 A template file is reported as `created` or `skipped`; `skipped` means the file was already there
@@ -32,7 +31,7 @@ and was left alone.
 my-project/
   .zoho-studio/
     .gitignore           # keeps settings.json and org.json out of git
-    settings.json        # your credentials, chmod 0600
+    settings.json        # project settings, chmod 0600
   logs/
     .gitignore           # keeps *.log out of git
   src/
@@ -49,17 +48,18 @@ Your project's root `.gitignore` is not touched. The two `.gitignore` files abov
 folders they protect, so the settings file, the organization snapshot, and the logs stay out of git
 wherever the project sits.
 
-Next, fill in `auth.clientId` and `auth.clientSecret` from your client in the Zoho API console. See
-[2-settings.md](2-settings.md) for the rest of the file.
+Next, run [`zoho-studio login`](4-login-command.md): it lets you choose a stored credential profile
+or create one from your client in the Zoho API console. See [2-settings.md](2-settings.md) for the
+rest of the settings file.
 
 ## When it refuses
 
 `init` stops if `.zoho-studio/settings.json` already exists, so a stray re-run cannot wipe your
-credentials. It also stops if the target path is a file rather than a folder, or if `.zoho-studio`
+settings. It also stops if the target path is a file rather than a folder, or if `.zoho-studio`
 itself is a file.
 
 `--force` overrides the first case only, and it is a **reset of `settings.json`, not a repair and
-not a re-scaffold**: that one file goes back to the defaults, and the client secret and tokens in it
-are gone. There is no undo. To change a single value, edit the file instead.
+not a re-scaffold**: that one file goes back to the defaults, and every value you set in it is
+gone; the profiles and tokens in `~/.zoho-studio` are not touched. There is no undo. To change a single value, edit the file instead.
 
 Nothing under `src/` is ever deleted by `init`, with or without `--force`.
