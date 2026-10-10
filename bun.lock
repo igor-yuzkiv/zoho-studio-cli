@@ -64,26 +64,15 @@
     },
     "packages/auth": {
       "name": "@zoho-studio/auth",
-      "dependencies": {
-        "@zoho-studio/core": "workspace:*",
-      },
     },
     "packages/core": {
       "name": "@zoho-studio/core",
     },
     "packages/zoho-crm": {
       "name": "@zoho-studio/zoho-crm",
-      "dependencies": {
-        "@zoho-studio/auth": "workspace:*",
-        "@zoho-studio/core": "workspace:*",
-      },
     },
     "packages/zoho-projects": {
       "name": "@zoho-studio/zoho-projects",
-      "dependencies": {
-        "@zoho-studio/auth": "workspace:*",
-        "@zoho-studio/core": "workspace:*",
-      },
     },
   },
   "packages": {

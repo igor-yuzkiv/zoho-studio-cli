@@ -56,6 +56,8 @@
     "dev": "bun run apps/cli/src/index.ts",
     "build": "bun build apps/cli/src/index.ts --target=bun --outfile=dist/zoho-studio",
     "compile": "bun run build:web && bun scripts/compile.ts",
+    "link": "for d in packages/*/; do (cd \"$d\" && bun link); done",
+    "unlink": "for d in packages/*/; do (cd \"$d\" && bun unlink); done",
     "deploy-skills": "for d in skills/*/; do n=$(basename \"$d\"); rm -rf \"$HOME/.claude/skills/$n\"; mkdir -p \"$HOME/.claude/skills\"; cp -R \"$d\" \"$HOME/.claude/skills/$n\"; done",
     "lint": "eslint packages apps tests scripts vite.config.ts",
     "typecheck": "tsc --noEmit && vue-tsc --noEmit -p apps/web/tsconfig.json",

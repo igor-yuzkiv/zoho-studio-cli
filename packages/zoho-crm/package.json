@@ -14,9 +14,5 @@
         "./webhook": "./src/entities/webhook/index.ts",
         "./workflow-action": "./src/entities/workflow-action/index.ts",
         "./workflow-rule": "./src/entities/workflow-rule/index.ts"
-    },
-    "dependencies": {
-        "@zoho-studio/core": "workspace:*",
-        "@zoho-studio/auth": "workspace:*"
     }
 }

@@ -45,8 +45,10 @@ template/         # files `init` copies into a new project
 ```
 
 Packages have no build step: `exports` in each `package.json` points at TypeScript sources, and
-Bun runs them as they are. Third-party dependencies stay in the root `package.json`; a package
-declares only the sibling packages it imports, as `"workspace:*"`.
+Bun runs them as they are. A package declares no dependencies at all: third-party packages and
+the sibling packages are declared once, in the root `package.json`, and resolve through the root
+`node_modules`. A package with its own `workspace:*` entries cannot be linked into a project
+outside the repository, which `init` relies on (`bun run link`, `link:@zoho-studio/<name>`).
 
 A package is imported by name, never by a path into another package. `@zoho-studio/zoho-crm`
 exposes its client, config and organization store at the root and each entity as a subpath
