@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveFieldFileName } from '@/zoho-crm/entities/field'
+import { resolveFieldFileName } from '@zoho-studio/zoho-crm/field'
 
 describe('resolveFieldFileName', () => {
     test('names the file after the field API name', () => {

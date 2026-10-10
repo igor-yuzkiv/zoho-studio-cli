@@ -4,7 +4,7 @@ import {
     resolvePageDirSegments,
     resolveScriptSourceSegments,
     type ClientScriptPage,
-} from '@/zoho-crm/entities/client-script'
+} from '@zoho-studio/zoho-crm/client-script'
 
 const opportunities = { api_name: 'Deals', display_label: 'Opportunities' }
 

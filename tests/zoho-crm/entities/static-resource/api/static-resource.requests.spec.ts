@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getStaticResourceContent, getStaticResourcesList } from '@/zoho-crm/entities/static-resource'
+import { getStaticResourceContent, getStaticResourcesList } from '@zoho-studio/zoho-crm/static-resource'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

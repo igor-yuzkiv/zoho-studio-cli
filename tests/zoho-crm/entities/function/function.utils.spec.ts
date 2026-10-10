@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveCodeSegments } from '@/zoho-crm/entities/function'
+import { resolveCodeSegments } from '@zoho-studio/zoho-crm/function'
 
 describe('resolveCodeSegments', () => {
     test('places the code in the function directory under the fixed extension', () => {

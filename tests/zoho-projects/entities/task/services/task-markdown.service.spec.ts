@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 
-import { renderTask } from '@/zoho-projects/entities/task'
+import { renderTask } from '@zoho-studio/zoho-projects'
 
 import { backlog, closed, context, routeShiftNode, upgrade, upgradeNode } from './fixtures/tasks'
 

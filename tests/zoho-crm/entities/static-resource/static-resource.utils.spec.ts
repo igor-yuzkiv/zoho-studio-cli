@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveContentSegments, resolveMetadataSegments } from '@/zoho-crm/entities/static-resource'
+import { resolveContentSegments, resolveMetadataSegments } from '@zoho-studio/zoho-crm/static-resource'
 
 const pricingHelpers = { id: '42', name: 'pricingHelpers', file_name: 'pricingHelpers.js', source: 'user' }
 

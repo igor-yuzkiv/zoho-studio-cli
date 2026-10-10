@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 
-import { loadRawTree } from '@/zoho-projects/entities/task'
+import { loadRawTree } from '@zoho-studio/zoho-projects'
 
 import { createTempProject, removeTempProject, writeRawFile } from '../../../../support/temp-project'
 

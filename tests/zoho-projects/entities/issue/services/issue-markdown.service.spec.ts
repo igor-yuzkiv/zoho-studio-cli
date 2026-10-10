@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 
-import { renderIssue } from '@/zoho-projects/entities/issue'
+import { renderIssue } from '@zoho-studio/zoho-projects'
 
 import { brokenExport, brokenExportNode, context, timeout, timeoutNode, upgradeTask } from './fixtures/issues'
 

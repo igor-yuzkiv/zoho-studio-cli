@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { resolveWorkspaceSettingsPath } from '@/config'
+import { resolveWorkspaceSettingsPath } from '@zoho-studio/core'
 import {
     addProfile,
     credentialsHomeEnvName,
@@ -10,8 +10,8 @@ import {
     saveConnection,
     type ConnectionName,
     type ConnectionTokens,
-} from '@/credentials'
-import { clearProjectCache, defaultProjectSettings, type ProjectSettings } from '@/settings'
+} from '@zoho-studio/core'
+import { clearProjectCache, defaultProjectSettings, type ProjectSettings } from '@zoho-studio/core'
 
 const initialCwd = process.cwd()
 

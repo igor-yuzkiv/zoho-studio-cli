@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getGlobalPicklist } from '@/zoho-crm/entities/global-picklist'
+import { getGlobalPicklist } from '@zoho-studio/zoho-crm/global-picklist'
 
 import { startCrmStub, type CrmStub } from '../../../../support/crm-stub'
 

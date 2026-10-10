@@ -1,6 +1,6 @@
-import type { TreeMilestone } from '@/zoho-projects/entities/milestone'
-import type { TreeTaskList } from '@/zoho-projects/entities/task-list'
-import type { TaskRenderContext, TreeStatus, TreeTask, ZohoTask } from '@/zoho-projects/entities/task'
+import type { TreeMilestone } from '@zoho-studio/zoho-projects'
+import type { TreeTaskList } from '@zoho-studio/zoho-projects'
+import type { TaskRenderContext, TreeStatus, TreeTask, ZohoTask } from '@zoho-studio/zoho-projects'
 
 export const projects = { portalId: '100', projectId: '200' }
 

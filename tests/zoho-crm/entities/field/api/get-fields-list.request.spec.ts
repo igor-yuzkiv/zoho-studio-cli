@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getFieldsList, getFieldsPage } from '@/zoho-crm/entities/field'
+import { getFieldsList, getFieldsPage } from '@zoho-studio/zoho-crm/field'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

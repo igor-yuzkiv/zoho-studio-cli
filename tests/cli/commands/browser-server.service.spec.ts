@@ -1,0 +1,323 @@
+import { afterEach, describe, expect, test } from 'bun:test'
+import { mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
+
+import type { ArtifactGroupSummary, FileEntry, ProjectInfo, PullRun } from '@/commands/browser/browser.types'
+import { startBrowserServer } from '@/commands/browser/browser-server.service'
+
+import { startApiStub } from '../../support/api-stub'
+import { startCrmStub, type CrmStub } from '../../support/crm-stub'
+
+let stub: CrmStub | null = null
+let server: ReturnType<typeof startBrowserServer> | null = null
+
+afterEach(async () => {
+    await server?.stop(true)
+    server = null
+    await stub?.stop()
+    stub = null
+})
+
+const jsonHeaders = { 'Content-Type': 'application/json' }
+
+const twoFunctions = [
+    { id: '1', name: 'first', api_name: 'first' },
+    { id: '2', name: 'second', api_name: 'second' },
+]
+
+async function startProject(
+    answer: (request: Request) => Response = () => Response.json({}),
+    tokens?: Parameters<typeof startApiStub>[2]
+) {
+    stub = tokens
+        ? await startApiStub(answer, (origin) => ({ api: { baseUrl: origin, version: 'v8' } }), tokens)
+        : await startCrmStub(answer)
+    const page = new Blob(['<div id="app"></div>'], { type: 'text/html' })
+    server = startBrowserServer({
+        projectPath: stub.projectPath,
+        port: 0,
+        resolveAsset: async (pathname) => (pathname === '/' ? page : null),
+    })
+
+    return { projectPath: stub.projectPath, origin: server.url.origin }
+}
+
+async function writeSourceFile(projectPath: string, relativePath: string, content: unknown) {
+    const filePath = join(projectPath, 'src', relativePath)
+    await mkdir(join(filePath, '..'), { recursive: true })
+    await Bun.write(filePath, typeof content === 'string' ? content : JSON.stringify(content))
+}
+
+async function waitForRun(origin: string, runId: string): Promise<PullRun> {
+    for (let attempt = 0; attempt < 100; attempt++) {
+        const runs = (await (await fetch(`${origin}/api/pulls`)).json()) as PullRun[]
+        const run = runs.find(({ id }) => id === runId)
+
+        if (run && run.status !== 'running') {
+            return run
+        }
+
+        await Bun.sleep(50)
+    }
+
+    throw new Error(`Run ${runId} did not finish`)
+}
+
+describe('browser server', () => {
+    test('listens on the loopback interface only', async () => {
+        await startProject()
+
+        expect(server?.hostname).toBe('127.0.0.1')
+    })
+
+    test('reports a group that was never pulled without a count', async () => {
+        const { origin } = await startProject()
+        const groups = (await (await fetch(`${origin}/api/groups`)).json()) as ArtifactGroupSummary[]
+        const functions = groups.find(({ id }) => id === 'functions')
+
+        expect(functions).toMatchObject({
+            area: 'crm',
+            count: null,
+            pulledAt: null,
+            relativePath: 'zoho-crm/functions',
+        })
+    })
+
+    test('counts one artifact per pulled item', async () => {
+        const { origin, projectPath } = await startProject()
+        await writeSourceFile(projectPath, 'zoho-crm/functions/first/first.metadata.json', {})
+        await writeSourceFile(projectPath, 'zoho-crm/functions/first/first.deluge', 'void x() {}')
+        await writeSourceFile(projectPath, 'zoho-crm/functions/second/second.metadata.json', {})
+
+        const groups = (await (await fetch(`${origin}/api/groups`)).json()) as ArtifactGroupSummary[]
+        const functions = groups.find(({ id }) => id === 'functions')
+
+        expect(functions?.count).toBe(2)
+        expect(functions?.pulledAt).not.toBeNull()
+        expect(functions?.absolutePath).toBe(join(projectPath, 'src/zoho-crm/functions'))
+    })
+
+    test('reads trees, files and JSON bundles below src', async () => {
+        const { origin, projectPath } = await startProject()
+        await writeSourceFile(projectPath, 'zoho-crm/workflows/Big Deal.json', { name: 'Big Deal' })
+
+        const tree = (await (await fetch(`${origin}/api/tree?path=zoho-crm&depth=2`)).json()) as FileEntry
+        const file = await fetch(`${origin}/api/file?path=${encodeURIComponent('zoho-crm/workflows/Big Deal.json')}`)
+        const bundle = await (await fetch(`${origin}/api/json?path=zoho-crm/workflows`)).json()
+
+        expect(tree.children?.[0]?.children?.[0]?.path).toBe('zoho-crm/workflows/Big Deal.json')
+        expect(await file.json()).toEqual({ name: 'Big Deal' })
+        expect(bundle).toEqual({ 'zoho-crm/workflows/Big Deal.json': { name: 'Big Deal' } })
+    })
+
+    test('refuses a path that leaves src', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/file?path=../.zoho-studio/settings.json`)
+
+        expect(response.status).toBe(400)
+    })
+
+    test('runs a pull and reports its summary', async () => {
+        const { origin, projectPath } = await startProject((request) =>
+            new URL(request.url).pathname.endsWith('/settings/functions')
+                ? Response.json({ functions: twoFunctions, info: { more_records: false } })
+                : Response.json({ functions: [{ script: 'void f() {}' }] })
+        )
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+        const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
+
+        expect(response.status).toBe(202)
+        expect(run).toMatchObject({ status: 'done', total: 2, completed: 2, command: 'z-crm:functions:pull' })
+        expect(run.log).toContain('Functions found: 2')
+        expect(await Bun.file(join(projectPath, 'src/zoho-crm/functions/first/first.metadata.json')).exists()).toBe(
+            true
+        )
+    })
+
+    test('refuses a second pull while one is running', async () => {
+        const { origin } = await startProject((request) =>
+            new URL(request.url).pathname.endsWith('/settings/functions')
+                ? Response.json({ functions: twoFunctions, info: { more_records: false } })
+                : Response.json({ functions: [{ script: '' }] })
+        )
+        const pull = () =>
+            fetch(`${origin}/api/pulls`, {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+            })
+
+        const first = await pull()
+        const second = await pull()
+
+        expect(second.status).toBe(409)
+        await waitForRun(origin, ((await first.json()) as PullRun).id)
+    })
+
+    test('reports a failed pull with its error', async () => {
+        const { origin } = await startProject(() => Response.json({ code: 'INVALID' }, { status: 400 }))
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+        const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
+
+        expect(run.status).toBe('failed')
+        expect(run.log.length).toBeGreaterThan(0)
+    })
+
+    test('marks a pull that failed for lack of a login', async () => {
+        const { origin } = await startProject(() => Response.json({}), {
+            accessToken: '',
+            refreshToken: '',
+            accessTokenExpiresAt: 0,
+        })
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+        const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
+
+        expect(run).toMatchObject({ status: 'failed', authRequired: true })
+    })
+
+    test('passes options through to the pull', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ area: 'projects', group: 'tasks', options: { from: 'not-a-date' } }),
+        })
+        const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
+
+        expect(run.command).toBe('z-projects:tasks:pull --from=not-a-date')
+        expect(run.status).toBe('failed')
+    })
+
+    test('answers an unknown group with 404', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ area: 'crm', group: 'nothing', options: {} }),
+        })
+
+        expect(response.status).toBe(404)
+    })
+
+    test('serves artifact files as plain text', async () => {
+        const { origin, projectPath } = await startProject()
+        await writeSourceFile(projectPath, 'zoho-crm/static-resources/crm/page.html', '<script>alert(1)</script>')
+
+        const response = await fetch(`${origin}/api/file?path=zoho-crm/static-resources/crm/page.html`)
+
+        expect(response.headers.get('Content-Type')).toStartWith('text/plain')
+        expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    })
+
+    test('refuses a request from another site', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: { ...jsonHeaders, Origin: 'https://evil.example' },
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+
+        expect(response.status).toBe(403)
+    })
+
+    test('refuses a request addressed to another host name', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/project`, { headers: { Host: 'attacker.example' } })
+
+        expect(response.status).toBe(403)
+    })
+
+    test('refuses a pull posted without a JSON content type', async () => {
+        const { origin } = await startProject()
+
+        const response = await fetch(`${origin}/api/pulls`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ area: 'crm', group: 'functions', options: {} }),
+        })
+
+        expect(response.status).toBe(415)
+    })
+
+    test('lists profiles without their secrets', async () => {
+        const { origin } = await startProject()
+
+        expect(await (await fetch(`${origin}/api/profiles`)).json()).toEqual([
+            { name: 'test', clientId: '1000.CLIENT' },
+        ])
+    })
+
+    test('creates a profile and refuses a duplicate name', async () => {
+        const { origin } = await startProject()
+        const create = (name: string) =>
+            fetch(`${origin}/api/profiles`, {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({ name, clientId: '1000.NEW', clientSecret: 'new-secret' }),
+            })
+
+        const created = await create(' acme ')
+        expect(created.status).toBe(201)
+        expect(await created.json()).toEqual({ name: 'acme', clientId: '1000.NEW' })
+        expect((await create('acme')).status).toBe(409)
+        expect(await (await fetch(`${origin}/api/profiles`)).text()).not.toContain('new-secret')
+    })
+
+    test('refuses a profile with an empty field', async () => {
+        const { origin } = await startProject()
+        const response = await fetch(`${origin}/api/profiles`, {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify({ name: 'acme', clientId: '', clientSecret: 's' }),
+        })
+
+        expect(response.status).toBe(400)
+    })
+
+    test('refuses a login without a profile or with an unknown connection', async () => {
+        const { origin } = await startProject()
+        const post = (body: unknown) =>
+            fetch(`${origin}/api/login`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify(body) })
+
+        expect((await post({ connection: 'default' })).status).toBe(400)
+        expect((await post({ profile: 'test', connection: 'other' })).status).toBe(400)
+    })
+
+    test('reports the login state of each connection', async () => {
+        const { origin } = await startProject()
+
+        const project = (await (await fetch(`${origin}/api/project`)).json()) as ProjectInfo
+
+        expect(project.auth).toEqual({
+            default: 'authorized',
+            projects: 'missing',
+        })
+    })
+
+    test('serves the page through the asset resolver', async () => {
+        const { origin } = await startProject()
+
+        expect(await (await fetch(`${origin}/`)).text()).toBe('<div id="app"></div>')
+        expect((await fetch(`${origin}/missing.js`)).status).toBe(404)
+    })
+})

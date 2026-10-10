@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getModulesList } from '@/zoho-crm/entities/module'
+import { getModulesList } from '@zoho-studio/zoho-crm/module'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

@@ -4,7 +4,7 @@ import {
     getClientScriptPagesList,
     getClientScriptSource,
     getClientScriptsList,
-} from '@/zoho-crm/entities/client-script'
+} from '@zoho-studio/zoho-crm/client-script'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveMetadataSegments } from '@/zoho-crm/entities/module'
+import { resolveMetadataSegments } from '@zoho-studio/zoho-crm/module'
 
 describe('resolveMetadataSegments', () => {
     test('names both the directory and the file after the module API name', () => {

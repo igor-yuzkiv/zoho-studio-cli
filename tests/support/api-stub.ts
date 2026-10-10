@@ -1,4 +1,4 @@
-import type { ProjectSettings } from '@/settings'
+import type { ProjectSettings } from '@zoho-studio/core'
 
 import { buildSettings, createTempProject, removeTempProject, type StoredTokens } from './temp-project'
 

@@ -1,5 +1,5 @@
-import type { IssueRenderContext, TreeIssue, ZohoIssue } from '@/zoho-projects/entities/issue'
-import type { TreeTask } from '@/zoho-projects/entities/task'
+import type { IssueRenderContext, TreeIssue, ZohoIssue } from '@zoho-studio/zoho-projects'
+import type { TreeTask } from '@zoho-studio/zoho-projects'
 
 export const projects = { portalId: '100', projectId: '200' }
 

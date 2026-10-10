@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
-import { htmlToMarkdown } from '@/zoho-projects/entities/task'
-import { decodeHtmlEntities } from '@/zoho-projects/md'
+import { htmlToMarkdown } from '@zoho-studio/zoho-projects'
+import { decodeHtmlEntities } from '@zoho-studio/zoho-projects'
 
 describe('htmlToMarkdown', () => {
     test('returns an empty string for empty or blank HTML', () => {

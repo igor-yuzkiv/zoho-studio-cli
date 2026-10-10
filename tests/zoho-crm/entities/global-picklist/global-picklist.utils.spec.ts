@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { sortGlobalPicklists } from '@/zoho-crm/entities/global-picklist'
+import { sortGlobalPicklists } from '@zoho-studio/zoho-crm/global-picklist'
 
 describe('sortGlobalPicklists', () => {
     test('orders by API name, then id so collisions resolve the same way each run', () => {

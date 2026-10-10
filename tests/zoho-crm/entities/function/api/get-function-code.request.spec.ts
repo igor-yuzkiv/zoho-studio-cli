@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getFunctionCode } from '@/zoho-crm/entities/function'
+import { getFunctionCode } from '@zoho-studio/zoho-crm/function'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

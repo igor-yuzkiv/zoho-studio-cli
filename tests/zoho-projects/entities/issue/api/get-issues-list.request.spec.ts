@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getIssuesList } from '@/zoho-projects/entities/issue'
+import { getIssuesList } from '@zoho-studio/zoho-projects'
 
 import { listPage, startProjectsStub, type ProjectsStub } from '../../../../support/projects-stub'
 

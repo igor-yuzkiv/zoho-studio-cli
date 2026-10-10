@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWorkflowActionsList, getWorkflowActionsPage } from '@/zoho-crm/entities/workflow-action'
+import { getWorkflowActionsList, getWorkflowActionsPage } from '@zoho-studio/zoho-crm/workflow-action'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 

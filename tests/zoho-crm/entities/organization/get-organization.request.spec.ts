@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@/zoho-crm/entities/organization'
+import { getOrganization } from '@zoho-studio/zoho-crm/organization'
 
 import { startCrmStub, type CrmStub } from '../../../support/crm-stub'
 

@@ -1,7 +1,7 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import type { ProjectSettings } from '@/settings'
+import type { ProjectSettings } from '@zoho-studio/core'
 
 import { type ApiStub, startApiStub } from './api-stub'
 import type { StoredTokens } from './temp-project'

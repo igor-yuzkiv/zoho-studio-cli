@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { formatOrganization, pullOrganization } from '@/zoho-crm/entities/organization'
-import { resolveWorkspaceOrganizationPath } from '@/config'
+import { formatOrganization, pullOrganization } from '@zoho-studio/zoho-crm/organization'
+import { resolveWorkspaceOrganizationPath } from '@zoho-studio/core'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../support/temp-project'
 

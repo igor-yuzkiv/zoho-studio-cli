@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { resolveMdPath, toDisplayName, toSlug } from '@/zoho-projects/md'
+import { resolveMdPath, toDisplayName, toSlug } from '@zoho-studio/zoho-projects'
 
 describe('toSlug', () => {
     test('lower-cases, dashes and cuts a name', () => {

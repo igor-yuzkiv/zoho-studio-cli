@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWebhooksList, getWebhooksPage } from '@/zoho-crm/entities/webhook'
+import { getWebhooksList, getWebhooksPage } from '@zoho-studio/zoho-crm/webhook'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
