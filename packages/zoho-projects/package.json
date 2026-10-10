@@ -1,0 +1,12 @@
+{
+    "name": "@zoho-studio/zoho-projects",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "dependencies": {
+        "@zoho-studio/core": "workspace:*",
+        "@zoho-studio/auth": "workspace:*"
+    }
+}

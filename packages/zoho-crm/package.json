@@ -1,0 +1,22 @@
+{
+    "name": "@zoho-studio/zoho-crm",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts",
+        "./client-script": "./src/entities/client-script/index.ts",
+        "./field": "./src/entities/field/index.ts",
+        "./function": "./src/entities/function/index.ts",
+        "./global-picklist": "./src/entities/global-picklist/index.ts",
+        "./module": "./src/entities/module/index.ts",
+        "./organization": "./src/entities/organization/index.ts",
+        "./static-resource": "./src/entities/static-resource/index.ts",
+        "./webhook": "./src/entities/webhook/index.ts",
+        "./workflow-action": "./src/entities/workflow-action/index.ts",
+        "./workflow-rule": "./src/entities/workflow-rule/index.ts"
+    },
+    "dependencies": {
+        "@zoho-studio/core": "workspace:*",
+        "@zoho-studio/auth": "workspace:*"
+    }
+}
