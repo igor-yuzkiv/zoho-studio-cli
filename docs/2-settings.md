@@ -96,7 +96,7 @@ the default instead of hunting for the original value.
 
 A key the CLI does not know is kept and ignored. `auth.clientId`, `auth.clientSecret`, and
 `auth.tokens` from a project created before the credential store are ignored too, with a warning on
-every run. A project created before the paths were fixed
+every run; [`zoho-studio auth:migrate-legacy`](26-auth-migrate-legacy-command.md) moves them out. A project created before the paths were fixed
 still carries its `crm` section, and one created before the `sync` command was removed carries a
 `sync` section — both now do nothing, delete them when they bother you. Such a
 project also saved its Deluge files under whatever `code_extension` said; the next

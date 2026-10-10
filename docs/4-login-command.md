@@ -137,3 +137,5 @@ failures propagate as-is, and the stored tokens are left untouched.
 
 A project whose `settings.json` still carries `auth.clientId`, `auth.clientSecret`, or
 `auth.tokens` from an older version gets a warning on every run: those keys are ignored now.
+[`zoho-studio auth:migrate-legacy`](26-auth-migrate-legacy-command.md) moves them into
+`~/.zoho-studio`.

@@ -12,6 +12,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [Project settings](docs/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
 - [init](docs/3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [login](docs/4-login-command.md) — authorizing a project with `zoho-studio login`
+- [auth:migrate-legacy](docs/26-auth-migrate-legacy-command.md) — moving the credentials of an older project into `~/.zoho-studio`
 - [z-crm:status](docs/5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
 - [z-crm:functions:pull](docs/6-functions-pull-command.md) — downloading functions
 - [z-crm:modules:pull](docs/7-modules-pull-command.md) — downloading module metadata

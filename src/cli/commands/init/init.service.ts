@@ -18,7 +18,7 @@ export async function initializeProject(
     if ((await Bun.file(resolveWorkspaceSettingsPath(projectPath)).exists()) && !force) {
         throw new Error(
             `${workspaceSettingsFileName} already exists in ${projectPath}. ` +
-                'Re-run with --force to reset it, discarding the stored credentials and tokens.'
+                'Re-run with --force to reset it to the defaults.'
         )
     }
 
