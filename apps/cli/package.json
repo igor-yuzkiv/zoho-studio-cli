@@ -1,0 +1,11 @@
+{
+    "name": "@zoho-studio/cli",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@zoho-studio/core": "workspace:*",
+        "@zoho-studio/auth": "workspace:*",
+        "@zoho-studio/zoho-crm": "workspace:*",
+        "@zoho-studio/zoho-projects": "workspace:*"
+    }
+}

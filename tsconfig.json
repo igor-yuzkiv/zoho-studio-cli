@@ -10,7 +10,7 @@
         "types": ["bun"],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/cli/*"]
+            "@/*": ["apps/cli/src/*"]
         },
 
         // Bundler mode
@@ -31,5 +31,5 @@
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false
     },
-    "exclude": ["src/web", "vite.config.ts", "node_modules", "dist"]
+    "exclude": ["apps/web", "vite.config.ts", "node_modules", "dist"]
 }

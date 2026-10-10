@@ -20,7 +20,7 @@ if (!webFiles.includes('index.html')) {
 const importPath = (filePath: string) => relative(entryDirPath, join(webPath, filePath))
 
 const entrySource = [
-    "import { registerEmbeddedWebAssets } from '../src/cli/commands/browser/web-assets.service'",
+    "import { registerEmbeddedWebAssets } from '../apps/cli/src/commands/browser/web-assets.service'",
     ...webFiles.map(
         (filePath, index) => `import asset${index} from ${JSON.stringify(importPath(filePath))} with { type: 'file' }`
     ),
@@ -29,7 +29,7 @@ const entrySource = [
     ...webFiles.map((filePath, index) => `    ${JSON.stringify(filePath)}: asset${index},`),
     '})',
     '',
-    "await import('../src/cli/index')",
+    "await import('../apps/cli/src/index')",
     '',
 ].join('\n')
 

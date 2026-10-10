@@ -5,11 +5,11 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-    root: 'src/web',
+    root: 'apps/web',
     plugins: [vue(), tailwindcss()],
     resolve: {
         alias: {
-            '@web': fileURLToPath(new URL('./src/web', import.meta.url)),
+            '@web': fileURLToPath(new URL('./apps/web', import.meta.url)),
         },
     },
     // Relative asset URLs let the CLI serve the build from any origin and port.

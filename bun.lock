@@ -9,6 +9,10 @@
         "@fontsource-variable/geist-mono": "^5.3.0",
         "@inquirer/prompts": "^8.5.2",
         "@lucide/vue": "^1.53.0",
+        "@zoho-studio/auth": "workspace:*",
+        "@zoho-studio/core": "workspace:*",
+        "@zoho-studio/zoho-crm": "workspace:*",
+        "@zoho-studio/zoho-projects": "workspace:*",
         "axios": "^1.18.1",
         "bunfig": "^0.15.15",
         "cli-progress": "^3.12.0",
@@ -44,6 +48,41 @@
       },
       "peerDependencies": {
         "typescript": "^5",
+      },
+    },
+    "apps/cli": {
+      "name": "@zoho-studio/cli",
+      "dependencies": {
+        "@zoho-studio/auth": "workspace:*",
+        "@zoho-studio/core": "workspace:*",
+        "@zoho-studio/zoho-crm": "workspace:*",
+        "@zoho-studio/zoho-projects": "workspace:*",
+      },
+    },
+    "apps/web": {
+      "name": "@zoho-studio/web",
+    },
+    "packages/auth": {
+      "name": "@zoho-studio/auth",
+      "dependencies": {
+        "@zoho-studio/core": "workspace:*",
+      },
+    },
+    "packages/core": {
+      "name": "@zoho-studio/core",
+    },
+    "packages/zoho-crm": {
+      "name": "@zoho-studio/zoho-crm",
+      "dependencies": {
+        "@zoho-studio/auth": "workspace:*",
+        "@zoho-studio/core": "workspace:*",
+      },
+    },
+    "packages/zoho-projects": {
+      "name": "@zoho-studio/zoho-projects",
+      "dependencies": {
+        "@zoho-studio/auth": "workspace:*",
+        "@zoho-studio/core": "workspace:*",
       },
     },
   },
@@ -291,6 +330,18 @@
     "@vue/shared": ["@vue/shared@3.5.43", "", {}, "sha512-uksS7YGMR5NZyr4JNq0Rp+QyLns0ueaz20KwzIPW9R0LH1Vnt4E+XUM29PNseEbf1www2gOuhuDi5AKOIXag9Q=="],
 
     "@vue/tsconfig": ["@vue/tsconfig@0.9.1", "", { "peerDependencies": { "typescript": ">= 5.8", "vue": "^3.4.0" }, "optionalPeers": ["typescript", "vue"] }, "sha512-buvjm+9NzLCJL29KY1j1991YYJ5e6275OiK+G4jtmfIb+z4POywbdm0wXusT9adVWqe0xqg70TbI7+mRx4uU9w=="],
+
+    "@zoho-studio/auth": ["@zoho-studio/auth@workspace:packages/auth"],
+
+    "@zoho-studio/cli": ["@zoho-studio/cli@workspace:apps/cli"],
+
+    "@zoho-studio/core": ["@zoho-studio/core@workspace:packages/core"],
+
+    "@zoho-studio/web": ["@zoho-studio/web@workspace:apps/web"],
+
+    "@zoho-studio/zoho-crm": ["@zoho-studio/zoho-crm@workspace:packages/zoho-crm"],
+
+    "@zoho-studio/zoho-projects": ["@zoho-studio/zoho-projects@workspace:packages/zoho-projects"],
 
     "acorn": ["acorn@8.17.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-xRQbDb9BnwDafYNn6Vwl839DYVjqXYb1XVGtWAZ1kcDc6iwAL4hg3B1dZlRiuENFeO2H53gFG3in621AdERVAg=="],
 
