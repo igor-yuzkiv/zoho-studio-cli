@@ -32,15 +32,15 @@ task_labels:
   - SKILL
 
 exemplars:
-  command: src/zoho-crm/commands/fields/pull-fields.command.ts
-  service: src/commands/init/init.service.ts
-  request: src/zoho-crm/entities/field/api/get-fields-list.request.ts
-  client: src/shared/api/crm/crm.client.ts
-  entity_types: src/zoho-crm/entities/field/field.types.ts
-  settings: src/settings/settings.store.ts
-  utils: src/shared/utils/cli.utils.ts
-  test_command: tests/commands/init.service.spec.ts
-  test_unit: tests/settings/settings.loader.spec.ts
+  command: apps/cli/src/zoho-crm/commands/fields/pull-fields.command.ts
+  service: apps/cli/src/commands/init/init.service.ts
+  request: packages/zoho-crm/src/entities/field/api/get-fields-list.request.ts
+  client: packages/zoho-crm/src/api/crm.client.ts
+  entity_types: packages/zoho-crm/src/entities/field/field.types.ts
+  settings: packages/core/src/settings/settings.store.ts
+  utils: packages/core/src/utils/cli.utils.ts
+  test_command: tests/cli/commands/init.service.spec.ts
+  test_unit: tests/core/settings/settings.loader.spec.ts
   test_fixture: tests/support/temp-project.ts
   docs_page: docs/8-fields-pull-command.md
 

@@ -101,7 +101,7 @@ They hold client secrets and refresh tokens — treat a leak as if a password le
 ## Staying authorized
 
 You run `login` once per connection. The access token Zoho issues lives an hour, and commands that
-need it ask `TokenService` (`src/cli/shared/api/auth/token.service.ts`) rather than reading the store
+need it ask `TokenService` (`packages/auth/src/token.service.ts`) rather than reading the store
 themselves. It hands back the stored token while it is valid, and otherwise exchanges the refresh
 token — with the client of the connection's profile — for a new access token and writes it back to
 `tokens.json`. A token within a minute of expiring counts as expired, so it is never handed out
