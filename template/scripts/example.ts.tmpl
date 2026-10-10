@@ -1,0 +1,32 @@
+/**
+ * Counts the fields of every pulled module. Run it from the project after `bun install`:
+ *
+ *   bun run scripts/example.ts
+ *
+ * It reads only the local artifacts, so it works without a login. Copy it to start a script of
+ * your own: every package of the framework is importable the same way.
+ */
+import { readdir } from 'node:fs/promises'
+import { join } from 'node:path'
+
+import { getProjectSettings, resolveArtifactPath } from '@zoho-studio/core'
+import { fieldsDirName, modulesDirName, zohoCrmDirName } from '@zoho-studio/zoho-crm'
+
+const { projectPath } = await getProjectSettings()
+const modulesPath = resolveArtifactPath(projectPath, [zohoCrmDirName, modulesDirName])
+
+const moduleNames = (await readdir(modulesPath, { withFileTypes: true }).catch(() => []))
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort()
+
+if (moduleNames.length === 0) {
+    console.log('No modules pulled yet. Run "zoho-studio z-crm:modules:pull" and "zoho-studio z-crm:fields:pull" first.')
+    process.exit(0)
+}
+
+for (const moduleName of moduleNames) {
+    const fieldFiles = await readdir(join(modulesPath, moduleName, fieldsDirName)).catch(() => [])
+
+    console.log(`${moduleName}: ${fieldFiles.length} fields`)
+}

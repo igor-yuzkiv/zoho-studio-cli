@@ -34,6 +34,13 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-projects:issues:render](docs/21-z-projects-issues-render-command.md) — building the issues part of the Obsidian catalogue from the raw Zoho Projects JSON
 - [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
+## Scripts in a project
+
+A project made by `zoho-studio init` comes with a `package.json` that links the framework packages
+(`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`, `@zoho-studio/zoho-projects`)
+and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, then `bun install`
+in the project; see [init](docs/3-init-command.md#scripts).
+
 ## Editor support
 
 Pulled functions are saved as `.deluge` files. For syntax highlighting, IntelliSense, and hover
@@ -52,6 +59,8 @@ bun test                # tests
 bun run check           # lint + typecheck + tests
 bun run build           # bun-targeted bundle → dist/
 bun run compile         # web app + standalone executable with the page embedded → dist/
+bun run link            # register packages/* in Bun's link registry, for projects made by `init`
+bun run unlink          # remove that registration
 bun run dev:web         # web app dev server (Vite)
 bun run build:web       # web app build → dist/web
 bun run deploy-skills   # install skills/ into ~/.claude/skills/

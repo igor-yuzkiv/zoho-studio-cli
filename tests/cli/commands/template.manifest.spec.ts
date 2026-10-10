@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { readdir } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
-import { templateFiles } from '@/commands/init/template.manifest'
+import { templateFiles, templateSourceSuffix } from '@/commands/init/template.manifest'
 
 const templateDirPath = join(import.meta.dir, '../../../template')
 
@@ -24,6 +24,7 @@ describe('templateFiles', () => {
     test('covers every file in the template directory', async () => {
         const onDisk = (await readTemplateFilePaths(templateDirPath))
             .map((filePath) => relative(templateDirPath, filePath))
+            .map((filePath) => filePath.endsWith(templateSourceSuffix) ? filePath.slice(0, -templateSourceSuffix.length) : filePath)
             .sort()
 
         expect(templateFiles.map(({ destination }) => destination).sort()).toEqual(onDisk)

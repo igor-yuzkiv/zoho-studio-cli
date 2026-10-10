@@ -30,6 +30,12 @@ describe('initializeProject', () => {
         expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
         expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\n')
+        expect(await readTemplateFile(workingPath, '.gitignore')).toBe('node_modules\n')
+        expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
+            dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },
+        })
+        expect(await Bun.file(join(workingPath, 'tsconfig.json')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'scripts/example.ts')).exists()).toBe(true)
         expect(result.templateFiles.every(({ outcome }) => outcome === 'created')).toBe(true)
     })
 
@@ -49,10 +55,13 @@ describe('initializeProject', () => {
         expect(await Bun.file(resolveWorkspaceSettingsPath(projectPath)).exists()).toBe(true)
     })
 
-    test('leaves the root .gitignore alone', async () => {
-        await initializeProject(workingPath)
+    test('never overwrites an existing root .gitignore', async () => {
+        await Bun.write(join(workingPath, '.gitignore'), 'dist\n')
 
-        expect(await Bun.file(join(workingPath, '.gitignore')).exists()).toBe(false)
+        const result = await initializeProject(workingPath)
+
+        expect(await readTemplateFile(workingPath, '.gitignore')).toBe('dist\n')
+        expect(result.templateFiles).toContainEqual({ path: '.gitignore', outcome: 'skipped' })
     })
 
     test('never overwrites a template file the user has edited', async () => {
