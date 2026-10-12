@@ -6,7 +6,6 @@ and refresh tokens in `~/.zoho-studio`, outside the project.
 ```bash
 zoho-studio login                         # choose a profile from the list, or create one
 zoho-studio login --profile acme          # no questions asked
-zoho-studio login --connection projects   # a separate login for Zoho Projects
 ```
 
 ## Profiles
@@ -38,7 +37,7 @@ Open https://accounts.zoho.com/oauth/v3/device in a browser and enter this code:
 
 The code is valid for 5 min. Waiting for approval...
 
-Authorized with the "acme" profile. Tokens of the default connection stored in ~/.zoho-studio.
+Authorized with the "acme" profile. Tokens stored in ~/.zoho-studio.
   access token valid for 60 min
 
 Organization: Acme Inc
@@ -56,19 +55,11 @@ Once the tokens are stored, `login` reads the organization and writes it to
 tokens are already saved by then, so a failure there is reported and the login still succeeds.
 
 The token values are never printed. `login` finds the project by walking up from the current
-folder, so it works from any subfolder, and it overwrites the tokens of a previous login of the
-same connection without asking.
+folder, so it works from any subfolder, and it overwrites the tokens of a previous login without asking.
 
-## Connections
+## Scopes
 
-A project has a **default** connection, and every command uses it. `--connection projects` logs in
-a second, separate connection — with another profile, or another Zoho account — that the
-`z-projects:*` commands use instead whenever it exists. CRM commands always stay on the default
-one.
-
-The default login asks Zoho for `auth.scopes.crm` and `auth.scopes.projects` together; a Projects
-login asks only for `auth.scopes.projects` and does not read the organization. See
-[2-settings.md](2-settings.md).
+`login` asks Zoho for `auth.scopes` from the settings. See [2-settings.md](2-settings.md).
 
 ## Where the tokens live
 
@@ -77,10 +68,11 @@ login asks only for `auth.scopes.projects` and does not read the organization. S
   profiles.json                      # every profile, with its client secret
   projects/
     -home-me-work-acme/
-      tokens.json                    # this project's connections and the profile of each
+      tokens.json                    # this project's tokens and the profile they were issued for
 ```
 
-A project's folder is named after its absolute path with `/` replaced by `-`. Move or rename the
+Tokens of the separate Zoho Projects login that earlier versions offered stay in `tokens.json` and
+are ignored; the next write of the file — a login or a token refresh — drops them. A project's folder is named after its absolute path with `/` replaced by `-`. Move or rename the
 project and its tokens stay behind under the old name — run `login` again. Two paths can map to
 the same name (`/a-b` and `/a/b`); `tokens.json` records the original path, and a project that
 finds another project's file there stops with an error instead of using its tokens.
@@ -100,12 +92,12 @@ They hold client secrets and refresh tokens — treat a leak as if a password le
 
 ## Staying authorized
 
-You run `login` once per connection. The access token Zoho issues lives an hour, and commands that
+You run `login` once per project. The access token Zoho issues lives an hour, and commands that
 need it ask `TokenService` (`packages/auth/src/token.service.ts`) rather than reading the store
 themselves. It hands back the stored token while it is valid, and otherwise exchanges the refresh
-token — with the client of the connection's profile — for a new access token and writes it back to
+token — with the client of the profile the tokens were issued for — for a new access token and writes it back to
 `tokens.json`. A token within a minute of expiring counts as expired, so it is never handed out
-just before it dies, and concurrent callers of one connection share a single refresh — Zoho caps a
+just before it dies, and concurrent callers share a single refresh — Zoho caps a
 refresh token at 10 access tokens per 10 minutes.
 
 The refresh token itself does not expire. You only need `login` again if it was revoked in the Zoho

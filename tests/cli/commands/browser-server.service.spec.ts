@@ -294,24 +294,21 @@ describe('browser server', () => {
         expect(response.status).toBe(400)
     })
 
-    test('refuses a login without a profile or with an unknown connection', async () => {
+    test('refuses a login without a profile', async () => {
         const { origin } = await startProject()
         const post = (body: unknown) =>
             fetch(`${origin}/api/login`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify(body) })
 
-        expect((await post({ connection: 'default' })).status).toBe(400)
-        expect((await post({ profile: 'test', connection: 'other' })).status).toBe(400)
+        expect((await post({})).status).toBe(400)
+        expect((await post({ profile: ' ' })).status).toBe(400)
     })
 
-    test('reports the login state of each connection', async () => {
+    test('reports the login state', async () => {
         const { origin } = await startProject()
 
         const project = (await (await fetch(`${origin}/api/project`)).json()) as ProjectInfo
 
-        expect(project.auth).toEqual({
-            default: 'authorized',
-            projects: 'missing',
-        })
+        expect(project.auth).toBe('authorized')
     })
 
     test('serves the page through the asset resolver', async () => {

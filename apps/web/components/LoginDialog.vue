@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import type { ConnectionName, ProfileSummary } from '@cli/commands/browser/browser.types'
+import type { ProfileSummary } from '@cli/commands/browser/browser.types'
 import { api } from '@web/api/api.client'
 import { useProjectStore } from '@web/stores/project.store'
 import { useUiStore } from '@web/stores/ui.store'
@@ -17,13 +17,12 @@ const codeCopied = ref(false)
 const newProfileChoice = ''
 
 const profiles = ref<ProfileSummary[]>([])
-const connection = ref<ConnectionName>('default')
 const selectedProfile = ref(newProfileChoice)
 const newProfile = reactive({ name: '', clientId: '', clientSecret: '' })
 
 const state = computed(() => projectStore.loginState)
 const inProgress = computed(() => state.value.status === 'starting' || state.value.status === 'waiting')
-// A finished login keeps its state on the server, and the other connection may still need one.
+// A finished login keeps its state on the server, and the form stays available to log in again.
 const showsForm = computed(() => !inProgress.value)
 const creatingProfile = computed(() => selectedProfile.value === newProfileChoice)
 const canStart = computed(
@@ -63,14 +62,14 @@ async function start() {
             Object.assign(newProfile, { name: '', clientId: '', clientSecret: '' })
         }
 
-        await projectStore.startLogin({ profile, connection: connection.value })
+        await projectStore.startLogin({ profile })
     } catch (error) {
         startError.value = error instanceof Error ? error.message : String(error)
     }
 }
 
-function describeStatus(name: ConnectionName): string {
-    return projectStore.project?.auth[name] === 'authorized' ? 'logged in' : 'not logged in'
+function describeStatus(): string {
+    return projectStore.project?.auth === 'authorized' ? 'logged in' : 'not logged in'
 }
 
 async function copyCode(code: string) {
@@ -136,9 +135,7 @@ async function copyCode(code: string) {
                     </p>
 
                     <template v-else-if="state.status === 'done'">
-                        <p class="text-ok">
-                            Authorized the {{ state.connection }} connection with the "{{ state.profile }}" profile.
-                        </p>
+                        <p class="text-ok">Authorized with the "{{ state.profile }}" profile.</p>
                         <p
                             v-if="state.warning"
                             class="rounded-md border border-warn/40 bg-warn/10 px-3 py-2 text-xs text-warn"
@@ -153,18 +150,7 @@ async function copyCode(code: string) {
                     <p v-else-if="state.status === 'failed'" class="text-err">{{ state.message }}</p>
 
                     <template v-if="showsForm">
-                        <p class="text-muted">
-                            Default connection: {{ describeStatus('default') }} · Zoho Projects connection:
-                            {{ describeStatus('projects') }}
-                        </p>
-
-                        <div>
-                            <label for="login-connection" class="mb-1.5 block font-medium">Connection</label>
-                            <select id="login-connection" v-model="connection" class="field-input">
-                                <option value="default">Default — every command</option>
-                                <option value="projects">Zoho Projects only — a separate login</option>
-                            </select>
-                        </div>
+                        <p class="text-muted">This project is {{ describeStatus() }}.</p>
 
                         <div>
                             <label for="login-profile" class="mb-1.5 block font-medium">Credential profile</label>

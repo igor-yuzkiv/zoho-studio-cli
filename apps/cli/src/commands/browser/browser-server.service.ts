@@ -10,7 +10,6 @@ import { artifactGroups, findArtifactGroup, summarizeArtifactGroup } from './art
 import type {
     ApiError,
     AuthStatus,
-    ConnectionName,
     CreateProfileRequest,
     LoginRequest,
     ProfileSummary,
@@ -129,14 +128,14 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
             '/api/login': {
                 GET: () => Response.json(loginSession.state),
                 POST: async (request) => {
-                    const { profile, connection } = (await request.json()) as Partial<LoginRequest>
+                    const { profile } = (await request.json()) as Partial<LoginRequest>
 
-                    if (!isFilled(profile) || (connection !== 'default' && connection !== 'projects')) {
-                        return apiError('A login needs a profile and a connection: "default" or "projects".', 400)
+                    if (!isFilled(profile)) {
+                        return apiError('A login needs a profile.', 400)
                     }
 
                     try {
-                        return Response.json(loginSession.start({ profile, connection }), { status: 202 })
+                        return Response.json(loginSession.start({ profile }), { status: 202 })
                     } catch (error) {
                         if (error instanceof LoginBusyError) {
                             return apiError(error.message, 409)
@@ -222,17 +221,14 @@ async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
         projectPath,
         sourcePath: resolveWorkspaceSourcePath(projectPath),
         organization: (await organizationFile.exists()) ? await organizationFile.json() : null,
-        auth: {
-            default: await readAuthStatus(projectPath, 'default'),
-            projects: await readAuthStatus(projectPath, 'projects'),
-        },
+        auth: await readAuthStatus(projectPath),
         workflowActionTypes: [...workflowActionTypes],
     }
 }
 
 /** A key shared with another project's path reads as not logged in rather than failing the whole page. */
-async function readAuthStatus(projectPath: string, connection: ConnectionName): Promise<AuthStatus> {
-    const tokens = await readConnection(projectPath, connection).catch(() => null)
+async function readAuthStatus(projectPath: string): Promise<AuthStatus> {
+    const tokens = await readConnection(projectPath).catch(() => null)
 
     return tokens?.refreshToken ? 'authorized' : 'missing'
 }

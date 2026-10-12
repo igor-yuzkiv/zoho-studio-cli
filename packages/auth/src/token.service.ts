@@ -3,7 +3,6 @@ import {
     readConnection,
     saveConnection,
     warnAboutLegacyAuth,
-    type ConnectionName,
     type ConnectionTokens,
 } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
@@ -20,14 +19,11 @@ const expiryToleranceMs = 60_000
 export class TokenService {
     private readonly pendingRefreshes = new Map<string, Promise<string>>()
 
-    /** `projects` falls back to the default connection while the project has no separate one. */
-    async getAccessToken(requested: ConnectionName = 'default'): Promise<string> {
+    async getAccessToken(): Promise<string> {
         const { projectPath, settings } = await getProjectSettings()
         warnAboutLegacyAuth(settings)
 
-        const separate = requested === 'default' ? null : await readConnection(projectPath, requested)
-        const connection: ConnectionName = separate ? requested : 'default'
-        const tokens = separate ?? (await readConnection(projectPath))
+        const tokens = await readConnection(projectPath)
 
         if (!tokens?.refreshToken) {
             throw new Error('This project is not authorized yet. Run "zoho-studio login" first.')
@@ -38,18 +34,17 @@ export class TokenService {
         }
 
         // A single run may ask for the token from several places, and Zoho caps refreshes per token.
-        const key = `${projectPath}\0${connection}`
-        let pending = this.pendingRefreshes.get(key)
+        let pending = this.pendingRefreshes.get(projectPath)
 
         if (!pending) {
-            pending = this.refresh(projectPath, connection, tokens).finally(() => this.pendingRefreshes.delete(key))
-            this.pendingRefreshes.set(key, pending)
+            pending = this.refresh(projectPath, tokens).finally(() => this.pendingRefreshes.delete(projectPath))
+            this.pendingRefreshes.set(projectPath, pending)
         }
 
         return pending
     }
 
-    private async refresh(projectPath: string, connection: ConnectionName, tokens: ConnectionTokens): Promise<string> {
+    private async refresh(projectPath: string, tokens: ConnectionTokens): Promise<string> {
         const profile = await findProfile(tokens.profile)
 
         if (!profile) {
@@ -65,11 +60,11 @@ export class TokenService {
             refreshToken: tokens.refreshToken,
         })
 
-        await saveConnection(
-            projectPath,
-            { ...tokens, accessToken: refreshed.accessToken, accessTokenExpiresAt: refreshed.accessTokenExpiresAt },
-            connection
-        )
+        await saveConnection(projectPath, {
+            ...tokens,
+            accessToken: refreshed.accessToken,
+            accessTokenExpiresAt: refreshed.accessTokenExpiresAt,
+        })
 
         return refreshed.accessToken
     }

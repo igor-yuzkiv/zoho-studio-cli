@@ -63,6 +63,18 @@ describe('credential store', () => {
         await expect(readConnection('/home/u/a/b')).rejects.toThrow(/belongs to \/home\/u\/a-b/)
     })
 
+    test('reads the default tokens of an older file that also holds a Projects connection', async () => {
+        await Bun.write(
+            resolveProjectTokensPath('/home/u/x'),
+            JSON.stringify({
+                projectPath: '/home/u/x',
+                connections: { default: tokens, projects: { ...tokens, profile: 'other' } },
+            })
+        )
+
+        expect(await readConnection('/home/u/x')).toEqual(tokens)
+    })
+
     test('returns null for a project that was never authorized', async () => {
         expect(await readConnection('/home/u/none')).toBeNull()
     })

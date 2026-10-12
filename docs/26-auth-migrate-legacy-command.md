@@ -16,7 +16,7 @@ This command takes them over:
    reused and nothing is asked. Otherwise a new profile is created; its name comes from
    `--profile`, or the command asks for it and suggests the project folder name. Without a terminal
    to ask in, the folder name is used.
-2. **The tokens become the project's default connection** — unless the store already holds tokens
+2. **The tokens become the project's stored tokens** — unless the store already holds tokens
    for this project, which are newer and are kept.
 3. **The three keys are removed from `settings.json`.** Everything else in the file stays as it
    was, including a flat `auth.scopes` list, which the CLI reads as before.

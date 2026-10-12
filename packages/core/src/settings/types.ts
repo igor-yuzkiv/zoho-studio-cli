@@ -2,11 +2,8 @@
 export interface ProjectSettings {
     auth: {
         baseUrl: string
-        /**
-         * What each login asks Zoho for: the default connection requests both lists, a separate
-         * Projects connection only `projects`. An older file's flat list is split by product on read.
-         */
-        scopes: AuthScopes
+        /** What `login` asks Zoho for. An older file's per-product lists are read as the `crm` one. */
+        scopes: string[]
     }
     api: {
         baseUrl: string
@@ -24,9 +21,4 @@ export interface ProjectSettings {
 export interface ProjectContext {
     projectPath: string
     settings: ProjectSettings
-}
-
-export interface AuthScopes {
-    crm: string[]
-    projects: string[]
 }

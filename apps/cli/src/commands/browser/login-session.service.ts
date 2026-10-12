@@ -37,11 +37,10 @@ export class LoginSession {
         return this.currentState
     }
 
-    private async run({ profile, connection }: LoginRequest) {
+    private async run({ profile }: LoginRequest) {
         try {
             const result = await login({
                 profile,
-                connection,
                 onVerificationRequired: ({ verificationUrl, userCode, expiresInMs }) =>
                     this.publish({
                         status: 'waiting',
@@ -56,10 +55,9 @@ export class LoginSession {
                   `${result.apiDomainMismatch.expected}. API calls will fail unless api.baseUrl matches your data center.`
                 : null
 
-            // The organization belongs to the CRM side, which the default connection serves.
-            const organizationError = connection === 'default' ? await refreshOrganization() : null
+            const organizationError = await refreshOrganization()
 
-            this.publish({ status: 'done', profile: result.profile, connection, warning, organizationError })
+            this.publish({ status: 'done', profile: result.profile, warning, organizationError })
         } catch (error) {
             this.publish({ status: 'failed', message: error instanceof Error ? error.message : String(error) })
         }

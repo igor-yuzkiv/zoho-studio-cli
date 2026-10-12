@@ -1,26 +1,15 @@
 import { resolve } from 'node:path'
 
 import { resolveProjectTokensPath } from './credentials.config'
-import type { ConnectionName, ConnectionTokens, ProjectTokensFile } from './credentials.types'
+import type { ConnectionTokens, ProjectTokensFile } from './credentials.types'
 import { readJsonOrNull, writeSecretJson } from './secret-file.utils'
 
-export async function readConnection(
-    projectPath: string,
-    connection: ConnectionName = 'default'
-): Promise<ConnectionTokens | null> {
-    return (await readProjectTokens(projectPath))?.connections[connection] ?? null
+export async function readConnection(projectPath: string): Promise<ConnectionTokens | null> {
+    return (await readProjectTokens(projectPath))?.connections.default ?? null
 }
 
-export async function saveConnection(
-    projectPath: string,
-    tokens: ConnectionTokens,
-    connection: ConnectionName = 'default'
-): Promise<void> {
-    const existing = await readProjectTokens(projectPath)
-    const file: ProjectTokensFile = {
-        projectPath: resolve(projectPath),
-        connections: { ...existing?.connections, [connection]: tokens },
-    }
+export async function saveConnection(projectPath: string, tokens: ConnectionTokens): Promise<void> {
+    const file: ProjectTokensFile = { projectPath: resolve(projectPath), connections: { default: tokens } }
 
     await writeSecretJson(resolveProjectTokensPath(projectPath), file)
 }

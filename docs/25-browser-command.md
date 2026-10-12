@@ -33,10 +33,9 @@ opens to show the rest of its fields.
 
 ## Logging in from the page
 
-The status bar shows whether the default connection has a refresh token stored, with a button that
-opens the same login as [`zoho-studio login`](4-login-command.md). The dialog shows the state of
-both connections and asks which one to log in — the default one, or a separate one for Zoho
-Projects — and with which credential profile. The last entry of the profile list creates a new
+The status bar shows whether the project has a refresh token stored, with a button that opens the
+same login as [`zoho-studio login`](4-login-command.md). The dialog asks which credential profile to
+log in with. The last entry of the profile list creates a new
 profile from a name, a client id, and a client secret before the login starts.
 
 Then the page shows the verification link and the code to enter, waits for the approval, and
@@ -70,7 +69,7 @@ would leave `src/` is refused.
 
 | Method and path | Returns |
 |---|---|
-| `GET /api/project` | project name and paths, the stored organization, whether each connection has a refresh token stored |
+| `GET /api/project` | project name and paths, the stored organization, whether a refresh token is stored |
 | `GET /api/groups` | every artifact group with its pull command, options, folder, artifact count and newest file time |
 | `GET /api/tree?path=&depth=` | the files and folders below a path |
 | `GET /api/file?path=` | one file as it is on disk, always as plain text |
@@ -81,5 +80,5 @@ would leave `src/` is refused.
 | `GET /api/login` | the state of the login started from the page |
 | `GET /api/profiles` | the stored credential profiles, name and client id only |
 | `POST /api/profiles` | creates a profile: `{ "name": "acme", "clientId": "…", "clientSecret": "…" }`; `409` when the name is taken |
-| `POST /api/login` | starts a login: `{ "profile": "acme", "connection": "default" }` or `"projects"`; `409` while one waits for approval |
+| `POST /api/login` | starts a login: `{ "profile": "acme" }`; `409` while one waits for approval |
 | `GET /api/events` | a server-sent event stream with every change to a pull or the login |

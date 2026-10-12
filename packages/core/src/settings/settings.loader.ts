@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path'
 
 import { workspaceSettingsBaseName, resolveWorkspaceSettingsDirPath, resolveWorkspaceSettingsPath } from '../config'
 import { defaultProjectSettings } from './default.settings'
-import type { AuthScopes, ProjectSettings } from './types'
+import type { ProjectSettings } from './types'
 
 /**
  * A missing or unparseable file yields the defaults, so callers cannot use this to decide
@@ -23,15 +23,9 @@ export async function loadProjectSettings(projectPath: string = process.cwd()): 
     return { ...settings, auth: { ...settings.auth, scopes: normalizeScopes(settings.auth.scopes) } }
 }
 
-/** Files written before the scopes were split per product hold one flat list. */
-function normalizeScopes(scopes: AuthScopes | string[]): AuthScopes {
-    if (!Array.isArray(scopes)) {
-        return scopes
-    }
-
-    const isProjectsScope = (scope: string) => scope.startsWith('ZohoProjects.')
-
-    return { crm: scopes.filter((scope) => !isProjectsScope(scope)), projects: scopes.filter(isProjectsScope) }
+/** Files written while the CLI also served Zoho Projects split the scopes per product; only `crm` is still used. */
+function normalizeScopes(scopes: string[] | { crm?: string[] }): string[] {
+    return Array.isArray(scopes) ? scopes : (scopes.crm ?? defaultProjectSettings.auth.scopes)
 }
 
 /** Lets commands run from a nested folder. Returns `null` when no ancestor is a project. */

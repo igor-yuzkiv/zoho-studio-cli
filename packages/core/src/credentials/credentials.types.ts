@@ -13,11 +13,9 @@ export interface ConnectionTokens {
     accessTokenExpiresAt: number
 }
 
-/** `default` serves every command; `projects`, when logged in, takes over the Zoho Projects ones. */
-export type ConnectionName = 'default' | 'projects'
-
 export interface ProjectTokensFile {
     /** The original project root; the key encoding is lossy, so a read checks it against the caller. */
     projectPath: string
-    connections: Partial<Record<ConnectionName, ConnectionTokens>>
+    /** Keyed by connection for the files of earlier versions; only `default` is read and written. */
+    connections: { default?: ConnectionTokens }
 }

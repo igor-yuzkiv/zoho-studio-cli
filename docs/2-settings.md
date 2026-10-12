@@ -13,24 +13,16 @@ next to the file, which keeps it and `org.json` out of git, and writes it with `
 {
     "auth": {
         "baseUrl": "https://accounts.zoho.com",
-        "scopes": {
-            "crm": [
-                "ZohoCRM.settings.modules.READ",
-                "ZohoCRM.settings.fields.READ",
-                "ZohoCRM.settings.workflow_rules.READ",
-                "ZohoCRM.settings.functions.READ",
-                "ZohoCRM.org.READ",
-                "ZohoCRM.settings.client_scripts.READ",
-                "ZohoCRM.settings.static_resources.READ",
-                "…"
-            ],
-            "projects": [
-                "ZohoProjects.milestones.READ",
-                "ZohoProjects.tasklists.READ",
-                "ZohoProjects.tasks.READ",
-                "ZohoProjects.bugs.READ"
-            ]
-        }
+        "scopes": [
+            "ZohoCRM.settings.modules.READ",
+            "ZohoCRM.settings.fields.READ",
+            "ZohoCRM.settings.workflow_rules.READ",
+            "ZohoCRM.settings.functions.READ",
+            "ZohoCRM.org.READ",
+            "ZohoCRM.settings.client_scripts.READ",
+            "ZohoCRM.settings.static_resources.READ",
+            "…"
+        ]
     },
     "api": {
         "baseUrl": "https://www.zohoapis.com",
@@ -57,10 +49,8 @@ folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Poin
 else and that no longer applies — add the new path to your `.gitignore` yourself.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
-the same list appears on the consent screen. It is split by product: the default login asks for
-`crm` and `projects` together, a separate Projects login only for `projects`. A file from before
-the split holds one flat list; the CLI sorts it on read, `ZohoProjects.*` into `projects` and
-everything else into `crm`. Trim it to what you actually use — a scope the CLI
+the same list appears on the consent screen. A file from a version that split the list per product
+(`{ "crm": […], "projects": […] }`) is read as its `crm` list. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
 so a project authorized before the client script and static resource scopes were added has to run
 `login` again before their `z-crm:*:pull` commands work.

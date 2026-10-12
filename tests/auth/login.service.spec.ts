@@ -235,13 +235,13 @@ describe('login', () => {
     })
 
     test('fails on empty scopes without calling Zoho', async () => {
-        await startProject([], { auth: { scopes: { crm: [], projects: [] } } })
+        await startProject([], { auth: { scopes: [] } })
 
         await expect(login()).rejects.toThrow(/auth.scopes is empty/)
     })
 
-    test('asks for every scope on the default connection and only Projects ones on a separate login', async () => {
-        await startProject([], { auth: { scopes: { crm: ['C'], projects: ['P'] } } })
+    test('asks for the configured scopes', async () => {
+        await startProject([], { auth: { scopes: ['A', 'B'] } })
         const requestedScopes: (string | null)[] = []
         server!.reload({
             fetch(request) {
@@ -257,10 +257,8 @@ describe('login', () => {
         })
 
         await login()
-        expect((await login({ connection: 'projects' })).connection).toBe('projects')
 
-        expect(requestedScopes).toEqual(['C,P', 'P'])
-        expect((await readConnection(projectPath!, 'projects'))?.refreshToken).toBe('refresh')
+        expect(requestedScopes).toEqual(['A,B'])
         expect((await readStoredTokens()).refreshToken).toBe('refresh')
     })
 

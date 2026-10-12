@@ -5,28 +5,20 @@ import type { ProjectSettings } from './types'
 export const defaultProjectSettings: ProjectSettings = {
     auth: {
         baseUrl: 'https://accounts.zoho.com',
-        scopes: {
-            crm: [
-                'ZohoCRM.settings.modules.READ',
-                'ZohoCRM.settings.fields.READ',
-                'ZohoCRM.settings.workflow_rules.READ',
-                'ZohoCRM.settings.functions.READ',
-                'ZohoCRM.org.READ',
-                'ZohoCRM.modules.ALL',
-                'ZohoCRM.apis.READ',
-                'ZohoCRM.settings.automation_actions.READ',
-                'ZohoCRM.settings.global_picklist.READ',
-                'ZohoCRM.settings.client_scripts.READ',
-                'ZohoCRM.settings.static_resources.READ',
-                'ZohoCRM.settings.ALL',
-            ],
-            projects: [
-                'ZohoProjects.milestones.READ',
-                'ZohoProjects.tasklists.READ',
-                'ZohoProjects.tasks.READ',
-                'ZohoProjects.bugs.READ',
-            ],
-        },
+        scopes: [
+            'ZohoCRM.settings.modules.READ',
+            'ZohoCRM.settings.fields.READ',
+            'ZohoCRM.settings.workflow_rules.READ',
+            'ZohoCRM.settings.functions.READ',
+            'ZohoCRM.org.READ',
+            'ZohoCRM.modules.ALL',
+            'ZohoCRM.apis.READ',
+            'ZohoCRM.settings.automation_actions.READ',
+            'ZohoCRM.settings.global_picklist.READ',
+            'ZohoCRM.settings.client_scripts.READ',
+            'ZohoCRM.settings.static_resources.READ',
+            'ZohoCRM.settings.ALL',
+        ],
     },
     api: {
         baseUrl: 'https://www.zohoapis.com',

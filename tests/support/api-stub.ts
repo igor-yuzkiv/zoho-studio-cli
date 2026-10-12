@@ -19,8 +19,7 @@ type SettingsForApi = (apiOrigin: string) => Partial<Pick<ProjectSettings, 'api'
 export async function startApiStub(
     answer: (request: Request) => Response,
     settingsForApi: SettingsForApi,
-    tokens: Partial<StoredTokens> = {},
-    projectsTokens?: StoredTokens
+    tokens: Partial<StoredTokens> = {}
 ): Promise<ApiStub> {
     const requestedUrls: URL[] = []
     const authorizations: (string | null)[] = []
@@ -50,7 +49,6 @@ export async function startApiStub(
                     accessTokenExpiresAt: Date.now() + 3_600_000,
                     ...tokens,
                 },
-                projectsTokens,
             },
             ...settingsForApi(apiServer.url.origin),
         })
