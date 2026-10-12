@@ -15,11 +15,12 @@ import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
 import { bundleEntries, formatDate, joinAbsolutePath, matchesFilter } from '@web/utils/bundle.utils'
 
+import { crmArea } from './crm.config'
 import type { WorkflowRule } from './crm.types'
 import WorkflowDetail from './WorkflowDetail.vue'
 
 const projectStore = useProjectStore()
-const group = computed(() => projectStore.findGroup('crm', 'workflows'))
+const group = computed(() => projectStore.findGroup(crmArea, 'workflows'))
 const filter = ref('')
 const selectedPath = ref<string | null>(null)
 const tab = ref<'flow' | 'json'>('flow')

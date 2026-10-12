@@ -16,6 +16,8 @@ import { useApiData } from '@web/composables/useApiData'
 import { useProjectStore } from '@web/stores/project.store'
 import { bundleEntries, formatDate, joinAbsolutePath, matchesFilter } from '@web/utils/bundle.utils'
 
+import { crmArea } from './crm.config'
+
 type FunctionMetadata = {
     id: string
     name: string
@@ -30,7 +32,7 @@ type FunctionMetadata = {
 }
 
 const projectStore = useProjectStore()
-const group = computed(() => projectStore.findGroup('crm', 'functions'))
+const group = computed(() => projectStore.findGroup(crmArea, 'functions'))
 const filter = ref('')
 const selectedPath = ref<string | null>(null)
 const tab = ref<'code' | 'arguments' | 'metadata'>('code')

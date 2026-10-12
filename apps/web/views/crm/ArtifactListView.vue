@@ -18,6 +18,8 @@ import { groupIcon } from '@web/utils/group-icons'
 import { bundleEntries, formatDate, joinAbsolutePath, matchesFilter, type BundleEntry } from '@web/utils/bundle.utils'
 import type { CodeLanguage } from '@web/utils/highlight.utils'
 
+import { crmArea } from './crm.config'
+
 type ArtifactRecord = {
     name?: string
     display_label?: string
@@ -48,7 +50,7 @@ const props = defineProps<{ config: ArtifactListConfig }>()
 
 const route = useRoute()
 const projectStore = useProjectStore()
-const group = computed(() => projectStore.findGroup('crm', props.config.groupId))
+const group = computed(() => projectStore.findGroup(crmArea, props.config.groupId))
 const filter = ref('')
 const selectedPath = ref<string | null>(null)
 const tab = ref<'source' | 'values' | 'json'>('json')

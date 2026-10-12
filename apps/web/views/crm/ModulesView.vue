@@ -19,6 +19,7 @@ import { useUiStore } from '@web/stores/ui.store'
 import { bundleEntries, formatDate, matchesFilter } from '@web/utils/bundle.utils'
 import { formatTimeAgo } from '@web/utils/time.utils'
 
+import { crmArea } from './crm.config'
 import type { FieldMetadata, ModuleMetadata, WorkflowRule } from './crm.types'
 import WorkflowDetail from './WorkflowDetail.vue'
 
@@ -26,8 +27,8 @@ type FieldColumn = 'field_label' | 'api_name' | 'data_type'
 
 const projectStore = useProjectStore()
 const ui = useUiStore()
-const modulesGroup = computed(() => projectStore.findGroup('crm', 'modules'))
-const fieldsGroup = computed(() => projectStore.findGroup('crm', 'fields'))
+const modulesGroup = computed(() => projectStore.findGroup(crmArea, 'modules'))
+const fieldsGroup = computed(() => projectStore.findGroup(crmArea, 'fields'))
 
 const moduleFilter = ref('')
 const fieldFilter = ref('')
@@ -317,7 +318,7 @@ const columns: { id: FieldColumn; label: string }[] = [
                         :key="script.path"
                         :to="{
                             name: 'group',
-                            params: { area: 'crm', group: 'client-scripts' },
+                            params: { area: crmArea, group: 'client-scripts' },
                             query: { path: script.path },
                         }"
                         class="flex items-center gap-3 rounded-lg border border-line bg-surface px-4 py-2.5 hover:bg-hover"

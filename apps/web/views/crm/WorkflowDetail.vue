@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router'
 
 import AppBadge from '@web/components/AppBadge.vue'
 
+import { crmArea } from './crm.config'
 import type { WorkflowAction, WorkflowCriterion, WorkflowRule } from './crm.types'
 
 defineProps<{ workflow: WorkflowRule }>()
@@ -46,7 +47,7 @@ function describeCriterion(criterion: WorkflowCriterion | null | undefined): str
 function actionLink(action: WorkflowAction) {
     return {
         name: 'group',
-        params: { area: 'crm', group: 'workflow-actions' },
+        params: { area: crmArea, group: 'workflow-actions' },
         query: { type: action.type.replace(/_/g, '-'), name: action.name },
     }
 }

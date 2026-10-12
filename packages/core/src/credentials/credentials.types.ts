@@ -16,6 +16,6 @@ export interface ConnectionTokens {
 export interface ProjectTokensFile {
     /** The original project root; the key encoding is lossy, so a read checks it against the caller. */
     projectPath: string
-    /** Keyed by connection for the files of earlier versions; only `default` is read and written. */
+    /** Earlier versions kept several connections here; only `default` is read and written, so their files still work. */
     connections: { default?: ConnectionTokens }
 }

@@ -72,7 +72,9 @@ folder, so it works from any subfolder, and it overwrites the tokens of a previo
 ```
 
 Tokens of the separate Zoho Projects login that earlier versions offered stay in `tokens.json` and
-are ignored; the next write of the file — a login or a token refresh — drops them. A project's folder is named after its absolute path with `/` replaced by `-`. Move or rename the
+are ignored; the next write of the file — a login or a token refresh — drops them.
+
+A project's folder is named after its absolute path with `/` replaced by `-`. Move or rename the
 project and its tokens stay behind under the old name — run `login` again. Two paths can map to
 the same name (`/a-b` and `/a/b`); `tokens.json` records the original path, and a project that
 finds another project's file there stops with an error instead of using its tokens.

@@ -50,7 +50,7 @@ const activeClass = '!bg-accent !text-white'
                 <span class="size-1.5 rounded-full bg-crm" :title="areaLabels[area]" />
             </template>
             <RouterLink
-                v-for="group in projectStore.navigationGroups[area]"
+                v-for="group in projectStore.navigationGroupsOf(area)"
                 :key="group.id"
                 :to="{ name: 'group', params: { area, group: group.id } }"
                 class="nav-link group"

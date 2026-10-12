@@ -34,9 +34,9 @@ export const useProjectStore = defineStore('project', () => {
     const pendingAreaPulls = ref<ArtifactGroupSummary[]>([])
     const loginState = ref<LoginState>({ status: 'idle' })
 
-    const navigationGroups = computed(() => ({
-        crm: groups.value.filter((group) => group.area === 'crm' && !groupsHiddenFromNavigation.has(group.id)),
-    }))
+    function navigationGroupsOf(area: AreaId): ArtifactGroupSummary[] {
+        return groups.value.filter((group) => group.area === area && !groupsHiddenFromNavigation.has(group.id))
+    }
 
     const currentRun = computed(() => runs.value.find((run) => run.status === 'running') ?? null)
     const latestRun = computed(() => runs.value[0] ?? null)
@@ -75,7 +75,7 @@ export const useProjectStore = defineStore('project', () => {
     }
 
     /** The server runs one pull at a time, so a whole area is queued here and started run by run. */
-    async function startAreaPull(area: AreaId) {
+    async function startPullAll(area: AreaId) {
         pendingAreaPulls.value = groups.value.filter((group) => group.area === area)
         await startNextAreaPull()
     }
@@ -153,14 +153,14 @@ export const useProjectStore = defineStore('project', () => {
         dataVersion,
         pendingAreaPulls,
         loginState,
-        navigationGroups,
+        navigationGroupsOf,
         currentRun,
         latestRun,
         load,
         listen,
         findGroup,
         startPull,
-        startAreaPull,
+        startPullAll,
         startLogin,
     }
 })

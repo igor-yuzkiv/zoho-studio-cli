@@ -5,6 +5,7 @@ import EmptyState from '@web/components/EmptyState.vue'
 import { useProjectStore } from '@web/stores/project.store'
 
 import { artifactListConfigs } from './crm/artifact-list.configs'
+import { crmArea } from './crm/crm.config'
 import ArtifactListView from './crm/ArtifactListView.vue'
 import FunctionsView from './crm/FunctionsView.vue'
 import ModulesView from './crm/ModulesView.vue'
@@ -14,11 +15,10 @@ const props = defineProps<{ area: string; group: string }>()
 const projectStore = useProjectStore()
 const artifactGroup = computed(() => projectStore.findGroup(props.area, props.group))
 
-const dedicatedViews: Record<string, Record<string, Component>> = {
-    crm: { functions: FunctionsView, modules: ModulesView, workflows: WorkflowsView },
-}
-const dedicatedView = computed(() => dedicatedViews[props.area]?.[props.group])
-const listConfig = computed(() => (props.area === 'crm' ? artifactListConfigs[props.group] : undefined))
+const crmViews: Record<string, Component> = { functions: FunctionsView, modules: ModulesView, workflows: WorkflowsView }
+const isCrm = computed(() => props.area === crmArea)
+const dedicatedView = computed(() => (isCrm.value ? crmViews[props.group] : undefined))
+const listConfig = computed(() => (isCrm.value ? artifactListConfigs[props.group] : undefined))
 </script>
 
 <template>

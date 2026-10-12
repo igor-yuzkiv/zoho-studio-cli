@@ -73,7 +73,7 @@ function groupsOf(area: AreaId) {
                     size="sm"
                     class="ml-auto"
                     :disabled="!!projectStore.currentRun"
-                    @click="projectStore.startAreaPull(area).then(() => (ui.pullPanelOpen = true))"
+                    @click="projectStore.startPullAll(area).then(() => (ui.pullPanelOpen = true))"
                 >
                     ↓ Pull all CRM
                 </AppButton>
