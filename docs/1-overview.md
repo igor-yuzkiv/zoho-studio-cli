@@ -11,18 +11,7 @@ where several projects can share one client. `zoho-studio init` scaffolds the pr
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
 and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
-`src/zoho-crm/workflow-actions`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`, and `src/zoho-projects/raw/` for the raw Zoho Projects tree:
-
-```text
-src/zoho-projects/raw/
-  <milestone>/
-    <milestone-id>.json
-    task-lists/<task-list>/
-      <task-list-id>.json
-      tasks/<task>/
-        <task-id>.json
-        <task-id>.comments.json
-```
+`src/zoho-crm/workflow-actions`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
 
 A project pulled before the CRM artifacts moved under `src/zoho-crm/` still has the old
 `src/functions`, `src/modules` and similar folders. The CLI neither moves nor deletes them: run the
@@ -61,10 +50,4 @@ used throughout these documents.
 - [23-static-resources-pull-command.md](23-static-resources-pull-command.md) — downloading static resources with `zoho-studio z-crm:static-resources:pull`
 - [24-preset-command.md](24-preset-command.md) — running a named sequence of commands with `zoho-studio preset`
 - [25-browser-command.md](25-browser-command.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`
-- [16-z-projects-milestones-pull-command.md](16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON with `zoho-studio z-projects:milestones:pull`
-- [17-z-projects-task-lists-pull-command.md](17-z-projects-task-lists-pull-command.md) — downloading Zoho Projects task lists under their milestones with `zoho-studio z-projects:task-lists:pull`
-- [18-z-projects-tasks-pull-command.md](18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments, with `zoho-studio z-projects:tasks:pull`
-- [19-z-projects-tasks-render-command.md](19-z-projects-tasks-render-command.md) — building an Obsidian markdown catalogue from the raw Zoho Projects JSON with `zoho-studio z-projects:tasks:render`
-- [20-z-projects-issues-pull-command.md](20-z-projects-issues-pull-command.md) — downloading Zoho Projects issues by period, with their comments, with `zoho-studio z-projects:issues:pull`
-- [21-z-projects-issues-render-command.md](21-z-projects-issues-render-command.md) — building the issues part of the Obsidian catalogue from the raw Zoho Projects JSON with `zoho-studio z-projects:issues:render`
 - [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them

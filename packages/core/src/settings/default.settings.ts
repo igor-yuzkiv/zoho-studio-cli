@@ -35,12 +35,6 @@ export const defaultProjectSettings: ProjectSettings = {
     logs: {
         file: `${logsDirName}/zoho-studio-cli.log`,
     },
-    projects: {
-        baseUrl: 'https://projectsapi.zoho.com',
-        portalId: '',
-        projectId: '',
-        mdPath: '',
-    },
     presets: {
         'pull-crm': [
             'z-crm:org:info',
@@ -53,14 +47,6 @@ export const defaultProjectSettings: ProjectSettings = {
             'z-crm:global-picklists:pull',
             'z-crm:client-scripts:pull',
             'z-crm:static-resources:pull',
-        ],
-        'pull-render-projects': [
-            'z-projects:milestones:pull',
-            'z-projects:task-lists:pull',
-            'z-projects:tasks:pull',
-            'z-projects:issues:pull',
-            'z-projects:tasks:render',
-            'z-projects:issues:render',
         ],
     },
 }

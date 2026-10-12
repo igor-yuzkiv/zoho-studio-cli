@@ -39,15 +39,8 @@ next to the file, which keeps it and `org.json` out of git, and writes it with `
     "logs": {
         "file": "logs/zoho-studio-cli.log"
     },
-    "projects": {
-        "baseUrl": "https://projectsapi.zoho.com",
-        "portalId": "",
-        "projectId": "",
-        "mdPath": ""
-    },
     "presets": {
-        "pull-crm": ["z-crm:org:info", "z-crm:modules:pull", "…"],
-        "pull-render-projects": ["z-projects:milestones:pull", "…"]
+        "pull-crm": ["z-crm:org:info", "z-crm:modules:pull", "…"]
     }
 }
 ```
@@ -69,24 +62,12 @@ the same list appears on the consent screen. It is split by product: the default
 the split holds one flat list; the CLI sorts it on read, `ZohoProjects.*` into `projects` and
 everything else into `crm`. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
-so a project authorized before the `ZohoProjects.*` scopes were added has to run `login` again
-before any `z-projects:*` command works, and the same holds for the client script and static
-resource scopes and their `z-crm:*:pull` commands.
-
-`projects` names the one Zoho Projects project the `z-projects:*` commands read. `portalId` and
-`projectId` are both in the browser URL of the project —
-`https://projects.zoho.com/portal/<portal name>#/projects/<projectId>/…` shows the project id, and
-the portal id is on the portal's settings page. `init` leaves both empty; a `z-projects:*` command
-stops with the name of the empty field before any request. `baseUrl` is the API host of your data
-center, separate from `api.baseUrl` because the two products live on different domains. `mdPath`
-is where [`z-projects:tasks:render`](19-z-projects-tasks-render-command.md) writes the markdown
-catalogue — empty for `src/zoho-projects/md/` inside the workspace, or a path (absolute, or
-relative to the workspace root) such as an Obsidian vault folder. Renders add to the folder and
-overwrite their own files; anything else in it is left alone.
+so a project authorized before the client script and static resource scopes were added has to run
+`login` again before their `z-crm:*:pull` commands work.
 
 `presets` names command sequences for [`zoho-studio preset`](24-preset-command.md). Like any other
 section, it merges with the built-in one by key, so a preset you add sits next to
-`pull-crm` and `pull-render-projects` instead of removing them.
+`pull-crm` instead of removing it.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so an empty object
 is a valid project. A key you do write **replaces** the default rather
@@ -94,7 +75,8 @@ than adding to it — that holds for the lists too, so a shortened `auth.scopes`
 stays exactly as short as you wrote it. That also means you can delete a key to return to
 the default instead of hunting for the original value.
 
-A key the CLI does not know is kept and ignored. `auth.clientId`, `auth.clientSecret`, and
+A key the CLI does not know is kept and ignored — that includes the `projects` section of a project
+created while the CLI still carried the Zoho Projects commands. `auth.clientId`, `auth.clientSecret`, and
 `auth.tokens` from a project created before the credential store are ignored too, with a warning on
 every run; [`zoho-studio auth:migrate-legacy`](26-auth-migrate-legacy-command.md) moves them out. A project created before the paths were fixed
 still carries its `crm` section, and one created before the `sync` command was removed carries a

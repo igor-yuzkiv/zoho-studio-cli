@@ -3,9 +3,9 @@
  * types directly, so this file must stay free of runtime imports.
  */
 
-export type AreaId = 'crm' | 'projects'
+export type AreaId = 'crm'
 
-export type PullOptionName = 'module' | 'type' | 'from' | 'to'
+export type PullOptionName = 'module' | 'type'
 
 export type ArtifactGroupSummary = {
     area: AreaId

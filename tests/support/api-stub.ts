@@ -10,7 +10,7 @@ export interface ApiStub {
     stop: () => Promise<void>
 }
 
-type SettingsForApi = (apiOrigin: string) => Partial<Pick<ProjectSettings, 'api' | 'projects'>>
+type SettingsForApi = (apiOrigin: string) => Partial<Pick<ProjectSettings, 'api'>>
 
 /**
  * Runs a project whose API and accounts hosts are local stubs, so a request test exercises the real

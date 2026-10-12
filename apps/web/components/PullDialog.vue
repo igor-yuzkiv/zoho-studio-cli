@@ -121,20 +121,6 @@ async function submit() {
                         </select>
                     </div>
 
-                    <div v-if="hasOption('from')">
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div>
-                                <label for="pull-from" class="mb-1.5 block text-[13px] font-medium">Updated from</label>
-                                <input id="pull-from" v-model="values.from" type="date" class="field-input" />
-                            </div>
-                            <div>
-                                <label for="pull-to" class="mb-1.5 block text-[13px] font-medium">to</label>
-                                <input id="pull-to" v-model="values.to" type="date" class="field-input" />
-                            </div>
-                        </div>
-                        <p class="mt-1 text-xs text-faint">UTC dates. Without a range the whole project is pulled.</p>
-                    </div>
-
                     <p v-if="group.options.length === 0" class="text-xs text-faint">
                         This group has no options — it is always pulled in full.
                     </p>

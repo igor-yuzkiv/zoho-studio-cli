@@ -12,10 +12,6 @@ import { pullStaticResources } from '@zoho-studio/zoho-crm/static-resource'
 import { pullWebhooks } from '@zoho-studio/zoho-crm/webhook'
 import { pullWorkflowActions } from '@zoho-studio/zoho-crm/workflow-action'
 import { pullWorkflows } from '@zoho-studio/zoho-crm/workflow-rule'
-import { pullIssues } from '@zoho-studio/zoho-projects'
-import { pullMilestones } from '@zoho-studio/zoho-projects'
-import { pullTaskLists } from '@zoho-studio/zoho-projects'
-import { pullTasks } from '@zoho-studio/zoho-projects'
 
 import type { AreaId, ArtifactGroupSummary, PullOptionName } from './browser.types'
 
@@ -30,11 +26,8 @@ export type ArtifactGroup = {
     relativePath: string
     /** Matches one file per artifact, relative to `relativePath`. */
     artifactPattern: string
-    excludedPattern?: string
     pull: (options: PullOptions, progress: PullProgress) => Promise<PullResult>
 }
-
-const commentsPattern = '**/*.comments.json'
 
 export const artifactGroups: ArtifactGroup[] = [
     {
@@ -131,49 +124,6 @@ export const artifactGroups: ArtifactGroup[] = [
         artifactPattern: '**/*.metadata.json',
         pull: (_, progress) => pullStaticResources(progress),
     },
-    {
-        area: 'projects',
-        id: 'milestones',
-        label: 'Milestones',
-        command: 'z-projects:milestones:pull',
-        options: [],
-        relativePath: 'zoho-projects/raw',
-        artifactPattern: '*/*.json',
-        excludedPattern: 'issues/*.json',
-        pull: (_, progress) => pullMilestones(progress),
-    },
-    {
-        area: 'projects',
-        id: 'task-lists',
-        label: 'Task lists',
-        command: 'z-projects:task-lists:pull',
-        options: [],
-        relativePath: 'zoho-projects/raw',
-        artifactPattern: '*/task-lists/*/*.json',
-        pull: (_, progress) => pullTaskLists(progress),
-    },
-    {
-        area: 'projects',
-        id: 'tasks',
-        label: 'Tasks',
-        command: 'z-projects:tasks:pull',
-        options: ['from', 'to'],
-        relativePath: 'zoho-projects/raw',
-        artifactPattern: '**/tasks/*/*.json',
-        excludedPattern: commentsPattern,
-        pull: (options, progress) => pullTasks({ from: options.from, to: options.to }, progress),
-    },
-    {
-        area: 'projects',
-        id: 'issues',
-        label: 'Issues',
-        command: 'z-projects:issues:pull',
-        options: ['from', 'to'],
-        relativePath: 'zoho-projects/raw/issues',
-        artifactPattern: '*/*.json',
-        excludedPattern: commentsPattern,
-        pull: (options, progress) => pullIssues({ from: options.from, to: options.to }, progress),
-    },
 ]
 
 export function findArtifactGroup(area: string, id: string): ArtifactGroup | undefined {
@@ -189,15 +139,10 @@ export async function summarizeArtifactGroup(projectPath: string, group: Artifac
         return { ...base, count: null, pulledAt: null }
     }
 
-    const excluded = group.excludedPattern ? new Bun.Glob(group.excludedPattern) : null
     let count = 0
     let newestModifiedAt = 0
 
     for await (const filePath of new Bun.Glob(group.artifactPattern).scan({ cwd: absolutePath, onlyFiles: true })) {
-        if (excluded?.match(filePath)) {
-            continue
-        }
-
         count++
         newestModifiedAt = Math.max(newestModifiedAt, (await stat(join(absolutePath, filePath))).mtimeMs)
     }

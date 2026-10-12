@@ -32,12 +32,8 @@ lines. Each line is what you would type after `zoho-studio`:
 Arguments are separated by whitespace; wrap a value that contains spaces in single or double
 quotes. No other shell syntax is understood — no variables, pipes, or `&&`.
 
-Two presets come built in:
-
-- `pull-crm` — `z-crm:org:info`, then every `z-crm:*:pull` command, with `z-crm:modules:pull`
-  before `z-crm:fields:pull`, as the fields pull requires.
-- `pull-render-projects` — the four `z-projects:*:pull` commands from milestones down to issues,
-  then `z-projects:tasks:render` and `z-projects:issues:render`.
+One preset comes built in: `pull-crm` — `z-crm:org:info`, then every `z-crm:*:pull` command, with
+`z-crm:modules:pull` before `z-crm:fields:pull`, as the fields pull requires.
 
 Presets are merged with the built-in ones by name: a preset you define is added, and one with a
 built-in name replaces that built-in preset entirely.

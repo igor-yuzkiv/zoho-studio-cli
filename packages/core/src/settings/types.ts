@@ -16,14 +16,6 @@ export interface ProjectSettings {
         /** The file every command logs to, relative to the project root. */
         file: string
     }
-    /** The one Zoho Projects project the `z-projects:*` commands work with. */
-    projects: {
-        baseUrl: string
-        portalId: string
-        projectId: string
-        /** Where `z-projects:tasks:render` writes; empty means `src/zoho-projects/md` inside the workspace. */
-        mdPath: string
-    }
     /** Named command sequences for `zoho-studio preset`; each entry is a command line without the binary name. */
     presets: Record<string, string[]>
 }

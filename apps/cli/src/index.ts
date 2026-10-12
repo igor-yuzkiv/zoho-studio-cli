@@ -17,12 +17,6 @@ import { pullGlobalPicklistsCommand } from '@/zoho-crm/commands/global-picklists
 import { pullClientScriptsCommand } from '@/zoho-crm/commands/client-scripts'
 import { pullStaticResourcesCommand } from '@/zoho-crm/commands/static-resources'
 import { browserCommand } from '@/commands/browser'
-import { pullMilestonesCommand } from '@/zoho-projects/commands/milestones'
-import { pullTaskListsCommand } from '@/zoho-projects/commands/task-lists'
-import { pullTasksCommand } from '@/zoho-projects/commands/tasks'
-import { pullIssuesCommand } from '@/zoho-projects/commands/issues'
-import { renderTasksCommand } from '@/zoho-projects/commands/tasks-render'
-import { renderIssuesCommand } from '@/zoho-projects/commands/issues-render'
 
 const program = new Command()
 
@@ -43,12 +37,6 @@ program.addCommand(pullWorkflowActionsCommand)
 program.addCommand(pullGlobalPicklistsCommand)
 program.addCommand(pullClientScriptsCommand)
 program.addCommand(pullStaticResourcesCommand)
-program.addCommand(pullMilestonesCommand)
-program.addCommand(pullTaskListsCommand)
-program.addCommand(pullTasksCommand)
-program.addCommand(pullIssuesCommand)
-program.addCommand(renderTasksCommand)
-program.addCommand(renderIssuesCommand)
 program.addCommand(browserCommand)
 program.addCommand(presetCommand)
 

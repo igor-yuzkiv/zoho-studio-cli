@@ -20,8 +20,7 @@ site open in the same browser, or one addressed to another host name, is refused
 
 ## Pulling from the page
 
-A pull started from the page runs the same code as the matching `z-crm:*:pull` or
-`z-projects:*:pull` command, with the same options and the same files written. Only one pull runs
+A pull started from the page runs the same code as the matching `z-crm:*:pull` command, with the same options and the same files written. Only one pull runs
 at a time: the pulls share the project folders and the token store, so a second one is refused
 until the first finishes. The page shows the progress and, at the end, the same summary the
 command prints.

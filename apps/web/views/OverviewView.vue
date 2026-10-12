@@ -15,7 +15,7 @@ const projectStore = useProjectStore()
 const ui = useUiStore()
 const router = useRouter()
 
-const areas: AreaId[] = ['crm', 'projects']
+const areas: AreaId[] = ['crm']
 
 const organization = computed(() => projectStore.project?.organization ?? null)
 const organizationName = computed(() => String(organization.value?.company_name ?? projectStore.project?.name ?? ''))
@@ -67,7 +67,7 @@ function groupsOf(area: AreaId) {
 
         <template v-for="area in areas" :key="area">
             <div class="mt-6 mb-2.5 flex items-center gap-2 font-semibold">
-                <span class="size-1.5 rounded-full" :class="area === 'crm' ? 'bg-crm' : 'bg-projects'" />
+                <span class="size-1.5 rounded-full bg-crm" />
                 {{ areaLabels[area] }}
                 <AppButton
                     size="sm"
@@ -75,7 +75,7 @@ function groupsOf(area: AreaId) {
                     :disabled="!!projectStore.currentRun"
                     @click="projectStore.startAreaPull(area).then(() => (ui.pullPanelOpen = true))"
                 >
-                    ↓ Pull all {{ area === 'crm' ? 'CRM' : 'Projects' }}
+                    ↓ Pull all CRM
                 </AppButton>
             </div>
             <div

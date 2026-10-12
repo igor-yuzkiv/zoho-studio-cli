@@ -26,18 +26,12 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-crm:static-resources:pull](docs/23-static-resources-pull-command.md) — downloading static resources
 - [preset](docs/24-preset-command.md) — running a named sequence of commands
 - [browser](docs/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
-- [z-projects:milestones:pull](docs/16-z-projects-milestones-pull-command.md) — downloading Zoho Projects milestones as raw JSON
-- [z-projects:task-lists:pull](docs/17-z-projects-task-lists-pull-command.md) — downloading Zoho Projects task lists under their milestones
-- [z-projects:tasks:pull](docs/18-z-projects-tasks-pull-command.md) — downloading Zoho Projects tasks by period, with their comments
-- [z-projects:tasks:render](docs/19-z-projects-tasks-render-command.md) — building an Obsidian markdown catalogue from the raw Zoho Projects JSON
-- [z-projects:issues:pull](docs/20-z-projects-issues-pull-command.md) — downloading Zoho Projects issues by period, with their comments
-- [z-projects:issues:render](docs/21-z-projects-issues-render-command.md) — building the issues part of the Obsidian catalogue from the raw Zoho Projects JSON
 - [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Scripts in a project
 
 A project made by `zoho-studio init` comes with a `package.json` that links the framework packages
-(`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`, `@zoho-studio/zoho-projects`)
+(`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`)
 and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, then `bun install`
 in the project; see [init](docs/3-init-command.md#scripts).
 

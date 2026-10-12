@@ -31,14 +31,12 @@ packages/
           <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
           api/                # requests belonging to this entity, one per file
           services/           # work built on top of the entity, when more than one caller needs it
-  zoho-projects/  # @zoho-studio/zoho-projects — same shape as zoho-crm, plus md/ and raw/
 apps/
   cli/            # the CLI; `@/` resolves to apps/cli/src
     src/
       index.ts      # CLI entry point, registers the commands
       commands/     # commands that belong to no Zoho product: init, login, debug, browser
       zoho-crm/commands/      # CLI command definitions of the area, one folder per command
-      zoho-projects/commands/
   web/            # the SPA served by `browser`; built by Vite into dist/web
 tests/            # mirrors packages/*/src and apps/cli/src, see Tests
 template/         # files `init` copies into a new project
@@ -160,7 +158,6 @@ packages/core/src/settings/settings.loader.ts                 ->  tests/core/set
 packages/auth/src/token.service.ts                            ->  tests/auth/token.service.spec.ts
 packages/zoho-crm/src/entities/field/field.utils.ts           ->  tests/zoho-crm/entities/field/field.utils.spec.ts
 apps/cli/src/commands/init/init.service.ts                    ->  tests/cli/commands/init.service.spec.ts
-apps/cli/src/zoho-projects/commands/tasks/pull-tasks.command.ts -> tests/cli/zoho-projects/commands/pull-tasks.command.spec.ts
 ```
 
 Use the built-in Bun test runner (`import { describe, expect, test } from 'bun:test'`).
@@ -176,8 +173,8 @@ Run `bun run check` (lint + typecheck + tests) before handing off a change.
 ## CLI command and option style
 
 - Binary name: `zoho-studio` (`program.name()`; the build produces `dist/zoho-studio`).
-- A command that belongs to a Zoho product area carries the area prefix: `z-crm:` for Zoho CRM,
-  `z-projects:` for Zoho Projects. Only commands that belong to no product stay bare: `init`,
+- A command that belongs to a Zoho product area carries the area prefix: `z-crm:` for Zoho CRM.
+  Only commands that belong to no product stay bare: `init`,
   `login`, `debug`, `browser`.
 - Use `namespace:action` for grouped commands, with the namespace in the plural:
   `z-crm:functions:pull`, `z-crm:modules:pull`, `z-crm:fields:pull`.

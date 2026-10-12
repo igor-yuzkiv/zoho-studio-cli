@@ -197,11 +197,11 @@ describe('browser server', () => {
         const response = await fetch(`${origin}/api/pulls`, {
             method: 'POST',
             headers: jsonHeaders,
-            body: JSON.stringify({ area: 'projects', group: 'tasks', options: { from: 'not-a-date' } }),
+            body: JSON.stringify({ area: 'crm', group: 'fields', options: { module: '../Leads' } }),
         })
         const run = await waitForRun(origin, ((await response.json()) as PullRun).id)
 
-        expect(run.command).toBe('z-projects:tasks:pull --from=not-a-date')
+        expect(run.command).toBe('z-crm:fields:pull --module=../Leads')
         expect(run.status).toBe('failed')
     })
 

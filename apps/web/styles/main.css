@@ -17,7 +17,6 @@
     --color-accent: var(--zs-accent);
     --color-accent-soft: var(--zs-accent-soft);
     --color-crm: var(--zs-crm);
-    --color-projects: var(--zs-projects);
     --color-ok: var(--zs-ok);
     --color-warn: var(--zs-warn);
     --color-err: var(--zs-err);
@@ -40,7 +39,6 @@
     --zs-accent: #ea580c;
     --zs-accent-soft: rgb(234 88 12 / 0.1);
     --zs-crm: #0284c7;
-    --zs-projects: #4d7c0f;
     --zs-ok: #16a34a;
     --zs-warn: #a16207;
     --zs-err: #dc2626;
@@ -64,7 +62,6 @@
     --zs-accent: #f97316;
     --zs-accent-soft: rgb(249 115 22 / 0.12);
     --zs-crm: #38bdf8;
-    --zs-projects: #a3e635;
     --zs-ok: #4ade80;
     --zs-warn: #facc15;
     --zs-err: #f87171;

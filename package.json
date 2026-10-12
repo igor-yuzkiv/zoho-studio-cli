@@ -14,7 +14,6 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/bun": "latest",
     "@types/cli-progress": "^3.11.6",
-    "@types/turndown": "^5.0.6",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.8.0",
@@ -43,14 +42,11 @@
     "open": "^11.0.1",
     "pinia": "^4.0.3",
     "pino": "^10.3.1",
-    "turndown": "^7.2.4",
     "vue": "^3.5.43",
     "vue-router": "^5.4.0",
-    "yaml": "^2.9.1",
     "@zoho-studio/core": "workspace:*",
     "@zoho-studio/auth": "workspace:*",
-    "@zoho-studio/zoho-crm": "workspace:*",
-    "@zoho-studio/zoho-projects": "workspace:*"
+    "@zoho-studio/zoho-crm": "workspace:*"
   },
   "scripts": {
     "dev": "bun run apps/cli/src/index.ts",

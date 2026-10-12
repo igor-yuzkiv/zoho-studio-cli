@@ -61,7 +61,7 @@ file, the organization snapshot, and the logs stay out of git wherever the proje
 ## Scripts
 
 `package.json` lists the four framework packages — `@zoho-studio/core`, `@zoho-studio/auth`,
-`@zoho-studio/zoho-crm`, `@zoho-studio/zoho-projects` — as `link:` dependencies, resolved by name
+`@zoho-studio/zoho-crm` — as `link:` dependencies, resolved by name
 from Bun's link registry rather than by a path. Register them once per machine, from the clone of
 the framework repository:
 

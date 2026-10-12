@@ -11,7 +11,7 @@ import { formatCount } from '@web/utils/time.utils'
 const storageKey = 'zoho-studio:sidebar-expanded'
 
 const projectStore = useProjectStore()
-const areas: AreaId[] = ['crm', 'projects']
+const areas: AreaId[] = ['crm']
 const expanded = ref(localStorage.getItem(storageKey) === 'true')
 
 watch(expanded, (value) => localStorage.setItem(storageKey, String(value)))
@@ -42,16 +42,12 @@ const activeClass = '!bg-accent !text-white'
                 v-if="expanded"
                 class="flex items-center gap-1.5 px-2 pt-3 pb-1 text-[11px] font-semibold tracking-wider text-faint uppercase"
             >
-                <span class="size-1.5 rounded-full" :class="area === 'crm' ? 'bg-crm' : 'bg-projects'" />
+                <span class="size-1.5 rounded-full bg-crm" />
                 {{ areaLabels[area] }}
             </div>
             <template v-else>
                 <div class="my-1 h-px w-6 bg-line" />
-                <span
-                    class="size-1.5 rounded-full"
-                    :class="area === 'crm' ? 'bg-crm' : 'bg-projects'"
-                    :title="areaLabels[area]"
-                />
+                <span class="size-1.5 rounded-full bg-crm" :title="areaLabels[area]" />
             </template>
             <RouterLink
                 v-for="group in projectStore.navigationGroups[area]"

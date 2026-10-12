@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -37,20 +37,17 @@ export function buildSettings({
     auth = {},
     api = {},
     logs = {},
-    projects = {},
     presets = defaultProjectSettings.presets,
 }: {
     auth?: Partial<TestProjectSettings['auth']>
     api?: Partial<ProjectSettings['api']>
     logs?: Partial<ProjectSettings['logs']>
-    projects?: Partial<ProjectSettings['projects']>
     presets?: ProjectSettings['presets']
 } = {}): TestProjectSettings {
     return {
         auth: { ...defaultProjectSettings.auth, clientId: '1000.CLIENT', clientSecret: 'secret', ...auth },
         api: { ...defaultProjectSettings.api, ...api },
         logs: { ...defaultProjectSettings.logs, ...logs },
-        projects: { ...defaultProjectSettings.projects, ...projects },
         presets,
     }
 }
@@ -112,12 +109,4 @@ export async function readStoredTokens(
 
 export function readStoredSettings(projectPath: string): Promise<ProjectSettings> {
     return Bun.file(resolveWorkspaceSettingsPath(projectPath)).json()
-}
-
-/** Writes one file below `src/zoho-projects/raw/` of the project — a JSON value, or a raw string for a broken file. */
-export async function writeRawFile(projectPath: string, relativePath: string, content: unknown): Promise<void> {
-    const filePath = join(projectPath, 'src/zoho-projects/raw', relativePath)
-
-    await mkdir(join(filePath, '..'), { recursive: true })
-    await Bun.write(filePath, typeof content === 'string' ? content : JSON.stringify(content))
 }
