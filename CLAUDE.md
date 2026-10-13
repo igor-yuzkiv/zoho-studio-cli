@@ -36,7 +36,7 @@ client happens on an explicit instruction and is announced before it is sent.
 
 A commit carries no agent attribution: no `Co-Authored-By` trailer, no session link.
 
-Task and document keys of the internal task board, checkpoints, session names, and local paths
-stay in the board and the chat. They do not appear in commit messages, code comments,
-client-facing documents, or mockups. Where an external tracker exists, its keys are the ones
-that go into commits.
+This repository is personal, so a Project Office task key may go into a commit message, as the
+last line of the body (see `.claude/rules/git.md`). Checkpoints, session names, and local paths
+stay in the board and the chat; they do not appear in commit messages, code comments,
+client-facing documents, or mockups.
