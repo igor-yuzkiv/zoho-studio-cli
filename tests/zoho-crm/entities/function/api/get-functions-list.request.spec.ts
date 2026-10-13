@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getFunctionsList, getFunctionsPage } from '@zoho-studio/zoho-crm/function'
+import { getFunctionsListRequest, getFunctionsPageRequest } from '@zoho-studio/zoho-crm/function'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -55,13 +55,13 @@ afterEach(async () => {
 const firstFunction = { id: '1', name: 'first', api_name: 'first', category: 'Button' }
 const secondFunction = { id: '2', name: 'second', api_name: 'second', category: 'Automation' }
 
-describe('getFunctionsPage', () => {
+describe('getFunctionsPageRequest', () => {
     test('requests the asked page and returns it with its pagination info', async () => {
         await startProject(() =>
             Response.json({ functions: [firstFunction], info: { more_records: true, next_page_token: 'tok-2' } })
         )
 
-        const page = await getFunctionsPage({ per_page: 200, page: 3 })
+        const page = await getFunctionsPageRequest({ per_page: 200, page: 3 })
 
         expect(page).toEqual({
             functions: [firstFunction],
@@ -74,11 +74,11 @@ describe('getFunctionsPage', () => {
     test('reads a no-content answer as an empty page', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getFunctionsPage({ per_page: 200, page: 1 })).toEqual({ functions: [], info: {} })
+        expect(await getFunctionsPageRequest({ per_page: 200, page: 1 })).toEqual({ functions: [], info: {} })
     })
 })
 
-describe('getFunctionsList', () => {
+describe('getFunctionsListRequest', () => {
     test('concatenates every page while Zoho reports more records', async () => {
         await startProject((request) => {
             const page = new URL(request.url).searchParams.get('page')
@@ -88,7 +88,7 @@ describe('getFunctionsList', () => {
                 : Response.json({ functions: [secondFunction], info: { more_records: false, page: 2 } })
         })
 
-        expect(await getFunctionsList()).toEqual([firstFunction, secondFunction])
+        expect(await getFunctionsListRequest()).toEqual([firstFunction, secondFunction])
         expect(requestedUrls.map((url) => url.searchParams.get('page'))).toEqual(['1', '2'])
     })
 
@@ -101,7 +101,7 @@ describe('getFunctionsList', () => {
                 : Response.json({ functions: [firstFunction], info: { more_records: true, next_page_token: 'tok-2' } })
         })
 
-        expect(await getFunctionsList()).toEqual([firstFunction, secondFunction])
+        expect(await getFunctionsListRequest()).toEqual([firstFunction, secondFunction])
         expect(requestedUrls[1]?.searchParams.get('page_token')).toBe('tok-2')
     })
 
@@ -110,13 +110,13 @@ describe('getFunctionsList', () => {
             Response.json({ functions: [firstFunction], info: { more_records: true, next_page_token: 'tok-1' } })
         )
 
-        expect(await getFunctionsList()).toEqual([firstFunction, firstFunction])
+        expect(await getFunctionsListRequest()).toEqual([firstFunction, firstFunction])
     })
 
     test('returns an empty list when Zoho answers with no content', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getFunctionsList()).toEqual([])
+        expect(await getFunctionsListRequest()).toEqual([])
     })
 
     test('fails when a page request fails', async () => {
@@ -128,6 +128,6 @@ describe('getFunctionsList', () => {
                 : Response.json({ code: 'INTERNAL_ERROR' }, { status: 500 })
         })
 
-        await expect(getFunctionsList()).rejects.toThrow(/500/)
+        await expect(getFunctionsListRequest()).rejects.toThrow(/500/)
     })
 })

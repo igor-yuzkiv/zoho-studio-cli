@@ -12,7 +12,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { assertModuleName, delay } from '@zoho-studio/core'
 import { workflowActionsDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getWorkflowAction, getWorkflowActionsList } from '../api'
+import { getWorkflowActionRequest, getWorkflowActionsListRequest } from '../api'
 import { workflowActionTypes, type WorkflowActionType, type ZohoWorkflowAction } from '../workflow-action.types'
 import { assertWorkflowActionType, describePullError, toWorkflowActionDirName } from '../workflow-action.utils'
 
@@ -53,7 +53,7 @@ export async function pullWorkflowActions(
         }
 
         try {
-            listedByType.set(type, sortForStableFileNames(await getWorkflowActionsList(type, module)))
+            listedByType.set(type, sortForStableFileNames(await getWorkflowActionsListRequest(type, module)))
         } catch (error) {
             failed.push({ name: type, message: describePullError(error) })
             logger.error({ err: error, type }, 'Failed to fetch a workflow actions list')
@@ -85,7 +85,7 @@ export async function pullWorkflowActions(
 
             try {
                 // The list omits what an action actually does, so the full record is fetched per action.
-                const details = await getWorkflowAction(type, action.id)
+                const details = await getWorkflowActionRequest(type, action.id)
                 const fileName = resolveArtifactFileName(action.name, action.id, takenFileNames)
 
                 // Zoho reports no details for some actions it lists quite normally. Keeping the

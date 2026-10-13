@@ -5,7 +5,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
 import { clientScriptsDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getClientScriptPagesList, getClientScriptSource, getClientScriptsList } from '../api'
+import { getClientScriptPagesListRequest, getClientScriptSourceRequest, getClientScriptsListRequest } from '../api'
 import type { ClientScript, ClientScriptPage } from '../client-script.types'
 import {
     clientScriptPageMetadataFileName,
@@ -30,7 +30,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
     let pages: ClientScriptPage[]
 
     try {
-        pages = await getClientScriptPagesList()
+        pages = await getClientScriptPagesListRequest()
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the client script pages list')
         throw error
@@ -63,7 +63,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
             let scripts: ClientScript[]
 
             try {
-                scripts = await getClientScriptsList(page.id)
+                scripts = await getClientScriptsListRequest(page.id)
             } catch (error) {
                 failed.push({ subject: `page ${pageLabel}`, message: toMessage(error) })
                 logger.error({ err: error, pageId: page.id }, 'Failed to fetch the client scripts of a page')
@@ -83,7 +83,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
                         throw new Error('Zoho returned no hosting url for the source')
                     }
 
-                    const source = await getClientScriptSource(hostingUrl)
+                    const source = await getClientScriptSourceRequest(hostingUrl)
                     await writeArtifactText(projectPath, resolveScriptSourceSegments(dirSegments, script), source)
                     sourcesDownloaded += 1
                 } catch (error) {

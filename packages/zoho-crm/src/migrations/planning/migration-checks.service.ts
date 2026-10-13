@@ -1,6 +1,6 @@
-import { getFieldsList } from '../../entities/field'
-import { getModulesList, type ZohoModule } from '../../entities/module'
-import { findProfileByName, getProfilesList } from '../../entities/profile'
+import { getFieldsListRequest } from '../../entities/field'
+import { getModulesListRequest, type ZohoModule } from '../../entities/module'
+import { findProfileByName, getProfilesListRequest } from '../../entities/profile'
 
 import type { MigrationDescription } from '../definition'
 
@@ -43,7 +43,7 @@ function newModuleFields(singularLabel: string): ExistingField[] {
 /** Compares a described migration with the current state of Zoho CRM; read failures are thrown. */
 export async function checkMigration(description: MigrationDescription): Promise<MigrationCheck> {
     const conflicts: string[] = []
-    const modules = await getModulesList()
+    const modules = await getModulesListRequest()
     const findModule = (apiName: string) => modules.find((module) => sameName(module.api_name, apiName))
 
     let existingFields: ExistingField[] = []
@@ -57,7 +57,7 @@ export async function checkMigration(description: MigrationDescription): Promise
         conflicts.push(...resolved.conflicts)
         profileIds = resolved.profileIds
     } else if (findModule(description.module.api_name)) {
-        existingFields = await getFieldsList(description.module.api_name)
+        existingFields = await getFieldsListRequest(description.module.api_name)
     } else {
         conflicts.push(`Module "${description.module.api_name}" does not exist in Zoho CRM.`)
     }
@@ -103,7 +103,7 @@ function findTakenModuleNames(
 }
 
 async function resolveProfileIds(names: string[]): Promise<MigrationCheck> {
-    const profiles = await getProfilesList()
+    const profiles = await getProfilesListRequest()
     const conflicts: string[] = []
     const profileIds: string[] = []
 

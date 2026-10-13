@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWorkflowAction } from '@zoho-studio/zoho-crm/workflow-action'
+import { getWorkflowActionRequest } from '@zoho-studio/zoho-crm/workflow-action'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -61,18 +61,18 @@ const detailedWebhook = {
     headers: { module_parameters: null, custom_parameters: null },
 }
 
-describe('getWorkflowAction', () => {
+describe('getWorkflowActionRequest', () => {
     test('returns the single action Zoho wraps in a list under the type key', async () => {
         await startProject(() => Response.json({ webhooks: [detailedWebhook] }))
 
-        expect(await getWorkflowAction('webhooks', '1')).toEqual(detailedWebhook)
+        expect(await getWorkflowActionRequest('webhooks', '1')).toEqual(detailedWebhook)
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/webhooks/1')
     })
 
     test('asks the endpoint of the type it was given', async () => {
         await startProject(() => Response.json({ email_notifications: [{ id: '5', name: 'Alert' }] }))
 
-        await getWorkflowAction('email_notifications', '5')
+        await getWorkflowActionRequest('email_notifications', '5')
 
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/email_notifications/5')
     })
@@ -80,12 +80,12 @@ describe('getWorkflowAction', () => {
     test('reports an empty answer as no record rather than as an error', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getWorkflowAction('tasks', '404')).toBeNull()
+        expect(await getWorkflowActionRequest('tasks', '404')).toBeNull()
     })
 
     test('still fails when the request itself is rejected', async () => {
         await startProject(() => Response.json({ code: 'OAUTH_SCOPE_MISMATCH' }, { status: 401 }))
 
-        await expect(getWorkflowAction('tasks', '1')).rejects.toThrow(/401/)
+        await expect(getWorkflowActionRequest('tasks', '1')).rejects.toThrow(/401/)
     })
 })

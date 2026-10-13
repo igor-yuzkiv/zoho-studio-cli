@@ -5,11 +5,11 @@ import type { StaticResource } from './static-resource.types'
 
 type LocatedResource = Pick<StaticResource, 'id' | 'name' | 'file_name' | 'source'>
 
-export function resolveMetadataSegments(resource: LocatedResource): string[] {
+export function staticResourceMetadataFilePath(resource: LocatedResource): string[] {
     return [...resolveResourceDirSegments(resource), `${toPathSegment(resource.name)}.metadata.json`]
 }
 
-export function resolveContentSegments(resource: LocatedResource): string[] {
+export function staticResourceContentFilePath(resource: LocatedResource): string[] {
     return [...resolveResourceDirSegments(resource), toPathSegment(resource.file_name)]
 }
 

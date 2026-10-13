@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getModulesList } from '@zoho-studio/zoho-crm/module'
+import { getModulesListRequest } from '@zoho-studio/zoho-crm/module'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -55,11 +55,11 @@ afterEach(async () => {
 const leadsModule = { id: '1', api_name: 'Leads', module_name: 'Leads', generated_type: 'default' }
 const customModule = { id: '2', api_name: 'CustomModule1', module_name: 'Projects', generated_type: 'custom' }
 
-describe('getModulesList', () => {
+describe('getModulesListRequest', () => {
     test('returns every module the endpoint answers with', async () => {
         await startProject(() => Response.json({ modules: [leadsModule, customModule] }))
 
-        expect(await getModulesList()).toEqual([leadsModule, customModule])
+        expect(await getModulesListRequest()).toEqual([leadsModule, customModule])
         expect(requestedUrls).toHaveLength(1)
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/modules')
     })
@@ -67,12 +67,12 @@ describe('getModulesList', () => {
     test('returns an empty list when Zoho answers with no content', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getModulesList()).toEqual([])
+        expect(await getModulesListRequest()).toEqual([])
     })
 
     test('fails when the request fails', async () => {
         await startProject(() => Response.json({ code: 'INTERNAL_ERROR' }, { status: 500 }))
 
-        await expect(getModulesList()).rejects.toThrow(/500/)
+        await expect(getModulesListRequest()).rejects.toThrow(/500/)
     })
 })

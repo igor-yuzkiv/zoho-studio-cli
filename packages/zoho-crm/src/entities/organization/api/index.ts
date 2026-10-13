@@ -1,1 +1,1 @@
-export { getOrganization } from './get-organization.request'
+export { getOrganizationRequest } from './get-organization.request'

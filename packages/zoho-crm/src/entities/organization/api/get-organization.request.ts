@@ -6,7 +6,7 @@ interface OrganizationPayload {
     org?: Organization[]
 }
 
-export async function getOrganization(): Promise<Organization> {
+export async function getOrganizationRequest(): Promise<Organization> {
     const { data } = await crmClient.get<OrganizationPayload>('/org')
     const organization = data?.org?.[0]
 

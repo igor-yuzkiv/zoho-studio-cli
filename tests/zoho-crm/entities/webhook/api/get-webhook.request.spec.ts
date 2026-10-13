@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWebhook } from '@zoho-studio/zoho-crm/webhook'
+import { getWebhookRequest } from '@zoho-studio/zoho-crm/webhook'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -62,17 +62,17 @@ const detailedWebhook = {
     authentication: { connection_name: 'backendserver', type: 'connection' },
 }
 
-describe('getWebhook', () => {
+describe('getWebhookRequest', () => {
     test('returns the single webhook Zoho wraps in a list', async () => {
         await startProject(() => Response.json({ webhooks: [detailedWebhook] }))
 
-        expect(await getWebhook('1')).toEqual(detailedWebhook)
+        expect(await getWebhookRequest('1')).toEqual(detailedWebhook)
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/webhooks/1')
     })
 
     test('fails on the empty answer Zoho gives for an unknown id', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        await expect(getWebhook('404')).rejects.toThrow(/no webhook for id "404"/)
+        await expect(getWebhookRequest('404')).rejects.toThrow(/no webhook for id "404"/)
     })
 })

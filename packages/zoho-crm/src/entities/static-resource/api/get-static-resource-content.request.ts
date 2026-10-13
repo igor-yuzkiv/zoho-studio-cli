@@ -5,7 +5,7 @@ import axios from 'axios'
  * gzip archives. The uri lies outside Zoho CRM and the CRM web UI reads it without credentials, so
  * no token is sent there.
  */
-export async function getStaticResourceContent(uri: string): Promise<Uint8Array> {
+export async function getStaticResourceContentRequest(uri: string): Promise<Uint8Array> {
     const { data } = await axios.get<ArrayBuffer>(uri, { responseType: 'arraybuffer' })
 
     return new Uint8Array(data)

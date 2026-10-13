@@ -11,7 +11,7 @@ const profilesPerPage = 200
 const maxPages = 100
 
 /** Returns every profile of the organization, following Zoho's page-number pagination. */
-export async function getProfilesList(): Promise<ZohoProfile[]> {
+export async function getProfilesListRequest(): Promise<ZohoProfile[]> {
     const profiles: ZohoProfile[] = []
 
     for (let page = 1; page <= maxPages; page += 1) {

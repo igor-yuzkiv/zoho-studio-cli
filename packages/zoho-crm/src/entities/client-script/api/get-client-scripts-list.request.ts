@@ -7,7 +7,7 @@ interface ClientScriptsPayload {
 }
 
 /** Returns the client scripts of one page; Zoho refuses the list without a page. */
-export async function getClientScriptsList(pageId: string): Promise<ClientScript[]> {
+export async function getClientScriptsListRequest(pageId: string): Promise<ClientScript[]> {
     const { data } = await crmClient.get<ClientScriptsPayload>('/settings/client_scripts', {
         params: { client_script_page_id: pageId },
     })

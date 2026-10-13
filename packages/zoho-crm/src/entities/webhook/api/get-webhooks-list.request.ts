@@ -25,7 +25,7 @@ interface WebhooksPage {
 }
 
 /** Returns a single page of webhooks together with the pagination Zoho reports for it. */
-export async function getWebhooksPage(params: WebhooksPageParams): Promise<WebhooksPage> {
+export async function getWebhooksPageRequest(params: WebhooksPageParams): Promise<WebhooksPage> {
     const { data } = await crmClient.get<WebhooksListPayload>('/settings/automation/webhooks', { params })
 
     // A 204 answer leaves no payload at all, so an absent list simply means an empty page.
@@ -36,11 +36,11 @@ export async function getWebhooksPage(params: WebhooksPageParams): Promise<Webho
  * Returns every webhook of the organization. Zoho paginates this endpoint by page number only —
  * it reports no page token, so there is nothing else to follow.
  */
-export async function getWebhooksList(): Promise<ZohoWebhook[]> {
+export async function getWebhooksListRequest(): Promise<ZohoWebhook[]> {
     const webhooks: ZohoWebhook[] = []
 
     for (let page = 1; page <= maxPages; page += 1) {
-        const currentPage = await getWebhooksPage({ per_page: webhooksPerPage, page })
+        const currentPage = await getWebhooksPageRequest({ per_page: webhooksPerPage, page })
 
         webhooks.push(...currentPage.webhooks)
 

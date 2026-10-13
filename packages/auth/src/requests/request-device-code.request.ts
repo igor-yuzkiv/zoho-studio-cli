@@ -10,7 +10,7 @@ interface DeviceCodePayload {
 }
 
 /** Starts the device flow: Zoho issues a code the user approves in a browser elsewhere. */
-export async function requestDeviceCode({ clientId, scopes }: DeviceCodeRequest): Promise<DeviceCode> {
+export async function deviceCodeRequest({ clientId, scopes }: DeviceCodeRequest): Promise<DeviceCode> {
     const { data } = await authClient.post<DeviceCodePayload>('/oauth/v3/device/code', null, {
         params: {
             client_id: clientId,

@@ -13,7 +13,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { assertModuleName, delay } from '@zoho-studio/core'
 import { workflowsDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getWorkflowRule, getWorkflowRulesList } from '../api'
+import { getWorkflowRuleRequest, getWorkflowRulesListRequest } from '../api'
 import type { ZohoWorkflowRule } from '../workflow-rule.types'
 
 const delayBetweenRuleRequestsMs = 300
@@ -35,7 +35,7 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
     let workflowRules: ZohoWorkflowRule[]
 
     try {
-        workflowRules = sortForStableFileNames(await getWorkflowRulesList(module))
+        workflowRules = sortForStableFileNames(await getWorkflowRulesListRequest(module))
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the workflow rules list')
         throw new Error(describeRequestError(error), { cause: error })
@@ -65,7 +65,7 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
 
             try {
                 // The list carries no conditions or actions, so the full record is fetched per rule.
-                const details = await getWorkflowRule(workflowRule.id)
+                const details = await getWorkflowRuleRequest(workflowRule.id)
                 const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
 
                 await writeArtifactJson(projectPath, [zohoCrmDirName, workflowsDirName, fileName], details)

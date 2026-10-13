@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getFieldsList, getFieldsPage } from '@zoho-studio/zoho-crm/field'
+import { getFieldsListRequest, getFieldsPageRequest } from '@zoho-studio/zoho-crm/field'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -55,13 +55,13 @@ afterEach(async () => {
 const lastNameField = { id: '1', api_name: 'Last_Name', field_label: 'Last Name', data_type: 'text' }
 const emailField = { id: '2', api_name: 'Email', field_label: 'Email', data_type: 'email' }
 
-describe('getFieldsPage', () => {
+describe('getFieldsPageRequest', () => {
     test('requests the asked module and page and returns it with its pagination info', async () => {
         await startProject(() =>
             Response.json({ fields: [lastNameField], info: { more_records: true, next_page_token: 'tok-2' } })
         )
 
-        const page = await getFieldsPage({ module: 'Leads', per_page: 200, page: 3 })
+        const page = await getFieldsPageRequest({ module: 'Leads', per_page: 200, page: 3 })
 
         expect(page).toEqual({
             fields: [lastNameField],
@@ -76,11 +76,11 @@ describe('getFieldsPage', () => {
     test('reads a no-content answer as an empty page', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getFieldsPage({ module: 'Leads', per_page: 200, page: 1 })).toEqual({ fields: [], info: {} })
+        expect(await getFieldsPageRequest({ module: 'Leads', per_page: 200, page: 1 })).toEqual({ fields: [], info: {} })
     })
 })
 
-describe('getFieldsList', () => {
+describe('getFieldsListRequest', () => {
     test('concatenates every page while Zoho reports more records', async () => {
         await startProject((request) => {
             const page = new URL(request.url).searchParams.get('page')
@@ -90,7 +90,7 @@ describe('getFieldsList', () => {
                 : Response.json({ fields: [emailField], info: { more_records: false, page: 2 } })
         })
 
-        expect(await getFieldsList('Leads')).toEqual([lastNameField, emailField])
+        expect(await getFieldsListRequest('Leads')).toEqual([lastNameField, emailField])
         expect(requestedUrls.map((url) => url.searchParams.get('page'))).toEqual(['1', '2'])
         expect(requestedUrls.every((url) => url.searchParams.get('module') === 'Leads')).toBe(true)
     })
@@ -104,7 +104,7 @@ describe('getFieldsList', () => {
                 : Response.json({ fields: [lastNameField], info: { more_records: true, next_page_token: 'tok-2' } })
         })
 
-        expect(await getFieldsList('Leads')).toEqual([lastNameField, emailField])
+        expect(await getFieldsListRequest('Leads')).toEqual([lastNameField, emailField])
         expect(requestedUrls[1]?.searchParams.get('page_token')).toBe('tok-2')
         expect(requestedUrls[1]?.searchParams.get('module')).toBe('Leads')
     })
@@ -114,18 +114,18 @@ describe('getFieldsList', () => {
             Response.json({ fields: [lastNameField], info: { more_records: true, next_page_token: 'tok-1' } })
         )
 
-        expect(await getFieldsList('Leads')).toEqual([lastNameField, lastNameField])
+        expect(await getFieldsListRequest('Leads')).toEqual([lastNameField, lastNameField])
     })
 
     test('returns an empty list when Zoho answers with no content', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getFieldsList('Leads')).toEqual([])
+        expect(await getFieldsListRequest('Leads')).toEqual([])
     })
 
     test('fails when a module is not available', async () => {
         await startProject(() => Response.json({ code: 'INVALID_MODULE' }, { status: 400 }))
 
-        await expect(getFieldsList('Ghost')).rejects.toThrow(/400/)
+        await expect(getFieldsListRequest('Ghost')).rejects.toThrow(/400/)
     })
 })

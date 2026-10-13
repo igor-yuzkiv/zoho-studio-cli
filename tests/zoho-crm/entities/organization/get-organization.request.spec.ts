@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@zoho-studio/zoho-crm/organization'
+import { getOrganizationRequest } from '@zoho-studio/zoho-crm/organization'
 
 import { startCrmStub, type CrmStub } from '../../../support/crm-stub'
 
@@ -11,18 +11,18 @@ afterEach(async () => {
     crm = null
 })
 
-describe('getOrganization', () => {
+describe('getOrganizationRequest', () => {
     test('returns the organization record as Zoho sent it', async () => {
         const organization = { company_name: 'Acme Inc', id: '77', primary_email: 'a@acme.test' }
         crm = await startCrmStub(() => Response.json({ org: [organization] }))
 
-        expect(await getOrganization()).toEqual(organization)
+        expect(await getOrganizationRequest()).toEqual(organization)
         expect(crm.requestedUrls[0]?.pathname).toEndWith('/org')
     })
 
     test('fails when the response holds no organization', async () => {
         crm = await startCrmStub(() => Response.json({ org: [] }))
 
-        await expect(getOrganization()).rejects.toThrow(/no organization/)
+        await expect(getOrganizationRequest()).rejects.toThrow(/no organization/)
     })
 })

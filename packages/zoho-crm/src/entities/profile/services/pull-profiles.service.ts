@@ -5,7 +5,7 @@ import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { profilesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getProfilesList } from '../api'
+import { getProfilesListRequest } from '../api'
 import type { ZohoProfile } from '../profile.types'
 
 export async function pullProfiles(progress: PullProgress): Promise<PullResult> {
@@ -17,7 +17,7 @@ export async function pullProfiles(progress: PullProgress): Promise<PullResult> 
     let profiles: ZohoProfile[]
 
     try {
-        profiles = [...(await getProfilesList())].sort(
+        profiles = [...(await getProfilesListRequest())].sort(
             (left, right) => left.api_name.localeCompare(right.api_name) || left.id.localeCompare(right.id)
         )
     } catch (error) {

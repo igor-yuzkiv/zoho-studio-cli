@@ -10,7 +10,7 @@ interface WorkflowRulePayload {
  * Returns the full record of one rule — its conditions and actions, which the list endpoint omits.
  * Zoho answers an unknown id with an empty 204 rather than an error, so that is reported here.
  */
-export async function getWorkflowRule(id: string): Promise<ZohoWorkflowRule> {
+export async function getWorkflowRuleRequest(id: string): Promise<ZohoWorkflowRule> {
     const { data } = await crmClient.get<WorkflowRulePayload>(`/settings/automation/workflow_rules/${id}`)
     const workflowRule = data?.workflow_rules?.[0]
 

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getGlobalPicklist } from '@zoho-studio/zoho-crm/global-picklist'
+import { getGlobalPicklistRequest } from '@zoho-studio/zoho-crm/global-picklist'
 
 import { startCrmStub, type CrmStub } from '../../../../support/crm-stub'
 
@@ -18,17 +18,17 @@ const detailedPicklist = {
     pick_list_values: [{ id: '6640142000000448031', actual_value: 'Advertisement', sequence_number: 1 }],
 }
 
-describe('getGlobalPicklist', () => {
+describe('getGlobalPicklistRequest', () => {
     test('returns the picklist with its values', async () => {
         crm = await startCrmStub(() => Response.json({ global_picklists: [detailedPicklist] }))
 
-        expect(await getGlobalPicklist(detailedPicklist.id)).toEqual(detailedPicklist)
+        expect(await getGlobalPicklistRequest(detailedPicklist.id)).toEqual(detailedPicklist)
         expect(crm.requestedUrls[0]?.pathname).toEndWith(`/settings/global_picklists/${detailedPicklist.id}`)
     })
 
     test('fails when Zoho answers an unknown id with no content', async () => {
         crm = await startCrmStub(() => new Response(null, { status: 204 }))
 
-        await expect(getGlobalPicklist('404')).rejects.toThrow(/no global picklist for id "404"/)
+        await expect(getGlobalPicklistRequest('404')).rejects.toThrow(/no global picklist for id "404"/)
     })
 })

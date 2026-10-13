@@ -28,7 +28,7 @@ interface FieldsPage {
 }
 
 /** Returns a single page of module fields together with the pagination Zoho reports for it. */
-export async function getFieldsPage(params: FieldsPageParams): Promise<FieldsPage> {
+export async function getFieldsPageRequest(params: FieldsPageParams): Promise<FieldsPage> {
     const { data } = await crmClient.get<FieldsListPayload>('/settings/fields', { params })
 
     // A 204 answer leaves no payload at all, so an absent list simply means an empty page.
@@ -36,12 +36,12 @@ export async function getFieldsPage(params: FieldsPageParams): Promise<FieldsPag
 }
 
 /** Returns every field of a module, following the pagination Zoho reports in `info`. */
-export async function getFieldsList(module: string): Promise<ZohoField[]> {
+export async function getFieldsListRequest(module: string): Promise<ZohoField[]> {
     const fields: ZohoField[] = []
     let params: FieldsPageParams = { module, per_page: fieldsPerPage, page: 1 }
 
     for (let page = 0; page < maxPages; page += 1) {
-        const currentPage = await getFieldsPage(params)
+        const currentPage = await getFieldsPageRequest(params)
 
         fields.push(...currentPage.fields)
 

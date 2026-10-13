@@ -1,2 +1,2 @@
-export { getWebhooksList, getWebhooksPage, type WebhooksPageParams } from './get-webhooks-list.request'
-export { getWebhook } from './get-webhook.request'
+export { getWebhooksListRequest, getWebhooksPageRequest, type WebhooksPageParams } from './get-webhooks-list.request'
+export { getWebhookRequest } from './get-webhook.request'

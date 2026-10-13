@@ -11,7 +11,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
 import { webhooksDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getWebhook, getWebhooksList } from '../api'
+import { getWebhookRequest, getWebhooksListRequest } from '../api'
 import type { ZohoWebhook } from '../webhook.types'
 
 const delayBetweenWebhookRequestsMs = 300
@@ -30,7 +30,7 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
     let webhooks: ZohoWebhook[]
 
     try {
-        webhooks = sortForStableFileNames(await getWebhooksList())
+        webhooks = sortForStableFileNames(await getWebhooksListRequest())
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the webhooks list')
         throw new Error(describeRequestError(error), { cause: error })
@@ -57,7 +57,7 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
             try {
                 // The list carries no body, headers, or authentication, so the full record is
                 // fetched per webhook.
-                const details = await getWebhook(webhook.id)
+                const details = await getWebhookRequest(webhook.id)
                 const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
 
                 await writeArtifactJson(projectPath, [zohoCrmDirName, webhooksDirName, fileName], details)

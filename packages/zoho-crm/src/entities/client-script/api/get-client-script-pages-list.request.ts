@@ -7,7 +7,7 @@ interface ClientScriptPagesPayload {
 }
 
 /** Returns every client script page of the organization; Zoho answers them in one unpaged list. */
-export async function getClientScriptPagesList(): Promise<ClientScriptPage[]> {
+export async function getClientScriptPagesListRequest(): Promise<ClientScriptPage[]> {
     const { data } = await crmClient.get<ClientScriptPagesPayload>('/settings/client_script_pages')
 
     return data?.client_script_pages ?? []

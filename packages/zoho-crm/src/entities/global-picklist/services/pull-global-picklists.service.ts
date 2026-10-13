@@ -6,7 +6,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
 import { globalPicklistsDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getGlobalPicklist, getGlobalPicklistsList } from '../api'
+import { getGlobalPicklistRequest, getGlobalPicklistsListRequest } from '../api'
 import type { ZohoGlobalPicklist } from '../global-picklist.types'
 import { sortGlobalPicklists } from '../global-picklist.utils'
 
@@ -26,7 +26,7 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
     let globalPicklists: ZohoGlobalPicklist[]
 
     try {
-        globalPicklists = sortGlobalPicklists(await getGlobalPicklistsList())
+        globalPicklists = sortGlobalPicklists(await getGlobalPicklistsListRequest())
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the global picklists list')
         throw new Error(describeRequestError(error), { cause: error })
@@ -53,7 +53,7 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
 
             try {
                 // The list carries no picklist values, so the full record is fetched per picklist.
-                const details = await getGlobalPicklist(globalPicklist.id)
+                const details = await getGlobalPicklistRequest(globalPicklist.id)
                 const fileName = resolveArtifactFileName(globalPicklist.api_name, globalPicklist.id, takenFileNames)
 
                 await writeArtifactJson(projectPath, [zohoCrmDirName, globalPicklistsDirName, fileName], details)

@@ -1,2 +1,2 @@
-export { getFieldsList, getFieldsPage, type FieldsPageParams } from './get-fields-list.request'
-export { createFields, maxFieldsPerCreateRequest } from './create-fields.request'
+export { getFieldsListRequest, getFieldsPageRequest, type FieldsPageParams } from './get-fields-list.request'
+export { createFieldsRequest, maxFieldsPerCreateRequest } from './create-fields.request'

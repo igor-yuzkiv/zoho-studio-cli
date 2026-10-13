@@ -12,7 +12,7 @@ type WorkflowActionPayload = Partial<Record<WorkflowActionType, ZohoWorkflowActi
  * also happens for actions that the list endpoint returns quite normally, so the caller decides
  * what an absent record means rather than being handed an error.
  */
-export async function getWorkflowAction(type: WorkflowActionType, id: string): Promise<ZohoWorkflowAction | null> {
+export async function getWorkflowActionRequest(type: WorkflowActionType, id: string): Promise<ZohoWorkflowAction | null> {
     const { data } = await crmClient.get<WorkflowActionPayload>(`/settings/automation/${type}/${id}`)
 
     return data?.[type]?.[0] ?? null

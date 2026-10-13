@@ -10,7 +10,7 @@ interface GlobalPicklistPayload {
  * Returns the full record of one global picklist — its values, which the list endpoint omits. Zoho
  * answers an unknown id with an empty 204 rather than an error, so that is reported here.
  */
-export async function getGlobalPicklist(id: string): Promise<ZohoGlobalPicklist> {
+export async function getGlobalPicklistRequest(id: string): Promise<ZohoGlobalPicklist> {
     const { data } = await crmClient.get<GlobalPicklistPayload>(`/settings/global_picklists/${id}`)
     const globalPicklist = data?.global_picklists?.[0]
 

@@ -7,7 +7,7 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { assertModuleName, delay } from '@zoho-studio/core'
 import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getFieldsList } from '../api'
+import { getFieldsListRequest } from '../api'
 import { saveModuleFields } from './save-module-fields.service'
 
 const delayBetweenModuleRequestsMs = 300
@@ -45,7 +45,7 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
             progress.update(moduleName)
 
             try {
-                const fields = await getFieldsList(moduleName)
+                const fields = await getFieldsListRequest(moduleName)
 
                 // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
                 await saveModuleFields(projectPath, moduleName, fields)

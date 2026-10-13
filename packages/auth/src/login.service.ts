@@ -7,7 +7,7 @@ import {
 } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
 
-import { pollDeviceToken, requestDeviceCode } from './requests'
+import { pollDeviceTokenRequest, deviceCodeRequest } from './requests'
 import type { DeviceCode, TokenResponse } from './auth.types'
 import type { LoginOptions, LoginResult } from './login.types'
 
@@ -24,7 +24,7 @@ export async function login({ profile: profileName, onVerificationRequired }: Lo
         )
     }
 
-    const deviceCode = await requestDeviceCode({ clientId, scopes })
+    const deviceCode = await deviceCodeRequest({ clientId, scopes })
 
     onVerificationRequired?.({
         verificationUrl: deviceCode.verificationUrl,
@@ -87,7 +87,7 @@ async function waitForApproval(
     for (;;) {
         await sleep(intervalMs)
 
-        const result = await pollDeviceToken({ ...client, deviceCode: deviceCode.deviceCode })
+        const result = await pollDeviceTokenRequest({ ...client, deviceCode: deviceCode.deviceCode })
 
         if (result.status === 'authorized') {
             return result.tokens

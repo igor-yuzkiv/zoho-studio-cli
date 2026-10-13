@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getStaticResourceContent, getStaticResourcesList } from '@zoho-studio/zoho-crm/static-resource'
+import { getStaticResourceContentRequest, getStaticResourcesListRequest } from '@zoho-studio/zoho-crm/static-resource'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -57,7 +57,7 @@ afterEach(async () => {
     }
 })
 
-describe('getStaticResourcesList', () => {
+describe('getStaticResourcesListRequest', () => {
     test('follows the pages while Zoho reports more records', async () => {
         await startProject((url) => {
             const page = Number(url.searchParams.get('page'))
@@ -68,7 +68,7 @@ describe('getStaticResourcesList', () => {
             })
         })
 
-        const resources = await getStaticResourcesList()
+        const resources = await getStaticResourcesListRequest()
 
         expect(resources.map((resource) => resource.id)).toEqual(['1', '2'])
         expect(requestedUrls[0]?.pathname).toBe('/crm/v8/settings/static_resources')
@@ -78,22 +78,22 @@ describe('getStaticResourcesList', () => {
     test('treats an empty answer as no resources', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getStaticResourcesList()).toEqual([])
+        expect(await getStaticResourcesListRequest()).toEqual([])
     })
 })
 
-describe('getStaticResourceContent', () => {
+describe('getStaticResourceContentRequest', () => {
     test('returns the bytes unchanged and sends no token', async () => {
         const bytes = new Uint8Array([0x1f, 0x8b, 0x08, 0x00, 0xff])
         await startProject(() => new Response(bytes, { headers: { 'Content-Type': 'application/octet-stream' } }))
 
-        expect(await getStaticResourceContent(`${crmServer!.url.origin}/sdk.js.gzip`)).toEqual(bytes)
+        expect(await getStaticResourceContentRequest(`${crmServer!.url.origin}/sdk.js.gzip`)).toEqual(bytes)
         expect(lastAuthorization).toBeNull()
     })
 
     test('fails when the file host answers with an error status', async () => {
         await startProject(() => new Response('gone', { status: 404 }))
 
-        await expect(getStaticResourceContent(`${crmServer!.url.origin}/missing.js`)).rejects.toThrow(/404/)
+        await expect(getStaticResourceContentRequest(`${crmServer!.url.origin}/missing.js`)).rejects.toThrow(/404/)
     })
 })

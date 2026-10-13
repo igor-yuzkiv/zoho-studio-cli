@@ -5,9 +5,9 @@ import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
 import { functionsDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getFunctionCode, getFunctionsList } from '../api'
+import { getFunctionCodeRequest, getFunctionsListRequest } from '../api'
 import type { ZohoFunction } from '../function.types'
-import { resolveCodeSegments, resolveMetadataSegments } from '../function.utils'
+import { functionCodeFilePath, functionMetadataFilePath } from '../function.utils'
 
 const delayBetweenCodeRequestsMs = 300
 
@@ -26,7 +26,7 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
     let functions: ZohoFunction[]
 
     try {
-        functions = await getFunctionsList()
+        functions = await getFunctionsListRequest()
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the functions list')
         throw error
@@ -38,7 +38,7 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
     await replaceArtifactDir(projectPath, [zohoCrmDirName, functionsDirName])
 
     for (const zohoFunction of functions) {
-        await writeArtifactJson(projectPath, resolveMetadataSegments(zohoFunction), zohoFunction)
+        await writeArtifactJson(projectPath, functionMetadataFilePath(zohoFunction), zohoFunction)
     }
 
     const failed: FailedFunction[] = []
@@ -54,8 +54,8 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
             progress.update(zohoFunction.name)
 
             try {
-                const code = await getFunctionCode(zohoFunction.id)
-                await writeArtifactText(projectPath, resolveCodeSegments(zohoFunction), code)
+                const code = await getFunctionCodeRequest(zohoFunction.id)
+                await writeArtifactText(projectPath, functionCodeFilePath(zohoFunction), code)
             } catch (error) {
                 failed.push({
                     name: zohoFunction.name,

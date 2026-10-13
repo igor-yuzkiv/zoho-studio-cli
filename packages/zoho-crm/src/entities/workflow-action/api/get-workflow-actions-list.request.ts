@@ -25,7 +25,7 @@ interface WorkflowActionsPage {
 }
 
 /** Returns a single page of one action type together with the pagination Zoho reports for it. */
-export async function getWorkflowActionsPage(
+export async function getWorkflowActionsPageRequest(
     type: WorkflowActionType,
     params: WorkflowActionsPageParams
 ): Promise<WorkflowActionsPage> {
@@ -39,14 +39,14 @@ export async function getWorkflowActionsPage(
  * Returns every action of one type, of one module when asked. Zoho paginates these endpoints by
  * page number only — it reports no page token, so there is nothing else to follow.
  */
-export async function getWorkflowActionsList(
+export async function getWorkflowActionsListRequest(
     type: WorkflowActionType,
     module?: string
 ): Promise<ZohoWorkflowAction[]> {
     const workflowActions: ZohoWorkflowAction[] = []
 
     for (let page = 1; page <= maxPages; page += 1) {
-        const currentPage = await getWorkflowActionsPage(type, { per_page: workflowActionsPerPage, page, module })
+        const currentPage = await getWorkflowActionsPageRequest(type, { per_page: workflowActionsPerPage, page, module })
 
         workflowActions.push(...currentPage.workflowActions)
 

@@ -18,7 +18,7 @@ interface CreateModulePayload {
  * Creates one custom module and returns its id. Zoho takes a single module per request and accepts
  * or rejects it as a whole, reporting the reason inside the `modules` list rather than at the top level.
  */
-export async function createModule(module: ZohoModuleCreate): Promise<{ id: string }> {
+export async function createModuleRequest(module: ZohoModuleCreate): Promise<{ id: string }> {
     let outcome: ModuleCreateOutcome | undefined
 
     try {

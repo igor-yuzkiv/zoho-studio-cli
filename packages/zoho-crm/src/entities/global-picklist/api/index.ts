@@ -1,6 +1,6 @@
 export {
-    getGlobalPicklistsList,
-    getGlobalPicklistsPage,
+    getGlobalPicklistsListRequest,
+    getGlobalPicklistsPageRequest,
     type GlobalPicklistsPageParams,
 } from './get-global-picklists-list.request'
-export { getGlobalPicklist } from './get-global-picklist.request'
+export { getGlobalPicklistRequest } from './get-global-picklist.request'

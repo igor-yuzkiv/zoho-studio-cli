@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWorkflowRule } from '@zoho-studio/zoho-crm/workflow-rule'
+import { getWorkflowRuleRequest } from '@zoho-studio/zoho-crm/workflow-rule'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -59,17 +59,17 @@ const detailedRule = {
     conditions: [{ id: '75', instant_actions: { actions: [{ type: 'email_notifications' }] } }],
 }
 
-describe('getWorkflowRule', () => {
+describe('getWorkflowRuleRequest', () => {
     test('returns the single rule Zoho wraps in a list', async () => {
         await startProject(() => Response.json({ workflow_rules: [detailedRule] }))
 
-        expect(await getWorkflowRule('1')).toEqual(detailedRule)
+        expect(await getWorkflowRuleRequest('1')).toEqual(detailedRule)
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/workflow_rules/1')
     })
 
     test('fails on the empty answer Zoho gives for an unknown id', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        await expect(getWorkflowRule('404')).rejects.toThrow(/no workflow rule for id "404"/)
+        await expect(getWorkflowRuleRequest('404')).rejects.toThrow(/no workflow rule for id "404"/)
     })
 })

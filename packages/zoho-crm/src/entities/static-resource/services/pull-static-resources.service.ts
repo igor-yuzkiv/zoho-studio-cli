@@ -4,9 +4,9 @@ import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { staticResourcesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getStaticResourceContent, getStaticResourcesList } from '../api'
+import { getStaticResourceContentRequest, getStaticResourcesListRequest } from '../api'
 import type { StaticResource } from '../static-resource.types'
-import { resolveContentSegments, resolveMetadataSegments } from '../static-resource.utils'
+import { staticResourceContentFilePath, staticResourceMetadataFilePath } from '../static-resource.utils'
 
 type FailedResource = {
     name: string
@@ -23,7 +23,7 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
     let resources: StaticResource[]
 
     try {
-        resources = await getStaticResourcesList()
+        resources = await getStaticResourcesListRequest()
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the static resources list')
         throw error
@@ -41,15 +41,15 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
     try {
         for (const resource of resources) {
             progress.update(resource.name)
-            await writeArtifactJson(projectPath, resolveMetadataSegments(resource), resource)
+            await writeArtifactJson(projectPath, staticResourceMetadataFilePath(resource), resource)
 
             try {
                 if (!resource.uri) {
                     throw new Error('Zoho returned no uri for the file')
                 }
 
-                const content = await getStaticResourceContent(resource.uri)
-                await writeArtifactBytes(projectPath, resolveContentSegments(resource), content)
+                const content = await getStaticResourceContentRequest(resource.uri)
+                await writeArtifactBytes(projectPath, staticResourceContentFilePath(resource), content)
             } catch (error) {
                 failed.push({
                     name: resource.name,

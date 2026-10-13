@@ -4,7 +4,7 @@ import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
-import { getModulesList } from '../api'
+import { getModulesListRequest } from '../api'
 import type { ZohoModule } from '../module.types'
 import { saveModuleMetadata } from './save-module-metadata.service'
 
@@ -17,7 +17,7 @@ export async function pullModules(progress: PullProgress): Promise<PullResult> {
     let modules: ZohoModule[]
 
     try {
-        modules = await getModulesList()
+        modules = await getModulesListRequest()
     } catch (error) {
         logger.error({ err: error }, 'Failed to fetch the modules list')
         throw error

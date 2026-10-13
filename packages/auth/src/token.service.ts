@@ -6,7 +6,7 @@ import {
 } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
 
-import { refreshAccessToken } from './requests'
+import { refreshAccessTokenRequest } from './requests'
 
 // Refreshing slightly early keeps a token from expiring between the check and the API call.
 const expiryToleranceMs = 60_000
@@ -52,7 +52,7 @@ export class TokenService {
             )
         }
 
-        const refreshed = await refreshAccessToken({
+        const refreshed = await refreshAccessTokenRequest({
             clientId: profile.clientId,
             clientSecret: profile.clientSecret,
             refreshToken: tokens.refreshToken,

@@ -21,7 +21,7 @@ interface CreateFieldsPayload {
  * rejects each field on its own — 201 when all pass, 207 when some do, 400 with a `fields` list when
  * none do — so only a rejection of the request itself, such as an unknown module, is thrown.
  */
-export async function createFields(moduleApiName: string, fields: ZohoFieldCreate[]): Promise<FieldCreateResult[]> {
+export async function createFieldsRequest(moduleApiName: string, fields: ZohoFieldCreate[]): Promise<FieldCreateResult[]> {
     if (fields.length > maxFieldsPerCreateRequest) {
         throw new Error(`Zoho CRM creates at most ${maxFieldsPerCreateRequest} fields per request, got ${fields.length}.`)
     }

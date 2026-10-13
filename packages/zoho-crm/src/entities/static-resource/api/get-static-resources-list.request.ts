@@ -11,7 +11,7 @@ const staticResourcesPerPage = 200
 const maxPages = 100
 
 /** Returns every static resource of the organization, Zoho's own libraries included. */
-export async function getStaticResourcesList(): Promise<StaticResource[]> {
+export async function getStaticResourcesListRequest(): Promise<StaticResource[]> {
     const resources: StaticResource[] = []
 
     for (let page = 1; page <= maxPages; page += 1) {

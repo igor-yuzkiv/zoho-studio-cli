@@ -27,7 +27,7 @@ interface FunctionsPage {
 }
 
 /** Returns a single page of functions together with the pagination Zoho reports for it. */
-export async function getFunctionsPage(params: PageParams): Promise<FunctionsPage> {
+export async function getFunctionsPageRequest(params: PageParams): Promise<FunctionsPage> {
     const { data } = await crmClient.get<FunctionsListPayload>('/settings/functions', { params })
 
     // A 204 answer leaves no payload at all, so an absent list simply means an empty page.
@@ -35,12 +35,12 @@ export async function getFunctionsPage(params: PageParams): Promise<FunctionsPag
 }
 
 /** Returns every function of the project, following the pagination Zoho reports in `info`. */
-export async function getFunctionsList(): Promise<ZohoFunction[]> {
+export async function getFunctionsListRequest(): Promise<ZohoFunction[]> {
     const functions: ZohoFunction[] = []
     let params: PageParams = { per_page: functionsPerPage, page: 1 }
 
     for (let page = 0; page < maxPages; page += 1) {
-        const currentPage = await getFunctionsPage(params)
+        const currentPage = await getFunctionsPageRequest(params)
 
         functions.push(...currentPage.functions)
 

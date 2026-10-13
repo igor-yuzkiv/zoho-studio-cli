@@ -10,7 +10,7 @@ interface RefreshPayload {
 }
 
 /** Zoho keeps the refresh token unchanged and answers with a new access token only. */
-export async function refreshAccessToken(request: RefreshAccessTokenRequest): Promise<AccessToken> {
+export async function refreshAccessTokenRequest(request: RefreshAccessTokenRequest): Promise<AccessToken> {
     const data = await requestAccessToken(request)
 
     if (!data?.access_token) {

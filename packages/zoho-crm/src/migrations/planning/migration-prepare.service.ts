@@ -1,4 +1,4 @@
-import { getOrganization } from '../../entities/organization'
+import { getOrganizationRequest } from '../../entities/organization'
 import { describeMigration, validateMigration } from '../definition'
 import { readMigrationJournal } from '../journal'
 import { loadMigration } from '../loader'
@@ -23,7 +23,7 @@ export async function prepareMigration(projectPath: string, name: string): Promi
 
     const description = describeMigration(definition)
     const { conflicts, profileIds } = await checkMigration(description)
-    const organizationId = (await getOrganization()).id ?? 'unknown'
+    const organizationId = (await getOrganizationRequest()).id ?? 'unknown'
     const previousRun = (await readMigrationJournal(projectPath, organizationId))[name]
 
     if (previousRun?.status === 'applied') {

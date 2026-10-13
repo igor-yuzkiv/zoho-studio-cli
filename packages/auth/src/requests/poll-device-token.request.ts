@@ -16,7 +16,7 @@ const waitingResults: Record<string, DeviceTokenPollResult> = {
     slow_down: { status: 'slow_down' },
 }
 
-export async function pollDeviceToken({
+export async function pollDeviceTokenRequest({
     clientId,
     clientSecret,
     deviceCode,

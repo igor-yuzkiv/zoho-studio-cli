@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWorkflowActionsList, getWorkflowActionsPage } from '@zoho-studio/zoho-crm/workflow-action'
+import { getWorkflowActionsListRequest, getWorkflowActionsPageRequest } from '@zoho-studio/zoho-crm/workflow-action'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -55,11 +55,11 @@ afterEach(async () => {
 const upsertHook = { id: '1', name: 'Contacts.Server.Upsert', module: { api_name: 'Contacts' } }
 const deleteHook = { id: '2', name: 'Contacts.Server.Delete', module: { api_name: 'Contacts' } }
 
-describe('getWorkflowActionsPage', () => {
+describe('getWorkflowActionsPageRequest', () => {
     test('reads the list out of the key Zoho names after the action type', async () => {
         await startProject(() => Response.json({ webhooks: [upsertHook], info: { more_records: true } }))
 
-        const page = await getWorkflowActionsPage('webhooks', { per_page: 200, page: 3 })
+        const page = await getWorkflowActionsPageRequest('webhooks', { per_page: 200, page: 3 })
 
         expect(page).toEqual({ workflowActions: [upsertHook], info: { more_records: true } })
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/webhooks')
@@ -71,7 +71,7 @@ describe('getWorkflowActionsPage', () => {
     test('asks the endpoint of the type it was given', async () => {
         await startProject(() => Response.json({ email_notifications: [], info: {} }))
 
-        await getWorkflowActionsPage('email_notifications', { per_page: 200, page: 1 })
+        await getWorkflowActionsPageRequest('email_notifications', { per_page: 200, page: 1 })
 
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/email_notifications')
     })
@@ -79,14 +79,14 @@ describe('getWorkflowActionsPage', () => {
     test('reads a no-content answer as an empty page', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getWorkflowActionsPage('tasks', { per_page: 200, page: 1 })).toEqual({
+        expect(await getWorkflowActionsPageRequest('tasks', { per_page: 200, page: 1 })).toEqual({
             workflowActions: [],
             info: {},
         })
     })
 })
 
-describe('getWorkflowActionsList', () => {
+describe('getWorkflowActionsListRequest', () => {
     test('concatenates every page while Zoho reports more records', async () => {
         await startProject((request) => {
             const page = new URL(request.url).searchParams.get('page')
@@ -96,26 +96,26 @@ describe('getWorkflowActionsList', () => {
                 : Response.json({ webhooks: [deleteHook], info: { more_records: false } })
         })
 
-        expect(await getWorkflowActionsList('webhooks')).toEqual([upsertHook, deleteHook])
+        expect(await getWorkflowActionsListRequest('webhooks')).toEqual([upsertHook, deleteHook])
         expect(requestedUrls.map((url) => url.searchParams.get('page'))).toEqual(['1', '2'])
     })
 
     test('narrows the request to one module when asked', async () => {
         await startProject(() => Response.json({ webhooks: [upsertHook], info: { more_records: false } }))
 
-        expect(await getWorkflowActionsList('webhooks', 'Contacts')).toEqual([upsertHook])
+        expect(await getWorkflowActionsListRequest('webhooks', 'Contacts')).toEqual([upsertHook])
         expect(requestedUrls[0]?.searchParams.get('module')).toBe('Contacts')
     })
 
     test('returns an empty list when Zoho answers with no content', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getWorkflowActionsList('field_updates')).toEqual([])
+        expect(await getWorkflowActionsListRequest('field_updates')).toEqual([])
     })
 
     test('fails when the token has no scope for the endpoint', async () => {
         await startProject(() => Response.json({ code: 'OAUTH_SCOPE_MISMATCH' }, { status: 401 }))
 
-        await expect(getWorkflowActionsList('tasks')).rejects.toThrow(/401/)
+        await expect(getWorkflowActionsListRequest('tasks')).rejects.toThrow(/401/)
     })
 })

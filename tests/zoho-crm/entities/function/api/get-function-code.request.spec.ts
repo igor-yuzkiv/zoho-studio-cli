@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getFunctionCode } from '@zoho-studio/zoho-crm/function'
+import { getFunctionCodeRequest } from '@zoho-studio/zoho-crm/function'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -54,18 +54,18 @@ afterEach(async () => {
 
 const delugeSource = 'string button.demo(String routeId)\n{\nreturn openUrl("x","parent window");\n}'
 
-describe('getFunctionCode', () => {
+describe('getFunctionCodeRequest', () => {
     test('returns the Deluge source verbatim', async () => {
         await startProject(delugeSource)
 
-        expect(await getFunctionCode('demo')).toBe(delugeSource)
+        expect(await getFunctionCodeRequest('demo')).toBe(delugeSource)
         expect(lastPath).toBe('/crm/v8/settings/functions/demo/code')
     })
 
     test('keeps a body that looks like JSON as a string', async () => {
         await startProject('{"code":"SUCCESS"}', { contentType: 'application/json' })
 
-        const code = await getFunctionCode('1000000000000012345')
+        const code = await getFunctionCodeRequest('1000000000000012345')
 
         expect(typeof code).toBe('string')
         expect(code).toBe('{"code":"SUCCESS"}')
@@ -74,6 +74,6 @@ describe('getFunctionCode', () => {
     test('fails when the CRM answers with an error status', async () => {
         await startProject('not found', { status: 404 })
 
-        await expect(getFunctionCode('missing')).rejects.toThrow(/404/)
+        await expect(getFunctionCodeRequest('missing')).rejects.toThrow(/404/)
     })
 })

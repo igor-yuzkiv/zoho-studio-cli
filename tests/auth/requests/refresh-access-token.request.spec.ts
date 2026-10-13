@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { refreshAccessToken } from '@zoho-studio/auth'
+import { refreshAccessTokenRequest } from '@zoho-studio/auth'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
@@ -32,10 +32,10 @@ afterEach(async () => {
 })
 
 function refresh() {
-    return refreshAccessToken({ clientId: '1000.CLIENT', clientSecret: 'secret', refreshToken: 'refresh' })
+    return refreshAccessTokenRequest({ clientId: '1000.CLIENT', clientSecret: 'secret', refreshToken: 'refresh' })
 }
 
-describe('refreshAccessToken', () => {
+describe('refreshAccessTokenRequest', () => {
     test('sends the refresh parameters and maps the new access token', async () => {
         await startZoho({
             access_token: 'fresh',

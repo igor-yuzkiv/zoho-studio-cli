@@ -1,6 +1,6 @@
 export {
-    getWorkflowActionsList,
-    getWorkflowActionsPage,
+    getWorkflowActionsListRequest,
+    getWorkflowActionsPageRequest,
     type WorkflowActionsPageParams,
 } from './get-workflow-actions-list.request'
-export { getWorkflowAction } from './get-workflow-action.request'
+export { getWorkflowActionRequest } from './get-workflow-action.request'

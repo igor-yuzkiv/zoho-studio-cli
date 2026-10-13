@@ -5,7 +5,7 @@ import axios from 'axios'
  * answers a transpiled form instead, so the source is read from the script's hosting url — a file
  * outside Zoho CRM that the CRM web UI also reads without credentials, so no token is sent there.
  */
-export async function getClientScriptSource(hostingUrl: string): Promise<string> {
+export async function getClientScriptSourceRequest(hostingUrl: string): Promise<string> {
     const { data } = await axios.get<string>(hostingUrl, {
         responseType: 'text',
         transformResponse: (body: unknown) => body,

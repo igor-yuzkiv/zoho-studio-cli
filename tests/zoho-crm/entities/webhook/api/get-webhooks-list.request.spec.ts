@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getWebhooksList, getWebhooksPage } from '@zoho-studio/zoho-crm/webhook'
+import { getWebhooksListRequest, getWebhooksPageRequest } from '@zoho-studio/zoho-crm/webhook'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../../../support/temp-project'
 
@@ -55,11 +55,11 @@ afterEach(async () => {
 const deleteHook = { id: '1', name: 'SRV.Programs.Delete', module: { api_name: 'Programs' } }
 const upsertHook = { id: '2', name: 'SRV.Programs.Upsert', module: { api_name: 'Programs' } }
 
-describe('getWebhooksPage', () => {
+describe('getWebhooksPageRequest', () => {
     test('requests the asked page and returns it with its pagination info', async () => {
         await startProject(() => Response.json({ webhooks: [deleteHook], info: { more_records: true } }))
 
-        const page = await getWebhooksPage({ per_page: 200, page: 3 })
+        const page = await getWebhooksPageRequest({ per_page: 200, page: 3 })
 
         expect(page).toEqual({ webhooks: [deleteHook], info: { more_records: true } })
         expect(requestedUrls[0]?.pathname).toEndWith('/settings/automation/webhooks')
@@ -70,11 +70,11 @@ describe('getWebhooksPage', () => {
     test('reads a no-content answer as an empty page', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getWebhooksPage({ per_page: 200, page: 1 })).toEqual({ webhooks: [], info: {} })
+        expect(await getWebhooksPageRequest({ per_page: 200, page: 1 })).toEqual({ webhooks: [], info: {} })
     })
 })
 
-describe('getWebhooksList', () => {
+describe('getWebhooksListRequest', () => {
     test('concatenates every page while Zoho reports more records', async () => {
         await startProject((request) => {
             const page = new URL(request.url).searchParams.get('page')
@@ -84,19 +84,19 @@ describe('getWebhooksList', () => {
                 : Response.json({ webhooks: [upsertHook], info: { more_records: false } })
         })
 
-        expect(await getWebhooksList()).toEqual([deleteHook, upsertHook])
+        expect(await getWebhooksListRequest()).toEqual([deleteHook, upsertHook])
         expect(requestedUrls.map((url) => url.searchParams.get('page'))).toEqual(['1', '2'])
     })
 
     test('returns an empty list when Zoho answers with no content', async () => {
         await startProject(() => new Response(null, { status: 204 }))
 
-        expect(await getWebhooksList()).toEqual([])
+        expect(await getWebhooksListRequest()).toEqual([])
     })
 
     test('fails when Zoho rejects the request', async () => {
         await startProject(() => Response.json({ code: 'OAUTH_SCOPE_MISMATCH' }, { status: 401 }))
 
-        await expect(getWebhooksList()).rejects.toThrow(/401/)
+        await expect(getWebhooksListRequest()).rejects.toThrow(/401/)
     })
 })

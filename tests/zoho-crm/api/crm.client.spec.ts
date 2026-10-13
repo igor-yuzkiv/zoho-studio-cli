@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { getOrganization } from '@zoho-studio/zoho-crm/organization'
+import { getOrganizationRequest } from '@zoho-studio/zoho-crm/organization'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
@@ -56,7 +56,7 @@ describe('crmClient', () => {
     test('sends the stored access token and the versioned base path', async () => {
         await startProject(organizationAnswer)
 
-        await getOrganization()
+        await getOrganizationRequest()
 
         expect(lastRequest).toEqual({ path: '/crm/v8/org', authorization: 'Zoho-oauthtoken access' })
     })
@@ -66,7 +66,7 @@ describe('crmClient', () => {
             tokens: { ...validTokens, accessToken: 'stale', accessTokenExpiresAt: Date.now() - 1 },
         })
 
-        await getOrganization()
+        await getOrganizationRequest()
 
         expect(lastRequest?.authorization).toBe('Zoho-oauthtoken fresh')
     })
@@ -74,6 +74,6 @@ describe('crmClient', () => {
     test('fails when the CRM answers with an error status', async () => {
         await startProject({ code: 'INVALID_TOKEN' }, { status: 401 })
 
-        await expect(getOrganization()).rejects.toThrow(/401/)
+        await expect(getOrganizationRequest()).rejects.toThrow(/401/)
     })
 })

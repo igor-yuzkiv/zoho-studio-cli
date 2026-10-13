@@ -4,7 +4,7 @@ import { confirm, select } from '@inquirer/prompts'
 
 import { getProjectSettings } from '@zoho-studio/core'
 
-import { getOrganization } from '../../entities/organization'
+import { getOrganizationRequest } from '../../entities/organization'
 import { readMigrationJournal } from '../journal'
 import { listMigrations } from '../loader'
 import { prepareMigration, type PreparedMigration } from '../planning'
@@ -95,7 +95,7 @@ async function chooseMigration(projectPath: string): Promise<string | null> {
         return null
     }
 
-    const journal = await readMigrationJournal(projectPath, (await getOrganization()).id ?? 'unknown')
+    const journal = await readMigrationJournal(projectPath, (await getOrganizationRequest()).id ?? 'unknown')
 
     return select({
         message: 'Migration to run',

@@ -51,9 +51,16 @@ the sibling packages are declared once, in the root `package.json`, and resolve 
 outside the repository, which `init` relies on (`bun run link`, `link:@zoho-studio/<name>`).
 
 A package is imported by name, never by a path into another package. `@zoho-studio/zoho-crm`
-exposes its client, config and organization store at the root and each entity as a subpath
-(`@zoho-studio/zoho-crm/field`), because several entities export helpers with the same name.
-Inside a package, imports are relative.
+exposes everything at the root — the client, config, every entity, and migrations — so a project
+script needs one import; each entity and `migrations` is also a subpath
+(`@zoho-studio/zoho-crm/field`). Every exported name is therefore unique across the package:
+`export *` would silently drop a name two entities share, which `tests/zoho-crm/index.spec.ts`
+guards against. Inside a package, imports are relative.
+
+A function that sends an HTTP request — everything in a `*.request.ts` — ends with `Request`
+(`getFieldsListRequest`, `createModuleRequest`), so a call site shows where the network is
+touched. A helper that would otherwise be ambiguous names its entity
+(`moduleMetadataFilePath`, not `resolveMetadataSegments`).
 
 A command folder exposes the command and nothing else: its `index.ts` exports only the `Command`,
 and whatever the command needs is either its own private file or lives in an entity. A command
@@ -110,7 +117,7 @@ Add a new suffix only when an existing one does not fit the responsibility.
 Use `index.ts` to expose a clear public interface for a folder when it improves imports.
 
 ```ts
-import { getFunctionsList } from '@zoho-studio/zoho-crm/function'
+import { getFunctionsListRequest } from '@zoho-studio/zoho-crm/function'
 import { crmClient } from '@zoho-studio/zoho-crm'
 import { getProjectSettings } from '@zoho-studio/core'
 import { initCommand } from '@/commands/init'

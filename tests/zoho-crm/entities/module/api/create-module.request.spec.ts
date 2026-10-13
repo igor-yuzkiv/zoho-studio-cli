@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { createModule } from '@zoho-studio/zoho-crm/module'
+import { createModuleRequest } from '@zoho-studio/zoho-crm/module'
 
 import { startCrmStub, type CrmStub } from '../../../../support/crm-stub'
 
@@ -18,7 +18,7 @@ const projects = {
     profiles: [{ id: '100' }],
 }
 
-describe('createModule', () => {
+describe('createModuleRequest', () => {
     test('posts the module wrapped in a single-item list and returns its id', async () => {
         crm = await startCrmStub(() =>
             Response.json(
@@ -27,7 +27,7 @@ describe('createModule', () => {
             )
         )
 
-        expect(await createModule(projects)).toEqual({ id: '555' })
+        expect(await createModuleRequest(projects)).toEqual({ id: '555' })
         expect(crm.requests[0]?.method).toBe('POST')
         expect(crm.requestedUrls[0]?.pathname).toEndWith('/settings/modules')
         expect(JSON.parse(crm.requests[0]?.body ?? '')).toEqual({ modules: [projects] })
@@ -41,6 +41,6 @@ describe('createModule', () => {
             )
         )
 
-        await expect(createModule(projects)).rejects.toThrow('duplicate data (DUPLICATE_DATA)')
+        await expect(createModuleRequest(projects)).rejects.toThrow('duplicate data (DUPLICATE_DATA)')
     })
 })

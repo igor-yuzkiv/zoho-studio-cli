@@ -26,7 +26,7 @@ interface WorkflowRulesPage {
 }
 
 /** Returns a single page of workflow rules together with the pagination Zoho reports for it. */
-export async function getWorkflowRulesPage(params: WorkflowRulesPageParams): Promise<WorkflowRulesPage> {
+export async function getWorkflowRulesPageRequest(params: WorkflowRulesPageParams): Promise<WorkflowRulesPage> {
     const { data } = await crmClient.get<WorkflowRulesListPayload>('/settings/automation/workflow_rules', { params })
 
     // A 204 answer leaves no payload at all, so an absent list simply means an empty page.
@@ -37,11 +37,11 @@ export async function getWorkflowRulesPage(params: WorkflowRulesPageParams): Pro
  * Returns every workflow rule, of one module when asked. Zoho paginates this endpoint by page
  * number only — it reports no page token, so there is nothing else to follow.
  */
-export async function getWorkflowRulesList(module?: string): Promise<ZohoWorkflowRule[]> {
+export async function getWorkflowRulesListRequest(module?: string): Promise<ZohoWorkflowRule[]> {
     const workflowRules: ZohoWorkflowRule[] = []
 
     for (let page = 1; page <= maxPages; page += 1) {
-        const currentPage = await getWorkflowRulesPage({ per_page: workflowRulesPerPage, page, module })
+        const currentPage = await getWorkflowRulesPageRequest({ per_page: workflowRulesPerPage, page, module })
 
         workflowRules.push(...currentPage.workflowRules)
 

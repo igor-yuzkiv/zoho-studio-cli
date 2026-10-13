@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { pollDeviceToken } from '@zoho-studio/auth'
+import { pollDeviceTokenRequest } from '@zoho-studio/auth'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
@@ -32,10 +32,10 @@ afterEach(async () => {
 })
 
 function poll() {
-    return pollDeviceToken({ clientId: '1000.CLIENT', clientSecret: 'secret', deviceCode: 'device' })
+    return pollDeviceTokenRequest({ clientId: '1000.CLIENT', clientSecret: 'secret', deviceCode: 'device' })
 }
 
-describe('pollDeviceToken', () => {
+describe('pollDeviceTokenRequest', () => {
     test('sends the device token parameters and maps issued tokens', async () => {
         await startZoho({
             access_token: 'access',

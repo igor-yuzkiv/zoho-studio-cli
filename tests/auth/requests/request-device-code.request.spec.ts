@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { requestDeviceCode } from '@zoho-studio/auth'
+import { deviceCodeRequest } from '@zoho-studio/auth'
 
 import { buildSettings, createTempProject, removeTempProject } from '../../support/temp-project'
 
@@ -32,10 +32,10 @@ afterEach(async () => {
 })
 
 function request() {
-    return requestDeviceCode({ clientId: '1000.CLIENT', scopes: ['A', 'B'] })
+    return deviceCodeRequest({ clientId: '1000.CLIENT', scopes: ['A', 'B'] })
 }
 
-describe('requestDeviceCode', () => {
+describe('deviceCodeRequest', () => {
     test('asks for an offline device code and maps the response', async () => {
         await startZoho({
             device_code: 'device',

@@ -1,6 +1,6 @@
 export {
-    getWorkflowRulesList,
-    getWorkflowRulesPage,
+    getWorkflowRulesListRequest,
+    getWorkflowRulesPageRequest,
     type WorkflowRulesPageParams,
 } from './get-workflow-rules-list.request'
-export { getWorkflowRule } from './get-workflow-rule.request'
+export { getWorkflowRuleRequest } from './get-workflow-rule.request'

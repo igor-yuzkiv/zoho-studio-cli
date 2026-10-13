@@ -1,7 +1,7 @@
 import { describeRequestError } from '../../api'
-import { createFields, getFieldsList, saveModuleFields } from '../../entities/field'
-import { createModule, getModulesList, saveModuleMetadata } from '../../entities/module'
-import { getOrganization } from '../../entities/organization'
+import { createFieldsRequest, getFieldsListRequest, saveModuleFields } from '../../entities/field'
+import { createModuleRequest, getModulesListRequest, saveModuleMetadata } from '../../entities/module'
+import { getOrganizationRequest } from '../../entities/organization'
 
 import { readMigrationJournal, saveMigrationJournalEntry, type MigrationJournalEntry } from '../journal'
 import type { MigrationStep, PreparedMigration } from '../planning'
@@ -30,7 +30,7 @@ export async function runMigration(
         return finish('blocked', `The migration has ${count} conflict${count === 1 ? '' : 's'}.`)
     }
 
-    const organizationId = (await getOrganization()).id ?? 'unknown'
+    const organizationId = (await getOrganizationRequest()).id ?? 'unknown'
     const previousRun = (await readMigrationJournal(projectPath, organizationId))[prepared.name]
 
     if (previousRun?.status === 'applied') {
@@ -79,7 +79,7 @@ async function runStep(
     emit: EmitMigrationEvent
 ): Promise<string | null> {
     if (step.kind === 'create-module') {
-        const { id } = await createModule(step.module)
+        const { id } = await createModuleRequest(step.module)
 
         // Recorded before the API name lookup, which can still fail, so the journal knows the module exists.
         entry.moduleId = id
@@ -97,7 +97,7 @@ async function runStep(
         throw new Error('The module to add the fields to is unknown.')
     }
 
-    const results = await createFields(targetModule, step.fields)
+    const results = await createFieldsRequest(targetModule, step.fields)
     let failedCount = 0
 
     for (const [position, result] of results.entries()) {
@@ -121,7 +121,7 @@ async function runStep(
 
 /** Zoho answers a module creation with its id only, so a generated API name is looked up by it. */
 async function findModuleApiName(moduleId: string): Promise<string> {
-    const module = (await getModulesList()).find((candidate) => candidate.id === moduleId)
+    const module = (await getModulesListRequest()).find((candidate) => candidate.id === moduleId)
 
     if (!module) {
         throw new Error(`Zoho CRM does not list the module it has just created (id ${moduleId}).`)
@@ -136,8 +136,8 @@ async function verifyAndRefresh(
     prepared: PreparedMigration,
     emit: EmitMigrationEvent
 ): Promise<void> {
-    const module = (await getModulesList()).find((candidate) => candidate.api_name === moduleApiName)
-    const fields = await getFieldsList(moduleApiName)
+    const module = (await getModulesListRequest()).find((candidate) => candidate.api_name === moduleApiName)
+    const fields = await getFieldsListRequest(moduleApiName)
     const existingLabels = new Set(fields.map((field) => field.field_label.toLowerCase()))
     const plannedLabels = prepared.description!.fields.map((field) => field.field_label)
 
