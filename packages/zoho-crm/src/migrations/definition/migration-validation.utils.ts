@@ -1,168 +1,82 @@
-import type { ZohoFieldCreate } from '../../entities/field'
-
-import { describeMigration } from './migration-definition.utils'
-import type { MigrationDefinition, MigrationDescription } from './migration-definition.types'
-
-const maxModuleLabelLength = 50
-const maxFieldLabelLength = 25
-const maxPicklistValueLength = 25
-const maxTextLength = 50000
-const maxDecimalPlace = 9
-const maxTooltipLength = 255
-const maxStaticTextTooltipLength = 35
-/** Seen accepted on a sandbox org; the rest answered DEPENDENT_MISMATCH, and textarea is untested. */
-const staticTextTooltipTypes = new Set([
-    'text',
-    'email',
-    'phone',
-    'website',
-    'integer',
-    'bigint',
-    'double',
-    'percent',
-    'currency',
-    'lookup',
-])
-const apiNamePattern = /^[A-Za-z](?:[A-Za-z0-9]|_(?!_))*(?<!_)$/
-const apiNameRule = 'must start with a letter and hold only letters, digits and single underscores, not ending with one.'
+import { collectFieldDeclarations } from './field-schema.builder'
+import {
+    createModuleSchema,
+    describeIssues,
+    fieldLabelSchema,
+    fieldOptionSchemas,
+    findFieldRuleProblems,
+    updateModuleSchema,
+} from './migration-definition.schemas'
+import type { FieldDeclaration, FieldsDeclaration, MigrationDefinition } from './migration-definition.types'
 
 /** Returns every problem of a migration that can be found without asking Zoho; an empty list means valid. */
 export function validateMigration(definition: MigrationDefinition): string[] {
+    const action = definition && 'create' in definition && definition.create ? 'create' : 'update'
+
     if (!definition || Boolean(definition.create) === Boolean(definition.update)) {
         return ['A migration must declare exactly one action: create or update.']
     }
 
-    let description: MigrationDescription
+    const schema = action === 'create' ? createModuleSchema : updateModuleSchema
+    const parsed = schema.safeParse(definition[action])
+
+    if (!parsed.success) {
+        return describeIssues(parsed.error.issues, { unknownOption: `${action}: ` })
+    }
+
+    let declarations: FieldDeclaration[]
 
     try {
-        description = describeMigration(definition)
+        declarations = collectFieldDeclarations(parsed.data.fields as FieldsDeclaration)
     } catch (error) {
         return [`The fields declaration failed: ${error instanceof Error ? error.message : String(error)}`]
     }
 
-    return [...validateModule(description), ...validateFields(description.fields)]
+    if (action === 'update' && declarations.length === 0) {
+        return ['An update must add at least one field.']
+    }
+
+    return validateFields(declarations)
 }
 
-function validateModule(description: MigrationDescription): string[] {
-    const problems: string[] = []
-
-    if (description.action === 'update') {
-        if (description.fields.length === 0) {
-            problems.push('An update must add at least one field.')
-        }
-
-        return problems
-    }
-
-    const { api_name, singular_label, plural_label } = description.module
-
-    if (api_name !== undefined && !apiNamePattern.test(api_name)) {
-        problems.push(`Module API name "${api_name}" ${apiNameRule}`)
-    }
-
-    for (const [name, label] of [
-        ['singular_label', singular_label],
-        ['plural_label', plural_label],
-    ] as const) {
-        if (!isLengthBetween(label, 1, maxModuleLabelLength)) {
-            problems.push(`Module ${name} must be 1 to ${maxModuleLabelLength} characters.`)
-        }
-    }
-
-    return problems
-}
-
-function validateFields(fields: ZohoFieldCreate[]): string[] {
+function validateFields(declarations: FieldDeclaration[]): string[] {
     const problems: string[] = []
     const seenLabels = new Set<string>()
     const seenApiNames = new Set<string>()
 
-    for (const field of fields) {
-        const report = (problem: string) => problems.push(`Field "${field.field_label}": ${problem}`)
-        const label = field.field_label.toLowerCase()
+    for (const { label, dataType, options } of declarations) {
+        const subject = `Field "${label}": `
+        const report = (problem: string) => problems.push(`${subject}${problem}`)
+        const parsedLabel = fieldLabelSchema.safeParse(label)
+        const parsedOptions = fieldOptionSchemas[dataType].safeParse(options)
 
-        if (!isLengthBetween(field.field_label, 1, maxFieldLabelLength)) {
-            report(`the label must be 1 to ${maxFieldLabelLength} characters.`)
-        }
-
-        if (seenLabels.has(label)) {
+        if (!parsedLabel.success) {
+            problems.push(...describeIssues(parsedLabel.error.issues, { all: subject, unknownOption: subject }))
+        } else if (seenLabels.has(label.toLowerCase())) {
             report('the label is declared more than once.')
         }
 
-        seenLabels.add(label)
-
-        if (field.api_name !== undefined) {
-            if (!apiNamePattern.test(field.api_name)) {
-                report(`API name "${field.api_name}" ${apiNameRule}`)
-            } else if (seenApiNames.has(field.api_name.toLowerCase())) {
-                report(`API name "${field.api_name}" is declared more than once.`)
-            }
-
-            seenApiNames.add(field.api_name.toLowerCase())
+        if (typeof label === 'string') {
+            seenLabels.add(label.toLowerCase())
         }
 
-        validateTypeOptions(field, report)
+        if (!parsedOptions.success) {
+            problems.push(...describeIssues(parsedOptions.error.issues, { all: subject, unknownOption: subject }))
+            continue
+        }
+
+        const apiName = parsedOptions.data.api_name
+
+        if (apiName !== undefined) {
+            if (seenApiNames.has(apiName.toLowerCase())) {
+                report(`API name "${apiName}" is declared more than once.`)
+            }
+
+            seenApiNames.add(apiName.toLowerCase())
+        }
+
+        findFieldRuleProblems(dataType, parsedOptions.data).forEach(report)
     }
 
     return problems
-}
-
-function validateTypeOptions(field: ZohoFieldCreate, report: (problem: string) => void): void {
-    const tooltip = field.tooltip as { name: string; value: string } | undefined
-
-    if (tooltip?.name === 'static_text') {
-        if (!staticTextTooltipTypes.has(field.data_type)) {
-            report(
-                `a static_text tooltip is not supported for ${field.data_type} fields; give the text alone for an info icon.`
-            )
-        } else if (!isLengthBetween(tooltip.value, 1, maxStaticTextTooltipLength)) {
-            report(`a static_text tooltip must be 1 to ${maxStaticTextTooltipLength} characters.`)
-        }
-    } else if (tooltip && !isLengthBetween(tooltip.value, 1, maxTooltipLength)) {
-        report(`the tooltip must be 1 to ${maxTooltipLength} characters.`)
-    }
-
-    if (field.length !== undefined && !isWholeNumberBetween(field.length, 1, maxTextLength)) {
-        report(`length must be a whole number from 1 to ${maxTextLength}.`)
-    }
-
-    if (field.decimal_place !== undefined && !isWholeNumberBetween(field.decimal_place, 0, maxDecimalPlace)) {
-        report(`decimal_place must be a whole number from 0 to ${maxDecimalPlace}.`)
-    }
-
-    if (Array.isArray(field.pick_list_values)) {
-        validatePicklistValues(field.pick_list_values as { actual_value: string }[], report)
-    }
-
-    if (field.data_type === 'lookup' && !(field.lookup as { module: { api_name: string } }).module.api_name) {
-        report('a lookup needs the API name of its target module.')
-    }
-}
-
-function validatePicklistValues(values: { actual_value: string }[], report: (problem: string) => void): void {
-    if (values.length === 0) {
-        report('a picklist needs at least one value.')
-    }
-
-    const seenValues = new Set<string>()
-
-    for (const { actual_value } of values) {
-        if (seenValues.has(actual_value)) {
-            report(`picklist value "${actual_value}" is declared more than once.`)
-        }
-
-        seenValues.add(actual_value)
-
-        if (!isLengthBetween(actual_value, 1, maxPicklistValueLength)) {
-            report(`picklist value "${actual_value}" must be 1 to ${maxPicklistValueLength} characters.`)
-        }
-    }
-}
-
-function isLengthBetween(value: string, min: number, max: number): boolean {
-    return value.length >= min && value.length <= max
-}
-
-function isWholeNumberBetween(value: unknown, min: number, max: number): boolean {
-    return Number.isInteger(value) && (value as number) >= min && (value as number) <= max
 }

@@ -108,7 +108,7 @@ path.utils.ts
 ```
 
 Responsibility suffixes in use: `.command.ts`, `.request.ts`, `.client.ts`, `.service.ts`,
-`.store.ts`, `.loader.ts`, `.types.ts`, `.settings.ts`, `.error.ts`, `.utils.ts`, `.builder.ts`, `.spec.ts`.
+`.store.ts`, `.loader.ts`, `.types.ts`, `.settings.ts`, `.error.ts`, `.utils.ts`, `.builder.ts`, `.schemas.ts`, `.spec.ts`.
 
 Add a new suffix only when an existing one does not fit the responsibility.
 

@@ -35,6 +35,9 @@
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@inquirer/prompts": "^8.5.2",
     "@lucide/vue": "^1.53.0",
+    "@zoho-studio/auth": "workspace:*",
+    "@zoho-studio/core": "workspace:*",
+    "@zoho-studio/zoho-crm": "workspace:*",
     "axios": "^1.18.1",
     "bunfig": "^0.15.15",
     "cli-progress": "^3.12.0",
@@ -44,9 +47,7 @@
     "pino": "^10.3.1",
     "vue": "^3.5.43",
     "vue-router": "^5.4.0",
-    "@zoho-studio/core": "workspace:*",
-    "@zoho-studio/auth": "workspace:*",
-    "@zoho-studio/zoho-crm": "workspace:*"
+    "zod": "4.6.5"
   },
   "scripts": {
     "dev": "bun run apps/cli/src/index.ts",

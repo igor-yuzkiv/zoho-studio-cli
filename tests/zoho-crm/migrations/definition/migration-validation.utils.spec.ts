@@ -135,4 +135,35 @@ describe('validateMigration', () => {
             'Field "Deadline": a static_text tooltip is not supported for date fields; give the text alone for an info icon.',
         ])
     })
+
+    test('rejects an option the field type does not have', () => {
+        const migration = updateWith((schema) => {
+            schema.double('Rate', { decimal_places: 2 } as never)
+        })
+
+        expect(validateMigration(migration)).toEqual(['Field "Rate": unknown option "decimal_places".'])
+    })
+
+    test('rejects an option value of the wrong type', () => {
+        const migration = updateWith((schema) => {
+            schema.text('Code', { length: '50' } as never)
+            schema.picklist('Stage', { values: 'New' } as never)
+        })
+
+        expect(validateMigration(migration)).toEqual([
+            'Field "Code": length must be a whole number from 1 to 50000.',
+            'Field "Stage": values must be a list of strings or { display_value, actual_value } pairs.',
+        ])
+    })
+
+    test('rejects an unknown key of the action and fields that are not a function', () => {
+        const migration = {
+            create: { singular_label: 'Project', plural_label: 'Projects', fields: [], color: 'red' },
+        } as never
+
+        expect(validateMigration(migration)).toEqual([
+            'create: fields must be a function that declares the fields.',
+            'create: unknown option "color".',
+        ])
+    })
 })

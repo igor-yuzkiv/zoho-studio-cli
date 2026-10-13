@@ -91,7 +91,9 @@ The other options keep Zoho's names, and an option you leave out gets Zoho's def
 
 Any of these blocks the run, and the script prints each one:
 
-- the file does not load, or breaks a rule Zoho would reject: label lengths, API name format, a
+- the file does not load, names an option the field type does not have (a misspelt
+  `decimal_places`, say), gives an option a value of the wrong kind (`length: '50'`), or breaks a
+  rule Zoho would reject: label lengths, API name format, a
   label or API name declared twice, an empty or repeated picklist value, a tooltip that is too long or
   of a type the field does not support;
 - for `create`, a module with the same API name or label exists, or a field collides with the
