@@ -82,6 +82,18 @@ describe('runMigrationScript', () => {
         expect(writes()).toHaveLength(0)
     })
 
+    test('ends the JSON stream of a blocked migration with a finished event', async () => {
+        crm = await startCrm()
+        await writeMigration('001-code', addCode)
+
+        expect(await runMigrationScript(['001-code', '--yes', '--json'])).toBe(1)
+        expect(JSON.parse(printed().at(-1)!)).toEqual({
+            type: 'finished',
+            status: 'blocked',
+            message: 'The migration has 1 conflict.',
+        })
+    })
+
     test('refuses --json without a migration name or a way to skip the prompt', async () => {
         crm = await startCrm()
 

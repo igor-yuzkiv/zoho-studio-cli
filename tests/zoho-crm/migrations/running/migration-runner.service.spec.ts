@@ -29,6 +29,8 @@ interface CrmState {
     rejectModule?: boolean
     rejectedLabels?: string[]
     generatedApiName?: string
+    hideCreatedModule?: boolean
+    failFieldsRead?: boolean
 }
 
 /** A CRM that remembers what was created, so the run can read it back. */
@@ -52,7 +54,7 @@ function startCrm(state: CrmState): Promise<CrmStub> {
             const id = String(nextId++)
             const apiName = module!.api_name ?? state.generatedApiName!
 
-            state.modules.push({ id, api_name: apiName, module_name: 'CustomModule9' })
+            if (!state.hideCreatedModule) state.modules.push({ id, api_name: apiName, module_name: 'CustomModule9' })
             state.fields[apiName] = []
 
             return Response.json({ modules: [{ code: 'SUCCESS', details: { id }, status: 'success' }] }, { status: 201 })
@@ -84,6 +86,8 @@ function startCrm(state: CrmState): Promise<CrmStub> {
         }
 
         if (url.pathname.endsWith('/settings/fields')) {
+            if (state.failFieldsRead) return Response.json({ code: 'INTERNAL_ERROR', message: 'internal error' }, { status: 500 })
+
             return Response.json({ fields: state.fields[moduleName] ?? [], info: {} })
         }
 
@@ -202,6 +206,34 @@ describe('runMigration', () => {
         expect(status).toBe('applied')
         expect(events).toContainEqual({ type: 'module-created', id: '500', api_name: 'Bills' })
         expect(crm.requestedUrls.at(-3)?.searchParams.get('module')).toBe('Bills')
+    })
+
+    test('journals the id of a created module even when its API name cannot be learned', async () => {
+        crm = await startCrm({ orgId: 'org-1', modules: [], fields: {}, hideCreatedModule: true })
+        const migration = defineMigration({
+            create: { singular_label: 'Bill', plural_label: 'Bills', fields: (schema) => schema.text('Number') },
+        })
+
+        const { status } = await run(prepare('001-bills', migration))
+
+        expect(status).toBe('failed')
+        expect((await readMigrationJournal(crm.projectPath, 'org-1'))['001-bills']).toMatchObject({
+            status: 'failed',
+            moduleId: '500',
+        })
+    })
+
+    test('still journals the run when reading the result back fails', async () => {
+        crm = await startCrm({ orgId: 'org-1', modules: [], fields: {}, failFieldsRead: true })
+
+        const { status, events } = await run(prepare('001-invoices', createInvoices))
+
+        expect(status).toBe('applied')
+        expect(events).toContainEqual({
+            type: 'verification-failed',
+            error: 'internal error (INTERNAL_ERROR)',
+        })
+        expect((await readMigrationJournal(crm.projectPath, 'org-1'))['001-invoices']).toMatchObject({ status: 'applied' })
     })
 
     test('adds fields to an existing module', async () => {

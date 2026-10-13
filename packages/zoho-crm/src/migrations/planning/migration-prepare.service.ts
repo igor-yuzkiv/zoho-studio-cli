@@ -1,4 +1,6 @@
+import { getOrganization } from '../../entities/organization'
 import { describeMigration, validateMigration } from '../definition'
+import { readMigrationJournal } from '../journal'
 import { loadMigration } from '../loader'
 
 import { checkMigration } from './migration-checks.service'
@@ -21,6 +23,12 @@ export async function prepareMigration(projectPath: string, name: string): Promi
 
     const description = describeMigration(definition)
     const { conflicts, profileIds } = await checkMigration(description)
+    const organizationId = (await getOrganization()).id ?? 'unknown'
+    const previousRun = (await readMigrationJournal(projectPath, organizationId))[name]
+
+    if (previousRun?.status === 'applied') {
+        conflicts.unshift(`Migration "${name}" was already applied to this organization on ${previousRun.ranAt}.`)
+    }
 
     return { name, description, plan: buildMigrationPlan(description, profileIds), conflicts }
 }

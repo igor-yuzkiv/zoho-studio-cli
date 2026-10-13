@@ -1,3 +1,4 @@
+import { describeRequestError } from '../../api'
 import { createFields, getFieldsList, saveModuleFields } from '../../entities/field'
 import { createModule, getModulesList, saveModuleMetadata } from '../../entities/module'
 import { getOrganization } from '../../entities/organization'
@@ -54,7 +55,12 @@ export async function runMigration(
     }
 
     if (moduleApiName) {
-        await verifyAndRefresh(projectPath, moduleApiName, prepared, emit)
+        try {
+            await verifyAndRefresh(projectPath, moduleApiName, prepared, emit)
+        } catch (error) {
+            // Zoho has already changed by now, so the run is journaled whatever the read-back says.
+            emit({ type: 'verification-failed', error: describeRequestError(error) })
+        }
     }
 
     await saveMigrationJournalEntry(projectPath, organizationId, prepared.name, entry)
@@ -74,9 +80,12 @@ async function runStep(
 ): Promise<string | null> {
     if (step.kind === 'create-module') {
         const { id } = await createModule(step.module)
+
+        // Recorded before the API name lookup, which can still fail, so the journal knows the module exists.
+        entry.moduleId = id
+
         const apiName = step.module.api_name ?? (await findModuleApiName(id))
 
-        entry.moduleId = id
         emit({ type: 'module-created', id, api_name: apiName })
 
         return apiName

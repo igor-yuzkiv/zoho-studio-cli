@@ -18,5 +18,6 @@ export type MigrationEvent =
     | { type: 'field-result'; index: number; field_label: string; result: FieldCreateResult }
     | { type: 'step-finished'; index: number; status: 'success' | 'failed'; error?: string }
     | { type: 'verified'; verification: MigrationVerification }
+    | { type: 'verification-failed'; error: string }
     | { type: 'artifacts-updated'; module: string }
     | { type: 'finished'; status: MigrationRunStatus; message: string }

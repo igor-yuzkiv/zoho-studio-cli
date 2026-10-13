@@ -55,6 +55,8 @@ export async function runMigrationScript(argv: string[] = process.argv.slice(2))
     print({ type: 'prepared', migration: prepared })
 
     if (prepared.conflicts.length > 0) {
+        // A blocked run sends nothing to Zoho; it only reports the block, so every stream ends with `finished`.
+        await runMigration(projectPath, prepared, print)
         return 1
     }
 

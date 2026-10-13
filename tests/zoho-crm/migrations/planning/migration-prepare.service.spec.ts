@@ -20,9 +20,13 @@ async function writeMigration(projectPath: string, name: string, source: string)
     await writeFile(join(migrationsPath, `${name}.ts`), source)
 }
 
+const addCode = `export default { update: { module: 'Projects', fields: (schema) => schema.text('Code') } }\n`
+
 function startCrm(): Promise<CrmStub> {
     return startCrmStub((request) => {
         const { pathname } = new URL(request.url)
+
+        if (pathname.endsWith('/org')) return Response.json({ org: [{ id: 'org-1' }] })
 
         if (pathname.endsWith('/settings/modules')) {
             return Response.json({ modules: [{ id: '2', api_name: 'Projects', module_name: 'CustomModule1' }] })
@@ -35,11 +39,7 @@ function startCrm(): Promise<CrmStub> {
 describe('prepareMigration', () => {
     test('returns the description and plan of a migration Zoho has no conflict with', async () => {
         crm = await startCrm()
-        await writeMigration(
-            crm.projectPath,
-            '001-add-code',
-            `export default { update: { module: 'Projects', fields: (schema) => schema.text('Code') } }\n`
-        )
+        await writeMigration(crm.projectPath, '001-add-code', addCode)
 
         expect(await prepareMigration(crm.projectPath, '001-add-code')).toEqual({
             name: '001-add-code',
@@ -53,6 +53,19 @@ describe('prepareMigration', () => {
             },
             conflicts: [],
         })
+    })
+
+    test('reports a migration already applied to the organization', async () => {
+        crm = await startCrm()
+        await writeMigration(crm.projectPath, '001-add-code', addCode)
+        await writeFile(
+            join(crm.projectPath, '.zoho-studio', 'migrations.json'),
+            JSON.stringify({ 'org-1': { '001-add-code': { status: 'applied', ranAt: '2026-10-13T10:00:00.000Z', fieldIds: {} } } })
+        )
+
+        expect((await prepareMigration(crm.projectPath, '001-add-code')).conflicts).toEqual([
+            'Migration "001-add-code" was already applied to this organization on 2026-10-13T10:00:00.000Z.',
+        ])
     })
 
     test('reports an invalid migration without asking Zoho', async () => {

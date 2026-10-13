@@ -52,6 +52,8 @@ export function formatMigrationEvent(event: MigrationEvent, totalSteps: number):
                 ...missing.map((label) => `  missing: ${label}`),
             ]
         }
+        case 'verification-failed':
+            return [`Could not read the result back from Zoho CRM: ${event.error}`]
         case 'artifacts-updated':
             return [`Local artifacts updated for module ${event.module}`]
         case 'finished':

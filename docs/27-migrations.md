@@ -91,7 +91,8 @@ Any of these blocks the run, and the script prints each one:
   in it — names are compared regardless of case;
 - a lookup points at a module that does not exist, including the module the same migration
   creates;
-- a profile name is unknown.
+- a profile name is unknown;
+- the migration was already applied to this organization (see the journal below).
 
 ## The run
 
@@ -99,7 +100,7 @@ The module is created first, then the fields, up to 25 per request. The run stop
 step Zoho rejects; for fields it prints which ones failed and why. After the run — a failed one
 too, once the module exists — the module is read back from Zoho, the script reports which planned
 fields exist and which are missing, and the module's folder in `src/zoho-crm/modules/` is
-refreshed, as [`z-crm:modules:pull`](7-modules-pull-command.md) and
+refreshed — if that read fails, the script says so and the run is still journaled — as [`z-crm:modules:pull`](7-modules-pull-command.md) and
 [`z-crm:fields:pull`](8-fields-pull-command.md) would write it.
 
 The exit code is 0 when the migration was applied, a dry run found no conflict, or you declined
@@ -128,4 +129,6 @@ checks read modules, fields, and profiles. All of them are in the default
 `--json` prints one JSON object per line instead of the readable report: first
 `{ "type": "prepared", "migration": … }` with the plan and the conflicts, then one event per
 step, per field result, for the verification, and a final `finished` with `applied`, `failed`, or
-`blocked`. It never prompts, so it needs a migration name and `--yes` or `--dry-run`.
+`blocked`. A migration with conflicts ends right after `prepared` with a `blocked` `finished`; a
+dry run without conflicts ends at `prepared`. It never prompts, so it needs a migration name and
+`--yes` or `--dry-run`.
