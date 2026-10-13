@@ -1,5 +1,7 @@
 # Overview
 
+Українська версія: [ua](../../ua/technical/1-overview.md)
+
 Zoho Studio CLI is a command-line tool for working with Zoho platform resources as local files, so
 Zoho development fits normal software engineering workflows — version control, scripts, and
 agent-driven automation.
@@ -16,7 +18,7 @@ its own `fields/` folder), `src/zoho-crm/workflows`, `src/zoho-crm/workflow-acti
 `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
 
 This folder holds the technical reference, one page per command. To learn the tool task by task,
-read the [user guide](user-guide/en/1-overview.md) ([українською](user-guide/ua/1-overview.md)).
+read the [user guide](../user-guide/1-overview.md) ([українською](../../ua/user-guide/1-overview.md)).
 
 ## Running the CLI
 

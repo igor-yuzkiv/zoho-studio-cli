@@ -2,11 +2,12 @@
 paths:
   - "docs/**/*.md"
   - "README.md"
+  - "README.ua.md"
 ---
 
 # Rule: Documentation
 
-Applies to `docs/**/*.md` and `README.md`.
+Applies to `docs/**/*.md`, `README.md`, and `README.ua.md`.
 
 Documentation describes the project as it is today. It grows as features land, one piece at a
 time, and never runs ahead of the code.
@@ -33,19 +34,33 @@ Documentation changes in the same commit as the behavior it describes.
 - Prefer updating an existing document over adding a new one.
 - When behavior is removed, remove its documentation instead of marking it obsolete.
 - Verify examples against real output rather than writing them from memory.
-- A new command needs a page in `docs/`, an entry in `1-overview.md`, and an entry in `README.md`.
+- A new command needs a page in `technical/`, an entry in its `1-overview.md`, and an entry in both
+  READMEs — in both languages.
 
 ## Structure
 
-`docs/` is flat. No subfolders, with one exception below. Every file is numbered in reading order:
-`<number>-<kebab-case-name>.md`, starting at `1-overview.md`, which is the entry point and links
-to the rest. These pages are the technical reference, one page per command or topic.
+All documentation exists in two languages with the same files and the same content:
 
-`docs/user-guide/<lang>/` is the user guide, in `ua` and `en`. Each language folder is flat and
-numbered the same way, from its own `1-overview.md`, and both hold the same files with the same
-content. A guide page explains a task in plain words and links to the reference for every option
-rather than repeating it. Change a guide page in both languages in the same commit. The README
-and `docs/1-overview.md` link to the guide.
+```text
+docs/
+  en/
+    user-guide/   the guide: a task at a time, in plain words
+    technical/    the reference: one page per command or topic
+  ua/
+    user-guide/
+    technical/
+README.md         English, links to docs/en/
+README.ua.md      Ukrainian, links to docs/ua/
+```
+
+Each of the four folders is flat — no subfolders — and numbered in reading order:
+`<number>-<kebab-case-name>.md`, starting at `1-overview.md`, its entry point. The same page has
+the same file name in both languages, and a change to a page is made in both languages in the same
+commit. Code, commands, paths, options, and quoted CLI output stay in English in both.
+
+A guide page explains a task and links to the technical page for every option rather than
+repeating it. The technical overview links to the guide, and each overview links to its other
+language.
 
 Take the next free number for a new document. Renumber only when the reading order genuinely
 changes, since renumbering breaks existing links.

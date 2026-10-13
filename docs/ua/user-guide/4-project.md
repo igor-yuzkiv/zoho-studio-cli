@@ -26,13 +26,13 @@ my-crm/
   [Підключення до Zoho](3-zoho-connection.md#дата-центри);
 - `presets` — ваші власні послідовності команд, див. [Завантаження](5-pulling.md#пресети).
 
-Повний опис — у [довіднику з налаштувань](../../2-settings.md).
+Повний опис — у [довіднику з налаштувань](../technical/2-settings.md).
 
 ## Що потрапляє в git
 
 `init` готує проєкт до git:
 
-- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, журнали, `node_modules`;
+- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`;
 - **призначені для коміту:** `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
 
 Облікових даних у проєкті немає взагалі — вони в `~/.zoho-studio`.
@@ -48,4 +48,4 @@ bun install
 ```
 
 Міграції описано на сторінці [Міграції](7-migrations.md), скрипти — на сторінці [Скрипти й пакети](9-scripts-and-packages.md). Більше про файли проєкту:
-[довідник з init](../../3-init-command.md).
+[довідник з init](../technical/3-init-command.md).

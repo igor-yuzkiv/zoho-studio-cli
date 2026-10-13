@@ -49,5 +49,5 @@ Use your region's ending instead of `.eu` — `.in`, `.com.au`, `.jp`, `.ca`, `.
 Profiles and tokens live in `~/.zoho-studio` in your home folder, never in the project, and only
 your user can read them. Treat that folder like a password: anyone who has it can read your CRM.
 
-More detail: [login](../../4-login-command.md), [settings](../../2-settings.md),
-[status](../../5-status-command.md).
+More detail: [login](../technical/4-login-command.md), [settings](../technical/2-settings.md),
+[status](../technical/5-status-command.md).

@@ -26,7 +26,7 @@ falls back to the default. The ones you are most likely to touch:
   [Connecting to Zoho](3-zoho-connection.md#data-centers);
 - `presets` — your own sequences of commands, see [Pulling](5-pulling.md#presets).
 
-The full description is in the [settings reference](../../2-settings.md).
+The full description is in the [settings reference](../technical/2-settings.md).
 
 ## What goes into git
 
@@ -48,4 +48,4 @@ bun install
 ```
 
 Migrations are described in [Migrations](7-migrations.md), scripts in [Scripts and packages](9-scripts-and-packages.md). More on the project files:
-[init reference](../../3-init-command.md).
+[init reference](../technical/3-init-command.md).

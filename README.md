@@ -1,5 +1,7 @@
 # Zoho CRM Studio CLI
 
+Українською: [README.ua.md](README.ua.md)
+
 Zoho Studio CLI is a developer-focused command-line tool for working with Zoho platform resources, configuration, metadata, and code.
 
 The project aims to bring Zoho development closer to conventional software engineering workflows by representing remote resources in a structured, local, and automation-friendly form.
@@ -22,38 +24,38 @@ bun run link                                 # once, so projects can import the 
 
 `zoho-studio --help` then lists the commands. Pull the repository and run `bun run compile` again
 to update; the link from `bun run link` follows the sources and needs no update. New to the tool?
-Start with the [user guide](docs/user-guide/en/1-overview.md) ([українською](docs/user-guide/ua/1-overview.md)).
+Start with the [user guide](docs/en/user-guide/1-overview.md) ([українською](docs/ua/user-guide/1-overview.md)).
 
 ## Documentation
 
-- [Overview](docs/1-overview.md) — what a project is, and how to run the CLI
-- [Project settings](docs/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
-- [init](docs/3-init-command.md) — scaffolding a project with `zoho-studio init`
-- [login](docs/4-login-command.md) — authorizing a project with `zoho-studio login`
-- [z-crm:status](docs/5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
-- [z-crm:functions:pull](docs/6-functions-pull-command.md) — downloading functions
-- [z-crm:modules:pull](docs/7-modules-pull-command.md) — downloading module metadata
-- [z-crm:fields:pull](docs/8-fields-pull-command.md) — downloading module fields
-- [z-crm:workflows:pull](docs/9-workflows-pull-command.md) — downloading workflow rules
-- [z-crm:org:info](docs/10-org-info-command.md) — reading the organization and storing it in the project
-- [z-crm:workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
-- [z-crm:webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
-- [z-crm:global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
-- [z-crm:profiles:pull](docs/26-profiles-pull-command.md) — downloading profiles
-- [z-crm:client-scripts:pull](docs/22-client-scripts-pull-command.md) — downloading client scripts
-- [z-crm:static-resources:pull](docs/23-static-resources-pull-command.md) — downloading static resources
-- [preset](docs/24-preset-command.md) — running a named sequence of commands
-- [browser](docs/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
+- [Overview](docs/en/technical/1-overview.md) — what a project is, and how to run the CLI
+- [Project settings](docs/en/technical/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
+- [init](docs/en/technical/3-init-command.md) — scaffolding a project with `zoho-studio init`
+- [login](docs/en/technical/4-login-command.md) — authorizing a project with `zoho-studio login`
+- [z-crm:status](docs/en/technical/5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
+- [z-crm:functions:pull](docs/en/technical/6-functions-pull-command.md) — downloading functions
+- [z-crm:modules:pull](docs/en/technical/7-modules-pull-command.md) — downloading module metadata
+- [z-crm:fields:pull](docs/en/technical/8-fields-pull-command.md) — downloading module fields
+- [z-crm:workflows:pull](docs/en/technical/9-workflows-pull-command.md) — downloading workflow rules
+- [z-crm:org:info](docs/en/technical/10-org-info-command.md) — reading the organization and storing it in the project
+- [z-crm:workflow-actions:pull](docs/en/technical/11-workflow-actions-pull-command.md) — downloading workflow actions
+- [z-crm:webhooks:pull](docs/en/technical/12-webhooks-pull-command.md) — downloading webhooks
+- [z-crm:global-picklists:pull](docs/en/technical/13-global-picklists-pull-command.md) — downloading global picklists
+- [z-crm:profiles:pull](docs/en/technical/26-profiles-pull-command.md) — downloading profiles
+- [z-crm:client-scripts:pull](docs/en/technical/22-client-scripts-pull-command.md) — downloading client scripts
+- [z-crm:static-resources:pull](docs/en/technical/23-static-resources-pull-command.md) — downloading static resources
+- [preset](docs/en/technical/24-preset-command.md) — running a named sequence of commands
+- [browser](docs/en/technical/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
 
 ## Scripts in a project
 
 A project made by `zoho-studio init` comes with a `package.json` that links the framework packages
 (`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`)
 and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, then `bun install`
-in the project; see [init](docs/3-init-command.md#scripts).
+in the project; see [init](docs/en/technical/3-init-command.md#scripts).
 
 `bun run migrate` in a project creates Zoho CRM modules and adds fields from the files in
-`migrations/zoho-crm/`; see [migrations](docs/27-migrations.md).
+`migrations/zoho-crm/`; see [migrations](docs/en/technical/27-migrations.md).
 
 ## Editor support
 

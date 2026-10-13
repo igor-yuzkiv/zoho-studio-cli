@@ -52,5 +52,5 @@ Zoho має окремі дата-центри, і кожен обліковий
 їх може лише ваш користувач. Ставтеся до цієї папки як до пароля: будь-хто, у кого вона є, може
 читати вашу CRM.
 
-Докладніше: [login](../../4-login-command.md), [налаштування](../../2-settings.md),
-[status](../../5-status-command.md).
+Докладніше: [login](../technical/4-login-command.md), [налаштування](../technical/2-settings.md),
+[status](../technical/5-status-command.md).

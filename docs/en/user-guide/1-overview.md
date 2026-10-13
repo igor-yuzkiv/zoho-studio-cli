@@ -1,6 +1,6 @@
 # Zoho Studio — user guide
 
-Українська версія: [ua](../ua/1-overview.md)
+Українська версія: [ua](../../ua/user-guide/1-overview.md)
 
 Zoho Studio turns a Zoho CRM organization into a folder of files on your computer: functions,
 modules and their fields, workflow rules, webhooks, client scripts, and more. Once they are files,
@@ -38,4 +38,4 @@ in the Zoho CRM organization with permission to view its setup — for migration
 8. [Troubleshooting](8-troubleshooting.md) — common errors and what to do
 9. [Scripts and packages](9-scripts-and-packages.md) — your own scripts with the shipped packages
 
-Every page links to the [technical reference](../../1-overview.md) for the full list of options.
+Every page links to the [technical reference](../technical/1-overview.md) for the full list of options.

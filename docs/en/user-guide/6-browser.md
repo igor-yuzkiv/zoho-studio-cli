@@ -20,4 +20,4 @@ The app runs until you press Ctrl+C in the terminal. It is reachable only from y
 - **Log in** from the status bar when the project is not logged in yet, the same way as
   `zoho-studio login`.
 
-More: [browser reference](../../25-browser-command.md).
+More: [browser reference](../technical/25-browser-command.md).

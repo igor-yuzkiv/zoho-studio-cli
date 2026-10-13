@@ -50,7 +50,7 @@ export default defineMigration({
 
 Типи полів: text, textarea, email, phone, website, integer, bigint, double, percent, currency,
 date, datetime, boolean, picklist, multiselectpicklist, lookup, userlookup. Опції кожного типу
-наведено в [довіднику з міграцій](../../27-migrations.md#field-types).
+наведено в [довіднику з міграцій](../technical/27-migrations.md#типи-полів).
 
 Будь-яке поле може мати підказку для того, хто його заповнює: `schema.text('Code', { tooltip: 'Internal project code' })`
 показує поруч із полем іконку з цим текстом.
@@ -85,4 +85,4 @@ bun run migrate
 
 Ця історія залишається на вашому комп'ютері: запусків ваших колег у ній немає.
 
-Докладніше: [довідник з міграцій](../../27-migrations.md).
+Докладніше: [довідник з міграцій](../technical/27-migrations.md).

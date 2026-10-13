@@ -42,7 +42,7 @@ exemplars:
   test_command: tests/cli/commands/init.service.spec.ts
   test_unit: tests/core/settings/settings.loader.spec.ts
   test_fixture: tests/support/temp-project.ts
-  docs_page: docs/8-fields-pull-command.md
+  docs_page: docs/en/technical/8-fields-pull-command.md
 
 verification:
   tests: bun test
