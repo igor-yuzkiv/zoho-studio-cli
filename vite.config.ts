@@ -9,7 +9,7 @@ export default defineConfig({
     plugins: [vue(), tailwindcss()],
     resolve: {
         alias: {
-            '@web': fileURLToPath(new URL('./apps/web', import.meta.url)),
+            '@web': fileURLToPath(new URL('./apps/web/src', import.meta.url)),
         },
     },
     // Relative asset URLs let the CLI serve the build from any origin and port.

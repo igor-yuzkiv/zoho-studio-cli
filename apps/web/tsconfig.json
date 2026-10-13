@@ -3,11 +3,11 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@web/*": ["./*"],
+            "@web/*": ["./src/*"],
             "@cli/*": ["../cli/src/*"]
         },
         "types": ["vite/client"],
         "noUncheckedIndexedAccess": true
     },
-    "include": ["**/*.ts", "**/*.vue"]
+    "include": ["src/**/*.ts", "src/**/*.vue"]
 }
