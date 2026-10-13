@@ -35,8 +35,8 @@ apps/
   cli/            # the CLI; `@/` resolves to apps/cli/src
     src/
       index.ts      # CLI entry point, registers the commands
-      commands/     # commands that belong to no Zoho product: init, login, debug, browser
-      zoho-crm/commands/      # CLI command definitions of the area, one folder per command
+      commands/     # CLI command definitions, one folder per command
+        zoho-crm/   # the commands of the Zoho CRM area; bare folders above are commands of no product
   web/            # the SPA served by `browser`; built by Vite into dist/web
 tests/            # mirrors packages/*/src and apps/cli/src, see Tests
 template/         # files `init` copies into a new project
@@ -151,7 +151,7 @@ const taskId = options.task
 
 Tests live in `tests/` and use the `.spec.ts` suffix. The first segment names the package or
 `cli`; the rest mirrors the package's `src/`, except that a command's folder is flattened away —
-command specs sit directly under `tests/cli/commands/` or `tests/cli/<area>/commands/`.
+command specs sit directly under `tests/cli/commands/` or `tests/cli/commands/<area>/`.
 
 ```text
 packages/core/src/settings/settings.loader.ts                 ->  tests/core/settings/settings.loader.spec.ts
