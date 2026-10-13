@@ -1,6 +1,34 @@
+import { styleText } from 'node:util'
+
 import type { ZohoFieldCreate } from '../../entities/field'
+import type { Organization } from '../../entities/organization'
 import type { MigrationEvent } from '../running'
 import type { MigrationStep, PreparedMigration } from '../planning'
+
+export interface MigrationTarget {
+    id: string
+    company_name: string
+    type: string
+}
+
+export function toMigrationTarget(organization: Organization): MigrationTarget {
+    return {
+        id: organization.id ?? 'unknown',
+        company_name: organization.company_name ?? 'unknown',
+        type: typeof organization.type === 'string' ? organization.type : 'unknown',
+    }
+}
+
+export function isSandbox(target: MigrationTarget): boolean {
+    return target.type === 'sandbox'
+}
+
+/** Anything but a sandbox is treated as production, so an unknown type never looks safe. */
+export function formatMigrationTarget(target: MigrationTarget): string {
+    const type = styleText(['bold', isSandbox(target) ? 'green' : 'red'], target.type.toUpperCase())
+
+    return `Organization: ${target.company_name} (${target.id}) — ${type}`
+}
 
 /** The plan and conflicts of a prepared migration, line by line, as the script prints them. */
 export function formatPreparedMigration(prepared: PreparedMigration): string[] {

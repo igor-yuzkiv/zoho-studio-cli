@@ -22,11 +22,13 @@ afterEach(async () => {
     crm = null
 })
 
-function startCrm(): Promise<CrmStub> {
+function startCrm(organizationType = 'sandbox'): Promise<CrmStub> {
     return startCrmStub((request) => {
         const { pathname } = new URL(request.url)
 
-        if (pathname.endsWith('/org')) return Response.json({ org: [{ id: 'org-1' }] })
+        if (pathname.endsWith('/org')) {
+            return Response.json({ org: [{ id: 'org-1', company_name: 'Acme', type: organizationType }] })
+        }
         if (pathname.endsWith('/settings/modules') && request.method === 'GET') {
             return Response.json({ modules: [{ id: '7', api_name: 'Projects', module_name: 'CustomModule1' }] })
         }
@@ -48,7 +50,7 @@ async function writeMigration(name: string, source: string): Promise<void> {
 const addDone = `export default { update: { module: 'Projects', fields: (schema) => schema.boolean('Done') } }\n`
 const addCode = `export default { update: { module: 'Projects', fields: (schema) => schema.text('Code') } }\n`
 
-const printed = () => log.mock.calls.map(([line]) => String(line))
+const printed = () => log.mock.calls.map(([line]) => Bun.stripANSI(String(line)))
 const writes = () => crm!.requests.filter((request) => request.method === 'POST')
 
 describe('runMigrationScript', () => {
@@ -100,5 +102,32 @@ describe('runMigrationScript', () => {
         expect(await runMigrationScript(['--json'])).toBe(1)
         expect(await runMigrationScript(['001-done', '--json'])).toBe(1)
         expect(crm.requests).toHaveLength(0)
+    })
+
+    test('names the organization and marks a sandbox before the plan', async () => {
+        crm = await startCrm('sandbox')
+        await writeMigration('001-done', addDone)
+
+        await runMigrationScript(['001-done', '--dry-run'])
+
+        expect(printed()[0]).toBe('Organization: Acme (org-1) — SANDBOX')
+    })
+
+    test('marks anything but a sandbox as production', async () => {
+        crm = await startCrm('production')
+        await writeMigration('001-done', addDone)
+
+        await runMigrationScript(['001-done', '--dry-run'])
+
+        expect(printed()[0]).toBe('Organization: Acme (org-1) — PRODUCTION')
+    })
+
+    test('reports the organization in the prepared JSON event', async () => {
+        crm = await startCrm('sandbox')
+        await writeMigration('001-done', addDone)
+
+        await runMigrationScript(['001-done', '--dry-run', '--json'])
+
+        expect(JSON.parse(printed()[0]!).organization).toEqual({ id: 'org-1', company_name: 'Acme', type: 'sandbox' })
     })
 })

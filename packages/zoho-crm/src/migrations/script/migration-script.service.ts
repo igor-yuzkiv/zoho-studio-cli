@@ -10,7 +10,14 @@ import { listMigrations } from '../loader'
 import { prepareMigration, type PreparedMigration } from '../planning'
 import { runMigration, type MigrationEvent } from '../running'
 
-import { formatMigrationEvent, formatPreparedMigration } from './migration-script.utils'
+import {
+    formatMigrationEvent,
+    formatMigrationTarget,
+    formatPreparedMigration,
+    isSandbox,
+    toMigrationTarget,
+    type MigrationTarget,
+} from './migration-script.utils'
 
 interface ScriptOptions {
     name?: string
@@ -20,7 +27,9 @@ interface ScriptOptions {
 }
 
 /** Every line the script prints in `--json` mode is one of these. */
-export type MigrationScriptEvent = { type: 'prepared'; migration: PreparedMigration } | MigrationEvent
+export type MigrationScriptEvent =
+    | { type: 'prepared'; migration: PreparedMigration; organization: MigrationTarget }
+    | MigrationEvent
 
 /**
  * The whole `bun run migrate` script of a project: pick a migration, show its plan, confirm, run it.
@@ -35,7 +44,8 @@ export async function runMigrationScript(argv: string[] = process.argv.slice(2))
     }
 
     const { projectPath } = await getProjectSettings()
-    const name = options.name ?? (await chooseMigration(projectPath))
+    const target = toMigrationTarget(await getOrganizationRequest())
+    const name = options.name ?? (await chooseMigration(projectPath, target))
 
     if (!name) {
         return 0
@@ -47,12 +57,12 @@ export async function runMigrationScript(argv: string[] = process.argv.slice(2))
         : (event: MigrationScriptEvent) => {
               const lines =
                   event.type === 'prepared'
-                      ? formatPreparedMigration(event.migration)
+                      ? [formatMigrationTarget(event.organization), ...formatPreparedMigration(event.migration)]
                       : formatMigrationEvent(event, prepared.plan?.steps.length ?? 0)
               lines.forEach((line) => console.log(line))
           }
 
-    print({ type: 'prepared', migration: prepared })
+    print({ type: 'prepared', migration: prepared, organization: target })
 
     if (prepared.conflicts.length > 0) {
         // A blocked run sends nothing to Zoho; it only reports the block, so every stream ends with `finished`.
@@ -64,7 +74,11 @@ export async function runMigrationScript(argv: string[] = process.argv.slice(2))
         return 0
     }
 
-    if (!options.yes && !(await confirm({ message: `Run migration "${name}"?`, default: false }))) {
+    const question = isSandbox(target)
+        ? `Run migration "${name}" on sandbox "${target.company_name}"?`
+        : `Run migration "${name}" on PRODUCTION "${target.company_name}"?`
+
+    if (!options.yes && !(await confirm({ message: question, default: false }))) {
         return 0
     }
 
@@ -87,7 +101,7 @@ function parseScriptOptions(argv: string[]): ScriptOptions {
     return { name: positionals[0], dryRun: values['dry-run'], yes: values.yes, json: values.json }
 }
 
-async function chooseMigration(projectPath: string): Promise<string | null> {
+async function chooseMigration(projectPath: string, target: MigrationTarget): Promise<string | null> {
     const names = await listMigrations(projectPath)
 
     if (names.length === 0) {
@@ -95,7 +109,7 @@ async function chooseMigration(projectPath: string): Promise<string | null> {
         return null
     }
 
-    const journal = await readMigrationJournal(projectPath, (await getOrganizationRequest()).id ?? 'unknown')
+    const journal = await readMigrationJournal(projectPath, target.id)
 
     return select({
         message: 'Migration to run',

@@ -105,6 +105,16 @@ Any of these blocks the run, and the script prints each one:
 
 ## The run
 
+Before the plan, the script names the organization the migration goes to, with its type in
+capitals — green for a sandbox, red for anything else:
+
+```text
+Organization: Acme (7000000012345) — SANDBOX
+```
+
+The confirmation question names it too, and calls anything but a sandbox `PRODUCTION`. With
+`--yes` there is no question, but the line is still printed.
+
 The module is created first, then the fields, up to 25 per request. The run stops at the first
 step Zoho rejects; for fields it prints which ones failed and why. After the run — a failed one
 too, once the module exists — the module is read back from Zoho, the script reports which planned
@@ -136,7 +146,8 @@ checks read modules, fields, and profiles. All of them are in the default
 ## Output for other programs
 
 `--json` prints one JSON object per line instead of the readable report: first
-`{ "type": "prepared", "migration": … }` with the plan and the conflicts, then one event per
+`{ "type": "prepared", "migration": …, "organization": { "id", "company_name", "type" } }` with
+the plan, the conflicts, and the target organization, then one event per
 step, per field result, for the verification, and a final `finished` with `applied`, `failed`, or
 `blocked`. A migration with conflicts ends right after `prepared` with a `blocked` `finished`; a
 dry run without conflicts ends at `prepared`. It never prompts, so it needs a migration name and
