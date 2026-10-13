@@ -36,6 +36,11 @@ describe('initializeProject', () => {
         })
         expect(await Bun.file(join(workingPath, 'tsconfig.json')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, 'scripts/example.ts')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'scripts/migrate.ts')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'migrations/zoho-crm/.gitkeep')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
+            scripts: { migrate: 'bun run scripts/migrate.ts' },
+        })
         expect(result.templateFiles.every(({ outcome }) => outcome === 'created')).toBe(true)
     })
 

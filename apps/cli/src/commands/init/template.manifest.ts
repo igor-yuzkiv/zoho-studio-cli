@@ -5,8 +5,12 @@ import rootGitignore from '../../../../../template/.gitignore' with { type: 'fil
 import packageJson from '../../../../../template/package.json.tmpl' with { type: 'file' }
 import tsconfigJson from '../../../../../template/tsconfig.json.tmpl' with { type: 'file' }
 import exampleScript from '../../../../../template/scripts/example.ts.tmpl' with { type: 'file' }
+import migrateScript from '../../../../../template/scripts/migrate.ts.tmpl' with { type: 'file' }
+import exampleMigration from '../../../../../template/scripts/example-migration.ts.txt' with { type: 'file' }
+import migrationsKeep from '../../../../../template/migrations/zoho-crm/.gitkeep' with { type: 'file' }
 
-import { logsDirName, workspaceSettingsDirName, workspaceSourceDirName } from '@zoho-studio/core'
+import { logsDirName, migrationsDirName, workspaceSettingsDirName, workspaceSourceDirName } from '@zoho-studio/core'
+import { zohoCrmDirName } from '@zoho-studio/zoho-crm'
 
 export interface TemplateFile {
     /** Where the file is on disk, or inside the compiled executable. */
@@ -33,4 +37,7 @@ export const templateFiles: TemplateFile[] = [
     { embeddedPath: packageJson, destination: 'package.json' },
     { embeddedPath: tsconfigJson, destination: 'tsconfig.json' },
     { embeddedPath: exampleScript, destination: 'scripts/example.ts' },
+    { embeddedPath: migrateScript, destination: 'scripts/migrate.ts' },
+    { embeddedPath: exampleMigration, destination: 'scripts/example-migration.ts.txt' },
+    { embeddedPath: migrationsKeep, destination: `${migrationsDirName}/${zohoCrmDirName}/.gitkeep` },
 ]

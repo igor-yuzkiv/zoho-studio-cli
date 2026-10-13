@@ -1,0 +1,31 @@
+// A migration to copy into migrations/zoho-crm/<name>.ts — the file name is the migration's name,
+// and migrations are listed in name order. A file declares exactly one action: create or update.
+import { defineMigration } from '@zoho-studio/zoho-crm/migrations'
+
+export default defineMigration({
+    create: {
+        api_name: 'Projects',
+        singular_label: 'Project',
+        plural_label: 'Projects',
+        profiles: ['Administrator'],
+        fields: (schema) => {
+            schema.text('Code', { api_name: 'Code', length: 50 })
+            schema.textarea('Notes', { size: 'large' })
+            schema.currency('Budget', { decimal_place: 2 })
+            schema.date('Deadline')
+            schema.picklist('Stage', { values: ['New', 'Active', 'Done'] })
+            schema.lookup('Account', { module: 'Accounts' })
+        },
+    },
+})
+
+// Adding fields to a module that already exists:
+//
+// export default defineMigration({
+//     update: {
+//         module: 'Projects',
+//         fields: (schema) => {
+//             schema.boolean('Archived')
+//         },
+//     },
+// })

@@ -21,6 +21,9 @@ Initialized Zoho Studio project in my-project
   package.json — created
   tsconfig.json — created
   scripts/example.ts — created
+  scripts/migrate.ts — created
+  scripts/example-migration.ts.txt — created
+  migrations/zoho-crm/.gitkeep — created
 
 Next steps:
   Run "zoho-studio login" and choose or create a credential profile
@@ -36,13 +39,17 @@ and was left alone.
 my-project/
   .gitignore             # keeps node_modules out of git
   .zoho-studio/
-    .gitignore           # keeps settings.json and org.json out of git
+    .gitignore           # keeps settings.json, org.json and migrations.json out of git
     settings.json        # project settings, chmod 0600
   logs/
     .gitignore           # keeps *.log out of git
-  package.json           # the framework packages as link: dependencies
+  migrations/
+    zoho-crm/            # migration files, see 27-migrations.md
+  package.json           # the framework packages as link: dependencies, and the migrate script
   scripts/
     example.ts           # a script to copy: counts the fields of every pulled module
+    migrate.ts           # runs a migration: bun run migrate
+    example-migration.ts.txt  # a migration to copy into migrations/zoho-crm/
   src/
   tsconfig.json          # type-checks scripts/ against the packages' sources
 ```
@@ -78,7 +85,7 @@ bun run scripts/example.ts
 
 The link is live: the project sees the packages' sources as they are in the repository, with no
 build or reinstall after a change there. `bunx tsc --noEmit` in the project type-checks `scripts/`
-against those sources. Re-run `bun run link` after moving the repository.
+and `migrations/` against those sources. Re-run `bun run link` after moving the repository.
 
 `scripts/example.ts` reads the local artifacts only, so it runs before any login; it tells you
 which pulls to run when `src/zoho-crm/modules` is still empty. Copy it to start a script of your

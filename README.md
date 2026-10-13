@@ -34,6 +34,9 @@ A project made by `zoho-studio init` comes with a `package.json` that links the 
 and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, then `bun install`
 in the project; see [init](docs/3-init-command.md#scripts).
 
+`bun run migrate` in a project creates Zoho CRM modules and adds fields from the files in
+`migrations/zoho-crm/`; see [migrations](docs/27-migrations.md).
+
 ## Editor support
 
 Pulled functions are saved as `.deluge` files. For syntax highlighting, IntelliSense, and hover

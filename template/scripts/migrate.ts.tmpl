@@ -1,0 +1,11 @@
+/**
+ * Runs one migration from migrations/zoho-crm against the organization the project is logged in to:
+ *
+ *   bun run migrate                  # pick a migration from the list
+ *   bun run migrate <name> --dry-run # show the plan and the conflicts only
+ *
+ * See scripts/example-migration.ts.txt for what a migration file looks like.
+ */
+import { runMigrationScript } from '@zoho-studio/zoho-crm/migrations'
+
+process.exitCode = await runMigrationScript()
