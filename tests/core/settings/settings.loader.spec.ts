@@ -31,29 +31,6 @@ describe('project settings loader', () => {
         expect(settings.auth.scopes).toEqual(defaultProjectSettings.auth.scopes)
     })
 
-    test('keeps legacy auth keys from an older file next to the defaults', async () => {
-        await Bun.write(
-            resolveWorkspaceSettingsPath(projectPath),
-            JSON.stringify({ auth: { clientId: '1000.CLIENT', tokens: { refreshToken: 'refresh' } } })
-        )
-
-        const settings = await loadProjectSettings(projectPath)
-
-        expect(settings.auth).toMatchObject({ clientId: '1000.CLIENT', tokens: { refreshToken: 'refresh' } })
-        expect(settings.auth.baseUrl).toBe(defaultProjectSettings.auth.baseUrl)
-    })
-
-    test('reads the per-product scopes of an older file as the CRM list', async () => {
-        await Bun.write(
-            resolveWorkspaceSettingsPath(projectPath),
-            JSON.stringify({ auth: { scopes: { crm: ['ZohoCRM.org.READ'], projects: ['ZohoProjects.tasks.READ'] } } })
-        )
-
-        const settings = await loadProjectSettings(projectPath)
-
-        expect(settings.auth.scopes).toEqual(['ZohoCRM.org.READ'])
-    })
-
     test('keeps a flat scope list as it is', async () => {
         await Bun.write(
             resolveWorkspaceSettingsPath(projectPath),
@@ -61,12 +38,6 @@ describe('project settings loader', () => {
         )
 
         expect((await loadProjectSettings(projectPath)).auth.scopes).toEqual(['ZohoCRM.org.READ'])
-    })
-
-    test('keeps a projects section of an older file without failing', async () => {
-        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ projects: { portalId: '1' } }))
-
-        expect((await loadProjectSettings(projectPath)).api).toEqual(defaultProjectSettings.api)
     })
 
     test('ignores ambient SETTINGS_* environment variables for keys settings.json omits', async () => {

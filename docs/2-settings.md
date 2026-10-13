@@ -49,8 +49,7 @@ folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Poin
 else and that no longer applies — add the new path to your `.gitignore` yourself.
 
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
-the same list appears on the consent screen. A file from a version that split the list per product
-(`{ "crm": […], "projects": […] }`) is read as its `crm` list. Trim it to what you actually use — a scope the CLI
+the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
 so a project authorized before the client script and static resource scopes were added has to run
 `login` again before their `z-crm:*:pull` commands work.
@@ -65,14 +64,7 @@ than adding to it — that holds for the lists too, so a shortened `auth.scopes`
 stays exactly as short as you wrote it. That also means you can delete a key to return to
 the default instead of hunting for the original value.
 
-A key the CLI does not know is kept and ignored — that includes the `projects` section of a project
-created while the CLI still carried the Zoho Projects commands. `auth.clientId`, `auth.clientSecret`, and
-`auth.tokens` from a project created before the credential store are ignored too, with a warning on
-every run; [`zoho-studio auth:migrate-legacy`](26-auth-migrate-legacy-command.md) moves them out. A project created before the paths were fixed
-still carries its `crm` section, and one created before the `sync` command was removed carries a
-`sync` section — both now do nothing, delete them when they bother you. Such a
-project also saved its Deluge files under whatever `code_extension` said; the next
-`z-crm:functions:pull` writes `.deluge` files and leaves the old ones beside them.
+A key the CLI does not know is kept and ignored.
 
 ## How reading works
 

@@ -175,28 +175,6 @@ describe('login', () => {
         }
     })
 
-    test('ignores legacy credentials in settings.json and warns about them', async () => {
-        await startProject()
-        const settingsPath = resolveWorkspaceSettingsPath(projectPath!)
-        const settings = await Bun.file(settingsPath).json()
-        await Bun.write(
-            settingsPath,
-            JSON.stringify({ ...settings, auth: { ...settings.auth, clientId: 'legacy', clientSecret: 'legacy' } })
-        )
-        const warnings: string[] = []
-        const originalWarn = console.warn
-        console.warn = (message: string) => warnings.push(message)
-
-        try {
-            await login()
-        } finally {
-            console.warn = originalWarn
-        }
-
-        expect(warnings.join('\n')).toMatch(/auth:migrate-legacy/)
-        expect((await readStoredTokens()).profile).toBe('test')
-    })
-
     test('works from a nested folder', async () => {
         await startProject()
         const nestedPath = join(projectPath!, 'a', 'b')

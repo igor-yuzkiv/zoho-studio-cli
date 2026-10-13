@@ -2,7 +2,6 @@ import { Command } from 'commander'
 
 import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
-import { authMigrateLegacyCommand } from '@/commands/auth-migrate-legacy'
 import { statusCommand } from '@/zoho-crm/commands/status'
 import { orgInfoCommand } from '@/zoho-crm/commands/org'
 import { debugCommand } from '@/commands/debug'
@@ -24,7 +23,6 @@ program.name('zoho-studio')
 
 program.addCommand(initCommand)
 program.addCommand(loginCommand)
-program.addCommand(authMigrateLegacyCommand)
 program.addCommand(statusCommand)
 program.addCommand(orgInfoCommand)
 program.addCommand(debugCommand)

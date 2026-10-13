@@ -10,7 +10,7 @@ import type { ProjectSettings } from './types'
  * whether a project is initialized.
  */
 export async function loadProjectSettings(projectPath: string = process.cwd()): Promise<ProjectSettings> {
-    const settings = await loadConfig<ProjectSettings>({
+    return loadConfig<ProjectSettings>({
         name: workspaceSettingsBaseName,
         cwd: resolveWorkspaceSettingsDirPath(projectPath),
         defaultConfig: defaultProjectSettings,
@@ -19,13 +19,6 @@ export async function loadProjectSettings(projectPath: string = process.cwd()): 
         // keys the project file omits.
         checkEnv: false,
     })
-
-    return { ...settings, auth: { ...settings.auth, scopes: normalizeScopes(settings.auth.scopes) } }
-}
-
-/** Files written while the CLI also served Zoho Projects split the scopes per product; only `crm` is still used. */
-function normalizeScopes(scopes: string[] | { crm?: string[] }): string[] {
-    return Array.isArray(scopes) ? scopes : (scopes.crm ?? defaultProjectSettings.auth.scopes)
 }
 
 /** Lets commands run from a nested folder. Returns `null` when no ancestor is a project. */

@@ -2,7 +2,6 @@ import {
     findProfile,
     readConnection,
     saveConnection,
-    warnAboutLegacyAuth,
     type ConnectionTokens,
 } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
@@ -20,8 +19,7 @@ export class TokenService {
     private readonly pendingRefreshes = new Map<string, Promise<string>>()
 
     async getAccessToken(): Promise<string> {
-        const { projectPath, settings } = await getProjectSettings()
-        warnAboutLegacyAuth(settings)
+        const { projectPath } = await getProjectSettings()
 
         const tokens = await readConnection(projectPath)
 

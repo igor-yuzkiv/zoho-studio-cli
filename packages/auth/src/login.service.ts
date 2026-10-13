@@ -3,7 +3,6 @@ import {
     findProfile,
     listProfiles,
     saveConnection,
-    warnAboutLegacyAuth,
     type CredentialProfile,
 } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
@@ -15,7 +14,6 @@ import type { LoginOptions, LoginResult } from './login.types'
 export async function login({ profile: profileName, onVerificationRequired }: LoginOptions = {}): Promise<LoginResult> {
     const { projectPath, settings } = await getProjectSettings()
     const scopes = settings.auth.scopes
-    warnAboutLegacyAuth(settings)
 
     const profile = await resolveProfile(profileName)
     const { clientId, clientSecret } = profile

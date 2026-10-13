@@ -2,7 +2,7 @@
 export interface ProjectSettings {
     auth: {
         baseUrl: string
-        /** What `login` asks Zoho for. An older file's per-product lists are read as the `crm` one. */
+        /** What `login` asks Zoho for. */
         scopes: string[]
     }
     api: {

@@ -71,9 +71,6 @@ folder, so it works from any subfolder, and it overwrites the tokens of a previo
       tokens.json                    # this project's tokens and the profile they were issued for
 ```
 
-Tokens of the separate Zoho Projects login that earlier versions offered stay in `tokens.json` and
-are ignored; the next write of the file — a login or a token refresh — drops them.
-
 A project's folder is named after its absolute path with `/` replaced by `-`. Move or rename the
 project and its tokens stay behind under the old name — run `login` again. Two paths can map to
 the same name (`/a-b` and `/a/b`); `tokens.json` records the original path, and a project that
@@ -128,8 +125,3 @@ to — the quickest confirmation that the profile and `api.baseUrl` are right.
 Zoho reports these failures with HTTP 200 and an `error` field in the body, so a "successful"
 request can still be a rejection — the CLI treats them as errors and writes nothing. Network
 failures propagate as-is, and the stored tokens are left untouched.
-
-A project whose `settings.json` still carries `auth.clientId`, `auth.clientSecret`, or
-`auth.tokens` from an older version gets a warning on every run: those keys are ignored now.
-[`zoho-studio auth:migrate-legacy`](26-auth-migrate-legacy-command.md) moves them into
-`~/.zoho-studio`.

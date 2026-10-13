@@ -13,10 +13,6 @@ Everything the CLI downloads lands under `src/`, in a folder per Zoho product, a
 and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
 `src/zoho-crm/workflow-actions`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
 
-A project pulled before the CRM artifacts moved under `src/zoho-crm/` still has the old
-`src/functions`, `src/modules` and similar folders. The CLI neither moves nor deletes them: run the
-`z-crm:*:pull` commands again and remove the old folders yourself.
-
 ## Running the CLI
 
 The CLI runs from source:
@@ -36,7 +32,6 @@ used throughout these documents.
 - [2-settings.md](2-settings.md) — the settings file, and how the CLI reads and writes it
 - [3-init-command.md](3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`
-- [26-auth-migrate-legacy-command.md](26-auth-migrate-legacy-command.md) — moving the credentials of an older project into `~/.zoho-studio` with `zoho-studio auth:migrate-legacy`
 - [5-status-command.md](5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
 - [6-functions-pull-command.md](6-functions-pull-command.md) — downloading functions with `zoho-studio z-crm:functions:pull`
 - [7-modules-pull-command.md](7-modules-pull-command.md) — downloading module metadata with `zoho-studio z-crm:modules:pull`
