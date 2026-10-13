@@ -52,6 +52,9 @@ Field types: text, textarea, email, phone, website, integer, bigint, double, per
 date, datetime, boolean, picklist, multiselectpicklist, lookup, userlookup. The options of each are
 in the [migrations reference](../../27-migrations.md#field-types).
 
+Any field can carry a hint for whoever fills it in: `schema.text('Code', { tooltip: 'Internal project code' })`
+shows an info icon with that text next to the field.
+
 ## 2. Check it
 
 ```bash

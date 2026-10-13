@@ -52,6 +52,9 @@ export default defineMigration({
 date, datetime, boolean, picklist, multiselectpicklist, lookup, userlookup. Опції кожного типу
 наведено в [довіднику з міграцій](../../27-migrations.md#field-types).
 
+Будь-яке поле може мати підказку для того, хто його заповнює: `schema.text('Code', { tooltip: 'Internal project code' })`
+показує поруч із полем іконку з цим текстом.
+
 ## 2. Перевірте її
 
 ```bash

@@ -8,6 +8,21 @@ const maxFieldLabelLength = 25
 const maxPicklistValueLength = 25
 const maxTextLength = 50000
 const maxDecimalPlace = 9
+const maxTooltipLength = 255
+const maxStaticTextTooltipLength = 35
+/** Seen accepted on a sandbox org; the rest answered DEPENDENT_MISMATCH, and textarea is untested. */
+const staticTextTooltipTypes = new Set([
+    'text',
+    'email',
+    'phone',
+    'website',
+    'integer',
+    'bigint',
+    'double',
+    'percent',
+    'currency',
+    'lookup',
+])
 const apiNamePattern = /^[A-Za-z](?:[A-Za-z0-9]|_(?!_))*(?<!_)$/
 const apiNameRule = 'must start with a letter and hold only letters, digits and single underscores, not ending with one.'
 
@@ -93,6 +108,20 @@ function validateFields(fields: ZohoFieldCreate[]): string[] {
 }
 
 function validateTypeOptions(field: ZohoFieldCreate, report: (problem: string) => void): void {
+    const tooltip = field.tooltip as { name: string; value: string } | undefined
+
+    if (tooltip?.name === 'static_text') {
+        if (!staticTextTooltipTypes.has(field.data_type)) {
+            report(
+                `a static_text tooltip is not supported for ${field.data_type} fields; give the text alone for an info icon.`
+            )
+        } else if (!isLengthBetween(tooltip.value, 1, maxStaticTextTooltipLength)) {
+            report(`a static_text tooltip must be 1 to ${maxStaticTextTooltipLength} characters.`)
+        }
+    } else if (tooltip && !isLengthBetween(tooltip.value, 1, maxTooltipLength)) {
+        report(`the tooltip must be 1 to ${maxTooltipLength} characters.`)
+    }
+
     if (field.length !== undefined && !isWholeNumberBetween(field.length, 1, maxTextLength)) {
         report(`length must be a whole number from 1 to ${maxTextLength}.`)
     }

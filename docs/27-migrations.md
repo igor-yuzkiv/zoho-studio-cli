@@ -63,14 +63,22 @@ A new project has an example to copy in `scripts/example-migration.ts.txt`.
 
 ## Field types
 
-Every method takes the field label (up to 25 characters) and options. `api_name` is accepted by
-all of them; Zoho derives one from the label when it is left out. The other options keep Zoho's
-names, and an option you leave out gets Zoho's default.
+Every method takes the field label (up to 25 characters) and options. Two options are accepted by
+all of them:
+
+- `api_name` — Zoho derives one from the label when it is left out;
+- `tooltip` — a hint for whoever fills the field in. A text alone, up to 255 characters, shows as
+  an info icon next to the field, and `{ type: 'info_icon', text }` is the same.
+  `{ type: 'static_text', text }`, up to 35 characters, shows the hint inside the empty field
+  instead; Zoho accepts it only on fields you type into — text, email, phone, website, integer,
+  bigint, double, percent, currency, and lookup.
+
+The other options keep Zoho's names, and an option you leave out gets Zoho's default.
 
 | Method | Options |
 |---|---|
 | `text`, `phone` | `length` |
-| `textarea` | `size`: `small`, `large`, or `rich_text` |
+| `textarea` | `size`: `small` (the default), `large`, or `rich_text` |
 | `email`, `website`, `date`, `datetime`, `boolean`, `userlookup` | — |
 | `integer`, `bigint` | `length` |
 | `double` | `length`, `decimal_place` |
@@ -84,7 +92,8 @@ names, and an option you leave out gets Zoho's default.
 Any of these blocks the run, and the script prints each one:
 
 - the file does not load, or breaks a rule Zoho would reject: label lengths, API name format, a
-  label or API name declared twice, an empty or repeated picklist value;
+  label or API name declared twice, an empty or repeated picklist value, a tooltip that is too long or
+  of a type the field does not support;
 - for `create`, a module with the same API name or label exists, or a field collides with the
   fields Zoho adds to every new module (`Name`, `Owner`, `Email`, `Secondary_Email`, `Tag`, …);
 - for `update`, the module does not exist, or a field with the same label or API name is already

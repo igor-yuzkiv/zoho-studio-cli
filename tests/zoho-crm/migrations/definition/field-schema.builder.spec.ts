@@ -81,4 +81,22 @@ describe('declareFields', () => {
             },
         ])
     })
+
+    test('turns a tooltip text into an info icon, and keeps an explicit tooltip type', () => {
+        const fields = declareFields((schema) => {
+            schema.text('Code', { tooltip: 'Internal project code' })
+            schema.date('Deadline', { tooltip: { type: 'static_text', text: 'Last working day' } })
+        })
+
+        expect(fields.map((field) => field.tooltip)).toEqual([
+            { name: 'info_icon', value: 'Internal project code' },
+            { name: 'static_text', value: 'Last working day' },
+        ])
+    })
+
+    test('gives a textarea the small size when none is named, since Zoho refuses one without a size', () => {
+        expect(declareFields((schema) => schema.textarea('Notes'))).toEqual([
+            { field_label: 'Notes', data_type: 'textarea', textarea: { type: 'small' } },
+        ])
+    })
 })

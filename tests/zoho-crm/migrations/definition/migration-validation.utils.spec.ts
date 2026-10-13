@@ -110,4 +110,29 @@ describe('validateMigration', () => {
 
         expect(validateMigration(migration)).toEqual(['The fields declaration failed: boom'])
     })
+
+    test('limits an info icon tooltip to 255 characters and a static text one to 35', () => {
+        const migration = updateWith((schema) => {
+            schema.text('Code', { tooltip: '' })
+            schema.text('Name', { tooltip: 'z'.repeat(256) })
+            schema.text('Ref', { tooltip: { type: 'static_text', text: 'z'.repeat(36) } })
+        })
+
+        expect(validateMigration(migration)).toEqual([
+            'Field "Code": the tooltip must be 1 to 255 characters.',
+            'Field "Name": the tooltip must be 1 to 255 characters.',
+            'Field "Ref": a static_text tooltip must be 1 to 35 characters.',
+        ])
+    })
+
+    test('allows a static text tooltip only on the types Zoho accepts it for', () => {
+        const migration = updateWith((schema) => {
+            schema.currency('Budget', { tooltip: { type: 'static_text', text: 'Hint' } })
+            schema.date('Deadline', { tooltip: { type: 'static_text', text: 'Hint' } })
+        })
+
+        expect(validateMigration(migration)).toEqual([
+            'Field "Deadline": a static_text tooltip is not supported for date fields; give the text alone for an info icon.',
+        ])
+    })
 })
