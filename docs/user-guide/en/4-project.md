@@ -47,5 +47,5 @@ repository, see the [README](../../../README.md#getting-the-cli)) and installed 
 bun install
 ```
 
-Migrations are described in [Migrations](7-migrations.md). More on the project files:
+Migrations are described in [Migrations](7-migrations.md), scripts in [Scripts and packages](9-scripts-and-packages.md). More on the project files:
 [init reference](../../3-init-command.md).

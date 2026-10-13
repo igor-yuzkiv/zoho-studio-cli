@@ -36,5 +36,6 @@ in the Zoho CRM organization with permission to view its setup — for migration
 6. [Browser](6-browser.md) — the local web app
 7. [Migrations](7-migrations.md) — creating modules and fields
 8. [Troubleshooting](8-troubleshooting.md) — common errors and what to do
+9. [Scripts and packages](9-scripts-and-packages.md) — your own scripts with the shipped packages
 
 Every page links to the [technical reference](../../1-overview.md) for the full list of options.
