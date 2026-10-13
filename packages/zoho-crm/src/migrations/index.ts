@@ -1,3 +1,7 @@
 export * from './migration.types'
 export { declareFields } from './field-schema.builder'
 export * from './migration.utils'
+export { listMigrations, loadMigration } from './migration.loader'
+export { buildMigrationPlan } from './migration-plan.utils'
+export { checkMigration } from './migration-checks.service'
+export { prepareMigration } from './migration-prepare.service'

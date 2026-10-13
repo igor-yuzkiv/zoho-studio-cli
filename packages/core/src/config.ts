@@ -21,6 +21,9 @@ export const workspaceSourceDirName = 'src'
 
 export const logsDirName = 'logs'
 
+/** Migrations are written by hand, so they sit at the project root rather than among the pulled artifacts in `src/`. */
+export const migrationsDirName = 'migrations'
+
 export function resolveWorkspaceSettingsDirPath(projectPath: string): string {
     return join(projectPath, workspaceSettingsDirName)
 }
@@ -35,4 +38,8 @@ export function resolveWorkspaceOrganizationPath(projectPath: string): string {
 
 export function resolveWorkspaceSourcePath(projectPath: string): string {
     return join(projectPath, workspaceSourceDirName)
+}
+
+export function resolveWorkspaceMigrationsPath(projectPath: string): string {
+    return join(projectPath, migrationsDirName)
 }

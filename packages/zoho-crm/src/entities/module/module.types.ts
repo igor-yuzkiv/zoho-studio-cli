@@ -4,6 +4,8 @@ export interface ZohoModule {
     api_name: string
     module_name: string
     generated_type?: string
+    singular_label?: string
+    plural_label?: string
     [field: string]: unknown
 }
 
