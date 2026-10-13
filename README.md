@@ -21,6 +21,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-crm:workflow-actions:pull](docs/11-workflow-actions-pull-command.md) — downloading workflow actions
 - [z-crm:webhooks:pull](docs/12-webhooks-pull-command.md) — downloading webhooks
 - [z-crm:global-picklists:pull](docs/13-global-picklists-pull-command.md) — downloading global picklists
+- [z-crm:profiles:pull](docs/26-profiles-pull-command.md) — downloading profiles
 - [z-crm:client-scripts:pull](docs/22-client-scripts-pull-command.md) — downloading client scripts
 - [z-crm:static-resources:pull](docs/23-static-resources-pull-command.md) — downloading static resources
 - [preset](docs/24-preset-command.md) — running a named sequence of commands

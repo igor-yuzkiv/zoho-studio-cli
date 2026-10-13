@@ -22,6 +22,11 @@ export const artifactListConfigs: Record<string, ArtifactListConfig> = {
         relativePath: 'zoho-crm/global-picklists',
         metadataSuffix: '.json',
     },
+    profiles: {
+        groupId: 'profiles',
+        relativePath: 'zoho-crm/profiles',
+        metadataSuffix: '.json',
+    },
     'client-scripts': {
         groupId: 'client-scripts',
         relativePath: 'zoho-crm/client-scripts',

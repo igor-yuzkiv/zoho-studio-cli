@@ -8,6 +8,7 @@ import { pullFields } from '@zoho-studio/zoho-crm/field'
 import { pullFunctions } from '@zoho-studio/zoho-crm/function'
 import { pullGlobalPicklists } from '@zoho-studio/zoho-crm/global-picklist'
 import { pullModules } from '@zoho-studio/zoho-crm/module'
+import { pullProfiles } from '@zoho-studio/zoho-crm/profile'
 import { pullStaticResources } from '@zoho-studio/zoho-crm/static-resource'
 import { pullWebhooks } from '@zoho-studio/zoho-crm/webhook'
 import { pullWorkflowActions } from '@zoho-studio/zoho-crm/workflow-action'
@@ -103,6 +104,16 @@ export const artifactGroups: ArtifactGroup[] = [
         relativePath: 'zoho-crm/global-picklists',
         artifactPattern: '**/*.json',
         pull: (_, progress) => pullGlobalPicklists(progress),
+    },
+    {
+        area: 'crm',
+        id: 'profiles',
+        label: 'Profiles',
+        command: 'z-crm:profiles:pull',
+        options: [],
+        relativePath: 'zoho-crm/profiles',
+        artifactPattern: '**/*.json',
+        pull: (_, progress) => pullProfiles(progress),
     },
     {
         area: 'crm',

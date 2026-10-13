@@ -44,4 +44,5 @@ used throughout these documents.
 - [22-client-scripts-pull-command.md](22-client-scripts-pull-command.md) — downloading client scripts with `zoho-studio z-crm:client-scripts:pull`
 - [23-static-resources-pull-command.md](23-static-resources-pull-command.md) — downloading static resources with `zoho-studio z-crm:static-resources:pull`
 - [24-preset-command.md](24-preset-command.md) — running a named sequence of commands with `zoho-studio preset`
+- [26-profiles-pull-command.md](26-profiles-pull-command.md) — downloading profiles with `zoho-studio z-crm:profiles:pull`
 - [25-browser-command.md](25-browser-command.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`

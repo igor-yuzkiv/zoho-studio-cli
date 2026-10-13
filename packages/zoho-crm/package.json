@@ -10,6 +10,7 @@
         "./global-picklist": "./src/entities/global-picklist/index.ts",
         "./module": "./src/entities/module/index.ts",
         "./organization": "./src/entities/organization/index.ts",
+        "./profile": "./src/entities/profile/index.ts",
         "./static-resource": "./src/entities/static-resource/index.ts",
         "./webhook": "./src/entities/webhook/index.ts",
         "./workflow-action": "./src/entities/workflow-action/index.ts",

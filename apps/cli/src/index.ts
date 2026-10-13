@@ -13,6 +13,7 @@ import { pullWorkflowsCommand } from '@/commands/zoho-crm/workflows'
 import { pullWebhooksCommand } from '@/commands/zoho-crm/webhooks'
 import { pullWorkflowActionsCommand } from '@/commands/zoho-crm/workflow-actions'
 import { pullGlobalPicklistsCommand } from '@/commands/zoho-crm/global-picklists'
+import { pullProfilesCommand } from '@/commands/zoho-crm/profiles'
 import { pullClientScriptsCommand } from '@/commands/zoho-crm/client-scripts'
 import { pullStaticResourcesCommand } from '@/commands/zoho-crm/static-resources'
 import { browserCommand } from '@/commands/browser'
@@ -33,6 +34,7 @@ program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)
 program.addCommand(pullGlobalPicklistsCommand)
+program.addCommand(pullProfilesCommand)
 program.addCommand(pullClientScriptsCommand)
 program.addCommand(pullStaticResourcesCommand)
 program.addCommand(browserCommand)
