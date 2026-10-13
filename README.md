@@ -25,7 +25,6 @@ It is designed for both developers and AI agents, providing a predictable interf
 - [z-crm:static-resources:pull](docs/23-static-resources-pull-command.md) — downloading static resources
 - [preset](docs/24-preset-command.md) — running a named sequence of commands
 - [browser](docs/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
-- [Skills](docs/15-skills.md) — agent-facing skills shipped with the CLI, and installing them
 
 ## Scripts in a project
 
@@ -56,5 +55,4 @@ bun run link            # register packages/* in Bun's link registry, for projec
 bun run unlink          # remove that registration
 bun run dev:web         # web app dev server (Vite)
 bun run build:web       # web app build → dist/web
-bun run deploy-skills   # install skills/ into ~/.claude/skills/
 ```

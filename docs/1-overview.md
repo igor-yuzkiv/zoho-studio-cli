@@ -45,4 +45,3 @@ used throughout these documents.
 - [23-static-resources-pull-command.md](23-static-resources-pull-command.md) — downloading static resources with `zoho-studio z-crm:static-resources:pull`
 - [24-preset-command.md](24-preset-command.md) — running a named sequence of commands with `zoho-studio preset`
 - [25-browser-command.md](25-browser-command.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`
-- [15-skills.md](15-skills.md) — agent-facing skills shipped with the CLI, and installing them
