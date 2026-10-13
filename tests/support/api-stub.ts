@@ -7,6 +7,8 @@ export interface ApiStub {
     requestedUrls: URL[]
     /** The `Authorization` header of every request, in order — read eagerly, since a finished request cannot be inspected later. */
     authorizations: (string | null)[]
+    /** The method and raw body of every request, in order — read eagerly for the same reason. */
+    requests: { method: string; body: string }[]
     stop: () => Promise<void>
 }
 
@@ -17,18 +19,20 @@ type SettingsForApi = (apiOrigin: string) => Partial<Pick<ProjectSettings, 'api'
  * client — base path, token refresh, and error handling included.
  */
 export async function startApiStub(
-    answer: (request: Request) => Response,
+    answer: (request: Request) => Response | Promise<Response>,
     settingsForApi: SettingsForApi,
     tokens: Partial<StoredTokens> = {}
 ): Promise<ApiStub> {
     const requestedUrls: URL[] = []
     const authorizations: (string | null)[] = []
+    const requests: { method: string; body: string }[] = []
 
     const apiServer = Bun.serve({
         port: 0,
-        fetch(request) {
+        async fetch(request) {
             requestedUrls.push(new URL(request.url))
             authorizations.push(request.headers.get('Authorization'))
+            requests.push({ method: request.method, body: await request.clone().text() })
 
             return answer(request)
         },
@@ -58,6 +62,7 @@ export async function startApiStub(
         projectPath,
         requestedUrls,
         authorizations,
+        requests,
         stop: async () => {
             apiServer.stop(true)
             accountsServer.stop(true)

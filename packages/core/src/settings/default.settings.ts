@@ -7,7 +7,9 @@ export const defaultProjectSettings: ProjectSettings = {
         baseUrl: 'https://accounts.zoho.com',
         scopes: [
             'ZohoCRM.settings.modules.READ',
+            'ZohoCRM.settings.modules.CREATE',
             'ZohoCRM.settings.fields.READ',
+            'ZohoCRM.settings.fields.CREATE',
             'ZohoCRM.settings.workflow_rules.READ',
             'ZohoCRM.settings.functions.READ',
             'ZohoCRM.org.READ',
