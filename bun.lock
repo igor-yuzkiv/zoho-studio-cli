@@ -48,11 +48,6 @@
     },
     "apps/cli": {
       "name": "@zoho-studio/cli",
-      "dependencies": {
-        "@zoho-studio/auth": "workspace:*",
-        "@zoho-studio/core": "workspace:*",
-        "@zoho-studio/zoho-crm": "workspace:*",
-      },
     },
     "apps/web": {
       "name": "@zoho-studio/web",
