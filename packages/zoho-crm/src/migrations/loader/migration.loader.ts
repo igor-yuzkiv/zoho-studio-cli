@@ -3,9 +3,11 @@ import { join } from 'node:path'
 
 import { resolveWorkspaceMigrationsPath } from '@zoho-studio/core'
 
-import { zohoCrmDirName } from '../zoho-crm.config'
+import { zohoCrmDirName } from '../../zoho-crm.config'
 
-import type { LoadedMigration, MigrationDefinition } from './migration.types'
+import type { MigrationDefinition } from '../definition'
+
+import type { LoadedMigration } from './migration-loader.types'
 
 const migrationExtension = '.ts'
 

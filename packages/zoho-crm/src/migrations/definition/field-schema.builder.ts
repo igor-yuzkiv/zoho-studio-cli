@@ -1,6 +1,6 @@
-import type { ZohoFieldCreate } from '../entities/field'
+import type { ZohoFieldCreate } from '../../entities/field'
 
-import type { FieldsDeclaration, FieldSchema, PicklistValue } from './migration.types'
+import type { FieldsDeclaration, FieldSchema, PicklistValue } from './migration-definition.types'
 
 /** Runs a fields declaration and returns the create payload of every field it declared, in order. */
 export function declareFields(declaration: FieldsDeclaration): ZohoFieldCreate[] {

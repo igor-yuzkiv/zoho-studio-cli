@@ -1,6 +1,8 @@
-import { maxFieldsPerCreateRequest, type ZohoFieldCreate } from '../entities/field'
+import { maxFieldsPerCreateRequest, type ZohoFieldCreate } from '../../entities/field'
 
-import type { MigrationDescription, MigrationPlan, MigrationStep } from './migration.types'
+import type { MigrationDescription } from '../definition'
+
+import type { MigrationPlan, MigrationStep } from './migration-plan.types'
 
 /** Turns a described migration into the requests a run sends, in order. */
 export function buildMigrationPlan(description: MigrationDescription, profileIds: string[]): MigrationPlan {

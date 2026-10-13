@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { listMigrations, loadMigration } from '@zoho-studio/zoho-crm/migrations'
 
-import { createTempProject, removeTempProject } from '../../support/temp-project'
+import { createTempProject, removeTempProject } from '../../../support/temp-project'
 
 let projectPath: string | null = null
 

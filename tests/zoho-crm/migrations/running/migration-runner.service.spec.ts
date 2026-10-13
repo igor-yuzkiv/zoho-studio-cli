@@ -13,7 +13,7 @@ import {
     type PreparedMigration,
 } from '@zoho-studio/zoho-crm/migrations'
 
-import { startCrmStub, type CrmStub } from '../../support/crm-stub'
+import { startCrmStub, type CrmStub } from '../../../support/crm-stub'
 
 let crm: CrmStub | null = null
 

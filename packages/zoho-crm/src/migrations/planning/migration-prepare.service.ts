@@ -1,8 +1,9 @@
+import { describeMigration, validateMigration } from '../definition'
+import { loadMigration } from '../loader'
+
 import { checkMigration } from './migration-checks.service'
-import { loadMigration } from './migration.loader'
 import { buildMigrationPlan } from './migration-plan.utils'
-import type { PreparedMigration } from './migration.types'
-import { describeMigration, validateMigration } from './migration.utils'
+import type { PreparedMigration } from './migration-plan.types'
 
 /** Loads a migration, validates it, and checks it against Zoho CRM; an invalid one never reaches Zoho. */
 export async function prepareMigration(projectPath: string, name: string): Promise<PreparedMigration> {

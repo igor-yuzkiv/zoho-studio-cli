@@ -1,8 +1,10 @@
-import { getFieldsList } from '../entities/field'
-import { getModulesList, type ZohoModule } from '../entities/module'
-import { findProfileByName, getProfilesList } from '../entities/profile'
+import { getFieldsList } from '../../entities/field'
+import { getModulesList, type ZohoModule } from '../../entities/module'
+import { findProfileByName, getProfilesList } from '../../entities/profile'
 
-import type { MigrationCheck, MigrationDescription } from './migration.types'
+import type { MigrationDescription } from '../definition'
+
+import type { MigrationCheck } from './migration-plan.types'
 
 interface ExistingField {
     api_name: string

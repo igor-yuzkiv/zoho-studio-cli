@@ -1,9 +1,8 @@
-import type { ZohoFieldCreate } from '../entities/field'
+import type { ZohoFieldCreate } from '../../entities/field'
 
-import { declareFields } from './field-schema.builder'
-import type { MigrationDefinition, MigrationDescription } from './migration.types'
+import { describeMigration } from './migration-definition.utils'
+import type { MigrationDefinition, MigrationDescription } from './migration-definition.types'
 
-const defaultProfiles = ['Administrator']
 const maxModuleLabelLength = 50
 const maxFieldLabelLength = 25
 const maxPicklistValueLength = 25
@@ -11,31 +10,6 @@ const maxTextLength = 50000
 const maxDecimalPlace = 9
 const apiNamePattern = /^[A-Za-z](?:[A-Za-z0-9]|_(?!_))*(?<!_)$/
 const apiNameRule = 'must start with a letter and hold only letters, digits and single underscores, not ending with one.'
-
-/** Gives a migration file its types; the definition itself is returned unchanged. */
-export function defineMigration(definition: MigrationDefinition): MigrationDefinition {
-    return definition
-}
-
-/** Reduces a migration to the data a run sends. Validate it first: an invalid one is described as is. */
-export function describeMigration(definition: MigrationDefinition): MigrationDescription {
-    if (definition.create) {
-        const { api_name, singular_label, plural_label, profiles, fields } = definition.create
-
-        return {
-            action: 'create',
-            module: api_name === undefined ? { singular_label, plural_label } : { api_name, singular_label, plural_label },
-            profiles: profiles ?? defaultProfiles,
-            fields: declareFields(fields),
-        }
-    }
-
-    return {
-        action: 'update',
-        module: { api_name: definition.update.module },
-        fields: declareFields(definition.update.fields),
-    }
-}
 
 /** Returns every problem of a migration that can be found without asking Zoho; an empty list means valid. */
 export function validateMigration(definition: MigrationDefinition): string[] {

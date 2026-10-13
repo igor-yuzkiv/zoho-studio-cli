@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 
 import { checkMigration, describeMigration, defineMigration } from '@zoho-studio/zoho-crm/migrations'
 
-import { startCrmStub, type CrmStub } from '../../support/crm-stub'
+import { startCrmStub, type CrmStub } from '../../../support/crm-stub'
 
 let crm: CrmStub | null = null
 

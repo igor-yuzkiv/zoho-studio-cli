@@ -1,15 +1,11 @@
-import { createFields, getFieldsList, saveModuleFields } from '../entities/field'
-import { createModule, getModulesList, saveModuleMetadata } from '../entities/module'
-import { getOrganization } from '../entities/organization'
+import { createFields, getFieldsList, saveModuleFields } from '../../entities/field'
+import { createModule, getModulesList, saveModuleMetadata } from '../../entities/module'
+import { getOrganization } from '../../entities/organization'
 
-import { readMigrationJournal, saveMigrationJournalEntry } from './migration-journal.store'
-import type {
-    MigrationEvent,
-    MigrationJournalEntry,
-    MigrationRunStatus,
-    MigrationStep,
-    PreparedMigration,
-} from './migration.types'
+import { readMigrationJournal, saveMigrationJournalEntry, type MigrationJournalEntry } from '../journal'
+import type { MigrationStep, PreparedMigration } from '../planning'
+
+import type { MigrationEvent, MigrationRunStatus } from './migration-run.types'
 
 type EmitMigrationEvent = (event: MigrationEvent) => void
 

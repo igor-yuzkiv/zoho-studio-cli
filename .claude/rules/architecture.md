@@ -25,7 +25,8 @@ packages/
     src/
       api/          # Zoho CRM client and request error handling
       zoho-crm.config.ts  # names and constants that belong to this area only
-      migrations/   # migrations of modules and fields: describing, planning, and running them
+      migrations/   # migrations of modules and fields, one folder per responsibility:
+                    #   definition/, loader/, planning/, running/, journal/, script/
       entities/     # domain entities of this area (e.g.: field, function, module)
         <entity>/
           <entity>.types.ts   # the shape the CLI depends on

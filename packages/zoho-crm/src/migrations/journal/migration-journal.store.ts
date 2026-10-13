@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { resolveWorkspaceSettingsDirPath, writeJsonFile } from '@zoho-studio/core'
 
-import type { MigrationJournal, MigrationJournalEntry } from './migration.types'
+import type { MigrationJournal, MigrationJournalEntry } from './migration-journal.types'
 
 /** One project may point at a sandbox and production in turn, so runs are kept per organization. */
 type JournalFile = Record<string, MigrationJournal>
