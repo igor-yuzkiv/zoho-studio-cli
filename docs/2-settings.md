@@ -43,6 +43,10 @@ See [`zoho-studio init`](3-init-command.md) for the whole tree.
 
 Every value in the file is **yours**: you fill it in, the CLI only reads it.
 
+`auth.baseUrl` and `api.baseUrl` name the Zoho data center. The defaults are the US one; an account
+in another region needs both changed to its domain — for Europe, `https://accounts.zoho.eu` and
+`https://www.zohoapis.eu`; likewise `.in`, `.com.au`, `.jp`, `.ca`, `.com.cn`.
+
 `logs.file` is where every command writes its log, relative to the project root, and its folder is
 created on the first line written. The default is `logs/zoho-studio-cli.log`, and the `logs/`
 folder `init` creates carries a `.gitignore` that keeps `*.log` out of git. Point this somewhere

@@ -4,7 +4,6 @@ import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/commands/zoho-crm/status'
 import { orgInfoCommand } from '@/commands/zoho-crm/org'
-import { debugCommand } from '@/commands/debug'
 import { presetCommand } from '@/commands/preset'
 import { pullFunctionsCommand } from '@/commands/zoho-crm/functions'
 import { pullModulesCommand } from '@/commands/zoho-crm/modules'
@@ -26,7 +25,6 @@ program.addCommand(initCommand)
 program.addCommand(loginCommand)
 program.addCommand(statusCommand)
 program.addCommand(orgInfoCommand)
-program.addCommand(debugCommand)
 program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)

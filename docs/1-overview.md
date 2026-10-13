@@ -10,8 +10,13 @@ call, and which scopes to ask for. The credentials stay outside the project, in 
 where several projects can share one client. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
-and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`,
-`src/zoho-crm/workflow-actions`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
+and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules` (each module's fields in
+its own `fields/` folder), `src/zoho-crm/workflows`, `src/zoho-crm/workflow-actions`,
+`src/zoho-crm/webhooks`, `src/zoho-crm/global-picklists`, `src/zoho-crm/profiles`,
+`src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
+
+This folder holds the technical reference, one page per command. To learn the tool task by task,
+read the [user guide](user-guide/en/1-overview.md) ([українською](user-guide/ua/1-overview.md)).
 
 ## Running the CLI
 
@@ -24,8 +29,8 @@ bun run dev -- init my-project
 ```
 
 `bun run build` produces a bundle in `dist/`, and `bun run compile` a standalone executable with the
-web page of `zoho-studio browser` built in. Both are invoked as `zoho-studio`, which is the name
-used throughout these documents.
+web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `PATH` to call it as
+`zoho-studio`, which is the name used throughout these documents — see the README.
 
 ## Documents
 

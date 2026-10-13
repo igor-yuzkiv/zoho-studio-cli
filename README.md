@@ -6,6 +6,24 @@ The project aims to bring Zoho development closer to conventional software engin
 
 It is designed for both developers and AI agents, providing a predictable interface for inspecting, managing, and processing Zoho project artifacts through scripts, development tools, and agent-driven workflows.
 
+## Getting the CLI
+
+The CLI is built from this repository; there are no prebuilt releases. It needs
+[Bun](https://bun.sh) 1.3 or newer.
+
+```bash
+git clone <this repository> zoho-studio-cli
+cd zoho-studio-cli
+bun install
+bun run compile                              # → dist/zoho-studio, with the web app inside
+ln -s "$PWD/dist/zoho-studio" ~/.local/bin/zoho-studio   # or any folder on your PATH
+bun run link                                 # once, so projects can import the packages
+```
+
+`zoho-studio --help` then lists the commands. Pull the repository and run `bun run compile` again
+to update; the link from `bun run link` follows the sources and needs no update. New to the tool?
+Start with the [user guide](docs/user-guide/en/1-overview.md) ([українською](docs/user-guide/ua/1-overview.md)).
+
 ## Documentation
 
 - [Overview](docs/1-overview.md) — what a project is, and how to run the CLI

@@ -37,9 +37,15 @@ Documentation changes in the same commit as the behavior it describes.
 
 ## Structure
 
-`docs/` is flat. No subfolders. Every file is numbered in reading order:
+`docs/` is flat. No subfolders, with one exception below. Every file is numbered in reading order:
 `<number>-<kebab-case-name>.md`, starting at `1-overview.md`, which is the entry point and links
-to the rest.
+to the rest. These pages are the technical reference, one page per command or topic.
+
+`docs/user-guide/<lang>/` is the user guide, in `ua` and `en`. Each language folder is flat and
+numbered the same way, from its own `1-overview.md`, and both hold the same files with the same
+content. A guide page explains a task in plain words and links to the reference for every option
+rather than repeating it. Change a guide page in both languages in the same commit. The README
+and `docs/1-overview.md` link to the guide.
 
 Take the next free number for a new document. Renumber only when the reading order genuinely
 changes, since renumbering breaks existing links.
