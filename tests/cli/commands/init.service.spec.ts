@@ -29,7 +29,7 @@ describe('initializeProject', () => {
         expect(await Bun.file(resolveWorkspaceSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
         expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
-        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\n')
+        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\nmigrations.json\n')
         expect(await readTemplateFile(workingPath, '.gitignore')).toBe('node_modules\n')
         expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
             dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },

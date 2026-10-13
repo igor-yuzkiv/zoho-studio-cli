@@ -1,12 +1,12 @@
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir, writeArtifactJson } from '@zoho-studio/core'
+import { replaceArtifactDir } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
 import { getModulesList } from '../api'
 import type { ZohoModule } from '../module.types'
-import { resolveMetadataSegments } from '../module.utils'
+import { saveModuleMetadata } from './save-module-metadata.service'
 
 export async function pullModules(progress: PullProgress): Promise<PullResult> {
     const logger = await createCommandLogger('z-crm:modules:pull')
@@ -33,7 +33,7 @@ export async function pullModules(progress: PullProgress): Promise<PullResult> {
     try {
         for (const module of modules) {
             progress.update(module.api_name)
-            await writeArtifactJson(projectPath, resolveMetadataSegments(module.api_name), module)
+            await saveModuleMetadata(projectPath, module)
             progress.increment()
         }
     } finally {

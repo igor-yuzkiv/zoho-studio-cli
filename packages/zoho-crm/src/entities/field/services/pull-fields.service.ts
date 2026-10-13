@@ -1,14 +1,14 @@
 import { readdir } from 'node:fs/promises'
 
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir, resolveArtifactPath, writeArtifactJson } from '@zoho-studio/core'
+import { resolveArtifactPath } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { assertModuleName, delay } from '@zoho-studio/core'
-import { fieldsDirName, modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
+import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
 import { getFieldsList } from '../api'
-import { resolveFieldFileName } from '../field.utils'
+import { saveModuleFields } from './save-module-fields.service'
 
 const delayBetweenModuleRequestsMs = 300
 
@@ -46,18 +46,9 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
 
             try {
                 const fields = await getFieldsList(moduleName)
-                const fieldsSegments = [zohoCrmDirName, modulesDirName, moduleName, fieldsDirName]
 
                 // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
-                await replaceArtifactDir(projectPath, fieldsSegments)
-
-                for (const field of fields) {
-                    await writeArtifactJson(
-                        projectPath,
-                        [...fieldsSegments, resolveFieldFileName(field.api_name)],
-                        field
-                    )
-                }
+                await saveModuleFields(projectPath, moduleName, fields)
 
                 savedFields += fields.length
             } catch (error) {

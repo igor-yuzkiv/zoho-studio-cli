@@ -1,4 +1,4 @@
-import type { ZohoFieldCreate } from '../entities/field'
+import type { FieldCreateResult, ZohoFieldCreate } from '../entities/field'
 import type { ZohoModuleCreate } from '../entities/module'
 
 export interface FieldOptions {
@@ -121,3 +121,34 @@ export interface PreparedMigration {
     plan: MigrationPlan | null
     conflicts: string[]
 }
+
+export type MigrationRunStatus = 'applied' | 'failed' | 'blocked'
+
+/** Planned fields compared by label with what Zoho holds after the run. */
+export interface MigrationVerification {
+    module: string
+    created: string[]
+    missing: string[]
+}
+
+/** What a run reports as it goes; the CLI prints these, and the web app will read the same stream. */
+export type MigrationEvent =
+    | { type: 'step-started'; index: number; step: MigrationStep }
+    | { type: 'module-created'; id: string; api_name: string }
+    | { type: 'field-result'; index: number; field_label: string; result: FieldCreateResult }
+    | { type: 'step-finished'; index: number; status: 'success' | 'failed'; error?: string }
+    | { type: 'verified'; verification: MigrationVerification }
+    | { type: 'artifacts-updated'; module: string }
+    | { type: 'finished'; status: MigrationRunStatus; message: string }
+
+export interface MigrationJournalEntry {
+    status: 'applied' | 'failed'
+    ranAt: string
+    error?: string
+    moduleId?: string
+    /** Ids of the created fields by label. */
+    fieldIds: Record<string, string>
+}
+
+/** Journal entries of one organization by migration name. */
+export type MigrationJournal = Record<string, MigrationJournalEntry>
