@@ -20,7 +20,8 @@ import { bundleEntries, formatDate, matchesFilter } from '@web/utils/bundle.util
 import { formatTimeAgo } from '@web/utils/time.utils'
 
 import { crmArea } from './crm.config'
-import type { FieldMetadata, ModuleMetadata, WorkflowRule } from './crm.types'
+import type { FieldMetadata, LayoutMetadata, ModuleMetadata, WorkflowRule } from './crm.types'
+import ModuleLayouts from './ModuleLayouts.vue'
 import WorkflowDetail from './WorkflowDetail.vue'
 
 type FieldColumn = 'field_label' | 'api_name' | 'data_type'
@@ -29,11 +30,12 @@ const projectStore = useProjectStore()
 const ui = useUiStore()
 const modulesGroup = computed(() => projectStore.findGroup(crmArea, 'modules'))
 const fieldsGroup = computed(() => projectStore.findGroup(crmArea, 'fields'))
+const layoutsGroup = computed(() => projectStore.findGroup(crmArea, 'layouts'))
 
 const moduleFilter = ref('')
 const fieldFilter = ref('')
 const selectedModule = ref<string | null>(null)
-const tab = ref<'fields' | 'settings' | 'workflows' | 'client-scripts'>('fields')
+const tab = ref<'fields' | 'layouts' | 'settings' | 'workflows' | 'client-scripts'>('fields')
 const sortColumn = ref<FieldColumn>('field_label')
 const sortDescending = ref(false)
 const rawField = ref<FieldMetadata | null>(null)
@@ -80,6 +82,25 @@ const fields = computed(() =>
         .filter(({ directory }) => directory.endsWith('/fields'))
         .map(({ value }) => value)
 )
+const layouts = computed(() =>
+    bundleEntries<LayoutMetadata>(moduleBundle.value)
+        .filter(({ directory }) => directory.endsWith('/layouts'))
+        .map(({ value }) => value)
+)
+/** Zoho returns a formula's expression only inside a layout; the first layout that has it speaks for the field. */
+const formulaExpressions = computed(() => {
+    const expressions = new Map<string, string>()
+
+    for (const field of layouts.value
+        .flatMap((layout) => layout.sections ?? [])
+        .flatMap((section) => section.fields ?? [])) {
+        if (field.formula?.expression && !expressions.has(field.api_name)) {
+            expressions.set(field.api_name, field.formula.expression)
+        }
+    }
+
+    return expressions
+})
 const visibleFields = computed(() => {
     const direction = sortDescending.value ? -1 : 1
 
@@ -125,12 +146,21 @@ function describeRelation(field: FieldMetadata): string {
         return `${field.pick_list_values.length} values`
     }
 
-    return field.formula?.return_type ? `formula: ${field.formula.return_type}` : ''
+    if (!field.formula?.return_type) {
+        return ''
+    }
+
+    const expression = formulaExpressions.value.get(field.api_name)
+
+    return expression ? `${field.formula.return_type} = ${expression}` : `formula: ${field.formula.return_type}`
 }
 
-function pullModuleFields() {
-    if (fieldsGroup.value && selectedModule.value) {
-        ui.openPullDialog(fieldsGroup.value, { module: selectedModule.value })
+async function pullModule() {
+    const groups = [fieldsGroup.value, layoutsGroup.value].filter((group) => group !== undefined)
+
+    if (groups.length && selectedModule.value) {
+        await projectStore.startPullSequence(groups, { module: selectedModule.value })
+        ui.pullPanelOpen = true
     }
 }
 
@@ -175,7 +205,7 @@ const columns: { id: FieldColumn; label: string }[] = [
                         </div>
                     </div>
                     <CopyPathButton :path="currentModule.entry.absolutePath" />
-                    <AppButton size="sm" @click="pullModuleFields">↓ Pull this module</AppButton>
+                    <AppButton size="sm" @click="pullModule">↓ Pull this module</AppButton>
                 </div>
 
                 <TabBar
@@ -183,6 +213,7 @@ const columns: { id: FieldColumn; label: string }[] = [
                     class="mt-3.5 !bg-transparent !px-0"
                     :tabs="[
                         { id: 'fields', label: `Fields · ${fields.length}` },
+                        { id: 'layouts', label: `Layouts · ${layouts.length}` },
                         { id: 'settings', label: 'Module settings' },
                         { id: 'workflows', label: `Workflows · ${moduleWorkflows.length}` },
                         { id: 'client-scripts', label: `Client scripts · ${moduleClientScripts.length}` },
@@ -234,7 +265,7 @@ const columns: { id: FieldColumn; label: string }[] = [
                                     <th
                                         class="border-b border-line bg-surface-2 px-3.5 py-2 text-left font-medium text-faint"
                                     >
-                                        Lookup / picklist
+                                        Lookup / picklist / formula
                                     </th>
                                     <th class="border-b border-line bg-surface-2 px-3.5 py-2">
                                         <span class="sr-only">Raw JSON</span>
@@ -256,7 +287,10 @@ const columns: { id: FieldColumn; label: string }[] = [
                                     <td class="px-3.5 py-2">
                                         <AppBadge v-if="field.custom_field" tone="accent">custom</AppBadge>
                                     </td>
-                                    <td class="px-3.5 py-2 whitespace-nowrap text-muted">
+                                    <td
+                                        class="max-w-80 truncate px-3.5 py-2 whitespace-nowrap text-muted"
+                                        :title="describeRelation(field)"
+                                    >
                                         {{ describeRelation(field) }}
                                     </td>
                                     <td class="px-2 py-1 text-right">
@@ -273,6 +307,15 @@ const columns: { id: FieldColumn; label: string }[] = [
                             </tbody>
                         </table>
                     </div>
+                </template>
+
+                <template v-else-if="tab === 'layouts'">
+                    <EmptyState
+                        v-if="layouts.length === 0"
+                        title="No layouts pulled for this module"
+                        message="Pull this module to see its layouts, sections and formulas here."
+                    />
+                    <ModuleLayouts v-else :layouts="layouts" />
                 </template>
 
                 <JsonViewer v-else-if="tab === 'settings'" :value="metadata" class="!mx-0" />

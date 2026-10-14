@@ -13,7 +13,8 @@ The app runs until you press Ctrl+C in the terminal. It is reachable only from y
 ## What you can do in it
 
 - **Browse** the downloaded files by group — modules, functions, workflows, and the rest — and open
-  any of them.
+  any of them. A module's page shows its fields and its layouts — sections, the fields in each, and
+  the expression of every formula field — and **Pull this module** pulls both for that module.
 - **Pull again** any group; the page shows the progress and the same summary the command prints.
   One pull runs at a time.
 - **Read the log** of every command, newest first, at the bottom of the overview.

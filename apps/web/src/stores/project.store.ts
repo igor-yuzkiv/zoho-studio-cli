@@ -24,6 +24,8 @@ export const pullGroupsByScreen: Record<string, string[]> = {
     modules: ['modules', 'fields', 'layouts'],
 }
 
+type QueuedPull = { group: ArtifactGroupSummary; options: Partial<Record<PullOptionName, string>> }
+
 export const useProjectStore = defineStore('project', () => {
     const project = ref<ProjectInfo | null>(null)
     const groups = ref<ArtifactGroupSummary[]>([])
@@ -31,7 +33,7 @@ export const useProjectStore = defineStore('project', () => {
     const loadError = ref<string | null>(null)
     /** Bumped after every finished pull, so open views know to reload their files. */
     const dataVersion = ref(0)
-    const pendingAreaPulls = ref<ArtifactGroupSummary[]>([])
+    const pendingPulls = ref<QueuedPull[]>([])
     const loginState = ref<LoginState>({ status: 'idle' })
 
     function navigationGroupsOf(area: AreaId): ArtifactGroupSummary[] {
@@ -74,26 +76,33 @@ export const useProjectStore = defineStore('project', () => {
         return run
     }
 
-    /** The server runs one pull at a time, so a whole area is queued here and started run by run. */
     async function startPullAll(area: AreaId) {
-        pendingAreaPulls.value = groups.value.filter((group) => group.area === area)
-        await startNextAreaPull()
+        await startPullSequence(groups.value.filter((group) => group.area === area))
+    }
+
+    /** The server runs one pull at a time, so the groups are queued here and started run by run. */
+    async function startPullSequence(
+        sequence: ArtifactGroupSummary[],
+        options: Partial<Record<PullOptionName, string>> = {}
+    ) {
+        pendingPulls.value = sequence.map((group) => ({ group, options }))
+        await startNextQueuedPull()
     }
 
     /** Started from a finished run; a group the server refused stays first in the queue for the next one. */
-    async function startNextAreaPull() {
-        const next = pendingAreaPulls.value[0]
+    async function startNextQueuedPull() {
+        const next = pendingPulls.value[0]
 
         if (!next || currentRun.value) {
             return
         }
 
         try {
-            await startPull(next)
-            pendingAreaPulls.value.shift()
+            await startPull(next.group, next.options)
+            pendingPulls.value.shift()
         } catch (error) {
             if (!(error instanceof ApiRequestError && error.status === 409)) {
-                pendingAreaPulls.value = []
+                pendingPulls.value = []
                 throw error
             }
         }
@@ -138,7 +147,7 @@ export const useProjectStore = defineStore('project', () => {
             if (event.run.status !== 'running' && previousStatus !== event.run.status) {
                 await refreshGroups()
                 dataVersion.value++
-                await startNextAreaPull().catch((error) => {
+                await startNextQueuedPull().catch((error) => {
                     loadError.value = error instanceof Error ? error.message : String(error)
                 })
             }
@@ -151,7 +160,7 @@ export const useProjectStore = defineStore('project', () => {
         runs,
         loadError,
         dataVersion,
-        pendingAreaPulls,
+        pendingPulls,
         loginState,
         navigationGroupsOf,
         currentRun,
@@ -161,6 +170,7 @@ export const useProjectStore = defineStore('project', () => {
         findGroup,
         startPull,
         startPullAll,
+        startPullSequence,
         startLogin,
     }
 })

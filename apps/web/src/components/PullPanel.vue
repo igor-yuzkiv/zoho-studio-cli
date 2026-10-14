@@ -91,8 +91,8 @@ watch(
                         Log in
                     </button>
                 </div>
-                <div v-if="projectStore.pendingAreaPulls.length" class="mt-1 text-faint">
-                    Queued: {{ projectStore.pendingAreaPulls.map((group) => group.label).join(', ') }}
+                <div v-if="projectStore.pendingPulls.length" class="mt-1 text-faint">
+                    Queued: {{ projectStore.pendingPulls.map(({ group }) => group.label).join(', ') }}
                 </div>
             </div>
         </template>

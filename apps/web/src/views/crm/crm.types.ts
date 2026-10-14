@@ -17,7 +17,28 @@ export type FieldMetadata = {
     read_only?: boolean
     lookup?: { module?: { api_name?: string } } | null
     pick_list_values?: { display_value: string }[]
-    formula?: { return_type?: string } | null
+    formula?: { return_type?: string; expression?: string } | null
+}
+
+/** A layout section and its fields; `mode` names the record view the section belongs to. */
+export type LayoutSection = {
+    id: string
+    api_name: string
+    display_label?: string
+    mode?: string
+    sequence_number?: number
+    column_count?: number
+    fields?: (FieldMetadata & { sequence_number?: number })[]
+}
+
+export type LayoutMetadata = {
+    id: string
+    api_name: string
+    display_label?: string
+    name?: string
+    status?: string
+    profiles?: { name: string }[] | null
+    sections?: LayoutSection[]
 }
 
 export type WorkflowAction = { id: string; name: string; type: string }

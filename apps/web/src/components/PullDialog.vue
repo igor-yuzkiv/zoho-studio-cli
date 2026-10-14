@@ -32,7 +32,7 @@ const commandPreview = computed(() => {
 
 const warning = computed(() =>
     group.value?.id === 'modules'
-        ? 'This replaces the whole modules folder, fields included. Pull fields again afterwards.'
+        ? 'This replaces the whole modules folder, fields and layouts included. Pull them again afterwards.'
         : null
 )
 
