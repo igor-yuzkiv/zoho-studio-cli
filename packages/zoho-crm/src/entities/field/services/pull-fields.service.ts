@@ -1,11 +1,8 @@
-import { readdir } from 'node:fs/promises'
-
 import { getProjectSettings } from '@zoho-studio/core'
-import { resolveArtifactPath } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
-import { assertModuleName, delay } from '@zoho-studio/core'
-import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
+import { delay } from '@zoho-studio/core'
+import { resolveLocalModuleNames } from '../../module'
 
 import { getFieldsListRequest } from '../api'
 import { saveModuleFields } from './save-module-fields.service'
@@ -24,11 +21,7 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
     logger.info({ module: options.module ?? null }, 'Starting fields pull')
 
     const { projectPath } = await getProjectSettings()
-    const modulesPath = resolveArtifactPath(projectPath, [zohoCrmDirName, modulesDirName])
-
-    const moduleNames = options.module
-        ? [await resolveRequestedModule(modulesPath, options.module)]
-        : await readLocalModuleNames(modulesPath)
+    const moduleNames = await resolveLocalModuleNames(projectPath, options.module)
 
     logger.info({ modules: moduleNames.length }, 'Local modules found')
 
@@ -76,32 +69,4 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
         ],
         failedCount: failed.length,
     }
-}
-
-async function readLocalModuleNames(modulesPath: string): Promise<string[]> {
-    const entries = await readdir(modulesPath, { withFileTypes: true }).catch(() => null)
-    const moduleNames = (entries ?? [])
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => entry.name)
-        .sort()
-
-    if (moduleNames.length === 0) {
-        throw new Error(`No modules found in "${modulesPath}". Run "zoho-studio z-crm:modules:pull" first.`)
-    }
-
-    return moduleNames
-}
-
-async function resolveRequestedModule(modulesPath: string, requested: string): Promise<string> {
-    const moduleName = assertModuleName(requested)
-    const entries = await readdir(modulesPath, { withFileTypes: true }).catch(() => null)
-    const exists = (entries ?? []).some((entry) => entry.isDirectory() && entry.name === moduleName)
-
-    if (!exists) {
-        throw new Error(
-            `Module "${moduleName}" is not in "${modulesPath}". Run "zoho-studio z-crm:modules:pull" first.`
-        )
-    }
-
-    return moduleName
 }
