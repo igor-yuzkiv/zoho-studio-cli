@@ -51,3 +51,10 @@ verification:
   types: bun run typecheck
   build: bun run build
   all: bun run check
+
+labels:
+  - CLI
+  - DOC
+  - SKILL
+
+temp: _tmp/
