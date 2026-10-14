@@ -12,8 +12,8 @@ call, and which scopes to ask for. The credentials stay outside the project, in 
 where several projects can share one client. `zoho-studio init` scaffolds the project around it.
 
 Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
-and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules` (each module's fields in
-its own `fields/` folder), `src/zoho-crm/workflows`, `src/zoho-crm/workflow-actions`,
+and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules` (each module's fields and layouts in
+its own `fields/` and `layouts/` folders), `src/zoho-crm/workflows`, `src/zoho-crm/workflow-actions`,
 `src/zoho-crm/webhooks`, `src/zoho-crm/global-picklists`, `src/zoho-crm/profiles`,
 `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
 
@@ -54,3 +54,4 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 - [25-browser-command.md](25-browser-command.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`
 - [26-profiles-pull-command.md](26-profiles-pull-command.md) — downloading profiles with `zoho-studio z-crm:profiles:pull`
 - [27-migrations.md](27-migrations.md) — creating modules and adding fields from migration files with `bun run migrate`
+- [28-layouts-pull-command.md](28-layouts-pull-command.md) — downloading module layouts, with their sections and formulas, with `zoho-studio z-crm:layouts:pull`

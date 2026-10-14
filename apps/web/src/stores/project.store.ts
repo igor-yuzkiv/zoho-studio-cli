@@ -16,12 +16,12 @@ export const areaLabels: Record<AreaId, string> = {
     crm: 'Zoho CRM',
 }
 
-/** Fields are browsed inside their module, so they have no entry of their own in the sidebar. */
-const groupsHiddenFromNavigation = new Set(['fields'])
+/** Fields and layouts are browsed inside their module, so they have no entry of their own in the sidebar. */
+const groupsHiddenFromNavigation = new Set(['fields', 'layouts'])
 
 /** Groups whose artifacts a screen shows, so its Pull offers each of them. */
 export const pullGroupsByScreen: Record<string, string[]> = {
-    modules: ['modules', 'fields'],
+    modules: ['modules', 'fields', 'layouts'],
 }
 
 export const useProjectStore = defineStore('project', () => {

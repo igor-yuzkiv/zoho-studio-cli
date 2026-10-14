@@ -7,6 +7,7 @@ import { pullClientScripts } from '@zoho-studio/zoho-crm/client-script'
 import { pullFields } from '@zoho-studio/zoho-crm/field'
 import { pullFunctions } from '@zoho-studio/zoho-crm/function'
 import { pullGlobalPicklists } from '@zoho-studio/zoho-crm/global-picklist'
+import { pullLayouts } from '@zoho-studio/zoho-crm/layout'
 import { pullModules } from '@zoho-studio/zoho-crm/module'
 import { pullProfiles } from '@zoho-studio/zoho-crm/profile'
 import { pullStaticResources } from '@zoho-studio/zoho-crm/static-resource'
@@ -60,6 +61,16 @@ export const artifactGroups: ArtifactGroup[] = [
         relativePath: 'zoho-crm/modules',
         artifactPattern: '*/fields/*.json',
         pull: (options, progress) => pullFields({ module: options.module }, progress),
+    },
+    {
+        area: 'crm',
+        id: 'layouts',
+        label: 'Layouts',
+        command: 'z-crm:layouts:pull',
+        options: ['module'],
+        relativePath: 'zoho-crm/modules',
+        artifactPattern: '*/layouts/*.json',
+        pull: (options, progress) => pullLayouts({ module: options.module }, progress),
     },
     {
         area: 'crm',

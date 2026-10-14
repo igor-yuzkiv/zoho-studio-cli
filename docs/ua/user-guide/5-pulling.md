@@ -21,6 +21,7 @@ zoho-studio preset pull-crm
 | `z-crm:org:info` | організацію | `.zoho-studio/org.json` |
 | `z-crm:modules:pull` | модулі | `src/zoho-crm/modules/<Module>/` |
 | `z-crm:fields:pull` | поля кожного завантаженого модуля | `src/zoho-crm/modules/<Module>/fields/` |
+| `z-crm:layouts:pull` | layouts кожного завантаженого модуля із секціями та виразами формул | `src/zoho-crm/modules/<Module>/layouts/` |
 | `z-crm:functions:pull` | функції з їхнім кодом Deluge | `src/zoho-crm/functions/` |
 | `z-crm:workflows:pull` | правила робочих процесів | `src/zoho-crm/workflows/` |
 | `z-crm:workflow-actions:pull` | дії робочих процесів | `src/zoho-crm/workflow-actions/` |

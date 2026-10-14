@@ -39,8 +39,9 @@ four-space indent and a trailing newline.
 so a module removed in Zoho disappears locally, and any local edit inside it is lost.
 
 That includes the fields [`zoho-studio z-crm:fields:pull`](8-fields-pull-command.md) writes into
-`<module>/fields/`: this command wipes them along with everything else. The order is always
-`z-crm:modules:pull` first, `z-crm:fields:pull` after.
+`<module>/fields/` and the layouts [`zoho-studio z-crm:layouts:pull`](28-layouts-pull-command.md)
+writes into `<module>/layouts/`: this command wipes them along with everything else. The order is
+always `z-crm:modules:pull` first, `z-crm:fields:pull` and `z-crm:layouts:pull` after.
 
 The location is fixed: `src/zoho-crm/modules/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.

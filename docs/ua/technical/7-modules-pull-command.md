@@ -39,8 +39,9 @@ src/zoho-crm/modules/
 поточне завантаження, тож модуль, видалений у Zoho, зникає й локально, а будь-яка локальна правка в ній втрачається.
 
 Це стосується й полів, які [`zoho-studio z-crm:fields:pull`](8-fields-pull-command.md) записує в
-`<module>/fields/`: ця команда стирає їх разом з усім іншим. Порядок завжди такий:
-спершу `z-crm:modules:pull`, потім `z-crm:fields:pull`.
+`<module>/fields/`, і layouts, які [`zoho-studio z-crm:layouts:pull`](28-layouts-pull-command.md)
+записує в `<module>/layouts/`: ця команда стирає їх разом з усім іншим. Порядок завжди такий:
+спершу `z-crm:modules:pull`, потім `z-crm:fields:pull` і `z-crm:layouts:pull`.
 
 Розташування фіксоване: `src/zoho-crm/modules/` у корені проєкту; якщо папки немає, її буде створено.
 Жодне налаштування його не змінює — дерево проєкту див. у [`zoho-studio init`](3-init-command.md).

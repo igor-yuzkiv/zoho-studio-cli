@@ -8,6 +8,7 @@
         "./field": "./src/entities/field/index.ts",
         "./function": "./src/entities/function/index.ts",
         "./global-picklist": "./src/entities/global-picklist/index.ts",
+        "./layout": "./src/entities/layout/index.ts",
         "./migrations": "./src/migrations/index.ts",
         "./module": "./src/entities/module/index.ts",
         "./organization": "./src/entities/organization/index.ts",

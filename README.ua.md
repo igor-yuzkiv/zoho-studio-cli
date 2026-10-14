@@ -36,6 +36,7 @@ bun run link                                 # once, so projects can import the 
 - [z-crm:functions:pull](docs/ua/technical/6-functions-pull-command.md) — завантаження функцій
 - [z-crm:modules:pull](docs/ua/technical/7-modules-pull-command.md) — завантаження метаданих модулів
 - [z-crm:fields:pull](docs/ua/technical/8-fields-pull-command.md) — завантаження полів модулів
+- [z-crm:layouts:pull](docs/ua/technical/28-layouts-pull-command.md) — завантаження layouts модулів із секціями та формулами
 - [z-crm:workflows:pull](docs/ua/technical/9-workflows-pull-command.md) — завантаження правил робочих процесів
 - [z-crm:org:info](docs/ua/technical/10-org-info-command.md) — читання організації та її збереження в проєкті
 - [z-crm:workflow-actions:pull](docs/ua/technical/11-workflow-actions-pull-command.md) — завантаження дій робочих процесів

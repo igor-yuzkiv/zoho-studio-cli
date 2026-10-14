@@ -36,8 +36,8 @@ const organizationFacts = computed(() => {
 })
 
 function openGroup(group: ArtifactGroupSummary) {
-    // Fields are browsed inside their module.
-    const id = group.id === 'fields' ? 'modules' : group.id
+    // Fields and layouts are browsed inside their module.
+    const id = group.id === 'fields' || group.id === 'layouts' ? 'modules' : group.id
     void router.push({ name: 'group', params: { area: group.area, group: id } })
 }
 

@@ -21,6 +21,7 @@ The built-in `pull-crm` preset runs every command below in the right order.
 | `z-crm:org:info` | the organization | `.zoho-studio/org.json` |
 | `z-crm:modules:pull` | modules | `src/zoho-crm/modules/<Module>/` |
 | `z-crm:fields:pull` | fields of every downloaded module | `src/zoho-crm/modules/<Module>/fields/` |
+| `z-crm:layouts:pull` | layouts of every downloaded module, with sections and formula expressions | `src/zoho-crm/modules/<Module>/layouts/` |
 | `z-crm:functions:pull` | functions with their Deluge code | `src/zoho-crm/functions/` |
 | `z-crm:workflows:pull` | workflow rules | `src/zoho-crm/workflows/` |
 | `z-crm:workflow-actions:pull` | workflow actions | `src/zoho-crm/workflow-actions/` |

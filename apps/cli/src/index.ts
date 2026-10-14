@@ -8,6 +8,7 @@ import { presetCommand } from '@/commands/preset'
 import { pullFunctionsCommand } from '@/commands/zoho-crm/functions'
 import { pullModulesCommand } from '@/commands/zoho-crm/modules'
 import { pullFieldsCommand } from '@/commands/zoho-crm/fields'
+import { pullLayoutsCommand } from '@/commands/zoho-crm/layouts'
 import { pullWorkflowsCommand } from '@/commands/zoho-crm/workflows'
 import { pullWebhooksCommand } from '@/commands/zoho-crm/webhooks'
 import { pullWorkflowActionsCommand } from '@/commands/zoho-crm/workflow-actions'
@@ -28,6 +29,7 @@ program.addCommand(orgInfoCommand)
 program.addCommand(pullFunctionsCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
+program.addCommand(pullLayoutsCommand)
 program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)
 program.addCommand(pullWorkflowActionsCommand)

@@ -55,7 +55,7 @@ else and that no longer applies — add the new path to your `.gitignore` yourse
 `auth.scopes` is the permission list [`zoho-studio login`](4-login-command.md) asks Zoho for, and
 the same list appears on the consent screen. Trim it to what you actually use — a scope the CLI
 never received is a scope it cannot silently use. Zoho fixes the scopes at the moment you consent,
-so a project authorized before the client script and static resource scopes were added has to run
+so a project authorized before the client script, static resource and layouts scopes were added has to run
 `login` again before their `z-crm:*:pull` commands work.
 
 `presets` names command sequences for [`zoho-studio preset`](24-preset-command.md). Like any other

@@ -13,7 +13,7 @@ Zoho Studio CLI — це інструмент командного рядка д
 
 Усе, що завантажує CLI, потрапляє в `src/`, у папку для кожного продукту Zoho, за шляхами, які
 CLI фіксує і які не змінює жодне налаштування — `src/zoho-crm/functions`, `src/zoho-crm/modules`
-(поля кожного модуля — у його власній папці `fields/`), `src/zoho-crm/workflows`,
+(поля й layouts кожного модуля — у його власних папках `fields/` і `layouts/`), `src/zoho-crm/workflows`,
 `src/zoho-crm/workflow-actions`, `src/zoho-crm/webhooks`, `src/zoho-crm/global-picklists`,
 `src/zoho-crm/profiles`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
 
@@ -54,3 +54,4 @@ bun run dev -- init my-project
 - [25-browser-command.md](25-browser-command.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку командою `zoho-studio browser`
 - [26-profiles-pull-command.md](26-profiles-pull-command.md) — завантаження профілів командою `zoho-studio z-crm:profiles:pull`
 - [27-migrations.md](27-migrations.md) — створення модулів і додавання полів із файлів міграцій командою `bun run migrate`
+- [28-layouts-pull-command.md](28-layouts-pull-command.md) — завантаження layouts модулів із секціями та формулами командою `zoho-studio z-crm:layouts:pull`

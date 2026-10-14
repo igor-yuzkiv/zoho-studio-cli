@@ -33,7 +33,7 @@ Arguments are separated by whitespace; wrap a value that contains spaces in sing
 quotes. No other shell syntax is understood — no variables, pipes, or `&&`.
 
 One preset comes built in: `pull-crm` — `z-crm:org:info`, then every `z-crm:*:pull` command, with
-`z-crm:modules:pull` before `z-crm:fields:pull`, as the fields pull requires.
+`z-crm:modules:pull` before `z-crm:fields:pull` and `z-crm:layouts:pull`, as those pulls require.
 
 Presets are merged with the built-in ones by name: a preset you define is added, and one with a
 built-in name replaces that built-in preset entirely.

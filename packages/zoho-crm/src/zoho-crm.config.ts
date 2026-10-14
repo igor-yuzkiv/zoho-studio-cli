@@ -9,6 +9,7 @@ export const fieldsDirName = 'fields'
 export const webhooksDirName = 'webhooks'
 export const globalPicklistsDirName = 'global-picklists'
 export const profilesDirName = 'profiles'
+export const layoutsDirName = 'layouts'
 
 /** Deluge sources are saved under this extension; map the editor to it rather than it to the editor. */
 export const functionCodeExtension = 'deluge'
