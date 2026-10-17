@@ -8,9 +8,8 @@
         "jsx": "react-jsx",
         "allowJs": true,
         "types": ["bun"],
-        "baseUrl": ".",
         "paths": {
-            "@/*": ["apps/cli/src/*"]
+            "@/*": ["./apps/cli/src/*"]
         },
 
         // Bundler mode

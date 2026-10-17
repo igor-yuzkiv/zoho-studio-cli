@@ -12,7 +12,7 @@ export default defineConfig([
   { ignores: ["tests/**/fixtures/**/*.md"] },
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.browser } },
   tseslint.configs.recommended,
-  ...pluginVue.configs["flat/recommended"].map((config) => ({ ...config, files: ["**/*.vue"] })),
+  ...pluginVue.configs["flat/essential"].map((config) => ({ ...config, files: ["**/*.vue"] })),
   { files: ["**/*.vue"], languageOptions: { parserOptions: { parser: tseslint.parser } } },
   // Formatting belongs to Prettier; this turns off the Vue layout rules that disagree with it.
   eslintConfigPrettier,
