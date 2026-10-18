@@ -39,6 +39,6 @@ Zoho Studio ніколи нічого не змінює у вашій CRM, кр�
 8. [Розв'язання проблем](8-troubleshooting.md) — типові помилки і що з ними робити
 9. [Скрипти й пакети](9-scripts-and-packages.md) — власні скрипти з пакетами Zoho Studio
 
-Слова, якими користуються ці сторінки, — artifact, pull, snapshot — визначає [глосарій](../glossary.md).
+Слова, якими користуються ці сторінки, — artifact, pull, snapshot, source, scaffold — визначає [глосарій](../glossary.md).
 
 Кожна сторінка посилається на [технічний довідник](../technical/1-overview.md) з повним переліком опцій.

@@ -37,6 +37,7 @@ Start with the [user guide](docs/en/user-guide/1-overview.md) ([українсь
 - [z-crm:modules:pull](docs/en/technical/7-modules-pull-command.md) — downloading module metadata
 - [z-crm:fields:pull](docs/en/technical/8-fields-pull-command.md) — downloading module fields
 - [z-crm:layouts:pull](docs/en/technical/28-layouts-pull-command.md) — downloading module layouts with their sections and formulas
+- [z-crm:functions:make](docs/en/technical/29-functions-make-command.md) — scaffolding a new Deluge function in `src/`
 - [z-crm:workflows:pull](docs/en/technical/9-workflows-pull-command.md) — downloading workflow rules
 - [z-crm:org:info](docs/en/technical/10-org-info-command.md) — reading the organization and storing it in the project
 - [z-crm:workflow-actions:pull](docs/en/technical/11-workflow-actions-pull-command.md) — downloading workflow actions

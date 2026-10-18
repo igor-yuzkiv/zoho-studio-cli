@@ -9,9 +9,13 @@
 | **Artifact** | Будь-який об'єкт Zoho CRM, з яким працює CLI: функція, модуль, поле, workflow rule тощо. |
 | **Pull** | Завантаження артефактів із Zoho CRM через API командами `z-crm:*:pull`. В інших інструментах це називають fetch. |
 | **Snapshot** | Локальна копія стану артефакта в тому вигляді, в якому її завантажив pull. Snapshot-и лежать у `data/zoho-crm/`. |
+| **Source** | Код і метадані артефакта, який розробляється локально. Source лежить у `src/zoho-crm/`, і жоден pull його не чіпає. |
+| **Scaffold** | Створення перших файлів нового артефакта із шаблону командою `z-crm:functions:make`. |
 
 ```text
 Zoho CRM ── Pull ──> snapshots in data/zoho-crm/
+
+Scaffold ──> source in src/zoho-crm/
 ```
 
 Snapshot — це стан CRM на момент останнього pull, а не версійована історія: наступний pull його

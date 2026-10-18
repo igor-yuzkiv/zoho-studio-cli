@@ -18,3 +18,26 @@ export const clientScriptsDirName = 'client-scripts'
 /** Client script pages that belong to no module, such as `commands`, are grouped under this folder. */
 export const clientScriptsWithoutModuleDirName = '_no-module'
 export const staticResourcesDirName = 'static-resources'
+
+/** The only runtime `z-crm:functions:make` scaffolds for. */
+export const delugeRuntime = 'Deluge 1.0'
+
+/**
+ * The return types Zoho accepts per category of a Deluge function; the first is the default.
+ * Zoho rejects a declaration whose return type does not match its category.
+ */
+export const delugeReturnTypesByCategory = {
+    Button: ['string'],
+    Automation: ['void', 'string'],
+    Schedule: ['void'],
+    'Related List': ['string'],
+    Standalone: ['string'],
+    Signals: ['void'],
+    'Validation Rule': ['map'],
+} as const satisfies Record<string, readonly string[]>
+
+export type DelugeFunctionCategory = keyof typeof delugeReturnTypesByCategory
+
+export const delugeFunctionCategories = Object.keys(delugeReturnTypesByCategory) as DelugeFunctionCategory[]
+
+export const functionDeployFileSuffix = 'deploy.json'

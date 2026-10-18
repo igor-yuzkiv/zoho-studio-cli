@@ -33,6 +33,23 @@
     },
     "presets": {
         "pull-crm": ["z-crm:org:info", "z-crm:modules:pull", "…"]
+    },
+    "zohoCrm": {
+        "functions": {
+            "naming": {
+                "enabled": true,
+                "vendor": "",
+                "categoryPrefixes": {
+                    "Button": "btn",
+                    "Automation": "wf",
+                    "Schedule": "sh",
+                    "Related List": "rl",
+                    "Standalone": "sa",
+                    "Signals": "sig",
+                    "Validation Rule": "vr"
+                }
+            }
+        }
     }
 }
 ```
@@ -61,6 +78,12 @@
 `presets` дає назви послідовностям команд для [`zoho-studio preset`](24-preset-command.md). Як і
 будь-який інший розділ, він зливається з вбудованим за ключами, тож доданий вами пресет стає поруч
 із `pull-crm`, а не замінює його.
+
+`zohoCrm.functions.naming` визначає API-ім'я, яке пропонує [`zoho-studio z-crm:functions:make`](29-functions-make-command.md):
+`<vendor>_<префікс категорії>_<модуль>_<призначення>`, наприклад `oz_wf_programs_refresh_pricing`.
+Порожній `vendor` прибирає цей сегмент; категорія, якої немає в `categoryPrefixes`, пишеться повністю
+в snake case; `enabled: false` змушує команду питати API-ім'я напряму. Вказуйте лише те, що
+змінюєте, — `{ "vendor": "oz" }` зберігає типові префікси.
 
 Кожен ключ необов'язковий. Усе, що ви пропустили, береться з вбудованих типових значень, тож
 порожній об'єкт — це коректний проєкт. Ключ, який ви записали, **замінює** типове значення, а

@@ -36,7 +36,7 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 
 ## Documents
 
-- [glossary.md](../glossary.md) — the terms used throughout: artifact, pull, snapshot
+- [glossary.md](../glossary.md) — the terms used throughout: artifact, pull, snapshot, source, scaffold
 - [2-settings.md](2-settings.md) — the settings file, and how the CLI reads and writes it
 - [3-init-command.md](3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`
@@ -56,3 +56,4 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 - [26-profiles-pull-command.md](26-profiles-pull-command.md) — downloading profiles with `zoho-studio z-crm:profiles:pull`
 - [27-migrations.md](27-migrations.md) — creating modules and adding fields from migration files with `bun run migrate`
 - [28-layouts-pull-command.md](28-layouts-pull-command.md) — downloading module layouts, with their sections and formulas, with `zoho-studio z-crm:layouts:pull`
+- [29-functions-make-command.md](29-functions-make-command.md) — scaffolding a new Deluge function in `src/` with `zoho-studio z-crm:functions:make`

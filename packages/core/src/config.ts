@@ -43,6 +43,10 @@ export function resolveWorkspaceDataPath(projectPath: string): string {
     return join(projectPath, workspaceDataDirName)
 }
 
+export function resolveWorkspaceSourcePath(projectPath: string): string {
+    return join(projectPath, workspaceSourceDirName)
+}
+
 export function resolveWorkspaceMigrationsPath(projectPath: string): string {
     return join(projectPath, migrationsDirName)
 }

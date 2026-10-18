@@ -1,4 +1,5 @@
 export * from './function.types'
 export * from './api'
 export * from './function.utils'
+export * from './function-source.utils'
 export * from './services'

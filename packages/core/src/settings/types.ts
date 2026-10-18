@@ -15,6 +15,18 @@ export interface ProjectSettings {
     }
     /** Named command sequences for `zoho-studio preset`; each entry is a command line without the binary name. */
     presets: Record<string, string[]>
+    zohoCrm: {
+        functions: {
+            /** How `z-crm:functions:make` proposes an API name: `<vendor>_<category prefix>_<module>_<purpose>`. */
+            naming: {
+                enabled: boolean
+                /** Left out of the name when empty. */
+                vendor: string
+                /** Keyed by Zoho category name; a category without an entry is spelled out in snake case. */
+                categoryPrefixes: Record<string, string>
+            }
+        }
+    }
 }
 
 /** The settings together with the project root they were found in. */

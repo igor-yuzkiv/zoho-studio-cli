@@ -47,4 +47,21 @@ export const defaultProjectSettings: ProjectSettings = {
             'z-crm:static-resources:pull',
         ],
     },
+    zohoCrm: {
+        functions: {
+            naming: {
+                enabled: true,
+                vendor: '',
+                categoryPrefixes: {
+                    Button: 'btn',
+                    Automation: 'wf',
+                    Schedule: 'sh',
+                    'Related List': 'rl',
+                    Standalone: 'sa',
+                    Signals: 'sig',
+                    'Validation Rule': 'vr',
+                },
+            },
+        },
+    },
 }

@@ -1,7 +1,7 @@
 import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
-import { resolveWorkspaceDataPath } from '../config'
+import { resolveWorkspaceDataPath, resolveWorkspaceSourcePath } from '../config'
 import { writeJsonFile } from '../utils'
 
 /**
@@ -19,17 +19,26 @@ export function toPathSegment(value: string): string {
     return segment
 }
 
-/** Resolves a path under the project's `data`, refusing anything that would land outside it. */
+/** Resolves a snapshot path under the project's `data`, refusing anything that would land outside it. */
 export function resolveArtifactPath(projectPath: string, segments: string[]): string {
-    const dataPath = resolve(resolveWorkspaceDataPath(projectPath))
-    const artifactPath = join(dataPath, ...segments.map(toPathSegment))
+    return resolveInside(resolveWorkspaceDataPath(projectPath), segments)
+}
+
+/** Resolves a source path under the project's `src`, refusing anything that would land outside it. */
+export function resolveSourcePath(projectPath: string, segments: string[]): string {
+    return resolveInside(resolveWorkspaceSourcePath(projectPath), segments)
+}
+
+function resolveInside(rootPath: string, segments: string[]): string {
+    const absoluteRootPath = resolve(rootPath)
+    const resolvedPath = join(absoluteRootPath, ...segments.map(toPathSegment))
 
     // Segments are sanitized above, so this holds unless that sanitizing is ever loosened.
-    if (!artifactPath.startsWith(dataPath + sep)) {
-        throw new Error(`Artifact path escapes ${dataPath}: ${artifactPath}`)
+    if (!resolvedPath.startsWith(absoluteRootPath + sep)) {
+        throw new Error(`Path escapes ${absoluteRootPath}: ${resolvedPath}`)
     }
 
-    return artifactPath
+    return resolvedPath
 }
 
 export async function ensureArtifactDir(projectPath: string, segments: string[]): Promise<string> {

@@ -46,6 +46,7 @@ export function buildSettings({
         api: { ...defaultProjectSettings.api, ...api },
         logs: { ...defaultProjectSettings.logs, ...logs },
         presets,
+        zohoCrm: defaultProjectSettings.zohoCrm,
     }
 }
 

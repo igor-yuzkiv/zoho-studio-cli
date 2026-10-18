@@ -9,9 +9,13 @@ here.
 | **Artifact** | Any Zoho CRM object the CLI works with: a function, a module, a field, a workflow rule, and so on. |
 | **Pull** | Downloading artifacts from Zoho CRM through the API, done by the `z-crm:*:pull` commands. Other tools call this a fetch. |
 | **Snapshot** | The local copy of an artifact's state, as a pull downloaded it. Snapshots live under `data/zoho-crm/`. |
+| **Source** | Code and metadata of an artifact developed locally. Source lives under `src/zoho-crm/`, and no pull touches it. |
+| **Scaffold** | Creating the first files of a new artifact from a template, done by `z-crm:functions:make`. |
 
 ```text
 Zoho CRM ── Pull ──> snapshots in data/zoho-crm/
+
+Scaffold ──> source in src/zoho-crm/
 ```
 
 A snapshot is the state of the CRM at the moment of the last pull, not a versioned history: the next

@@ -8,6 +8,7 @@ import {
     replaceArtifactDir,
     resolveArtifactFileName,
     resolveArtifactPath,
+    resolveSourcePath,
     sortForStableFileNames,
     toPathSegment,
     writeArtifactJson,
@@ -159,5 +160,17 @@ describe('sortForStableFileNames', () => {
         sortForStableFileNames(records)
 
         expect(records.map((record) => record.id)).toEqual(['2', '1'])
+    })
+})
+
+describe('resolveSourcePath', () => {
+    test('resolves inside the project src directory', () => {
+        expect(resolveSourcePath(projectPath, ['zoho-crm', 'functions', 'oz_sa_ping'])).toBe(
+            join(projectPath, 'src', 'zoho-crm', 'functions', 'oz_sa_ping')
+        )
+    })
+
+    test('keeps a segment that looks like a path inside src', () => {
+        expect(resolveSourcePath(projectPath, ['../../etc'])).toBe(join(projectPath, 'src', '.._.._etc'))
     })
 })

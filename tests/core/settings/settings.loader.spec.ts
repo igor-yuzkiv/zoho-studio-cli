@@ -31,6 +31,27 @@ describe('project settings loader', () => {
         expect(settings.auth.scopes).toEqual(defaultProjectSettings.auth.scopes)
     })
 
+    test('gives a settings.json without zohoCrm the default function naming', async () => {
+        await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ api: { version: 'v8' } }))
+
+        expect((await loadProjectSettings(projectPath)).zohoCrm.functions.naming).toEqual(
+            defaultProjectSettings.zohoCrm.functions.naming
+        )
+    })
+
+    test('keeps the default category prefixes when only the vendor is set', async () => {
+        await Bun.write(
+            resolveWorkspaceSettingsPath(projectPath),
+            JSON.stringify({ zohoCrm: { functions: { naming: { vendor: 'oz' } } } })
+        )
+
+        const naming = (await loadProjectSettings(projectPath)).zohoCrm.functions.naming
+
+        expect(naming.vendor).toBe('oz')
+        expect(naming.enabled).toBe(true)
+        expect(naming.categoryPrefixes).toEqual(defaultProjectSettings.zohoCrm.functions.naming.categoryPrefixes)
+    })
+
     test('keeps a flat scope list as it is', async () => {
         await Bun.write(
             resolveWorkspaceSettingsPath(projectPath),

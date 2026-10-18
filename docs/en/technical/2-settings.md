@@ -33,6 +33,23 @@ next to the file, which keeps it and `org.json` out of git, and writes it with `
     },
     "presets": {
         "pull-crm": ["z-crm:org:info", "z-crm:modules:pull", "…"]
+    },
+    "zohoCrm": {
+        "functions": {
+            "naming": {
+                "enabled": true,
+                "vendor": "",
+                "categoryPrefixes": {
+                    "Button": "btn",
+                    "Automation": "wf",
+                    "Schedule": "sh",
+                    "Related List": "rl",
+                    "Standalone": "sa",
+                    "Signals": "sig",
+                    "Validation Rule": "vr"
+                }
+            }
+        }
     }
 }
 ```
@@ -61,6 +78,12 @@ so a project authorized before the client script, static resource and layouts sc
 `presets` names command sequences for [`zoho-studio preset`](24-preset-command.md). Like any other
 section, it merges with the built-in one by key, so a preset you add sits next to
 `pull-crm` instead of removing it.
+
+`zohoCrm.functions.naming` decides the API name [`zoho-studio z-crm:functions:make`](29-functions-make-command.md)
+proposes: `<vendor>_<category prefix>_<module>_<purpose>`, such as `oz_wf_programs_refresh_pricing`.
+An empty `vendor` drops that segment; a category missing from `categoryPrefixes` is spelled out in
+snake case; `enabled: false` makes the command ask for the API name directly. Set only what you
+change — `{ "vendor": "oz" }` keeps the default prefixes.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so an empty object
 is a valid project. A key you do write **replaces** the default rather
