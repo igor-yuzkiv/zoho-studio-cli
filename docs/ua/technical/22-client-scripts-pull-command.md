@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:client-scripts:pull`
 
-Завантажує всі клієнтські скрипти Zoho CRM проєкту в `src/zoho-crm/client-scripts/` — по одній
+Завантажує всі клієнтські скрипти Zoho CRM проєкту в `data/zoho-crm/client-scripts/` — по одній
 директорії на скрипт, з його метаданими та кодом JavaScript.
 
 ```bash
@@ -25,7 +25,7 @@ Failed: 1
 директорії.
 
 ```text
-src/zoho-crm/client-scripts/
+data/zoho-crm/client-scripts/
 ├── Deals/
 │   ├── module_create.Retail/
 │   │   ├── page.metadata.json

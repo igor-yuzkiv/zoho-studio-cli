@@ -14,7 +14,8 @@ zoho-studio init --force         # reset settings.json to the defaults
 ```text
 Initialized Zoho Studio project in my-project
   .zoho-studio/settings.json — created
-  src/.gitkeep — created
+  data/.gitkeep — created
+  src/zoho-crm/functions/.gitkeep — created
   logs/.gitignore — created
   .zoho-studio/.gitignore — created
   .gitignore — created
@@ -51,10 +52,11 @@ my-project/
     migrate.ts           # runs a migration: bun run migrate
     example-migration.ts.txt  # a migration to copy into migrations/zoho-crm/
   src/
+    zoho-crm/functions/  # source: функції, які розробляються локально
   tsconfig.json          # type-checks scripts/ against the packages' sources
 ```
 
-`src/` — це місце, куди пише кожне завантаження: `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`. Ці шляхи
+`data/` — це місце, куди пише кожне завантаження: `data/zoho-crm/functions`, `data/zoho-crm/modules`, `data/zoho-crm/workflows`. Ці шляхи
 фіксовані, і жодне налаштування їх не змінює. Кожна папка з'являється під час першого
 завантаження, яке її наповнює.
 
@@ -89,7 +91,7 @@ bun run scripts/example.ts
 і `migrations/` щодо цього коду. Після переміщення репозиторію знову запустіть `bun run link`.
 
 `scripts/example.ts` читає лише локальні артефакти, тож працює ще до будь-якого входу; коли
-`src/zoho-crm/modules` ще порожня, він підказує, які завантаження запустити. Скопіюйте його, щоб
+`data/zoho-crm/modules` ще порожня, він підказує, які завантаження запустити. Скопіюйте його, щоб
 почати власний скрипт.
 
 Далі запустіть [`zoho-studio login`](4-login-command.md): він дає змогу вибрати збережений профіль
@@ -107,4 +109,4 @@ bun run scripts/example.ts
 ви в ньому встановили, зникає; профілі й токени в `~/.zoho-studio` не зачіпаються. Скасувати це
 неможливо. Щоб змінити одне значення, відредагуйте файл.
 
-`init` ніколи нічого не видаляє в `src/`, ні з `--force`, ні без нього.
+`init` ніколи нічого не видаляє в `data/` і `src/`, ні з `--force`, ні без нього.

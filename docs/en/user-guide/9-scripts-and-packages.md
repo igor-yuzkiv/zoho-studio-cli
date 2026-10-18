@@ -27,7 +27,7 @@ reinstalling. The project must be logged in (`zoho-studio login`) for anything t
 | Package | What it gives a script |
 |---|---|
 | `@zoho-studio/zoho-crm` | requests to Zoho CRM, the entities (modules, fields, functions, …), pulls, migrations |
-| `@zoho-studio/core` | the project and its settings, writing files under `src/`, the log |
+| `@zoho-studio/core` | the project and its settings, writing files under `data/`, the log |
 | `@zoho-studio/auth` | the login and access tokens — scripts rarely need it, the CRM requests log in on their own |
 
 Everything in `@zoho-studio/zoho-crm` is imported from the package itself:
@@ -101,6 +101,6 @@ Zoho's own message.
 - **The project:** `getProjectSettings()` from `@zoho-studio/core` returns the project folder and
   its settings.
 - **Files:** `writeArtifactJson(projectPath, ['zoho-crm', 'reports', 'leads.json'], data)` from
-  `@zoho-studio/core` writes under `src/`, with folder and file names made safe.
+  `@zoho-studio/core` writes under `data/`, with folder and file names made safe.
 
 `scripts/example.ts` in a new project is a complete script to start from.

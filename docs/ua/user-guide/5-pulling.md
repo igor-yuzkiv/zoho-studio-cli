@@ -1,6 +1,6 @@
 # Завантаження
 
-Завантаження переносить ресурси з CRM у `src/zoho-crm/`. Для кожного виду ресурсів є своя
+Завантаження переносить ресурси з CRM у `data/zoho-crm/`. Для кожного виду ресурсів є своя
 команда, а **пресет** запускає кілька з них поспіль.
 
 **Завантаження замінює папку, у яку записує.** Те, що видалили в CRM, зникає й локально, тож
@@ -19,17 +19,17 @@ zoho-studio preset pull-crm
 | Команда | Що завантажує | Куди |
 |---|---|---|
 | `z-crm:org:info` | організацію | `.zoho-studio/org.json` |
-| `z-crm:modules:pull` | модулі | `src/zoho-crm/modules/<Module>/` |
-| `z-crm:fields:pull` | поля кожного завантаженого модуля | `src/zoho-crm/modules/<Module>/fields/` |
-| `z-crm:layouts:pull` | layouts кожного завантаженого модуля із секціями та виразами формул | `src/zoho-crm/modules/<Module>/layouts/` |
-| `z-crm:functions:pull` | функції з їхнім кодом Deluge | `src/zoho-crm/functions/` |
-| `z-crm:workflows:pull` | правила робочих процесів | `src/zoho-crm/workflows/` |
-| `z-crm:workflow-actions:pull` | дії робочих процесів | `src/zoho-crm/workflow-actions/` |
-| `z-crm:webhooks:pull` | вебхуки | `src/zoho-crm/webhooks/` |
-| `z-crm:global-picklists:pull` | глобальні списки вибору | `src/zoho-crm/global-picklists/` |
-| `z-crm:profiles:pull` | профілі | `src/zoho-crm/profiles/` |
-| `z-crm:client-scripts:pull` | клієнтські скрипти | `src/zoho-crm/client-scripts/` |
-| `z-crm:static-resources:pull` | статичні ресурси | `src/zoho-crm/static-resources/` |
+| `z-crm:modules:pull` | модулі | `data/zoho-crm/modules/<Module>/` |
+| `z-crm:fields:pull` | поля кожного завантаженого модуля | `data/zoho-crm/modules/<Module>/fields/` |
+| `z-crm:layouts:pull` | layouts кожного завантаженого модуля із секціями та виразами формул | `data/zoho-crm/modules/<Module>/layouts/` |
+| `z-crm:functions:pull` | функції з їхнім кодом Deluge | `data/zoho-crm/functions/` |
+| `z-crm:workflows:pull` | правила робочих процесів | `data/zoho-crm/workflows/` |
+| `z-crm:workflow-actions:pull` | дії робочих процесів | `data/zoho-crm/workflow-actions/` |
+| `z-crm:webhooks:pull` | вебхуки | `data/zoho-crm/webhooks/` |
+| `z-crm:global-picklists:pull` | глобальні списки вибору | `data/zoho-crm/global-picklists/` |
+| `z-crm:profiles:pull` | профілі | `data/zoho-crm/profiles/` |
+| `z-crm:client-scripts:pull` | клієнтські скрипти | `data/zoho-crm/client-scripts/` |
+| `z-crm:static-resources:pull` | статичні ресурси | `data/zoho-crm/static-resources/` |
 
 Поля завантажуються для вже завантажених модулів, тому спершу запустіть `z-crm:modules:pull`.
 Деякі команди мають опції, наприклад `zoho-studio z-crm:fields:pull --module=Leads` для одного

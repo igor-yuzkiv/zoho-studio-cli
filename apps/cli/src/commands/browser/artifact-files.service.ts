@@ -1,7 +1,7 @@
 import { readdir, stat } from 'node:fs/promises'
 import { join, relative, sep } from 'node:path'
 
-import { resolveWorkspaceSourcePath } from '@zoho-studio/core'
+import { resolveWorkspaceDataPath } from '@zoho-studio/core'
 import { resolveArtifactPath } from '@zoho-studio/core'
 
 import type { FileEntry, JsonBundle } from './browser.types'
@@ -10,11 +10,11 @@ import type { FileEntry, JsonBundle } from './browser.types'
 export function resolveRequestedPath(projectPath: string, relativePath: string): string {
     const segments = relativePath.split('/').filter(Boolean)
 
-    return segments.length === 0 ? resolveWorkspaceSourcePath(projectPath) : resolveArtifactPath(projectPath, segments)
+    return segments.length === 0 ? resolveWorkspaceDataPath(projectPath) : resolveArtifactPath(projectPath, segments)
 }
 
 export function toRelativePath(projectPath: string, absolutePath: string): string {
-    return relative(resolveWorkspaceSourcePath(projectPath), absolutePath).split(sep).join('/')
+    return relative(resolveWorkspaceDataPath(projectPath), absolutePath).split(sep).join('/')
 }
 
 export async function readFileTree(

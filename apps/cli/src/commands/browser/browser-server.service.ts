@@ -1,6 +1,6 @@
 import { basename } from 'node:path'
 
-import { resolveWorkspaceOrganizationPath, resolveWorkspaceSourcePath } from '@zoho-studio/core'
+import { resolveWorkspaceOrganizationPath, resolveWorkspaceDataPath } from '@zoho-studio/core'
 import { addProfile, listProfiles, readConnection } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
 import { workflowActionTypes } from '@zoho-studio/zoho-crm/workflow-action'
@@ -167,7 +167,7 @@ type RouteHandler = (request: Bun.BunRequest) => Response | Promise<Response>
 type Route = RouteHandler | Partial<Record<'GET' | 'POST', RouteHandler>>
 
 /**
- * The API can empty folders under src/ and start a login, and any page open in the same browser can
+ * The API can empty folders under data/ and start a login, and any page open in the same browser can
  * send requests to 127.0.0.1. Only the app's own page is answered: the Host must name this server
  * (which defeats DNS rebinding), a cross-site Origin is refused, and a POST must declare JSON, which
  * a cross-site form or no-preflight fetch cannot do.
@@ -219,7 +219,7 @@ async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {
     return {
         name: basename(projectPath),
         projectPath,
-        sourcePath: resolveWorkspaceSourcePath(projectPath),
+        dataPath: resolveWorkspaceDataPath(projectPath),
         organization: (await organizationFile.exists()) ? await organizationFile.json() : null,
         auth: await readAuthStatus(projectPath),
         workflowActionTypes: [...workflowActionTypes],

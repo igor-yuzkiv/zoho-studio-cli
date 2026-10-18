@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:global-picklists:pull`
 
-Завантажує всі глобальні списки вибору Zoho CRM у плоску папку `src/zoho-crm/global-picklists/` — по одному
+Завантажує всі глобальні списки вибору Zoho CRM у плоску папку `data/zoho-crm/global-picklists/` — по одному
 файлу JSON на список, разом із `pick_list_values`, яких немає в самому переліку списків.
 
 ```bash
@@ -22,7 +22,7 @@ Global picklists failed: 0
 ## Що ви отримуєте
 
 ```text
-src/zoho-crm/global-picklists/
+data/zoho-crm/global-picklists/
   Industry.json
   Source.json
   Time_Zone.json

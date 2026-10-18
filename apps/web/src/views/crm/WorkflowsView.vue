@@ -77,7 +77,7 @@ watch(workflows, (entries) => {
             <template v-if="selected">
                 <DetailHeader
                     :title="selected.value.name"
-                    :path="joinAbsolutePath(projectStore.project?.sourcePath, selected.path)"
+                    :path="joinAbsolutePath(projectStore.project?.dataPath, selected.path)"
                 >
                     <template #badges>
                         <AppBadge :tone="selected.value.status?.active ? 'ok' : 'neutral'">

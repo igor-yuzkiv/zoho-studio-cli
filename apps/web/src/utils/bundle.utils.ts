@@ -1,7 +1,7 @@
 import type { JsonBundle } from '@cli/commands/browser/browser.types'
 
 export type BundleEntry<TValue> = {
-    /** Relative to the project's `src/`. */
+    /** Relative to the project's `data/`. */
     path: string
     directory: string
     fileName: string
@@ -23,8 +23,8 @@ export function bundleEntries<TValue>(bundle: JsonBundle | null, suffix = '.json
         })
 }
 
-export function joinAbsolutePath(sourcePath: string | undefined, relativePath: string): string {
-    return sourcePath ? `${sourcePath}/${relativePath}` : relativePath
+export function joinAbsolutePath(dataPath: string | undefined, relativePath: string): string {
+    return dataPath ? `${dataPath}/${relativePath}` : relativePath
 }
 
 export function matchesFilter(filter: string, ...values: (string | null | undefined)[]): boolean {

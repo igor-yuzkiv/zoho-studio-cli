@@ -9,7 +9,8 @@ my-crm/
     settings.json          which Zoho region to use, what to ask permission for, presets
     org.json               the organization the project is logged in to
     migrations.json        which migrations ran, per organization
-  src/zoho-crm/            everything downloaded from the CRM
+  data/zoho-crm/           snapshots: everything downloaded from the CRM
+  src/zoho-crm/functions/  functions you develop locally
   migrations/zoho-crm/     migration files you write
   logs/                    the log of every command
   scripts/                 scripts you write, including the migrate script
@@ -17,7 +18,7 @@ my-crm/
   tsconfig.json            type-checks scripts and migrations against the packages
 ```
 
-What a pull downloads into `src/zoho-crm/` is a snapshot — a copy of the CRM's state that the next pull
+What a pull downloads into `data/zoho-crm/` is a snapshot — a copy of the CRM's state that the next pull
 replaces; the [glossary](../glossary.md) page defines it and the other terms.
 
 ## Settings
@@ -36,7 +37,7 @@ The full description is in the [settings reference](../technical/2-settings.md).
 `init` prepares the project for git:
 
 - **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`;
-- **meant to be committed:** `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
+- **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
 
 Credentials are not in the project at all — they are in `~/.zoho-studio`.
 

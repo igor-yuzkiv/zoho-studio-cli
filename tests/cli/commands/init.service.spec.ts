@@ -27,7 +27,8 @@ describe('initializeProject', () => {
         const result = await initializeProject(workingPath)
 
         expect(await Bun.file(resolveWorkspaceSettingsPath(workingPath)).json()).toEqual(defaultProjectSettings)
-        expect(await Bun.file(join(workingPath, 'src/.gitkeep')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'data/.gitkeep')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, 'src/zoho-crm/functions/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
         expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\nmigrations.json\n')
         expect(await readTemplateFile(workingPath, '.gitignore')).toBe('node_modules\n')
@@ -91,7 +92,7 @@ describe('initializeProject', () => {
 
     test('never deletes pulled artifacts, even when forced', async () => {
         await initializeProject(workingPath)
-        const artifactPath = join(workingPath, 'src/zoho-crm/functions/send_invoice/Send Invoice.deluge')
+        const artifactPath = join(workingPath, 'data/zoho-crm/functions/send_invoice/Send Invoice.deluge')
         await Bun.write(artifactPath, 'info "sent";')
 
         await initializeProject(workingPath, { force: true })

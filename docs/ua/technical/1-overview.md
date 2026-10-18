@@ -11,11 +11,11 @@ Zoho Studio CLI — це інструмент командного рядка д
 (scopes) запитувати. Облікові дані зберігаються поза проєктом, у `~/.zoho-studio`, де кілька
 проєктів можуть користуватися одним клієнтом. `zoho-studio init` створює проєкт навколо цього файлу.
 
-Усе, що завантажує CLI, потрапляє в `src/`, у папку для кожного продукту Zoho, за шляхами, які
-CLI фіксує і які не змінює жодне налаштування — `src/zoho-crm/functions`, `src/zoho-crm/modules`
-(поля й layouts кожного модуля — у його власних папках `fields/` і `layouts/`), `src/zoho-crm/workflows`,
-`src/zoho-crm/workflow-actions`, `src/zoho-crm/webhooks`, `src/zoho-crm/global-picklists`,
-`src/zoho-crm/profiles`, `src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
+Усе, що завантажує CLI, потрапляє в `data/`, у папку для кожного продукту Zoho, за шляхами, які
+CLI фіксує і які не змінює жодне налаштування — `data/zoho-crm/functions`, `data/zoho-crm/modules`
+(поля й layouts кожного модуля — у його власних папках `fields/` і `layouts/`), `data/zoho-crm/workflows`,
+`data/zoho-crm/workflow-actions`, `data/zoho-crm/webhooks`, `data/zoho-crm/global-picklists`,
+`data/zoho-crm/profiles`, `data/zoho-crm/client-scripts`, `data/zoho-crm/static-resources`.
 
 У цій папці — технічний довідник, по сторінці на команду. Щоб опанувати інструмент задача за
 задачею, прочитайте [посібник користувача](../user-guide/1-overview.md).

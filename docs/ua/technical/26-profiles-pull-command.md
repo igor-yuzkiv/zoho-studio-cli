@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:profiles:pull`
 
-Завантажує всі профілі Zoho CRM у плоску папку `src/zoho-crm/profiles/` — по одному файлу JSON на
+Завантажує всі профілі Zoho CRM у плоску папку `data/zoho-crm/profiles/` — по одному файлу JSON на
 профіль.
 
 ```bash
@@ -23,7 +23,7 @@ Profiles saved: 3
 ## Що ви отримуєте
 
 ```text
-src/zoho-crm/profiles/
+data/zoho-crm/profiles/
   Administrator.json
   Standard.json
   Team_User.json

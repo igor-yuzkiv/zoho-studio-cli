@@ -172,7 +172,7 @@ function sourcePathOfEntry(entry: BundleEntry<ArtifactRecord>) {
                 <DetailHeader
                     :title="labelOf(selected)"
                     :subtitle="config.sectionOf?.(selected)"
-                    :path="joinAbsolutePath(projectStore.project?.sourcePath, sourcePath ?? selected.path)"
+                    :path="joinAbsolutePath(projectStore.project?.dataPath, sourcePath ?? selected.path)"
                 >
                     <template #badges>
                         <AppBadge

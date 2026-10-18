@@ -144,7 +144,7 @@ describe('runMigration', () => {
             verification: { module: 'Invoices', created: ['Number', 'Total'], missing: [] },
         })
 
-        const modulePath = join(crm.projectPath, 'src', 'zoho-crm', 'modules', 'Invoices')
+        const modulePath = join(crm.projectPath, 'data', 'zoho-crm', 'modules', 'Invoices')
         expect(JSON.parse(await readFile(join(modulePath, 'Invoices.metadata.json'), 'utf8')).id).toBe('500')
         expect(JSON.parse(await readFile(join(modulePath, 'fields', 'Number.json'), 'utf8')).field_label).toBe('Number')
 

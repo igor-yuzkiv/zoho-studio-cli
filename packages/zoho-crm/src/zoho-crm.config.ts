@@ -1,4 +1,4 @@
-/** Every CRM artifact sits under this folder inside `src/`, so another product's area can sit next to it. */
+/** Every CRM artifact sits under this folder inside `data/`, so another product's area can sit next to it. */
 export const zohoCrmDirName = 'zoho-crm'
 
 export const functionsDirName = 'functions'

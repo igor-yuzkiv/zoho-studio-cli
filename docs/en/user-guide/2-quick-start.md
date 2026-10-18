@@ -42,7 +42,7 @@ confirms the login and shows which organization you are connected to.
 zoho-studio preset pull-crm
 ```
 
-This runs every download one after another. The files appear under `src/zoho-crm/`.
+This runs every download one after another. The files appear under `data/zoho-crm/`.
 
 ## 5. Look at it
 

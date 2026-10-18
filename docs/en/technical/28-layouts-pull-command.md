@@ -27,7 +27,7 @@ with the `ZohoCRM.settings.layouts.READ` scope (or `ZohoCRM.settings.ALL`) grant
 ## What lands on disk
 
 ```text
-src/zoho-crm/modules/
+data/zoho-crm/modules/
 └── Deals/
     ├── Deals.metadata.json
     ├── fields/

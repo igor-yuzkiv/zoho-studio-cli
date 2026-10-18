@@ -14,14 +14,17 @@ export const workspaceOrganizationFileName = 'org.json'
 export const workspaceOrganizationRelativePath = `${workspaceSettingsDirName}/${workspaceOrganizationFileName}`
 
 /**
- * Every downloaded or generated artifact lives here. The layout is fixed rather than configurable
- * so that later features can rely on where things are.
+ * Snapshots — every artifact a pull downloads — live here. The layout is fixed rather than
+ * configurable so that later features can rely on where things are.
  */
+export const workspaceDataDirName = 'data'
+
+/** Source — artifacts developed locally — lives apart from snapshots, so a pull never touches it. */
 export const workspaceSourceDirName = 'src'
 
 export const logsDirName = 'logs'
 
-/** Migrations are written by hand, so they sit at the project root rather than among the pulled artifacts in `src/`. */
+/** Migrations are written by hand, so they sit at the project root rather than among the snapshots in `data/`. */
 export const migrationsDirName = 'migrations'
 
 export function resolveWorkspaceSettingsDirPath(projectPath: string): string {
@@ -36,8 +39,8 @@ export function resolveWorkspaceOrganizationPath(projectPath: string): string {
     return join(resolveWorkspaceSettingsDirPath(projectPath), workspaceOrganizationFileName)
 }
 
-export function resolveWorkspaceSourcePath(projectPath: string): string {
-    return join(projectPath, workspaceSourceDirName)
+export function resolveWorkspaceDataPath(projectPath: string): string {
+    return join(projectPath, workspaceDataDirName)
 }
 
 export function resolveWorkspaceMigrationsPath(projectPath: string): string {

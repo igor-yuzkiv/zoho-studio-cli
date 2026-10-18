@@ -42,8 +42,8 @@ async function startProject(
     return { projectPath: stub.projectPath, origin: server.url.origin }
 }
 
-async function writeSourceFile(projectPath: string, relativePath: string, content: unknown) {
-    const filePath = join(projectPath, 'src', relativePath)
+async function writeDataFile(projectPath: string, relativePath: string, content: unknown) {
+    const filePath = join(projectPath, 'data', relativePath)
     await mkdir(join(filePath, '..'), { recursive: true })
     await Bun.write(filePath, typeof content === 'string' ? content : JSON.stringify(content))
 }
@@ -85,21 +85,21 @@ describe('browser server', () => {
 
     test('counts one artifact per pulled item', async () => {
         const { origin, projectPath } = await startProject()
-        await writeSourceFile(projectPath, 'zoho-crm/functions/first/first.metadata.json', {})
-        await writeSourceFile(projectPath, 'zoho-crm/functions/first/first.deluge', 'void x() {}')
-        await writeSourceFile(projectPath, 'zoho-crm/functions/second/second.metadata.json', {})
+        await writeDataFile(projectPath, 'zoho-crm/functions/first/first.metadata.json', {})
+        await writeDataFile(projectPath, 'zoho-crm/functions/first/first.deluge', 'void x() {}')
+        await writeDataFile(projectPath, 'zoho-crm/functions/second/second.metadata.json', {})
 
         const groups = (await (await fetch(`${origin}/api/groups`)).json()) as ArtifactGroupSummary[]
         const functions = groups.find(({ id }) => id === 'functions')
 
         expect(functions?.count).toBe(2)
         expect(functions?.pulledAt).not.toBeNull()
-        expect(functions?.absolutePath).toBe(join(projectPath, 'src/zoho-crm/functions'))
+        expect(functions?.absolutePath).toBe(join(projectPath, 'data/zoho-crm/functions'))
     })
 
-    test('reads trees, files and JSON bundles below src', async () => {
+    test('reads trees, files and JSON bundles below data', async () => {
         const { origin, projectPath } = await startProject()
-        await writeSourceFile(projectPath, 'zoho-crm/workflows/Big Deal.json', { name: 'Big Deal' })
+        await writeDataFile(projectPath, 'zoho-crm/workflows/Big Deal.json', { name: 'Big Deal' })
 
         const tree = (await (await fetch(`${origin}/api/tree?path=zoho-crm&depth=2`)).json()) as FileEntry
         const file = await fetch(`${origin}/api/file?path=${encodeURIComponent('zoho-crm/workflows/Big Deal.json')}`)
@@ -110,7 +110,7 @@ describe('browser server', () => {
         expect(bundle).toEqual({ 'zoho-crm/workflows/Big Deal.json': { name: 'Big Deal' } })
     })
 
-    test('refuses a path that leaves src', async () => {
+    test('refuses a path that leaves data', async () => {
         const { origin } = await startProject()
 
         const response = await fetch(`${origin}/api/file?path=../.zoho-studio/settings.json`)
@@ -135,7 +135,7 @@ describe('browser server', () => {
         expect(response.status).toBe(202)
         expect(run).toMatchObject({ status: 'done', total: 2, completed: 2, command: 'z-crm:functions:pull' })
         expect(run.log).toContain('Functions found: 2')
-        expect(await Bun.file(join(projectPath, 'src/zoho-crm/functions/first/first.metadata.json')).exists()).toBe(
+        expect(await Bun.file(join(projectPath, 'data/zoho-crm/functions/first/first.metadata.json')).exists()).toBe(
             true
         )
     })
@@ -219,7 +219,7 @@ describe('browser server', () => {
 
     test('serves artifact files as plain text', async () => {
         const { origin, projectPath } = await startProject()
-        await writeSourceFile(projectPath, 'zoho-crm/static-resources/crm/page.html', '<script>alert(1)</script>')
+        await writeDataFile(projectPath, 'zoho-crm/static-resources/crm/page.html', '<script>alert(1)</script>')
 
         const response = await fetch(`${origin}/api/file?path=zoho-crm/static-resources/crm/page.html`)
 

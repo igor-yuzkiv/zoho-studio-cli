@@ -53,8 +53,8 @@ function groupsOf(area: AreaId) {
                 <h1 class="text-[22px] font-semibold tracking-tight">{{ organizationName }}</h1>
                 <div class="mt-0.5 flex flex-wrap items-center gap-2 text-muted">
                     <span v-if="organization?.id">CRM org {{ organization.id }} ·</span>
-                    <span class="font-mono text-xs">{{ projectStore.project?.sourcePath }}</span>
-                    <CopyPathButton v-if="projectStore.project" :path="projectStore.project.sourcePath" />
+                    <span class="font-mono text-xs">{{ projectStore.project?.dataPath }}</span>
+                    <CopyPathButton v-if="projectStore.project" :path="projectStore.project.dataPath" />
                 </div>
             </div>
             <dl class="flex gap-7 text-[13px] text-muted">

@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:profiles:pull`
 
-Downloads every Zoho CRM profile into a flat `src/zoho-crm/profiles/` folder — one JSON file per
+Downloads every Zoho CRM profile into a flat `data/zoho-crm/profiles/` folder — one JSON file per
 profile.
 
 ```bash
@@ -23,7 +23,7 @@ The command is part of the default `pull-crm` [preset](24-preset-command.md).
 ## What you get
 
 ```text
-src/zoho-crm/profiles/
+data/zoho-crm/profiles/
   Administrator.json
   Standard.json
   Team_User.json

@@ -1,7 +1,7 @@
 import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
-import { resolveWorkspaceSourcePath } from '../config'
+import { resolveWorkspaceDataPath } from '../config'
 import { writeJsonFile } from '../utils'
 
 /**
@@ -19,14 +19,14 @@ export function toPathSegment(value: string): string {
     return segment
 }
 
-/** Resolves a path under the project's `src`, refusing anything that would land outside it. */
+/** Resolves a path under the project's `data`, refusing anything that would land outside it. */
 export function resolveArtifactPath(projectPath: string, segments: string[]): string {
-    const sourcePath = resolve(resolveWorkspaceSourcePath(projectPath))
-    const artifactPath = join(sourcePath, ...segments.map(toPathSegment))
+    const dataPath = resolve(resolveWorkspaceDataPath(projectPath))
+    const artifactPath = join(dataPath, ...segments.map(toPathSegment))
 
     // Segments are sanitized above, so this holds unless that sanitizing is ever loosened.
-    if (!artifactPath.startsWith(sourcePath + sep)) {
-        throw new Error(`Artifact path escapes ${sourcePath}: ${artifactPath}`)
+    if (!artifactPath.startsWith(dataPath + sep)) {
+        throw new Error(`Artifact path escapes ${dataPath}: ${artifactPath}`)
     }
 
     return artifactPath
@@ -41,11 +41,11 @@ export async function ensureArtifactDir(projectPath: string, segments: string[])
 
 /**
  * Empties a directory so it mirrors exactly what a pull returned. Destructive by design, which is
- * why it takes segments rather than a path: nothing outside `src` can be passed to it.
+ * why it takes segments rather than a path: nothing outside `data` can be passed to it.
  */
 export async function replaceArtifactDir(projectPath: string, segments: string[]): Promise<string> {
     if (segments.length === 0) {
-        throw new Error('Refusing to replace the whole src directory.')
+        throw new Error('Refusing to replace the whole data directory.')
     }
 
     const dirPath = resolveArtifactPath(projectPath, segments)

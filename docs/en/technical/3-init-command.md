@@ -14,7 +14,8 @@ The output tells you what changed:
 ```text
 Initialized Zoho Studio project in my-project
   .zoho-studio/settings.json — created
-  src/.gitkeep — created
+  data/.gitkeep — created
+  src/zoho-crm/functions/.gitkeep — created
   logs/.gitignore — created
   .zoho-studio/.gitignore — created
   .gitignore — created
@@ -51,10 +52,11 @@ my-project/
     migrate.ts           # runs a migration: bun run migrate
     example-migration.ts.txt  # a migration to copy into migrations/zoho-crm/
   src/
+    zoho-crm/functions/  # source: functions developed locally
   tsconfig.json          # type-checks scripts/ against the packages' sources
 ```
 
-`src/` is where every pull writes: `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows`. Those paths are
+`data/` is where every pull writes: `data/zoho-crm/functions`, `data/zoho-crm/modules`, `data/zoho-crm/workflows`. Those paths are
 fixed and no setting moves them. Each folder appears on the first pull that fills it.
 
 Everything except `settings.json` comes from the template, and **an existing file is never
@@ -88,7 +90,7 @@ build or reinstall after a change there. `bunx tsc --noEmit` in the project type
 and `migrations/` against those sources. Re-run `bun run link` after moving the repository.
 
 `scripts/example.ts` reads the local artifacts only, so it runs before any login; it tells you
-which pulls to run when `src/zoho-crm/modules` is still empty. Copy it to start a script of your
+which pulls to run when `data/zoho-crm/modules` is still empty. Copy it to start a script of your
 own.
 
 Next, run [`zoho-studio login`](4-login-command.md): it lets you choose a stored credential profile
@@ -105,4 +107,4 @@ itself is a file.
 not a re-scaffold**: that one file goes back to the defaults, and every value you set in it is
 gone; the profiles and tokens in `~/.zoho-studio` are not touched. There is no undo. To change a single value, edit the file instead.
 
-Nothing under `src/` is ever deleted by `init`, with or without `--force`.
+Nothing under `data/` or `src/` is ever deleted by `init`, with or without `--force`.

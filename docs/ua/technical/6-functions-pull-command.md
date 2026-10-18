@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:functions:pull`
 
-Завантажує всі функції Zoho CRM проєкту в `src/zoho-crm/functions/` — по одній директорії на
+Завантажує всі функції Zoho CRM проєкту в `data/zoho-crm/functions/` — по одній директорії на
 функцію, з її метаданими та кодом Deluge.
 
 ```bash
@@ -24,7 +24,7 @@ Code failed: 1
 директорії.
 
 ```text
-src/zoho-crm/functions/
+data/zoho-crm/functions/
 └── calculate_invoice_total/
     ├── Calculate Invoice Total.metadata.json
     └── Calculate Invoice Total.deluge
@@ -41,7 +41,7 @@ src/zoho-crm/functions/
 відображає поточне завантаження, тож функція, видалена в Zoho, зникає й локально, а будь-яка
 локальна правка всередині неї втрачається.
 
-Розташування фіксоване: `src/zoho-crm/functions/` у корені проєкту, створюється, якщо її немає.
+Розташування фіксоване: `data/zoho-crm/functions/` у корені проєкту, створюється, якщо її немає.
 Жодне налаштування його не змінює — дерево проєкту див. у [`zoho-studio init`](3-init-command.md).
 
 ## Збої

@@ -1,7 +1,7 @@
 # `zoho-studio z-crm:static-resources:pull`
 
 Завантажує всі статичні ресурси Zoho CRM — файли JavaScript, які підключають клієнтські скрипти, — у
-`src/zoho-crm/static-resources/`, по одній директорії на ресурс, з його метаданими та файлом.
+`data/zoho-crm/static-resources/`, по одній директорії на ресурс, з його метаданими та файлом.
 
 ```bash
 zoho-studio z-crm:static-resources:pull
@@ -24,7 +24,7 @@ Files failed: 0
 директорії.
 
 ```text
-src/zoho-crm/static-resources/
+data/zoho-crm/static-resources/
 ├── user/
 │   └── pricingHelpers.1000000000053904403/
 │       ├── pricingHelpers.metadata.json

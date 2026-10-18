@@ -37,8 +37,8 @@ next to the file, which keeps it and `org.json` out of git, and writes it with `
 }
 ```
 
-**Where the pulled files go is not configurable.** Every artifact lands under `src/` at a fixed
-path — `src/zoho-crm/functions`, `src/zoho-crm/modules`, `src/zoho-crm/workflows` — so that the CLI can rely on the layout.
+**Where the pulled files go is not configurable.** Every artifact lands under `data/` at a fixed
+path — `data/zoho-crm/functions`, `data/zoho-crm/modules`, `data/zoho-crm/workflows` — so that the CLI can rely on the layout.
 See [`zoho-studio init`](3-init-command.md) for the whole tree.
 
 Every value in the file is **yours**: you fill it in, the CLI only reads it.

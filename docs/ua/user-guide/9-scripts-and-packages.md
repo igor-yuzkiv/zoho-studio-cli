@@ -28,7 +28,7 @@ bun run scripts/example.ts
 | Пакет | Що він дає скрипту |
 |---|---|
 | `@zoho-studio/zoho-crm` | запити до Zoho CRM, сутності (модулі, поля, функції, …), завантаження, міграції |
-| `@zoho-studio/core` | проєкт і його налаштування, запис файлів у `src/`, лог |
+| `@zoho-studio/core` | проєкт і його налаштування, запис файлів у `data/`, лог |
 | `@zoho-studio/auth` | вхід і токени доступу — скриптам рідко потрібен, запити до CRM входять самі |
 
 Усе з `@zoho-studio/zoho-crm` імпортується з самого пакета:
@@ -102,6 +102,6 @@ const { data } = await crmClient.get('/settings/layouts', { params: { module: 'L
 - **Проєкт:** `getProjectSettings()` з `@zoho-studio/core` повертає папку проєкту та його
   налаштування.
 - **Файли:** `writeArtifactJson(projectPath, ['zoho-crm', 'reports', 'leads.json'], data)` з
-  `@zoho-studio/core` пише в `src/`, роблячи назви папок і файлів безпечними.
+  `@zoho-studio/core` пише в `data/`, роблячи назви папок і файлів безпечними.
 
 `scripts/example.ts` у новому проєкті — готовий скрипт, з якого можна почати.

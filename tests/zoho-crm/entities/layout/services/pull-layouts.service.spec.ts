@@ -14,7 +14,7 @@ afterEach(async () => {
     crm = null
 })
 
-const modulesPath = (projectPath: string) => join(projectPath, 'src', 'zoho-crm', 'modules')
+const modulesPath = (projectPath: string) => join(projectPath, 'data', 'zoho-crm', 'modules')
 
 async function addLocalModules(projectPath: string, names: string[]) {
     for (const name of names) {

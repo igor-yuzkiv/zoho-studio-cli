@@ -9,7 +9,8 @@ my-crm/
     settings.json          which Zoho region to use, what to ask permission for, presets
     org.json               the organization the project is logged in to
     migrations.json        which migrations ran, per organization
-  src/zoho-crm/            everything downloaded from the CRM
+  data/zoho-crm/           snapshots: everything downloaded from the CRM
+  src/zoho-crm/functions/  functions you develop locally
   migrations/zoho-crm/     migration files you write
   logs/                    the log of every command
   scripts/                 scripts you write, including the migrate script
@@ -17,7 +18,7 @@ my-crm/
   tsconfig.json            перевіряє типи скриптів і міграцій за пакетами
 ```
 
-Те, що pull завантажує в `src/zoho-crm/`, — це snapshot: копія стану CRM, яку наступний pull замінює;
+Те, що pull завантажує в `data/zoho-crm/`, — це snapshot: копія стану CRM, яку наступний pull замінює;
 сторінка [глосарію](../glossary.md) визначає його та інші терміни.
 
 ## Налаштування
@@ -36,7 +37,7 @@ my-crm/
 `init` готує проєкт до git:
 
 - **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`;
-- **призначені для коміту:** `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
+- **призначені для коміту:** `data/`, `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
 
 Облікових даних у проєкті немає взагалі — вони в `~/.zoho-studio`.
 

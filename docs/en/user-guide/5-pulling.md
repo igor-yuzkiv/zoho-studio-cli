@@ -1,6 +1,6 @@
 # Pulling
 
-Pulling downloads resources from the CRM into `src/zoho-crm/`. Each kind of resource has its own
+Pulling downloads resources from the CRM into `data/zoho-crm/`. Each kind of resource has its own
 command, and a **preset** runs several of them in a row.
 
 **A pull replaces the folder it writes.** What was deleted in the CRM disappears locally too, so
@@ -19,17 +19,17 @@ The built-in `pull-crm` preset runs every command below in the right order.
 | Command | What it downloads | Where |
 |---|---|---|
 | `z-crm:org:info` | the organization | `.zoho-studio/org.json` |
-| `z-crm:modules:pull` | modules | `src/zoho-crm/modules/<Module>/` |
-| `z-crm:fields:pull` | fields of every downloaded module | `src/zoho-crm/modules/<Module>/fields/` |
-| `z-crm:layouts:pull` | layouts of every downloaded module, with sections and formula expressions | `src/zoho-crm/modules/<Module>/layouts/` |
-| `z-crm:functions:pull` | functions with their Deluge code | `src/zoho-crm/functions/` |
-| `z-crm:workflows:pull` | workflow rules | `src/zoho-crm/workflows/` |
-| `z-crm:workflow-actions:pull` | workflow actions | `src/zoho-crm/workflow-actions/` |
-| `z-crm:webhooks:pull` | webhooks | `src/zoho-crm/webhooks/` |
-| `z-crm:global-picklists:pull` | global picklists | `src/zoho-crm/global-picklists/` |
-| `z-crm:profiles:pull` | profiles | `src/zoho-crm/profiles/` |
-| `z-crm:client-scripts:pull` | client scripts | `src/zoho-crm/client-scripts/` |
-| `z-crm:static-resources:pull` | static resources | `src/zoho-crm/static-resources/` |
+| `z-crm:modules:pull` | modules | `data/zoho-crm/modules/<Module>/` |
+| `z-crm:fields:pull` | fields of every downloaded module | `data/zoho-crm/modules/<Module>/fields/` |
+| `z-crm:layouts:pull` | layouts of every downloaded module, with sections and formula expressions | `data/zoho-crm/modules/<Module>/layouts/` |
+| `z-crm:functions:pull` | functions with their Deluge code | `data/zoho-crm/functions/` |
+| `z-crm:workflows:pull` | workflow rules | `data/zoho-crm/workflows/` |
+| `z-crm:workflow-actions:pull` | workflow actions | `data/zoho-crm/workflow-actions/` |
+| `z-crm:webhooks:pull` | webhooks | `data/zoho-crm/webhooks/` |
+| `z-crm:global-picklists:pull` | global picklists | `data/zoho-crm/global-picklists/` |
+| `z-crm:profiles:pull` | profiles | `data/zoho-crm/profiles/` |
+| `z-crm:client-scripts:pull` | client scripts | `data/zoho-crm/client-scripts/` |
+| `z-crm:static-resources:pull` | static resources | `data/zoho-crm/static-resources/` |
 
 Fields are pulled for the modules already downloaded, so run `z-crm:modules:pull` first. Some
 commands take options, for example `zoho-studio z-crm:fields:pull --module=Leads` for one module;

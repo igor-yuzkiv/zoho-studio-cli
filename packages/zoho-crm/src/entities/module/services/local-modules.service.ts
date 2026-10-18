@@ -5,7 +5,7 @@ import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
 /**
  * Names the local modules a per-module pull works through: the requested one, or every module
- * already pulled into `src/zoho-crm/modules/`.
+ * already pulled into `data/zoho-crm/modules/`.
  */
 export async function resolveLocalModuleNames(projectPath: string, requested?: string): Promise<string[]> {
     const modulesPath = resolveArtifactPath(projectPath, [zohoCrmDirName, modulesDirName])

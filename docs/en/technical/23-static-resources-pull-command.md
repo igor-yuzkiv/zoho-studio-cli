@@ -1,7 +1,7 @@
 # `zoho-studio z-crm:static-resources:pull`
 
 Downloads every Zoho CRM static resource — the JavaScript files client scripts load — into
-`src/zoho-crm/static-resources/`, one directory per resource, holding its metadata and its file.
+`data/zoho-crm/static-resources/`, one directory per resource, holding its metadata and its file.
 
 ```bash
 zoho-studio z-crm:static-resources:pull
@@ -24,7 +24,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-src/zoho-crm/static-resources/
+data/zoho-crm/static-resources/
 ├── user/
 │   └── pricingHelpers.1000000000053904403/
 │       ├── pricingHelpers.metadata.json

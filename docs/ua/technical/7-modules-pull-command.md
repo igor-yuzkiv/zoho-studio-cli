@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:modules:pull`
 
-Завантажує метадані кожного модуля Zoho CRM організації в `src/zoho-crm/modules/` — по одній
+Завантажує метадані кожного модуля Zoho CRM організації в `data/zoho-crm/modules/` — по одній
 папці на модуль, у якій лежить його файл метаданих.
 
 ```bash
@@ -21,7 +21,7 @@ Metadata saved: 42
 папки.
 
 ```text
-src/zoho-crm/modules/
+data/zoho-crm/modules/
 ├── Leads/
 │   └── Leads.metadata.json
 └── CustomModule1/
@@ -43,7 +43,7 @@ src/zoho-crm/modules/
 записує в `<module>/layouts/`: ця команда стирає їх разом з усім іншим. Порядок завжди такий:
 спершу `z-crm:modules:pull`, потім `z-crm:fields:pull` і `z-crm:layouts:pull`.
 
-Розташування фіксоване: `src/zoho-crm/modules/` у корені проєкту; якщо папки немає, її буде створено.
+Розташування фіксоване: `data/zoho-crm/modules/` у корені проєкту; якщо папки немає, її буде створено.
 Жодне налаштування його не змінює — дерево проєкту див. у [`zoho-studio init`](3-init-command.md).
 
 ## Збої

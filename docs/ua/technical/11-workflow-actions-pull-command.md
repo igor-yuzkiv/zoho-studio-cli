@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:workflow-actions:pull`
 
-Завантажує кожну дію робочих процесів Zoho CRM у `src/zoho-crm/workflow-actions/` — по одному JSON-файлу на дію,
+Завантажує кожну дію робочих процесів Zoho CRM у `data/zoho-crm/workflow-actions/` — по одному JSON-файлу на дію,
 згруповано за типом дії, разом з конфігурацією, якої немає в самому списку дій.
 
 ```bash
@@ -32,7 +32,7 @@ Failures: 0
 ## Що з'являється на диску
 
 ```text
-src/zoho-crm/workflow-actions/
+data/zoho-crm/workflow-actions/
 ├── email-notifications/
 │   └── Send Welcome Email.json
 ├── field-updates/
@@ -72,7 +72,7 @@ Saved from the list, because Zoho returned no details: 1
 Дія `functions` записує, яку функцію вона викликає і з якими аргументами; сам код Deluge
 надходить із [`z-crm:functions:pull`](6-functions-pull-command.md).
 
-Папка завжди `src/zoho-crm/workflow-actions/`; жодне налаштування її не переносить.
+Папка завжди `data/zoho-crm/workflow-actions/`; жодне налаштування її не переносить.
 
 **Папка типу видаляється й створюється заново під час кожного повного запуску**, тож дія, видалена в Zoho,
 зникає й локально, а будь-яка локальна правка втрачається. Тип, запит списку якого не вдався, зберігає попередній

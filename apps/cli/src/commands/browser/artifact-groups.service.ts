@@ -1,7 +1,7 @@
 import { stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { resolveWorkspaceSourcePath } from '@zoho-studio/core'
+import { resolveWorkspaceDataPath } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { pullClientScripts } from '@zoho-studio/zoho-crm/client-script'
 import { pullFields } from '@zoho-studio/zoho-crm/field'
@@ -153,7 +153,7 @@ export function findArtifactGroup(area: string, id: string): ArtifactGroup | und
 }
 
 export async function summarizeArtifactGroup(projectPath: string, group: ArtifactGroup): Promise<ArtifactGroupSummary> {
-    const absolutePath = join(resolveWorkspaceSourcePath(projectPath), group.relativePath)
+    const absolutePath = join(resolveWorkspaceDataPath(projectPath), group.relativePath)
     const { relativePath, area, id, label, command, options } = group
     const base = { area, id, label, command, options, relativePath, absolutePath }
 

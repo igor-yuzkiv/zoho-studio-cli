@@ -102,7 +102,7 @@ const { data: code } = useApiData(
                 <DetailHeader
                     :title="selected.value.name"
                     :subtitle="selected.value.api_name"
-                    :path="joinAbsolutePath(projectStore.project?.sourcePath, selected.directory)"
+                    :path="joinAbsolutePath(projectStore.project?.dataPath, selected.directory)"
                     mono
                 >
                     <template #badges>

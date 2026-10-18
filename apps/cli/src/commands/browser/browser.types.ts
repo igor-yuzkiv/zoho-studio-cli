@@ -14,7 +14,7 @@ export type ArtifactGroupSummary = {
     /** The CLI command that pulls this group, without the binary name. */
     command: string
     options: PullOptionName[]
-    /** Relative to the project's `src/`. */
+    /** Relative to the project's `data/`. */
     relativePath: string
     absolutePath: string
     /** Null until the group has been pulled at least once. */
@@ -45,7 +45,7 @@ export type LoginRequest = {
 export type ProjectInfo = {
     name: string
     projectPath: string
-    sourcePath: string
+    dataPath: string
     organization: Record<string, unknown> | null
     auth: AuthStatus
     workflowActionTypes: string[]
@@ -53,7 +53,7 @@ export type ProjectInfo = {
 
 export type FileEntry = {
     name: string
-    /** Relative to the project's `src/`, with `/` separators. */
+    /** Relative to the project's `data/`, with `/` separators. */
     path: string
     absolutePath: string
     kind: 'file' | 'directory'
@@ -62,7 +62,7 @@ export type FileEntry = {
     children?: FileEntry[]
 }
 
-/** Every JSON file under a directory, keyed by its path relative to the project's `src/`. */
+/** Every JSON file under a directory, keyed by its path relative to the project's `data/`. */
 export type JsonBundle = Record<string, unknown>
 
 export type PullRequest = {

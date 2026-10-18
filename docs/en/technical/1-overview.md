@@ -11,11 +11,11 @@ everything the CLI needs to know about the project: which data center to talk to
 call, and which scopes to ask for. The credentials stay outside the project, in `~/.zoho-studio`,
 where several projects can share one client. `zoho-studio init` scaffolds the project around it.
 
-Everything the CLI downloads lands under `src/`, in a folder per Zoho product, at paths it fixes
-and no setting moves — `src/zoho-crm/functions`, `src/zoho-crm/modules` (each module's fields and layouts in
-its own `fields/` and `layouts/` folders), `src/zoho-crm/workflows`, `src/zoho-crm/workflow-actions`,
-`src/zoho-crm/webhooks`, `src/zoho-crm/global-picklists`, `src/zoho-crm/profiles`,
-`src/zoho-crm/client-scripts`, `src/zoho-crm/static-resources`.
+Everything the CLI downloads lands under `data/`, in a folder per Zoho product, at paths it fixes
+and no setting moves — `data/zoho-crm/functions`, `data/zoho-crm/modules` (each module's fields and layouts in
+its own `fields/` and `layouts/` folders), `data/zoho-crm/workflows`, `data/zoho-crm/workflow-actions`,
+`data/zoho-crm/webhooks`, `data/zoho-crm/global-picklists`, `data/zoho-crm/profiles`,
+`data/zoho-crm/client-scripts`, `data/zoho-crm/static-resources`.
 
 This folder holds the technical reference, one page per command. To learn the tool task by task,
 read the [user guide](../user-guide/1-overview.md) ([українською](../../ua/user-guide/1-overview.md)).

@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:client-scripts:pull`
 
-Downloads every Zoho CRM client script of the project into `src/zoho-crm/client-scripts/` — one
+Downloads every Zoho CRM client script of the project into `data/zoho-crm/client-scripts/` — one
 directory per script, holding its metadata and its JavaScript source.
 
 ```bash
@@ -25,7 +25,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-src/zoho-crm/client-scripts/
+data/zoho-crm/client-scripts/
 ├── Deals/
 │   ├── module_create.Retail/
 │   │   ├── page.metadata.json

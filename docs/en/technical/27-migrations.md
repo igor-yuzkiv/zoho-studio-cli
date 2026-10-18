@@ -120,7 +120,7 @@ The confirmation question names it too, and calls anything but a sandbox `PRODUC
 The module is created first, then the fields, up to 25 per request. The run stops at the first
 step Zoho rejects; for fields it prints which ones failed and why. After the run — a failed one
 too, once the module exists — the module is read back from Zoho, the script reports which planned
-fields exist and which are missing, and the module's folder in `src/zoho-crm/modules/` is
+fields exist and which are missing, and the module's folder in `data/zoho-crm/modules/` is
 refreshed — if that read fails, the script says so and the run is still journaled — as [`z-crm:modules:pull`](7-modules-pull-command.md) and
 [`z-crm:fields:pull`](8-fields-pull-command.md) would write it.
 

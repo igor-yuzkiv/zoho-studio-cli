@@ -1,4 +1,5 @@
-import sourceKeep from '../../../../../template/src/.gitkeep' with { type: 'file' }
+import dataKeep from '../../../../../template/data/.gitkeep' with { type: 'file' }
+import functionsSourceKeep from '../../../../../template/src/zoho-crm/functions/.gitkeep' with { type: 'file' }
 import logsGitignore from '../../../../../template/logs/.gitignore' with { type: 'file' }
 import settingsGitignore from '../../../../../template/.zoho-studio/.gitignore' with { type: 'file' }
 import rootGitignore from '../../../../../template/.gitignore' with { type: 'file' }
@@ -9,8 +10,14 @@ import migrateScript from '../../../../../template/scripts/migrate.ts.tmpl' with
 import exampleMigration from '../../../../../template/scripts/example-migration.ts.txt' with { type: 'file' }
 import migrationsKeep from '../../../../../template/migrations/zoho-crm/.gitkeep' with { type: 'file' }
 
-import { logsDirName, migrationsDirName, workspaceSettingsDirName, workspaceSourceDirName } from '@zoho-studio/core'
-import { zohoCrmDirName } from '@zoho-studio/zoho-crm'
+import {
+    logsDirName,
+    migrationsDirName,
+    workspaceDataDirName,
+    workspaceSettingsDirName,
+    workspaceSourceDirName,
+} from '@zoho-studio/core'
+import { functionsDirName, zohoCrmDirName } from '@zoho-studio/zoho-crm'
 
 export interface TemplateFile {
     /** Where the file is on disk, or inside the compiled executable. */
@@ -30,7 +37,11 @@ export interface TemplateFile {
 export const templateSourceSuffix = '.tmpl'
 
 export const templateFiles: TemplateFile[] = [
-    { embeddedPath: sourceKeep, destination: `${workspaceSourceDirName}/.gitkeep` },
+    { embeddedPath: dataKeep, destination: `${workspaceDataDirName}/.gitkeep` },
+    {
+        embeddedPath: functionsSourceKeep,
+        destination: `${workspaceSourceDirName}/${zohoCrmDirName}/${functionsDirName}/.gitkeep`,
+    },
     { embeddedPath: logsGitignore, destination: `${logsDirName}/.gitignore` },
     { embeddedPath: settingsGitignore, destination: `${workspaceSettingsDirName}/.gitignore` },
     { embeddedPath: rootGitignore, destination: '.gitignore' },

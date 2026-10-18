@@ -74,7 +74,7 @@ bun run migrate
 Pick the migration from the list, read the plan, and confirm. **Check the first line**: it names
 the organization the migration goes to and says `SANDBOX` in green or `PRODUCTION` in red. The terminal shows each step and
 each field as it is created. At the end, Zoho Studio reads the module back from the CRM, reports
-which fields exist, and refreshes the module's files in `src/zoho-crm/modules/`.
+which fields exist, and refreshes the module's files in `data/zoho-crm/modules/`.
 
 ## Afterwards
 

@@ -27,7 +27,7 @@ Modules failed: 1
 ## Що з'являється на диску
 
 ```text
-src/zoho-crm/modules/
+data/zoho-crm/modules/
 └── Deals/
     ├── Deals.metadata.json
     ├── fields/

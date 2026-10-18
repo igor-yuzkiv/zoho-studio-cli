@@ -50,7 +50,7 @@ const itemClass = 'flex h-full items-center gap-1.5 px-2.5 hover:bg-hover'
             <span v-else class="text-faint">{{ formatTimeAgo(run.finishedAt) }}</span>
         </button>
         <span class="flex-1" />
-        <span class="truncate px-2.5 font-mono text-faint">{{ projectStore.project?.sourcePath }}</span>
+        <span class="truncate px-2.5 font-mono text-faint">{{ projectStore.project?.dataPath }}</span>
         <button
             type="button"
             :class="itemClass"

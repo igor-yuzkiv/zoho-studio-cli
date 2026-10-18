@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:modules:pull`
 
-Downloads the metadata of every Zoho CRM module of the organization into `src/zoho-crm/modules/` —
+Downloads the metadata of every Zoho CRM module of the organization into `data/zoho-crm/modules/` —
 one directory per module, holding its metadata file.
 
 ```bash
@@ -21,7 +21,7 @@ Files are written under the project root — the folder holding `.zoho-studio/`,
 directory.
 
 ```text
-src/zoho-crm/modules/
+data/zoho-crm/modules/
 ├── Leads/
 │   └── Leads.metadata.json
 └── CustomModule1/
@@ -43,7 +43,7 @@ That includes the fields [`zoho-studio z-crm:fields:pull`](8-fields-pull-command
 writes into `<module>/layouts/`: this command wipes them along with everything else. The order is
 always `z-crm:modules:pull` first, `z-crm:fields:pull` and `z-crm:layouts:pull` after.
 
-The location is fixed: `src/zoho-crm/modules/` under the project root, created if it is not there. No
+The location is fixed: `data/zoho-crm/modules/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](3-init-command.md) for the project tree.
 
 ## Failures

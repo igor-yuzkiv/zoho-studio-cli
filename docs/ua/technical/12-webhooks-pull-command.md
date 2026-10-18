@@ -1,6 +1,6 @@
 # `zoho-studio z-crm:webhooks:pull`
 
-Завантажує кожен вебхук Zoho CRM у пласку папку `src/zoho-crm/webhooks/` — по одному JSON-файлу на вебхук,
+Завантажує кожен вебхук Zoho CRM у пласку папку `data/zoho-crm/webhooks/` — по одному JSON-файлу на вебхук,
 разом із тілом запиту, заголовками, параметрами URL та автентифікацією, яких немає в самому списку
 вебхуків.
 
@@ -31,7 +31,7 @@ Webhooks failed: 0
 ## Що з'являється на диску
 
 ```text
-src/zoho-crm/webhooks/
+data/zoho-crm/webhooks/
 ├── SRV.Programs.Delete.json
 ├── SRV.Shipping_Packages.Upsert.json
 └── Notify Billing.json
@@ -43,7 +43,7 @@ src/zoho-crm/webhooks/
 що саме вебхук надсилає. Зверніть увагу: `authentication` називає підключення, яке використовує Zoho; жодного
 секрету у відповіді немає.
 
-Папка завжди `src/zoho-crm/webhooks/`; жодне налаштування її не переносить.
+Папка завжди `data/zoho-crm/webhooks/`; жодне налаштування її не переносить.
 
 **Уся папка видаляється й створюється заново під час кожного запуску**, тож вебхук, видалений у Zoho, зникає
 й локально, а будь-яка локальна правка втрачається.

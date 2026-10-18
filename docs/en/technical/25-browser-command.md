@@ -1,6 +1,6 @@
 # `zoho-studio browser`
 
-Opens the project in a local web app: the artifacts under `src/` are browsed in the page, and any
+Opens the project in a local web app: the artifacts under `data/` are browsed in the page, and any
 group of them can be pulled again from it. Run it inside a project folder.
 
 ```bash
@@ -64,8 +64,8 @@ bun run dev:web                                # in this repository
 
 ## HTTP API
 
-The page talks to the server over JSON; a `POST` must send `Content-Type: application/json`. Paths are relative to the project's `src/`; a path that
-would leave `src/` is refused.
+The page talks to the server over JSON; a `POST` must send `Content-Type: application/json`. Paths are relative to the project's `data/`; a path that
+would leave `data/` is refused.
 
 | Method and path | Returns |
 |---|---|

@@ -39,9 +39,9 @@ describe('toPathSegment', () => {
 })
 
 describe('resolveArtifactPath', () => {
-    test('resolves inside the project src directory', () => {
+    test('resolves inside the project data directory', () => {
         expect(resolveArtifactPath(projectPath, ['functions', 'send_invoice'])).toBe(
-            join(projectPath, 'src', 'functions', 'send_invoice')
+            join(projectPath, 'data', 'functions', 'send_invoice')
         )
     })
 
@@ -49,10 +49,10 @@ describe('resolveArtifactPath', () => {
         expect(() => resolveArtifactPath(projectPath, ['..', 'elsewhere'])).toThrow(/cannot be used/)
     })
 
-    test('keeps a segment that looks like a path inside src', () => {
-        expect(resolveArtifactPath(projectPath, ['../../etc'])).toBe(join(projectPath, 'src', '.._.._etc'))
+    test('keeps a segment that looks like a path inside data', () => {
+        expect(resolveArtifactPath(projectPath, ['../../etc'])).toBe(join(projectPath, 'data', '.._.._etc'))
         expect(resolveArtifactPath(projectPath, ['functions/../../etc'])).toBe(
-            join(projectPath, 'src', 'functions_.._.._etc')
+            join(projectPath, 'data', 'functions_.._.._etc')
         )
     })
 })
@@ -66,8 +66,8 @@ describe('replaceArtifactDir', () => {
         expect(await readdir(dirPath)).toEqual([])
     })
 
-    test('refuses to replace the whole src directory', async () => {
-        await expect(replaceArtifactDir(projectPath, [])).rejects.toThrow(/whole src directory/)
+    test('refuses to replace the whole data directory', async () => {
+        await expect(replaceArtifactDir(projectPath, [])).rejects.toThrow(/whole data directory/)
     })
 })
 
@@ -75,7 +75,7 @@ describe('writeArtifactJson', () => {
     test('creates the parent directories and writes indented json', async () => {
         await writeArtifactJson(projectPath, ['modules', 'Leads', 'Leads.metadata.json'], { api_name: 'Leads' })
 
-        expect(await Bun.file(join(projectPath, 'src', 'modules', 'Leads', 'Leads.metadata.json')).text()).toBe(
+        expect(await Bun.file(join(projectPath, 'data', 'modules', 'Leads', 'Leads.metadata.json')).text()).toBe(
             '{\n    "api_name": "Leads"\n}\n'
         )
     })
