@@ -1,0 +1,120 @@
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
+
+import { resolveArtifactPath, resolveSourcePath, toPathSegment, writeJsonFile } from '@zoho-studio/core'
+
+import {
+    delugeFunctionCategories,
+    delugeRuntime,
+    functionsDirName,
+    zohoCrmDirName,
+    type DelugeFunctionCategory,
+} from '../../../zoho-crm.config'
+import {
+    functionDeclarationName,
+    functionDeployFilePath,
+    functionSourceCodeFilePath,
+    functionSourceDirPath,
+    hasFunctionDeclaration,
+} from '../function-source.utils'
+import { functionCodeFilePath } from '../function.utils'
+import type { FunctionDeployMetadata, ZohoFunction } from '../function.types'
+import { assertNoPulledFunctionsInSource, functionSourceExists } from './scaffold-function.service'
+
+export interface ImportedFunctionFiles {
+    codePath: string
+    deployPath: string
+    /** Problems a deploy would run into, worth telling the user about now. */
+    warnings: string[]
+}
+
+export async function functionSnapshotExists(projectPath: string, apiName: string): Promise<boolean> {
+    return (await listSnapshotMetadataFiles(projectPath, apiName)).length > 0
+}
+
+/** Copies a pulled function from `data/` into `src/`, keeping its CRM id so a deploy updates it. */
+export async function importFunctionSource(projectPath: string, apiName: string): Promise<ImportedFunctionFiles> {
+    await assertNoPulledFunctionsInSource(projectPath)
+
+    if (await functionSourceExists(projectPath, apiName)) {
+        const functionPath = resolveSourcePath(projectPath, functionSourceDirPath(apiName))
+        throw new Error(`Function "${apiName}" already exists in "${functionPath}".`)
+    }
+
+    const zohoFunction = await readFunctionSnapshotMetadata(projectPath, apiName)
+    const category = assertDelugeFunction(zohoFunction)
+    const snapshotCodePath = resolveArtifactPath(projectPath, functionCodeFilePath(zohoFunction))
+    const code = await readFile(snapshotCodePath, 'utf8').catch(() => {
+        throw new Error(`The snapshot of "${apiName}" has no code at "${snapshotCodePath}". Pull functions again.`)
+    })
+
+    const codePath = resolveSourcePath(projectPath, functionSourceCodeFilePath(apiName))
+    const deployPath = resolveSourcePath(projectPath, functionDeployFilePath(apiName))
+    const metadata: FunctionDeployMetadata = {
+        id: zohoFunction.id,
+        name: zohoFunction.name,
+        api_name: zohoFunction.api_name,
+        description: typeof zohoFunction.description === 'string' ? zohoFunction.description : '',
+        runtime: delugeRuntime,
+        category,
+        deployments: [],
+    }
+
+    await mkdir(dirname(codePath), { recursive: true })
+    await writeFile(codePath, code)
+    await writeJsonFile(deployPath, metadata)
+
+    const declarationName = functionDeclarationName(metadata.name, category)
+    const warnings = hasFunctionDeclaration(code, declarationName)
+        ? []
+        : [
+              `The code does not declare "${declarationName}", so Zoho will reject it on deploy until the declaration is fixed.`,
+          ]
+
+    return { codePath, deployPath, warnings }
+}
+
+function functionSnapshotDirPath(apiName: string): string[] {
+    return [zohoCrmDirName, functionsDirName, toPathSegment(apiName)]
+}
+
+async function listSnapshotMetadataFiles(projectPath: string, apiName: string): Promise<string[]> {
+    const files = await readdir(resolveArtifactPath(projectPath, functionSnapshotDirPath(apiName))).catch(() => [])
+
+    return files.filter((file) => file.endsWith('.metadata.json'))
+}
+
+async function readFunctionSnapshotMetadata(projectPath: string, apiName: string): Promise<ZohoFunction> {
+    const snapshotPath = resolveArtifactPath(projectPath, functionSnapshotDirPath(apiName))
+    const [metadataFile, ...otherMetadataFiles] = await listSnapshotMetadataFiles(projectPath, apiName)
+
+    if (!metadataFile) {
+        throw new Error(`No pulled function "${apiName}" in "${snapshotPath}".`)
+    }
+
+    if (otherMetadataFiles.length > 0) {
+        throw new Error(`"${snapshotPath}" holds more than one function record. Pull functions again.`)
+    }
+
+    return Bun.file(
+        resolveArtifactPath(projectPath, [...functionSnapshotDirPath(apiName), metadataFile])
+    ).json() as Promise<ZohoFunction>
+}
+
+function assertDelugeFunction(zohoFunction: ZohoFunction): DelugeFunctionCategory {
+    if (zohoFunction.runtime !== delugeRuntime) {
+        throw new Error(
+            `"${zohoFunction.api_name}" runs on ${String(zohoFunction.runtime ?? 'an unknown runtime')}; only ${delugeRuntime} functions can be imported.`
+        )
+    }
+
+    const category = delugeFunctionCategories.find((value) => value === zohoFunction.category)
+
+    if (!category) {
+        throw new Error(
+            `"${zohoFunction.api_name}" has the category "${String(zohoFunction.category ?? 'none')}", which is not one of ${delugeFunctionCategories.join(', ')}.`
+        )
+    }
+
+    return category
+}

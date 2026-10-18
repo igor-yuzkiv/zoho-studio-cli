@@ -8,7 +8,9 @@
   sample declares `standalone.restoreDealByNameTest`, in camel case
 - **Actually:** not observed yet; the camel-case sample contradicts the lower-case rule. Whether
   `-` in a display name becomes `_` is not documented
-- **In our code:** `buildFunctionStub` lower-cases both parts and turns spaces and `-` into `_`
+- **In our code:** `buildFunctionStub` lower-cases both parts and turns spaces and `-` into `_`;
+  `hasFunctionDeclaration` checks an imported function against that rule ignoring case, and Import
+  warns when the code does not match
 
 ## The return type is fixed by the category
 

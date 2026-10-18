@@ -1,7 +1,8 @@
 # `zoho-studio z-crm:functions:make`
 
 Scaffolds a new Deluge function in `src/zoho-crm/functions/` by asking a few questions, so you start
-from files Zoho will accept rather than from a blank page. It works offline: no login, no request to
+from files Zoho will accept rather than from a blank page, or imports a function already pulled into
+`data/`. It works offline: no login, no request to
 Zoho.
 
 ```bash
@@ -89,6 +90,21 @@ Arguments are not asked for — add them to the declaration yourself.
 
 `id` stays `null` until the function exists in Zoho. The return type and the arguments are not
 repeated here: Zoho reads them from the declaration.
+
+## Importing a pulled function
+
+When the API name you enter belongs to a function already pulled into `data/zoho-crm/functions/`,
+the command offers to import it into `src/` instead of creating a new one. Declining creates nothing.
+
+Importing copies the snapshot's code unchanged into `<api_name>.deluge` and writes
+`<api_name>.deploy.json` from the snapshot's metadata — including its CRM `id`, so a deploy updates
+that function rather than creating another. The snapshot in `data/` is left as it is. The category
+comes from the snapshot, whatever you picked at the first question.
+
+Only a function that runs on `Deluge 1.0` and has one of the seven Deluge categories can be imported;
+any other is refused with the reason. If the code does not declare `<category>.<display name>` the way
+Zoho expects, the import still happens and the command warns that a deploy will be rejected until the
+declaration is fixed.
 
 ## A project that still keeps snapshots in `src/`
 

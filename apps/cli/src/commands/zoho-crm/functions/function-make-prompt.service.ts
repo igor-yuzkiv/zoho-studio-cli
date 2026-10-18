@@ -30,10 +30,16 @@ interface FunctionMakeContext {
     localModuleNames: string[]
     /** Answers with what is wrong with the API name, beyond its format, or `null`. */
     checkApiNameIsFree: (apiName: string) => Promise<string | null>
+    hasSnapshot: (apiName: string) => Promise<boolean>
 }
 
-/** Walks the user through a new function and answers with it, or `null` when they decline the summary. */
-export async function promptForFunctionScaffold(context: FunctionMakeContext): Promise<FunctionScaffold | null> {
+export type FunctionMakeChoice = { kind: 'scaffold'; scaffold: FunctionScaffold } | { kind: 'import'; apiName: string }
+
+/**
+ * Walks the user through a new function, or through importing a pulled one when the API name they
+ * enter already has a snapshot in `data/`. Answers `null` when they decline.
+ */
+export async function promptForFunctionMake(context: FunctionMakeContext): Promise<FunctionMakeChoice | null> {
     const category = await select<DelugeFunctionCategory>({
         message: 'Category',
         choices: delugeFunctionCategories.map((value) => ({ name: value, value })),
@@ -46,6 +52,15 @@ export async function promptForFunctionScaffold(context: FunctionMakeContext): P
         default: proposedApiName,
         validate: async (value) => validateFunctionApiName(value) ?? (await context.checkApiNameIsFree(value)) ?? true,
     })
+
+    if (await context.hasSnapshot(apiName)) {
+        const importIt = await confirm({
+            message: `"${apiName}" was pulled into data/. Import it into src/ instead of creating a new one?`,
+            default: true,
+        })
+
+        return importIt ? { kind: 'import', apiName } : null
+    }
     const name = await input({
         message: 'Display name',
         default: apiName,
@@ -63,7 +78,7 @@ export async function promptForFunctionScaffold(context: FunctionMakeContext): P
         console.log(`  ${relative(context.projectPath, resolveSourcePath(context.projectPath, segments))}`)
     }
 
-    return (await confirm({ message: 'Create the function?', default: true })) ? scaffold : null
+    return (await confirm({ message: 'Create the function?', default: true })) ? { kind: 'scaffold', scaffold } : null
 }
 
 async function promptForReturnType(category: DelugeFunctionCategory): Promise<string> {

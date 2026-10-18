@@ -38,6 +38,6 @@ in the Zoho CRM organization with permission to view its setup — for migration
 8. [Troubleshooting](8-troubleshooting.md) — common errors and what to do
 9. [Scripts and packages](9-scripts-and-packages.md) — your own scripts with the shipped packages
 
-The words these pages use — artifact, pull, snapshot, source, scaffold — are defined in the [glossary](../glossary.md).
+The words these pages use — artifact, pull, snapshot, source, scaffold, import — are defined in the [glossary](../glossary.md).
 
 Every page links to the [technical reference](../technical/1-overview.md) for the full list of options.

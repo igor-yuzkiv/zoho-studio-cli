@@ -62,17 +62,28 @@ const stubReturnStatements: Record<string, string> = {
 
 /**
  * Zoho compiles a Deluge function only when it is declared as `<category>.<display name>`, both in
- * lower snake case, so the stub derives the declaration rather than asking for it.
+ * lower snake case — see zoho-findings/functions.md.
  */
+export function functionDeclarationName(name: string, category: string): string {
+    return `${toDeclarationSegment(category)}.${toDeclarationSegment(name)}`
+}
+
 export function buildFunctionStub(definition: {
     name: string
     category: DelugeFunctionCategory
     returnType: string
 }): string {
-    const declarationName = `${toDeclarationSegment(definition.category)}.${toDeclarationSegment(definition.name)}`
     const body = stubReturnStatements[definition.returnType] ?? ''
 
-    return `${definition.returnType} ${declarationName}()\n{\n${body}}\n`
+    return `${definition.returnType} ${functionDeclarationName(definition.name, definition.category)}()\n{\n${body}}\n`
+}
+
+/** Case is ignored because whether Zoho insists on lower case is not confirmed yet. */
+export function hasFunctionDeclaration(code: string, declarationName: string): boolean {
+    const codeWithoutBlockComments = code.replace(/\/\*[\s\S]*?\*\//g, '')
+    const escapedName = declarationName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+    return new RegExp(`^\\s*\\w+\\s+${escapedName}\\s*\\(`, 'im').test(codeWithoutBlockComments)
 }
 
 function toDeclarationSegment(value: string): string {
