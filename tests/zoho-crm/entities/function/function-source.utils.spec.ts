@@ -23,6 +23,11 @@ describe('toFunctionNameSegment', () => {
         expect(toFunctionNameSegment('  open-wizard  now ')).toBe('open_wizard_now')
         expect(toFunctionNameSegment('openwizard')).toBe('openwizard')
     })
+
+    test('splits camel case into words', () => {
+        expect(toFunctionNameSegment('testZohoStudioMakeFunction')).toBe('test_zoho_studio_make_function')
+        expect(toFunctionNameSegment('syncCRMRecords')).toBe('sync_crm_records')
+    })
 })
 
 describe('buildFunctionApiName', () => {

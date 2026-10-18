@@ -15,10 +15,15 @@ const functionNamePattern = /^[A-Za-z][A-Za-z0-9 _-]{2,99}$/
 const functionApiNamePattern = /^[A-Za-z][A-Za-z0-9_-]{2,99}$/
 const functionDescriptionMaxLength = 3000
 
-/** Lower snake case, so free text such as "Refresh pricing" can become one segment of an API name. */
+/**
+ * Lower snake case, so free text such as "Refresh pricing" or "refreshPricing" can become one segment
+ * of an API name without losing its word boundaries.
+ */
 export function toFunctionNameSegment(value: string): string {
     return value
         .trim()
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '_')
         .replace(/^_+|_+$/g, '')

@@ -10,21 +10,19 @@ zoho-studio z-crm:functions:make
 ```
 
 ```text
-✔ Category Automation
-✔ Return type void
-✔ Is the function tied to a module? Yes
-✔ Module Programs
-✔ What the function does refresh pricing
-✔ API name oz_wf_programs_refresh_pricing
-✔ Display name oz_wf_programs_refresh_pricing
-✔ Description Recalculates the program prices
+✔ Category Standalone
+✔ Is the function tied to a module? No
+✔ What the function does testZohoStudioMakeFunction
+✔ API name sa_test_zoho_studio_make_function
+✔ Display name sa_test_zoho_studio_make_function
+✔ Description
 
 Files to create:
-  src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deluge
-  src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deploy.json
+  src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deluge
+  src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deploy.json
 ✔ Create the function? Yes
-Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deluge
-Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deploy.json
+Created src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deluge
+Created src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deploy.json
 ```
 
 The command needs an interactive terminal; without one it stops with an error and creates nothing.
@@ -39,7 +37,8 @@ The command needs an interactive terminal; without one it stops with an error an
 - **Is the function tied to a module?**, **Module** and **What the function does** — the parts of the
   proposed API name, asked only when naming is enabled. Answering no to the first leaves the module
   segment out; answering yes offers the modules pulled into `data/zoho-crm/modules/` or a segment
-  typed in by hand (only the latter when nothing is pulled). Both parts are turned into lower snake case.
+  typed in by hand (only the latter when nothing is pulled). Both parts are turned into lower snake case, camel case
+  split into words: `refreshPricing` becomes `refresh_pricing`.
 - **API name** — proposed from [`zohoCrm.functions.naming`](2-settings.md) as
   `<vendor>_<category prefix>_<module>_<purpose>`, and editable. With naming disabled you type it.
 - **Display name** — the API name unless you change it.

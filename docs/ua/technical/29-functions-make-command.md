@@ -8,21 +8,19 @@ zoho-studio z-crm:functions:make
 ```
 
 ```text
-✔ Category Automation
-✔ Return type void
-✔ Is the function tied to a module? Yes
-✔ Module Programs
-✔ What the function does refresh pricing
-✔ API name oz_wf_programs_refresh_pricing
-✔ Display name oz_wf_programs_refresh_pricing
-✔ Description Recalculates the program prices
+✔ Category Standalone
+✔ Is the function tied to a module? No
+✔ What the function does testZohoStudioMakeFunction
+✔ API name sa_test_zoho_studio_make_function
+✔ Display name sa_test_zoho_studio_make_function
+✔ Description
 
 Files to create:
-  src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deluge
-  src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deploy.json
+  src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deluge
+  src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deploy.json
 ✔ Create the function? Yes
-Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deluge
-Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_refresh_pricing.deploy.json
+Created src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deluge
+Created src/zoho-crm/functions/sa_test_zoho_studio_make_function/sa_test_zoho_studio_make_function.deploy.json
 ```
 
 Команді потрібен інтерактивний термінал; без нього вона зупиняється з помилкою й нічого не створює.
@@ -37,7 +35,8 @@ Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_ref
 - **Is the function tied to a module?**, **Module** і **What the function does** — частини
   запропонованого API-імені, їх питають, лише коли naming увімкнено. Відповідь «ні» на перше прибирає
   сегмент модуля; «так» пропонує модулі, завантажені в `data/zoho-crm/modules/`, або сегмент, введений
-  вручну (лише його, коли нічого не завантажено). Обидві частини перетворюються на lower snake case.
+  вручну (лише його, коли нічого не завантажено). Обидві частини перетворюються на lower snake case, а camel case
+  розбивається на слова: `refreshPricing` стає `refresh_pricing`.
 - **API name** — пропонується за [`zohoCrm.functions.naming`](2-settings.md) як
   `<vendor>_<префікс категорії>_<модуль>_<призначення>`, і його можна змінити. Коли naming вимкнено,
   ви вводите його самі.
