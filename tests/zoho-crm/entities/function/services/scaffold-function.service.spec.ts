@@ -58,6 +58,14 @@ describe('scaffoldFunctionSource', () => {
         await expect(scaffoldFunctionSource(projectPath, pingFunction)).rejects.toThrow(/already exists/)
     })
 
+    test('refuses an API name that differs from an existing one only in case', async () => {
+        await scaffoldFunctionSource(projectPath, pingFunction)
+
+        await expect(
+            scaffoldFunctionSource(projectPath, { ...pingFunction, name: 'Oz_Sa_Ping', api_name: 'Oz_Sa_Ping' })
+        ).rejects.toThrow(/already exists/)
+    })
+
     test('refuses a return type the category does not allow', async () => {
         await expect(scaffoldFunctionSource(projectPath, { ...pingFunction, returnType: 'void' })).rejects.toThrow(
             /return type/

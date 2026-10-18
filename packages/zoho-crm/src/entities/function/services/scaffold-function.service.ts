@@ -1,5 +1,5 @@
-import { mkdir, readdir, stat, writeFile } from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { mkdir, readdir, writeFile } from 'node:fs/promises'
+import { basename, dirname } from 'node:path'
 
 import { resolveSourcePath, writeJsonFile } from '@zoho-studio/core'
 
@@ -91,9 +91,10 @@ export async function assertNoPulledFunctionsInSource(projectPath: string): Prom
     }
 }
 
+/** Zoho compares API names ignoring case, so `Oz_Sa_Ping` is taken once `oz_sa_ping` exists. */
 export async function functionSourceExists(projectPath: string, apiName: string): Promise<boolean> {
-    return stat(resolveSourcePath(projectPath, functionSourceDirPath(apiName))).then(
-        () => true,
-        () => false
-    )
+    const folderName = basename(resolveSourcePath(projectPath, functionSourceDirPath(apiName))).toLowerCase()
+    const entries = await readdir(resolveSourcePath(projectPath, [zohoCrmDirName, functionsDirName])).catch(() => [])
+
+    return entries.some((entry) => entry.toLowerCase() === folderName)
 }

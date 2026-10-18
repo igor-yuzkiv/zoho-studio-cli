@@ -1,2 +1,5 @@
 export { getFunctionCodeRequest } from './get-function-code.request'
 export { getFunctionsListRequest, getFunctionsPageRequest, type PageParams } from './get-functions-list.request'
+export { createFunctionRequest } from './create-function.request'
+export { updateFunctionRequest } from './update-function.request'
+export { FunctionRequestError, type FunctionCompilationError } from './function-request.error'
