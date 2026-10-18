@@ -58,3 +58,4 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 - [28-layouts-pull-command.md](28-layouts-pull-command.md) — downloading module layouts, with their sections and formulas, with `zoho-studio z-crm:layouts:pull`
 - [29-functions-make-command.md](29-functions-make-command.md) — scaffolding a new Deluge function in `src/`, or importing a pulled one, with `zoho-studio z-crm:functions:make`
 - [30-functions-deploy-command.md](30-functions-deploy-command.md) — creating or updating a function in Zoho from `src/` with `zoho-studio z-crm:functions:deploy`
+- [31-functions-import-command.md](31-functions-import-command.md) — copying a pulled function from `data/` into `src/` with `zoho-studio z-crm:functions:import`

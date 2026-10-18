@@ -96,6 +96,8 @@ repeated here: Zoho reads them from the declaration.
 
 When the API name you enter belongs to a function already pulled into `data/zoho-crm/functions/`,
 the command offers to import it into `src/` instead of creating a new one. Declining creates nothing.
+To import a function you already know, without the questions, use
+[`zoho-studio z-crm:functions:import`](31-functions-import-command.md).
 
 Importing copies the snapshot's code unchanged into `<api_name>.deluge` and writes
 `<api_name>.deploy.json` from the snapshot's metadata — including its CRM `id`, so a deploy updates

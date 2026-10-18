@@ -58,3 +58,4 @@ bun run dev -- init my-project
 - [28-layouts-pull-command.md](28-layouts-pull-command.md) — завантаження layouts модулів із секціями та формулами командою `zoho-studio z-crm:layouts:pull`
 - [29-functions-make-command.md](29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої командою `zoho-studio z-crm:functions:make`
 - [30-functions-deploy-command.md](30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/` командою `zoho-studio z-crm:functions:deploy`
+- [31-functions-import-command.md](31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/` командою `zoho-studio z-crm:functions:import`

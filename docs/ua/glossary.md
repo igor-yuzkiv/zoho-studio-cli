@@ -10,7 +10,7 @@
 | **Pull** | Завантаження артефактів із Zoho CRM через API командами `z-crm:*:pull`. В інших інструментах це називають fetch. |
 | **Snapshot** | Локальна копія стану артефакта в тому вигляді, в якому її завантажив pull. Snapshot-и лежать у `data/zoho-crm/`. |
 | **Source** | Код і метадані артефакта, який розробляється локально. Source лежить у `src/zoho-crm/`, і жоден pull його не чіпає. |
-| **Import** | Копіювання артефакта зі snapshot-а в source для локальної розробки; його пропонує `z-crm:functions:make`. |
+| **Import** | Копіювання артефакта зі snapshot-а в source для локальної розробки командою `z-crm:functions:import`; його також пропонує `z-crm:functions:make`. |
 | **Deploy** | Створення або оновлення артефакта в Zoho CRM з його source командою `z-crm:functions:deploy`. |
 | **Deployment** | Один deploy, який Zoho прийняв, з датою та операцією (create або update). |
 | **Changelog** | Опис зміни, яку приніс deployment. |

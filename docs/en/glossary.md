@@ -10,7 +10,7 @@ here.
 | **Pull** | Downloading artifacts from Zoho CRM through the API, done by the `z-crm:*:pull` commands. Other tools call this a fetch. |
 | **Snapshot** | The local copy of an artifact's state, as a pull downloaded it. Snapshots live under `data/zoho-crm/`. |
 | **Source** | Code and metadata of an artifact developed locally. Source lives under `src/zoho-crm/`, and no pull touches it. |
-| **Import** | Copying an artifact from its snapshot into source to develop it locally, offered by `z-crm:functions:make`. |
+| **Import** | Copying an artifact from its snapshot into source to develop it locally, done by `z-crm:functions:import` and offered by `z-crm:functions:make`. |
 | **Deploy** | Creating or updating an artifact in Zoho CRM from its source, done by `z-crm:functions:deploy`. |
 | **Deployment** | One deploy that Zoho accepted, with its date and operation (create or update). |
 | **Changelog** | The description of the change a deployment brought. |

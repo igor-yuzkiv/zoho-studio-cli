@@ -32,6 +32,33 @@ export async function functionSnapshotExists(projectPath: string, apiName: strin
     return (await listSnapshotMetadataFiles(projectPath, apiName)).length > 0
 }
 
+export interface ImportableFunction {
+    apiName: string
+    name: string
+}
+
+/** The pulled functions in `data/` that have no source in `src/` yet, sorted by API name. */
+export async function listImportableFunctions(projectPath: string): Promise<ImportableFunction[]> {
+    const functionsPath = resolveArtifactPath(projectPath, [zohoCrmDirName, functionsDirName])
+    const entries = await readdir(functionsPath, { withFileTypes: true }).catch(() => [])
+    const importable: ImportableFunction[] = []
+
+    for (const entry of entries.filter((candidate) => candidate.isDirectory())) {
+        const [metadataFile] = await listSnapshotMetadataFiles(projectPath, entry.name)
+
+        if (!metadataFile || (await functionSourceExists(projectPath, entry.name))) {
+            continue
+        }
+
+        const zohoFunction = (await Bun.file(
+            resolveArtifactPath(projectPath, [...functionSnapshotDirPath(entry.name), metadataFile])
+        ).json()) as ZohoFunction
+        importable.push({ apiName: entry.name, name: zohoFunction.name })
+    }
+
+    return importable.sort((left, right) => left.apiName.localeCompare(right.apiName))
+}
+
 /** Copies a pulled function from `data/` into `src/`, keeping its CRM id so a deploy updates it. */
 export async function importFunctionSource(projectPath: string, apiName: string): Promise<ImportedFunctionFiles> {
     await assertNoPulledFunctionsInSource(projectPath)
@@ -89,7 +116,9 @@ async function readFunctionSnapshotMetadata(projectPath: string, apiName: string
     const [metadataFile, ...otherMetadataFiles] = await listSnapshotMetadataFiles(projectPath, apiName)
 
     if (!metadataFile) {
-        throw new Error(`No pulled function "${apiName}" in "${snapshotPath}".`)
+        throw new Error(
+            `No pulled function "${apiName}" in "${snapshotPath}". Run "zoho-studio z-crm:functions:pull" first.`
+        )
     }
 
     if (otherMetadataFiles.length > 0) {

@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { functionSnapshotExists, importFunctionSource } from '@zoho-studio/zoho-crm/function'
+import { functionSnapshotExists, importFunctionSource, listImportableFunctions } from '@zoho-studio/zoho-crm/function'
 
 let projectPath: string
 
@@ -46,6 +46,25 @@ describe('functionSnapshotExists', () => {
 
         expect(await functionSnapshotExists(projectPath, 'oz_wf_refresh_pricing')).toBe(true)
         expect(await functionSnapshotExists(projectPath, 'oz_wf_other')).toBe(false)
+    })
+})
+
+describe('listImportableFunctions', () => {
+    test('lists pulled functions that have no source yet, by API name', async () => {
+        await writeSnapshot({ api_name: 'oz_sa_zeta', name: 'Zeta' })
+        await writeSnapshot({ api_name: 'oz_sa_alpha', name: 'Alpha' })
+        await writeSnapshot({})
+        await importFunctionSource(projectPath, 'oz_wf_refresh_pricing')
+        await mkdir(snapshotPath('oz_sa_left_empty'), { recursive: true })
+
+        expect(await listImportableFunctions(projectPath)).toEqual([
+            { apiName: 'oz_sa_alpha', name: 'Alpha' },
+            { apiName: 'oz_sa_zeta', name: 'Zeta' },
+        ])
+    })
+
+    test('answers an empty list when nothing was pulled', async () => {
+        expect(await listImportableFunctions(projectPath)).toEqual([])
     })
 })
 
