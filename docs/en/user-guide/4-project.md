@@ -17,6 +17,9 @@ my-crm/
   tsconfig.json            type-checks scripts and migrations against the packages
 ```
 
+What a pull downloads into `src/zoho-crm/` is a snapshot — a copy of the CRM's state that the next pull
+replaces; the [glossary](../glossary.md) page defines it and the other terms.
+
 ## Settings
 
 `.zoho-studio/settings.json` holds no secrets. Every key in it is optional: what you leave out

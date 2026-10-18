@@ -36,6 +36,7 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 
 ## Documents
 
+- [glossary.md](../glossary.md) — the terms used throughout: artifact, pull, snapshot
 - [2-settings.md](2-settings.md) — the settings file, and how the CLI reads and writes it
 - [3-init-command.md](3-init-command.md) — scaffolding a project with `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — authorizing a project with `zoho-studio login`

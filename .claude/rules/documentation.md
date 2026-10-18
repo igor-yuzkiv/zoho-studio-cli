@@ -44,9 +44,11 @@ All documentation exists in two languages with the same files and the same conte
 ```text
 docs/
   en/
+    glossary.md   the terms shared by the guide and the reference
     user-guide/   the guide: a task at a time, in plain words
     technical/    the reference: one page per command or topic
   ua/
+    glossary.md
     user-guide/
     technical/
 README.md         English, links to docs/en/
@@ -54,7 +56,8 @@ README.ua.md      Ukrainian, links to docs/ua/
 ```
 
 Each of the four folders is flat — no subfolders — and numbered in reading order:
-`<number>-<kebab-case-name>.md`, starting at `1-overview.md`, its entry point. The same page has
+`<number>-<kebab-case-name>.md`, starting at `1-overview.md`, its entry point. The glossary sits
+beside them, unnumbered, because both folders share it; both overviews link to it. The same page has
 the same file name in both languages, and a change to a page is made in both languages in the same
 commit. Code, commands, paths, options, and quoted CLI output stay in English in both.
 
