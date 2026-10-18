@@ -48,7 +48,7 @@ export async function runMigration(
             emit({ type: 'step-finished', index, status: 'success' })
         } catch (error) {
             entry.status = 'failed'
-            entry.error = error instanceof Error ? error.message : String(error)
+            entry.error = describeRequestError(error)
             emit({ type: 'step-finished', index, status: 'failed', error: entry.error })
             break
         }

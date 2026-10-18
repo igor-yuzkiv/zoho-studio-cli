@@ -11,6 +11,18 @@ describe('describeRequestError', () => {
         expect(describeRequestError(error)).toBe('The value provided to the param is Invalid (INVALID_MODULE)')
     })
 
+    test('adds the details Zoho gave, which usually name the offending field', () => {
+        const error = Object.assign(new Error('Request failed with status code 400'), {
+            response: {
+                data: { message: 'duplicate data', code: 'DUPLICATE_DATA', details: { api_name: 'plural_label' } },
+            },
+        })
+
+        expect(describeRequestError(error)).toBe(
+            'duplicate data (DUPLICATE_DATA) — details: {"api_name":"plural_label"}'
+        )
+    })
+
     test('falls back to the error message when there is no Zoho payload', () => {
         expect(describeRequestError(new Error('socket hang up'))).toBe('socket hang up')
         expect(describeRequestError('broken')).toBe('broken')
