@@ -36,6 +36,7 @@
     },
     "zohoCrm": {
         "functions": {
+            "changelogTemplate": "Deployed {date}",
             "naming": {
                 "enabled": true,
                 "vendor": "",
@@ -84,6 +85,9 @@
 Порожній `vendor` прибирає цей сегмент; категорія, якої немає в `categoryPrefixes`, пишеться повністю
 в snake case; `enabled: false` змушує команду питати API-ім'я напряму. Вказуйте лише те, що
 змінюєте, — `{ "vendor": "oz" }` зберігає типові префікси.
+
+`zohoCrm.functions.changelogTemplate` — changelog, який надсилає [`zoho-studio z-crm:functions:deploy`](30-functions-deploy-command.md),
+коли ви його не вказали; `{date}` стає датою deploy в UTC.
 
 Кожен ключ необов'язковий. Усе, що ви пропустили, береться з вбудованих типових значень, тож
 порожній об'єкт — це коректний проєкт. Ключ, який ви записали, **замінює** типове значення, а

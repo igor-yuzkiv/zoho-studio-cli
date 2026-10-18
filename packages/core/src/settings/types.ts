@@ -17,6 +17,8 @@ export interface ProjectSettings {
     presets: Record<string, string[]>
     zohoCrm: {
         functions: {
+            /** The changelog `z-crm:functions:deploy` sends when none is given; `{date}` becomes the deployment date. */
+            changelogTemplate: string
             /** How `z-crm:functions:make` proposes an API name: `<vendor>_<category prefix>_<module>_<purpose>`. */
             naming: {
                 enabled: boolean

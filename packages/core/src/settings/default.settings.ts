@@ -49,6 +49,7 @@ export const defaultProjectSettings: ProjectSettings = {
     },
     zohoCrm: {
         functions: {
+            changelogTemplate: 'Deployed {date}',
             naming: {
                 enabled: true,
                 vendor: '',

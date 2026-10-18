@@ -36,6 +36,7 @@ next to the file, which keeps it and `org.json` out of git, and writes it with `
     },
     "zohoCrm": {
         "functions": {
+            "changelogTemplate": "Deployed {date}",
             "naming": {
                 "enabled": true,
                 "vendor": "",
@@ -84,6 +85,9 @@ proposes: `<vendor>_<category prefix>_<module>_<purpose>`, such as `oz_wf_progra
 An empty `vendor` drops that segment; a category missing from `categoryPrefixes` is spelled out in
 snake case; `enabled: false` makes the command ask for the API name directly. Set only what you
 change — `{ "vendor": "oz" }` keeps the default prefixes.
+
+`zohoCrm.functions.changelogTemplate` is the changelog [`zoho-studio z-crm:functions:deploy`](30-functions-deploy-command.md)
+sends when you give none; `{date}` becomes the deployment date in UTC.
 
 Every key is optional. Anything you leave out falls back to a built-in default, so an empty object
 is a valid project. A key you do write **replaces** the default rather

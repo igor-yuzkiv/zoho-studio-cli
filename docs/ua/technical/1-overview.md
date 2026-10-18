@@ -36,7 +36,7 @@ bun run dev -- init my-project
 
 ## Документи
 
-- [glossary.md](../glossary.md) — терміни, якими користується документація: artifact, pull, snapshot, source, scaffold, import
+- [glossary.md](../glossary.md) — терміни, якими користується документація: artifact, pull, snapshot, source, scaffold, import, deploy
 - [2-settings.md](2-settings.md) — файл налаштувань і те, як CLI його читає й записує
 - [3-init-command.md](3-init-command.md) — створення проєкту командою `zoho-studio init`
 - [4-login-command.md](4-login-command.md) — авторизація проєкту командою `zoho-studio login`
@@ -57,3 +57,4 @@ bun run dev -- init my-project
 - [27-migrations.md](27-migrations.md) — створення модулів і додавання полів із файлів міграцій командою `bun run migrate`
 - [28-layouts-pull-command.md](28-layouts-pull-command.md) — завантаження layouts модулів із секціями та формулами командою `zoho-studio z-crm:layouts:pull`
 - [29-functions-make-command.md](29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої командою `zoho-studio z-crm:functions:make`
+- [30-functions-deploy-command.md](30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/` командою `zoho-studio z-crm:functions:deploy`

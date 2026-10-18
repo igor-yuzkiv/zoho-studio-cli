@@ -1,0 +1,79 @@
+# `zoho-studio z-crm:functions:deploy`
+
+Публікує функцію з `src/zoho-crm/functions/<api_name>/` у Zoho CRM: першого разу створює її, далі
+оновлює, і записує кожен успішний deploy у deploy-файл функції. Deluge-функції починають працювати,
+щойно Zoho їх прийняв, — окремого кроку публікації немає.
+
+```bash
+zoho-studio z-crm:functions:deploy oz_sa_ping --changelog "Answer with the server time"
+```
+
+```text
+Created oz_sa_ping in Zoho (id 1023338000007548001)
+Changelog: Answer with the server time
+```
+
+Команді потрібен проєкт, який пройшов [`zoho-studio login`](4-login-command.md). Функція береться з
+[`zoho-studio z-crm:functions:make`](29-functions-make-command.md) — створена або імпортована.
+
+## Опції
+
+| Опція | Значення |
+|---|---|
+| `<api_name>` | Папка функції в `src/zoho-crm/functions/`. |
+| `--changelog <text>` | Changelog цього deploy. Без неї повідомлення береться з [`zohoCrm.functions.changelogTemplate`](2-settings.md), типово `Deployed {date}`, де `{date}` — дата deploy. |
+
+## Створення чи оновлення
+
+Вирішує `id` у `<api_name>.deploy.json`. Коли він `null`, функція створюється, і її новий id
+записується у файл; коли він заданий, оновлюється функція з цим id. Імпортована функція має id від
+початку, тож її перший deploy — це оновлення.
+
+Оновлення надсилає код, display name і опис. API-ім'я, категорія і runtime фіксуються, щойно функція
+існує, — Zoho відмовляється їх змінювати.
+
+Після того як Zoho прийняв зміну, команда додає запис у `deployments` deploy-файлу:
+
+```json
+"deployments": [
+    { "date": "2026-10-18T12:00:00.000Z", "operation": "create", "changelog": "First version" }
+]
+```
+
+Дата — в UTC. Zoho зберігає changelog разом із ревізією функції, але не повертає його через API,
+тож цей список — копія, яку можна прочитати.
+
+Команда не робить pull після deploy: `data/` зберігає стан останнього pull, доки ви не запустите
+[`z-crm:functions:pull`](6-functions-pull-command.md). Zoho прибирає таби на початку рядків і
+завершальний перенос рядка з коду, який зберігає, тож завантажений snapshot не збігається з source
+байт у байт.
+
+## Перевірки перед надсиланням
+
+Нічого не надсилається в Zoho і нічого не записується, коли:
+
+- немає папки функції або її deploy-файлу;
+- deploy-файл порушує правило: display name має 3–100 символів, починається з літери й містить
+  літери, цифри, пробіли, `-` і `_`; API-ім'я — те саме без пробілів і збігається з назвою папки;
+  опис — до 3000 символів; runtime — `Deluge 1.0`; категорія — одна із семи категорій Deluge;
+- код не оголошує `<category>.<display name>` — категорію та display name у нижньому регістрі, з `_`
+  замість пробілів і `-`. Zoho звіряє оголошення без урахування регістру;
+- `src/zoho-crm/functions/` досі тримає завантажені функції з часів до переїзду в `data/` —
+  перенесіть їх командою `mv src/zoho-crm data/zoho-crm`.
+
+## Коли Zoho відмовляє
+
+Відхилений deploy лишає deploy-файл як був, а команда завершується з кодом 1.
+
+- **Помилки компіляції** показуються з рядком і позицією, які повідомив Zoho:
+
+  ```text
+  function have compilation errors (COMPILATION_ERROR)
+    line 3, position 0: The syntax is incorrect. Please check the format.
+  ```
+
+  Тип повернення, якого категорія не дозволяє, повідомляється так само.
+- **Функція з таким API-ім'ям уже існує** (`DUPLICATE_DATA`, Zoho перевіряє без урахування регістру) —
+  команда зупиняється й пропонує натомість імпортувати ту функцію. Сама вона до неї не прив'язується.
+- **Функції зі збереженим id більше немає** (`INVALID_DATA`) — задайте `id: null`, щоб створити її
+  знову.
