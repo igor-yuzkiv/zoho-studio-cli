@@ -9,9 +9,15 @@ zoho-studio z-crm:functions:deploy oz_sa_ping --changelog "Answer with the serve
 ```
 
 ```text
-Created oz_sa_ping in Zoho (id 1023338000007548001)
+Create a new function oz_sa_ping in Zoho
 Changelog: Answer with the server time
+✔ Deploy? Yes
+Created oz_sa_ping in Zoho (id 1023338000007548001)
 ```
+
+Коли локальні перевірки пройдено, команда каже, що збирається зробити, — створити нову функцію чи
+оновити ту, що має збережений id, — показує changelog і просить підтвердження. Відмова нічого не
+надсилає. Без термінала команда не запускається, якщо не вказано `--yes`.
 
 Команді потрібен проєкт, який пройшов [`zoho-studio login`](4-login-command.md). Функція береться з
 [`zoho-studio z-crm:functions:make`](29-functions-make-command.md) — створена або імпортована.
@@ -21,6 +27,7 @@ Changelog: Answer with the server time
 | Опція | Значення |
 |---|---|
 | `<api_name>` | Папка функції в `src/zoho-crm/functions/`. |
+| `-y, --yes` | Deploy без запиту підтвердження — для скриптів і запусків без термінала. |
 | `--changelog <text>` | Changelog цього deploy. Без неї повідомлення береться з [`zohoCrm.functions.changelogTemplate`](2-settings.md), типово `Deployed {date}`, де `{date}` — дата deploy. |
 
 ## Створення чи оновлення

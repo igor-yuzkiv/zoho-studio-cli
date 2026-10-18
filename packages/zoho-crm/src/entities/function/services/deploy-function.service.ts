@@ -25,6 +25,16 @@ export interface DeployFunctionOptions {
     /** `{date}` is replaced with the deployment date. */
     changelogTemplate: string
     now?: Date
+    /** Asked once the local checks pass and before anything is sent; `false` cancels the deploy. */
+    confirm?: (plan: FunctionDeploymentPlan) => Promise<boolean>
+}
+
+export interface FunctionDeploymentPlan {
+    operation: FunctionDeployment['operation']
+    apiName: string
+    /** The function updated; `null` when a new one is created. */
+    id: string | null
+    changelog: string
 }
 
 export interface FunctionDeploymentResult {
@@ -36,12 +46,13 @@ export interface FunctionDeploymentResult {
 /**
  * Creates the function in Zoho when its deploy file has no id yet, and updates it otherwise. The
  * deploy file is written only after Zoho accepted the change, so a failed deploy leaves no trace.
+ * Answers `null` when the deploy was cancelled at the confirmation.
  */
 export async function deployFunctionSource(
     projectPath: string,
     apiName: string,
     options: DeployFunctionOptions
-): Promise<FunctionDeploymentResult> {
+): Promise<FunctionDeploymentResult | null> {
     await assertNoPulledFunctionsInSource(projectPath)
 
     const deployPath = resolveSourcePath(projectPath, functionDeployFilePath(apiName))
@@ -56,6 +67,11 @@ export async function deployFunctionSource(
     const date = (options.now ?? new Date()).toISOString()
     const changelog = options.changelog ?? options.changelogTemplate.replaceAll('{date}', date)
     const operation: FunctionDeployment['operation'] = metadata.id ? 'update' : 'create'
+
+    if (options.confirm && !(await options.confirm({ operation, apiName, id: metadata.id, changelog }))) {
+        return null
+    }
+
     const id = await sendFunction(metadata, code, changelog).catch((error: unknown) => {
         throw explainFunctionRejection(error, metadata)
     })

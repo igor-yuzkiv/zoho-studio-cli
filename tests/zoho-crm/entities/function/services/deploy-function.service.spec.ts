@@ -56,11 +56,32 @@ describe('deployFunctionSource', () => {
 
         const result = await deployFunctionSource(crm.projectPath, 'oz_sa_ping', { ...options, changelog: 'Second' })
 
-        expect(result.operation).toBe('update')
+        expect(result?.operation).toBe('update')
         expect(crm.requests[1]?.method).toBe('PUT')
         expect(crm.requestedUrls[1]?.pathname).toEndWith('/settings/functions/1023')
         const deploy = await Bun.file(deployFilePath(crm.projectPath)).json()
         expect(deploy.deployments.map((entry: { operation: string }) => entry.operation)).toEqual(['create', 'update'])
+    })
+
+    test('shows the plan before sending and sends nothing when it is declined', async () => {
+        crm = await startCrmStub(created)
+        await addPingFunction(crm.projectPath)
+        const before = await Bun.file(deployFilePath(crm.projectPath)).text()
+        let shownPlan: unknown = null
+
+        const result = await deployFunctionSource(crm.projectPath, 'oz_sa_ping', {
+            ...options,
+            changelog: 'First',
+            confirm: async (plan) => {
+                shownPlan = plan
+                return false
+            },
+        })
+
+        expect(result).toBeNull()
+        expect(shownPlan).toEqual({ operation: 'create', apiName: 'oz_sa_ping', id: null, changelog: 'First' })
+        expect(crm.requests).toHaveLength(0)
+        expect(await Bun.file(deployFilePath(crm.projectPath)).text()).toBe(before)
     })
 
     test('builds the changelog from the template when none is given', async () => {
@@ -69,7 +90,7 @@ describe('deployFunctionSource', () => {
 
         const result = await deployFunctionSource(crm.projectPath, 'oz_sa_ping', options)
 
-        expect(result.changelog).toBe('Deployed 2026-10-18T12:00:00.000Z')
+        expect(result?.changelog).toBe('Deployed 2026-10-18T12:00:00.000Z')
     })
 
     test('leaves the deploy file as it was when Zoho rejects the code', async () => {

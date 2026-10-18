@@ -10,9 +10,15 @@ zoho-studio z-crm:functions:deploy oz_sa_ping --changelog "Answer with the serve
 ```
 
 ```text
-Created oz_sa_ping in Zoho (id 1023338000007548001)
+Create a new function oz_sa_ping in Zoho
 Changelog: Answer with the server time
+✔ Deploy? Yes
+Created oz_sa_ping in Zoho (id 1023338000007548001)
 ```
+
+Once the local checks pass, the command says what it is about to do — create a new function, or
+update the one with the stored id — shows the changelog, and asks for confirmation. Declining sends
+nothing. Without a terminal it refuses to run unless `--yes` is given.
 
 The command needs a project that has been through [`zoho-studio login`](4-login-command.md). The
 function comes from [`zoho-studio z-crm:functions:make`](29-functions-make-command.md), either
@@ -23,6 +29,7 @@ scaffolded or imported.
 | Option | Meaning |
 |---|---|
 | `<api_name>` | The function folder in `src/zoho-crm/functions/`. |
+| `-y, --yes` | Deploy without asking for confirmation, for scripts and runs without a terminal. |
 | `--changelog <text>` | The changelog of this deployment. Without it, the message comes from [`zohoCrm.functions.changelogTemplate`](2-settings.md), `Deployed {date}` by default, where `{date}` is the deployment date. |
 
 ## Create or update
