@@ -10,6 +10,7 @@ zoho-studio z-crm:functions:make
 ```text
 ✔ Category Automation
 ✔ Return type void
+✔ Is the function tied to a module? Yes
 ✔ Module Programs
 ✔ What the function does refresh pricing
 ✔ API name oz_wf_programs_refresh_pricing
@@ -33,9 +34,10 @@ Created src/zoho-crm/functions/oz_wf_programs_refresh_pricing/oz_wf_programs_ref
 - **Return type** — лише для Automation (`void` або `string`). Кожна інша категорія дозволяє один
   тип, і він підставляється сам: `string` для Button, Related List і Standalone, `void` для Schedule
   і Signals, `map` для Validation Rule.
-- **Module** і **What the function does** — частини запропонованого API-імені, їх питають, лише коли
-  naming увімкнено. Модуль вибирається з модулів, завантажених у `data/zoho-crm/modules/`, вводиться
-  вручну або пропускається. Обидва значення перетворюються на lower snake case.
+- **Is the function tied to a module?**, **Module** і **What the function does** — частини
+  запропонованого API-імені, їх питають, лише коли naming увімкнено. Відповідь «ні» на перше прибирає
+  сегмент модуля; «так» пропонує модулі, завантажені в `data/zoho-crm/modules/`, або сегмент, введений
+  вручну (лише його, коли нічого не завантажено). Обидві частини перетворюються на lower snake case.
 - **API name** — пропонується за [`zohoCrm.functions.naming`](2-settings.md) як
   `<vendor>_<префікс категорії>_<модуль>_<призначення>`, і його можна змінити. Коли naming вимкнено,
   ви вводите його самі.

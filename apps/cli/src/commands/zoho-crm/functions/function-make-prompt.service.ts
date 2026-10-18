@@ -22,7 +22,6 @@ import {
 type FunctionNamingSettings = ProjectSettings['zohoCrm']['functions']['naming']
 
 const enterModuleChoice = Symbol('enter')
-const noModuleChoice = Symbol('none')
 
 interface FunctionMakeContext {
     projectPath: string
@@ -91,27 +90,35 @@ async function promptForReturnType(category: DelugeFunctionCategory): Promise<st
     return select({ message: 'Return type', choices: returnTypes.map((value) => ({ name: value, value })) })
 }
 
+async function promptForModuleSegment(localModuleNames: string[]): Promise<string> {
+    const moduleChoice =
+        localModuleNames.length === 0
+            ? enterModuleChoice
+            : await select<string | typeof enterModuleChoice>({
+                  message: 'Module',
+                  choices: [
+                      ...localModuleNames.map((moduleName) => ({ name: moduleName, value: moduleName })),
+                      { name: 'Enter a module segment', value: enterModuleChoice },
+                  ],
+              })
+
+    if (moduleChoice !== enterModuleChoice) {
+        return moduleChoice
+    }
+
+    return input({
+        message: 'Module segment',
+        validate: (value) => (toFunctionNameSegment(value) ? true : 'Enter a segment.'),
+    })
+}
+
 async function promptForProposedApiName(
     context: FunctionMakeContext,
     category: DelugeFunctionCategory
 ): Promise<string> {
-    const moduleChoice = await select<string | typeof enterModuleChoice | typeof noModuleChoice>({
-        message: 'Module',
-        choices: [
-            ...context.localModuleNames.map((moduleName) => ({ name: moduleName, value: moduleName })),
-            { name: 'Enter a module segment', value: enterModuleChoice },
-            { name: 'No module', value: noModuleChoice },
-        ],
-    })
-    const module =
-        moduleChoice === enterModuleChoice
-            ? await input({
-                  message: 'Module segment',
-                  validate: (value) => (toFunctionNameSegment(value) ? true : 'Enter a segment.'),
-              })
-            : moduleChoice === noModuleChoice
-              ? undefined
-              : moduleChoice
+    const module = (await confirm({ message: 'Is the function tied to a module?', default: false }))
+        ? await promptForModuleSegment(context.localModuleNames)
+        : undefined
 
     const what = await input({
         message: 'What the function does',

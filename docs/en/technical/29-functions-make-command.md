@@ -12,6 +12,7 @@ zoho-studio z-crm:functions:make
 ```text
 ✔ Category Automation
 ✔ Return type void
+✔ Is the function tied to a module? Yes
 ✔ Module Programs
 ✔ What the function does refresh pricing
 ✔ API name oz_wf_programs_refresh_pricing
@@ -35,9 +36,10 @@ The command needs an interactive terminal; without one it stops with an error an
 - **Return type** — asked only for Automation (`void` or `string`). Every other category allows a
   single type, which is used as it is: `string` for Button, Related List and Standalone, `void` for
   Schedule and Signals, `map` for Validation Rule.
-- **Module** and **What the function does** — the parts of the proposed API name, asked only when
-  naming is enabled. The module is picked from the modules pulled into `data/zoho-crm/modules/`,
-  typed in by hand, or left out. Both are turned into lower snake case.
+- **Is the function tied to a module?**, **Module** and **What the function does** — the parts of the
+  proposed API name, asked only when naming is enabled. Answering no to the first leaves the module
+  segment out; answering yes offers the modules pulled into `data/zoho-crm/modules/` or a segment
+  typed in by hand (only the latter when nothing is pulled). Both parts are turned into lower snake case.
 - **API name** — proposed from [`zohoCrm.functions.naming`](2-settings.md) as
   `<vendor>_<category prefix>_<module>_<purpose>`, and editable. With naming disabled you type it.
 - **Display name** — the API name unless you change it.
