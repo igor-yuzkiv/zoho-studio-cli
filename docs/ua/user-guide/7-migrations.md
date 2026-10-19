@@ -16,6 +16,10 @@
 впорядковує міграції, наприклад `001-create-projects.ts`. У проєкті є приклад, який можна
 скопіювати: `scripts/example-migration.ts.txt`.
 
+Або доручіть створення файлу Zoho Studio: `zoho-studio z-crm:migrations:make` питає, створити модуль
+чи додати поля до наявного, який саме модуль, показує, що буде створено, і записує наступний за
+номером файл, де заповнено все, крім полів. Детальніше: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
+
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'
 

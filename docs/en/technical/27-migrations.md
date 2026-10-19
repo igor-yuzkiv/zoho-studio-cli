@@ -59,7 +59,9 @@ export default defineMigration({
 })
 ```
 
-A new project has an example to copy in `scripts/example-migration.ts.txt`.
+A new project has an example to copy in `scripts/example-migration.ts.txt`, and
+[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) creates the next numbered file
+with the action filled in.
 
 ## Field types
 

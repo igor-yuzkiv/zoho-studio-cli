@@ -59,7 +59,9 @@ export default defineMigration({
 })
 ```
 
-У новому проєкті є приклад для копіювання в `scripts/example-migration.ts.txt`.
+У новому проєкті є приклад для копіювання в `scripts/example-migration.ts.txt`, а
+[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) створює наступний за номером
+файл із заповненою дією.
 
 ## Типи полів
 

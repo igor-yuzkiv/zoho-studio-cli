@@ -15,6 +15,10 @@ function resolveCrmMigrationsPath(projectPath: string): string {
     return join(resolveWorkspaceMigrationsPath(projectPath), zohoCrmDirName)
 }
 
+export function migrationFilePath(projectPath: string, name: string): string {
+    return join(resolveCrmMigrationsPath(projectPath), `${name}${migrationExtension}`)
+}
+
 /** Returns the names of the CRM migrations — file names without the extension — in name order. */
 export async function listMigrations(projectPath: string): Promise<string[]> {
     const entries = await readdir(resolveCrmMigrationsPath(projectPath), { withFileTypes: true }).catch(() => [])
@@ -27,7 +31,7 @@ export async function listMigrations(projectPath: string): Promise<string[]> {
 
 /** Imports a migration file; a file that cannot be used is reported as a problem rather than thrown. */
 export async function loadMigration(projectPath: string, name: string): Promise<LoadedMigration> {
-    const path = join(resolveCrmMigrationsPath(projectPath), `${name}${migrationExtension}`)
+    const path = migrationFilePath(projectPath, name)
     let module: { default?: MigrationDefinition }
 
     try {

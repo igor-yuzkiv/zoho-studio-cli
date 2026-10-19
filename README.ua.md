@@ -40,6 +40,7 @@ bun run link                                 # once, so projects can import the 
 - [z-crm:functions:make](docs/ua/technical/29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої
 - [z-crm:functions:import](docs/ua/technical/31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/`
 - [z-crm:functions:deploy](docs/ua/technical/30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/`
+- [z-crm:migrations:make](docs/ua/technical/32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями
 - [z-crm:workflows:pull](docs/ua/technical/9-workflows-pull-command.md) — завантаження правил робочих процесів
 - [z-crm:org:info](docs/ua/technical/10-org-info-command.md) — читання організації та її збереження в проєкті
 - [z-crm:workflow-actions:pull](docs/ua/technical/11-workflow-actions-pull-command.md) — завантаження дій робочих процесів
@@ -59,7 +60,8 @@ bun run link                                 # once, so projects can import the 
 `bun install` у проєкті; див. [init](docs/ua/technical/3-init-command.md#скрипти).
 
 `bun run migrate` у проєкті створює модулі Zoho CRM і додає поля з файлів у
-`migrations/zoho-crm/`; див. [міграції](docs/ua/technical/27-migrations.md).
+`migrations/zoho-crm/`; див. [міграції](docs/ua/technical/27-migrations.md). `zoho-studio z-crm:migrations:make`
+створює заготовку нової міграції.
 
 ## Підтримка в редакторі
 

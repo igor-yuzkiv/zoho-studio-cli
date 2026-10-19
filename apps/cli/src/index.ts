@@ -13,6 +13,7 @@ import {
 } from '@/commands/zoho-crm/functions'
 import { pullModulesCommand } from '@/commands/zoho-crm/modules'
 import { pullFieldsCommand } from '@/commands/zoho-crm/fields'
+import { makeMigrationCommand } from '@/commands/zoho-crm/migrations'
 import { pullLayoutsCommand } from '@/commands/zoho-crm/layouts'
 import { pullWorkflowsCommand } from '@/commands/zoho-crm/workflows'
 import { pullWebhooksCommand } from '@/commands/zoho-crm/webhooks'
@@ -37,6 +38,7 @@ program.addCommand(importFunctionCommand)
 program.addCommand(deployFunctionCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
+program.addCommand(makeMigrationCommand)
 program.addCommand(pullLayoutsCommand)
 program.addCommand(pullWorkflowsCommand)
 program.addCommand(pullWebhooksCommand)

@@ -40,6 +40,7 @@ Start with the [user guide](docs/en/user-guide/1-overview.md) ([українсь
 - [z-crm:functions:make](docs/en/technical/29-functions-make-command.md) — scaffolding a new Deluge function in `src/`, or importing a pulled one
 - [z-crm:functions:import](docs/en/technical/31-functions-import-command.md) — copying a pulled function from `data/` into `src/`
 - [z-crm:functions:deploy](docs/en/technical/30-functions-deploy-command.md) — creating or updating a function in Zoho from `src/`
+- [z-crm:migrations:make](docs/en/technical/32-migrations-make-command.md) — creating a migration file through a few questions
 - [z-crm:workflows:pull](docs/en/technical/9-workflows-pull-command.md) — downloading workflow rules
 - [z-crm:org:info](docs/en/technical/10-org-info-command.md) — reading the organization and storing it in the project
 - [z-crm:workflow-actions:pull](docs/en/technical/11-workflow-actions-pull-command.md) — downloading workflow actions
@@ -59,7 +60,8 @@ and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, 
 in the project; see [init](docs/en/technical/3-init-command.md#scripts).
 
 `bun run migrate` in a project creates Zoho CRM modules and adds fields from the files in
-`migrations/zoho-crm/`; see [migrations](docs/en/technical/27-migrations.md).
+`migrations/zoho-crm/`; see [migrations](docs/en/technical/27-migrations.md). `zoho-studio z-crm:migrations:make`
+starts a new migration file.
 
 ## Editor support
 

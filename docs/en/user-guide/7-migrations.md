@@ -16,6 +16,10 @@ Create a file in `migrations/zoho-crm/`. Its name is the migration's name, and a
 keeps them in order, for example `001-create-projects.ts`. A project has an example to copy in
 `scripts/example-migration.ts.txt`.
 
+Or let Zoho Studio create the file: `zoho-studio z-crm:migrations:make` asks whether to create a
+module or add fields to one, which module, shows what it will create, and writes the next numbered
+file with everything but the fields filled in. More: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
+
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'
 
