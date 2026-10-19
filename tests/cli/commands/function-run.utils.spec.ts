@@ -4,7 +4,7 @@ import {
     buildFunctionRunCommandLine,
     collectFunctionArgument,
     findUnknownArguments,
-} from '@/commands/zoho-crm/functions/function-run.utils'
+} from '@/commands/zoho-crm/functions/run/function-run.utils'
 
 describe('collectFunctionArgument', () => {
     test('folds repeated --arg name=value into one map, keeping "=" in the value', () => {

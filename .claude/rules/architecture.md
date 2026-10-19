@@ -39,6 +39,7 @@ apps/
       index.ts      # CLI entry point, registers the commands
       commands/     # CLI command definitions, one folder per command
         zoho-crm/   # the commands of the Zoho CRM area; bare folders above are commands of no product
+          functions/  # several commands of one namespace: a folder per command (pull/, make/, run/, …)
   web/            # the SPA served by `browser`; built by Vite into dist/web
 tests/            # mirrors packages/*/src and apps/cli/src, see Tests
 template/         # files `init` copies into a new project
