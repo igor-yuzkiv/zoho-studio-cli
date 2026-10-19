@@ -17,8 +17,9 @@ keeps them in order, for example `001-create-projects.ts`. A project has an exam
 `scripts/example-migration.ts.txt`.
 
 Or let Zoho Studio create the file: `zoho-studio z-crm:migrations:make` asks whether to create a
-module or add fields to one, which module, shows what it will create, and writes the next numbered
-file with everything but the fields filled in. More: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
+module or add fields to one, which module, shows what it will create, and writes a file named after
+the date and time, such as `2026_10_19_202401_create_customer_orders.ts`, with everything but the
+fields filled in. More: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'

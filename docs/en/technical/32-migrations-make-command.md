@@ -14,12 +14,12 @@ zoho-studio z-crm:migrations:make
 ✔ Singular label Customer Order
 
 Migration to create:
-  Name:   002-create-customer-orders
-  File:   migrations/zoho-crm/002-create-customer-orders.ts
+  Name:   2026_10_19_202401_create_customer_orders
+  File:   migrations/zoho-crm/2026_10_19_202401_create_customer_orders.ts
   Action: create the module "Customer Orders" (singular "Customer Order")
 ✔ Create the migration? Yes
-Created migrations/zoho-crm/002-create-customer-orders.ts
-Declare the fields, then check it with "bun run migrate 002-create-customer-orders --dry-run".
+Created migrations/zoho-crm/2026_10_19_202401_create_customer_orders.ts
+Declare the fields, then check it with "bun run migrate 2026_10_19_202401_create_customer_orders --dry-run".
 ```
 
 The command needs an interactive terminal; without one it stops with an error and creates nothing.
@@ -41,9 +41,13 @@ confirmation; declining creates nothing.
 
 ## The file
 
-The name is the next number after the highest numbered migration in the folder, the action, and
-the module in kebab case: `003-update-deals` follows `002-create-customer-orders`. Numbers have
-three digits, or as many as the project already uses.
+The name follows Laravel's convention: the local date and time the file was made, the action, and
+the module in snake case — `2026_10_19_202401_create_customer_orders`. The prefix always has the
+same width, so the list of migrations, sorted by name, is in the order they were made, and two
+people creating migrations in separate branches do not end up with the same name.
+
+Migrations named by hand with a number keep their place when the number is zero-padded: `001-…`
+sorts before every dated name. A name such as `9-…` sorts after them.
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'

@@ -20,7 +20,7 @@ afterEach(async () => {
 })
 
 describe('scaffoldMigration', () => {
-    test('creates the next numbered migration file, which the migrate list then shows', async () => {
+    test('creates a dated migration file, which the migrate list shows after the numbered ones', async () => {
         projectPath = await createTempProject()
         const migrationsPath = join(projectPath, 'migrations', 'zoho-crm')
         await mkdir(migrationsPath, { recursive: true })
@@ -28,10 +28,10 @@ describe('scaffoldMigration', () => {
 
         const migration = await scaffoldMigration(projectPath, { action: 'update', module: 'Projects' })
 
-        expect(migration.name).toBe('002-update-projects')
-        expect(relative(projectPath, migration.path)).toBe('migrations/zoho-crm/002-update-projects.ts')
+        expect(migration.name).toMatch(/^\d{4}_\d{2}_\d{2}_\d{6}_update_projects$/)
+        expect(relative(projectPath, migration.path)).toBe(`migrations/zoho-crm/${migration.name}.ts`)
         expect(await readFile(migration.path, 'utf8')).toContain("module: 'Projects',")
-        expect(await listMigrations(projectPath)).toEqual(['001-create-projects', '002-update-projects'])
+        expect(await listMigrations(projectPath)).toEqual(['001-create-projects', migration.name])
     })
 
     test('creates the migrations folder when the project has none', async () => {
@@ -43,35 +43,31 @@ describe('scaffoldMigration', () => {
             plural_label: 'Projects',
         })
 
-        expect(migration.name).toBe('001-create-projects')
         expect(await readFile(migration.path, 'utf8')).toContain("plural_label: 'Projects',")
     })
-})
 
-describe('scaffoldMigration with the name the user confirmed', () => {
-    test('writes that name even when the folder changed since', async () => {
+    test('writes the name the user confirmed', async () => {
         projectPath = await createTempProject()
-        const planned = await planMigrationScaffold(projectPath, { action: 'update', module: 'Deals' })
-        await scaffoldMigration(projectPath, { action: 'update', module: 'Leads' })
-
-        const migration = await scaffoldMigration(
+        const planned = planMigrationScaffold(
             projectPath,
             { action: 'update', module: 'Deals' },
-            '002-update-deals'
+            new Date(2026, 9, 19, 14, 30, 5)
         )
 
-        expect(planned.name).toBe('001-update-deals')
-        expect(migration.name).toBe('002-update-deals')
-        expect(await listMigrations(projectPath)).toEqual(['001-update-leads', '002-update-deals'])
+        const migration = await scaffoldMigration(projectPath, { action: 'update', module: 'Deals' }, planned.name)
+
+        expect(migration).toEqual(planned)
+        expect(await listMigrations(projectPath)).toEqual(['2026_10_19_143005_update_deals'])
     })
 
     test('explains a name that is already taken', async () => {
         projectPath = await createTempProject()
-        await scaffoldMigration(projectPath, { action: 'update', module: 'Deals' })
+        const name = '2026_10_19_143005_update_deals'
+        await scaffoldMigration(projectPath, { action: 'update', module: 'Deals' }, name)
 
-        await expect(
-            scaffoldMigration(projectPath, { action: 'update', module: 'Deals' }, '001-update-deals')
-        ).rejects.toThrow('Migration "001-update-deals" already exists')
+        await expect(scaffoldMigration(projectPath, { action: 'update', module: 'Deals' }, name)).rejects.toThrow(
+            `Migration "${name}" already exists`
+        )
     })
 })
 
@@ -111,9 +107,13 @@ describe('planMigrationScaffold', () => {
     test('names the file without creating it', async () => {
         projectPath = await createTempProject()
 
-        const planned = await planMigrationScaffold(projectPath, { action: 'update', module: 'Deals' })
+        const planned = planMigrationScaffold(
+            projectPath,
+            { action: 'update', module: 'Deals' },
+            new Date(2026, 9, 19, 14, 30, 5)
+        )
 
-        expect(planned.name).toBe('001-update-deals')
+        expect(planned.name).toBe('2026_10_19_143005_update_deals')
         expect(await listMigrations(projectPath)).toEqual([])
     })
 })

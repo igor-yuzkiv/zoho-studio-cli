@@ -1,8 +1,8 @@
 export * from './migration-scaffold.types'
 export { planMigrationScaffold, scaffoldMigration } from './migration-scaffold.service'
 export {
+    buildMigrationName,
     buildMigrationStub,
-    buildNextMigrationName,
     proposeSingularLabel,
     toMigrationNameSegment,
     validateModuleApiName,

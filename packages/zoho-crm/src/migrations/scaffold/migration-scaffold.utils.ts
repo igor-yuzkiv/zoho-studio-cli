@@ -2,32 +2,31 @@ import { apiNameSchema } from '../definition/fields/field-type.utils'
 
 import type { MigrationScaffold } from './migration-scaffold.types'
 
-const migrationNumberPattern = /^(\d+)-/
-const defaultMigrationNumberWidth = 3
 const moduleApiNameSchema = apiNameSchema('Module API name')
 
-/** Turns a module label or API name into the part of a file name: `Customer_Orders` → `customer-orders`. */
+/** Turns a module label or API name into the part of a file name: `Customer Orders` → `customer_orders`. */
 export function toMigrationNameSegment(value: string): string {
     return value
-        .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
 }
 
 /**
- * Names a new migration after the last numbered one, so it lands at the end of the list:
- * `003-create-projects` follows `002-…`. The list is sorted as text, so the number keeps the width
- * the project already uses; three digits start a project with none.
+ * Names a migration the way Laravel does, after the moment it is made:
+ * `2026_10_19_143005_create_projects`. The prefix has one width, so the list, sorted as text, is
+ * in the order the migrations were made, and two people working apart do not pick the same name.
+ * Zero-padded numbered names, such as `001-…`, sort ahead of it.
  */
-export function buildNextMigrationName(existingNames: string[], scaffold: MigrationScaffold): string {
-    const numbers = existingNames.flatMap((name) => migrationNumberPattern.exec(name)?.[1] ?? [])
-    const nextNumber = Math.max(0, ...numbers.map(Number)) + 1
-    const width = numbers.length > 0 ? Math.max(...numbers.map((number) => number.length)) : defaultMigrationNumberWidth
+export function buildMigrationName(scaffold: MigrationScaffold, now: Date): string {
+    const pad = (value: number) => String(value).padStart(2, '0')
+    const date = `${now.getFullYear()}_${pad(now.getMonth() + 1)}_${pad(now.getDate())}`
+    const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`
     const subject = scaffold.action === 'create' ? scaffold.plural_label : scaffold.module
     const segment = toMigrationNameSegment(subject) || 'module'
 
-    return `${String(nextNumber).padStart(width, '0')}-${scaffold.action}-${segment}`
+    return `${date}_${time}_${scaffold.action}_${segment}`
 }
 
 /** A guess the user confirms or corrects: `Projects` → `Project`. */

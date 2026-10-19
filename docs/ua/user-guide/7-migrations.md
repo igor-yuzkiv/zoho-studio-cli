@@ -17,8 +17,8 @@
 скопіювати: `scripts/example-migration.ts.txt`.
 
 Або доручіть створення файлу Zoho Studio: `zoho-studio z-crm:migrations:make` питає, створити модуль
-чи додати поля до наявного, який саме модуль, показує, що буде створено, і записує наступний за
-номером файл, де заповнено все, крім полів. Детальніше: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
+чи додати поля до наявного, який саме модуль, показує, що буде створено, і записує файл, названий за
+датою й часом, наприклад `2026_10_19_202401_create_customer_orders.ts`, де заповнено все, крім полів. Детальніше: [z-crm:migrations:make](../technical/32-migrations-make-command.md).
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'

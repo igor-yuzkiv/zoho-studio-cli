@@ -32,7 +32,7 @@ export async function promptForMigrationMake(context: MigrationMakeContext): Pro
     })
     const scaffold: MigrationScaffold =
         action === 'create' ? await promptForNewModule() : { action, module: await promptForExistingModule(context) }
-    const planned = await planMigrationScaffold(context.projectPath, scaffold)
+    const planned = planMigrationScaffold(context.projectPath, scaffold)
 
     console.log('\nMigration to create:')
     console.log(`  Name:   ${planned.name}`)

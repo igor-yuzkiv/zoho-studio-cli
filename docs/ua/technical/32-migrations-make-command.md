@@ -14,12 +14,12 @@ zoho-studio z-crm:migrations:make
 ✔ Singular label Customer Order
 
 Migration to create:
-  Name:   002-create-customer-orders
-  File:   migrations/zoho-crm/002-create-customer-orders.ts
+  Name:   2026_10_19_202401_create_customer_orders
+  File:   migrations/zoho-crm/2026_10_19_202401_create_customer_orders.ts
   Action: create the module "Customer Orders" (singular "Customer Order")
 ✔ Create the migration? Yes
-Created migrations/zoho-crm/002-create-customer-orders.ts
-Declare the fields, then check it with "bun run migrate 002-create-customer-orders --dry-run".
+Created migrations/zoho-crm/2026_10_19_202401_create_customer_orders.ts
+Declare the fields, then check it with "bun run migrate 2026_10_19_202401_create_customer_orders --dry-run".
 ```
 
 Команді потрібен інтерактивний термінал; без нього вона завершується з помилкою й нічого не створює.
@@ -41,9 +41,13 @@ Declare the fields, then check it with "bun run migrate 002-create-customer-orde
 
 ## Файл
 
-Назва складається з наступного номера після найбільшого номера міграції в папці, дії та модуля в
-kebab case: `003-update-deals` іде після `002-create-customer-orders`. Номер має три цифри або
-стільки, скільки вже використовує проєкт.
+Назва йде за угодою Laravel: локальні дата й час створення файлу, дія та модуль у snake case —
+`2026_10_19_202401_create_customer_orders`. Префікс завжди однакової ширини, тож список міграцій,
+відсортований за назвою, іде в порядку їх створення, а двоє людей, що створюють міграції в різних
+гілках, не отримають однакову назву.
+
+Міграції, названі вручну з номером, зберігають своє місце, якщо номер доповнено нулями: `001-…`
+стоїть перед усіма назвами з датою. Назва на кшталт `9-…` стоїть після них.
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'

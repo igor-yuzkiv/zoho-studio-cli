@@ -21,7 +21,8 @@ packages linked (`bun install` after `bun run link`, see [init](3-init-command.m
 ## A migration file
 
 The file name without `.ts` is the migration's name, and the list shows migrations in name order,
-so a numeric prefix keeps them in the order they were written. A file declares exactly one action.
+so a prefix keeps them in the order they were written: a zero-padded number (`001-projects`), or
+the date and time that [`z-crm:migrations:make`](32-migrations-make-command.md) puts there. A file declares exactly one action.
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'
@@ -60,8 +61,8 @@ export default defineMigration({
 ```
 
 A new project has an example to copy in `scripts/example-migration.ts.txt`, and
-[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) creates the next numbered file
-with the action filled in.
+[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) creates a file named after
+the date and time, with the action filled in.
 
 ## Field types
 

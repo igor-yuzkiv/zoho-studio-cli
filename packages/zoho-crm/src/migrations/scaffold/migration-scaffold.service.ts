@@ -1,17 +1,18 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { listMigrations, migrationFilePath } from '../loader'
+import { migrationFilePath } from '../loader'
 
 import type { MigrationScaffold, ScaffoldedMigration } from './migration-scaffold.types'
-import { buildMigrationStub, buildNextMigrationName } from './migration-scaffold.utils'
+import { buildMigrationName, buildMigrationStub } from './migration-scaffold.utils'
 
 /** Names the file a new migration would get, without creating it. */
-export async function planMigrationScaffold(
+export function planMigrationScaffold(
     projectPath: string,
-    scaffold: MigrationScaffold
-): Promise<ScaffoldedMigration> {
-    const name = buildNextMigrationName(await listMigrations(projectPath), scaffold)
+    scaffold: MigrationScaffold,
+    now: Date = new Date()
+): ScaffoldedMigration {
+    const name = buildMigrationName(scaffold, now)
 
     return { name, path: migrationFilePath(projectPath, name) }
 }
@@ -27,7 +28,7 @@ export async function scaffoldMigration(
 ): Promise<ScaffoldedMigration> {
     const planned = name
         ? { name, path: migrationFilePath(projectPath, name) }
-        : await planMigrationScaffold(projectPath, scaffold)
+        : planMigrationScaffold(projectPath, scaffold)
 
     await mkdir(dirname(planned.path), { recursive: true })
     await writeFile(planned.path, buildMigrationStub(scaffold), { flag: 'wx' }).catch((error: unknown) => {

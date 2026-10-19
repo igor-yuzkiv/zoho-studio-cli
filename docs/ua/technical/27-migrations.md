@@ -21,7 +21,8 @@ bun run migrate 001-projects --yes      # run without the confirmation prompt
 ## Файл міграції
 
 Ім'я файлу без `.ts` — це назва міграції, а список показує міграції в порядку назв,
-тож числовий префікс зберігає їх у тому порядку, в якому їх написано. Файл оголошує рівно одну дію.
+тож префікс зберігає їх у тому порядку, в якому їх написано: номер, доповнений нулями
+(`001-projects`), або дата й час, які ставить [`z-crm:migrations:make`](32-migrations-make-command.md). Файл оголошує рівно одну дію.
 
 ```ts
 import { defineMigration } from '@zoho-studio/zoho-crm/migrations'
@@ -60,8 +61,8 @@ export default defineMigration({
 ```
 
 У новому проєкті є приклад для копіювання в `scripts/example-migration.ts.txt`, а
-[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) створює наступний за номером
-файл із заповненою дією.
+[`zoho-studio z-crm:migrations:make`](32-migrations-make-command.md) створює файл, названий за
+датою й часом, із заповненою дією.
 
 ## Типи полів
 

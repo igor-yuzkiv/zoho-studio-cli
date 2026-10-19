@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 
 import {
+    buildMigrationName,
     buildMigrationStub,
-    buildNextMigrationName,
     proposeSingularLabel,
     toMigrationNameSegment,
     validateModuleApiName,
@@ -10,43 +10,43 @@ import {
 } from '@zoho-studio/zoho-crm/migrations'
 
 describe('toMigrationNameSegment', () => {
-    test('turns labels and API names into kebab case', () => {
-        expect(toMigrationNameSegment('Customer Orders')).toBe('customer-orders')
-        expect(toMigrationNameSegment('Customer_Orders')).toBe('customer-orders')
-        expect(toMigrationNameSegment('CustomerOrders')).toBe('customer-orders')
-        expect(toMigrationNameSegment('  Projects & Tasks! ')).toBe('projects-tasks')
+    test('turns labels and API names into snake case', () => {
+        expect(toMigrationNameSegment('Customer Orders')).toBe('customer_orders')
+        expect(toMigrationNameSegment('Customer_Orders')).toBe('customer_orders')
+        expect(toMigrationNameSegment('CustomerOrders')).toBe('customer_orders')
+        expect(toMigrationNameSegment('  Projects & Tasks! ')).toBe('projects_tasks')
     })
 })
 
-describe('buildNextMigrationName', () => {
+describe('buildMigrationName', () => {
     const create = { action: 'create', singular_label: 'Project', plural_label: 'Projects' } as const
 
-    test('starts at 001 in an empty folder', () => {
-        expect(buildNextMigrationName([], create)).toBe('001-create-projects')
+    test('starts with the local date and time, as Laravel names its migrations', () => {
+        expect(buildMigrationName(create, new Date(2026, 9, 19, 14, 30, 5))).toBe('2026_10_19_143005_create_projects')
+        expect(buildMigrationName({ action: 'update', module: 'Customer_Orders' }, new Date(2026, 0, 2, 3, 4, 5))).toBe(
+            '2026_01_02_030405_update_customer_orders'
+        )
     })
 
-    test('follows the highest number, ignoring names without one', () => {
-        expect(
-            buildNextMigrationName(['001-create-projects', '007-add-budget', 'notes'], {
-                action: 'update',
-                module: 'Deals',
-            })
-        ).toBe('008-update-deals')
-    })
+    test('sorts as text in the order the migrations were made, after zero-padded numbered ones', () => {
+        const names = [
+            '001-create-projects',
+            '012-add-budget',
+            buildMigrationName(create, new Date(2026, 8, 30, 23, 59, 59)),
+            buildMigrationName(create, new Date(2026, 9, 1, 0, 0, 0)),
+            buildMigrationName(create, new Date(2026, 9, 1, 10, 0, 0)),
+        ]
 
-    test('keeps the width of the numbering the project already uses, so the new name sorts last', () => {
-        expect(buildNextMigrationName(['0009-create-projects'], create)).toBe('0010-create-projects')
-        expect(buildNextMigrationName(['1-a', '2-b'], create)).toBe('3-create-projects')
-        expect(buildNextMigrationName(['01-a', '09-b'], create)).toBe('10-create-projects')
-
-        const names = ['01-a', '09-b', buildNextMigrationName(['01-a', '09-b'], create)]
         expect([...names].sort()).toEqual(names)
     })
 
     test('falls back to a generic segment when the label has no letters or digits', () => {
-        expect(buildNextMigrationName([], { action: 'create', singular_label: 'Ж', plural_label: 'Жж' })).toBe(
-            '001-create-module'
-        )
+        expect(
+            buildMigrationName(
+                { action: 'create', singular_label: 'Ж', plural_label: 'Жж' },
+                new Date(2026, 9, 19, 14, 30, 5)
+            )
+        ).toBe('2026_10_19_143005_create_module')
     })
 })
 
