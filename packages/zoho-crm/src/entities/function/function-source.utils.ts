@@ -9,6 +9,8 @@ import {
     type DelugeFunctionCategory,
 } from '../../zoho-crm.config'
 
+import type { FunctionParameter } from './function.types'
+
 type FunctionNamingSettings = ProjectSettings['zohoCrm']['functions']['naming']
 
 const functionNamePattern = /^[A-Za-z][A-Za-z0-9 _-]{2,99}$/
@@ -89,6 +91,18 @@ export function hasFunctionDeclaration(code: string, declarationName: string): b
     const escapedName = declarationName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
     return new RegExp(`^\\s*\\w+\\s+${escapedName}\\s*\\(`, 'im').test(codeWithoutBlockComments)
+}
+
+/** The arguments of the function's declaration, in order; none when the code declares nothing. */
+export function parseFunctionParameters(code: string): FunctionParameter[] {
+    const codeWithoutBlockComments = code.replace(/\/\*[\s\S]*?\*\//g, '')
+    const declaration = /^\s*\w+\s+[\w.]+\s*\(([^)]*)\)/m.exec(codeWithoutBlockComments)
+
+    return (declaration?.[1] ?? '')
+        .split(',')
+        .map((parameter) => parameter.trim().split(/\s+/))
+        .filter((words): words is [string, string] => words.length === 2)
+        .map(([type, name]) => ({ type, name }))
 }
 
 function toDeclarationSegment(value: string): string {

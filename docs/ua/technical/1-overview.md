@@ -59,4 +59,5 @@ bun run dev -- init my-project
 - [29-functions-make-command.md](29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої командою `zoho-studio z-crm:functions:make`
 - [30-functions-deploy-command.md](30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/` командою `zoho-studio z-crm:functions:deploy`
 - [31-functions-import-command.md](31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/` командою `zoho-studio z-crm:functions:import`
+- [33-functions-run-command.md](33-functions-run-command.md) — запуск коду функції з `src/` або `data/` у Zoho командою `zoho-studio z-crm:functions:run`
 - [32-migrations-make-command.md](32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями командою `zoho-studio z-crm:migrations:make`

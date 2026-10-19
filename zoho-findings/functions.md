@@ -82,3 +82,7 @@
 - **Actually:** `PUT /settings/functions/{id}` after the function was deleted answers
   `400 { "code": "INVALID_DATA", "message": "invalid data", "details": { "resource_path_index": 2 } }`
 - **In our code:** `FunctionRequestError` carries the code, so a deploy can tell this case apart
+
+## Running a function's code without saving it
+
+Undocumented; described in full in [functions-run.md](functions-run.md).

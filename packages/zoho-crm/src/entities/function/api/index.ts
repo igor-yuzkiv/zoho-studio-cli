@@ -3,3 +3,4 @@ export { getFunctionsListRequest, getFunctionsPageRequest, type PageParams } fro
 export { createFunctionRequest } from './create-function.request'
 export { updateFunctionRequest } from './update-function.request'
 export { FunctionRequestError, type FunctionCompilationError } from './function-request.error'
+export { runFunctionRequest } from './run-function.request'

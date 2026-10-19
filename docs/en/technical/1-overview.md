@@ -59,4 +59,5 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 - [29-functions-make-command.md](29-functions-make-command.md) — scaffolding a new Deluge function in `src/`, or importing a pulled one, with `zoho-studio z-crm:functions:make`
 - [30-functions-deploy-command.md](30-functions-deploy-command.md) — creating or updating a function in Zoho from `src/` with `zoho-studio z-crm:functions:deploy`
 - [31-functions-import-command.md](31-functions-import-command.md) — copying a pulled function from `data/` into `src/` with `zoho-studio z-crm:functions:import`
+- [33-functions-run-command.md](33-functions-run-command.md) — running a function's code from `src/` or `data/` in Zoho with `zoho-studio z-crm:functions:run`
 - [32-migrations-make-command.md](32-migrations-make-command.md) — creating a migration file through a few questions with `zoho-studio z-crm:migrations:make`

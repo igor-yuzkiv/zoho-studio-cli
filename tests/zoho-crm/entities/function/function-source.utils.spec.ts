@@ -5,6 +5,7 @@ import {
     buildFunctionStub,
     functionDeployFilePath,
     functionSourceCodeFilePath,
+    parseFunctionParameters,
     toFunctionNameSegment,
     validateFunctionApiName,
     validateFunctionDescription,
@@ -108,5 +109,25 @@ describe('function source paths', () => {
             'oz_sa_ping',
             'oz_sa_ping.deploy.json',
         ])
+    })
+})
+
+describe('parseFunctionParameters', () => {
+    test('reads the arguments of the declaration in order', () => {
+        expect(parseFunctionParameters('string button.send_quote(String id, Int count , Map options)\n{\n}')).toEqual([
+            { type: 'String', name: 'id' },
+            { type: 'Int', name: 'count' },
+            { type: 'Map', name: 'options' },
+        ])
+    })
+
+    test('finds none in a declaration without arguments', () => {
+        expect(parseFunctionParameters('string standalone.ping()\n{\n\treturn "";\n}')).toEqual([])
+    })
+
+    test('skips a commented-out declaration before the real one', () => {
+        const code = '/* string standalone.old(String unused) */\nvoid automation.refresh(Int program_id)\n{\n}'
+
+        expect(parseFunctionParameters(code)).toEqual([{ type: 'Int', name: 'program_id' }])
     })
 })

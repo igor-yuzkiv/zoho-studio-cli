@@ -68,12 +68,8 @@ export async function importFunctionSource(projectPath: string, apiName: string)
         throw new Error(`Function "${apiName}" already exists in "${functionPath}".`)
     }
 
-    const zohoFunction = await readFunctionSnapshotMetadata(projectPath, apiName)
+    const { zohoFunction, code } = await readFunctionSnapshot(projectPath, apiName)
     const category = assertDelugeFunction(zohoFunction)
-    const snapshotCodePath = resolveArtifactPath(projectPath, functionCodeFilePath(zohoFunction))
-    const code = await readFile(snapshotCodePath, 'utf8').catch(() => {
-        throw new Error(`The snapshot of "${apiName}" has no code at "${snapshotCodePath}". Pull functions again.`)
-    })
 
     const codePath = resolveSourcePath(projectPath, functionSourceCodeFilePath(apiName))
     const deployPath = resolveSourcePath(projectPath, functionDeployFilePath(apiName))
@@ -99,6 +95,35 @@ export async function importFunctionSource(projectPath: string, apiName: string)
           ]
 
     return { codePath, deployPath, warnings }
+}
+
+/** The functions pulled into `data/` — folders with a function record — sorted by API name. */
+export async function listFunctionSnapshots(projectPath: string): Promise<string[]> {
+    const functionsPath = resolveArtifactPath(projectPath, [zohoCrmDirName, functionsDirName])
+    const entries = await readdir(functionsPath, { withFileTypes: true }).catch(() => [])
+    const apiNames: string[] = []
+
+    for (const entry of entries.filter((candidate) => candidate.isDirectory())) {
+        if (await functionSnapshotExists(projectPath, entry.name)) {
+            apiNames.push(entry.name)
+        }
+    }
+
+    return apiNames.sort((left, right) => left.localeCompare(right))
+}
+
+/** A pulled function's record and code, as they were in Zoho at the last pull. */
+export async function readFunctionSnapshot(
+    projectPath: string,
+    apiName: string
+): Promise<{ zohoFunction: ZohoFunction; code: string }> {
+    const zohoFunction = await readFunctionSnapshotMetadata(projectPath, apiName)
+    const snapshotCodePath = resolveArtifactPath(projectPath, functionCodeFilePath(zohoFunction))
+    const code = await readFile(snapshotCodePath, 'utf8').catch(() => {
+        throw new Error(`The snapshot of "${apiName}" has no code at "${snapshotCodePath}". Pull functions again.`)
+    })
+
+    return { zohoFunction, code }
 }
 
 function functionSnapshotDirPath(apiName: string): string[] {

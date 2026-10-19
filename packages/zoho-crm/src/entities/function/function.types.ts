@@ -30,3 +30,15 @@ export interface FunctionDeployMetadata {
     category: DelugeFunctionCategory
     deployments: FunctionDeployment[]
 }
+
+/** One argument in a function's declaration: `String id` is `{ type: 'String', name: 'id' }`. */
+export interface FunctionParameter {
+    type: string
+    name: string
+}
+
+/** What Zoho answers to a run — the named fields are the ones the CLI relies on. */
+export interface FunctionRunResult {
+    functions?: { status?: string; [field: string]: unknown }[]
+    [field: string]: unknown
+}

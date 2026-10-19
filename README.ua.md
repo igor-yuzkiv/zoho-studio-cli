@@ -40,6 +40,7 @@ bun run link                                 # once, so projects can import the 
 - [z-crm:functions:make](docs/ua/technical/29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої
 - [z-crm:functions:import](docs/ua/technical/31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/`
 - [z-crm:functions:deploy](docs/ua/technical/30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/`
+- [z-crm:functions:run](docs/ua/technical/33-functions-run-command.md) — запуск коду функції з `src/` або `data/` у Zoho з виведенням результату
 - [z-crm:migrations:make](docs/ua/technical/32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями
 - [z-crm:workflows:pull](docs/ua/technical/9-workflows-pull-command.md) — завантаження правил робочих процесів
 - [z-crm:org:info](docs/ua/technical/10-org-info-command.md) — читання організації та її збереження в проєкті

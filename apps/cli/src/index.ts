@@ -8,6 +8,7 @@ import { presetCommand } from '@/commands/preset'
 import {
     deployFunctionCommand,
     importFunctionCommand,
+    runFunctionCommand,
     makeFunctionCommand,
     pullFunctionsCommand,
 } from '@/commands/zoho-crm/functions'
@@ -36,6 +37,7 @@ program.addCommand(pullFunctionsCommand)
 program.addCommand(makeFunctionCommand)
 program.addCommand(importFunctionCommand)
 program.addCommand(deployFunctionCommand)
+program.addCommand(runFunctionCommand)
 program.addCommand(pullModulesCommand)
 program.addCommand(pullFieldsCommand)
 program.addCommand(makeMigrationCommand)
