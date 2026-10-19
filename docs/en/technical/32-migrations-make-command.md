@@ -34,7 +34,7 @@ The command needs an interactive terminal; without one it stops with an error an
 - For an existing module: **Module** — a search over the modules pulled into
   `data/zoho-crm/modules/`. A module that is not pulled can be typed in by its API name and picked
   as `<name> (not pulled)`. With nothing pulled, the command asks for the API name directly. An API
-  name starts with a letter and holds letters, digits, and underscores.
+  name starts with a letter and holds letters, digits, and single underscores, not ending with one.
 
 Before writing, the command shows the migration's name, its file, and what it will do, and asks for
 confirmation; declining creates nothing.

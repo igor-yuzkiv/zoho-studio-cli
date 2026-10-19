@@ -7,6 +7,7 @@ import {
     validateModuleApiName,
     validateModuleLabel,
     type MigrationScaffold,
+    type ScaffoldedMigration,
 } from '@zoho-studio/zoho-crm/migrations'
 
 interface MigrationMakeContext {
@@ -14,8 +15,14 @@ interface MigrationMakeContext {
     localModuleNames: string[]
 }
 
+export interface MigrationMakeChoice {
+    scaffold: MigrationScaffold
+    /** The name and file the user confirmed. */
+    planned: ScaffoldedMigration
+}
+
 /** Walks the user through a new migration and shows what will be created. Answers `null` when they decline. */
-export async function promptForMigrationMake(context: MigrationMakeContext): Promise<MigrationScaffold | null> {
+export async function promptForMigrationMake(context: MigrationMakeContext): Promise<MigrationMakeChoice | null> {
     const action = await select<MigrationScaffold['action']>({
         message: 'Migration type',
         choices: [
@@ -36,7 +43,7 @@ export async function promptForMigrationMake(context: MigrationMakeContext): Pro
             : `  Action: add fields to the module "${scaffold.module}"`
     )
 
-    return (await confirm({ message: 'Create the migration?', default: true })) ? scaffold : null
+    return (await confirm({ message: 'Create the migration?', default: true })) ? { scaffold, planned } : null
 }
 
 async function promptForNewModule(): Promise<MigrationScaffold> {

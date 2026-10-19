@@ -34,8 +34,13 @@ describe('buildNextMigrationName', () => {
         ).toBe('008-update-deals')
     })
 
-    test('keeps a wider numbering the project already uses', () => {
+    test('keeps the width of the numbering the project already uses, so the new name sorts last', () => {
         expect(buildNextMigrationName(['0009-create-projects'], create)).toBe('0010-create-projects')
+        expect(buildNextMigrationName(['1-a', '2-b'], create)).toBe('3-create-projects')
+        expect(buildNextMigrationName(['01-a', '09-b'], create)).toBe('10-create-projects')
+
+        const names = ['01-a', '09-b', buildNextMigrationName(['01-a', '09-b'], create)]
+        expect([...names].sort()).toEqual(names)
     })
 
     test('falls back to a generic segment when the label has no letters or digits', () => {
@@ -65,6 +70,8 @@ describe('module validation', () => {
         expect(validateModuleApiName('Customer_Orders1')).toBeNull()
         expect(validateModuleApiName('1Orders')).not.toBeNull()
         expect(validateModuleApiName('Customer Orders')).not.toBeNull()
+        expect(validateModuleApiName('Customer__Orders')).not.toBeNull()
+        expect(validateModuleApiName('Orders_')).not.toBeNull()
     })
 })
 

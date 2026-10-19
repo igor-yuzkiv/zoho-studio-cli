@@ -48,6 +48,33 @@ describe('scaffoldMigration', () => {
     })
 })
 
+describe('scaffoldMigration with the name the user confirmed', () => {
+    test('writes that name even when the folder changed since', async () => {
+        projectPath = await createTempProject()
+        const planned = await planMigrationScaffold(projectPath, { action: 'update', module: 'Deals' })
+        await scaffoldMigration(projectPath, { action: 'update', module: 'Leads' })
+
+        const migration = await scaffoldMigration(
+            projectPath,
+            { action: 'update', module: 'Deals' },
+            '002-update-deals'
+        )
+
+        expect(planned.name).toBe('001-update-deals')
+        expect(migration.name).toBe('002-update-deals')
+        expect(await listMigrations(projectPath)).toEqual(['001-update-leads', '002-update-deals'])
+    })
+
+    test('explains a name that is already taken', async () => {
+        projectPath = await createTempProject()
+        await scaffoldMigration(projectPath, { action: 'update', module: 'Deals' })
+
+        await expect(
+            scaffoldMigration(projectPath, { action: 'update', module: 'Deals' }, '001-update-deals')
+        ).rejects.toThrow('Migration "001-update-deals" already exists')
+    })
+})
+
 describe('the scaffolded file', () => {
     // The temp project cannot resolve the package, so the import is swapped for an identity function.
     async function loadScaffolded(scaffold: Parameters<typeof scaffoldMigration>[1]) {

@@ -15,17 +15,17 @@ export const makeMigrationCommand = new Command('z-crm:migrations:make')
         }
 
         const { projectPath } = await getProjectSettings()
-        const scaffold = await promptForMigrationMake({
+        const choice = await promptForMigrationMake({
             projectPath,
             localModuleNames: await resolveLocalModuleNames(projectPath).catch(() => []),
         })
 
-        if (!scaffold) {
+        if (!choice) {
             console.log('Nothing created.')
             return
         }
 
-        const migration = await scaffoldMigration(projectPath, scaffold)
+        const migration = await scaffoldMigration(projectPath, choice.scaffold, choice.planned.name)
 
         console.log(`Created ${relative(projectPath, migration.path)}`)
         console.log(`Declare the fields, then check it with "bun run migrate ${migration.name} --dry-run".`)

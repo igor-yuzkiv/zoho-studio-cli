@@ -1,7 +1,10 @@
+import { apiNameSchema } from '../definition/fields/field-type.utils'
+
 import type { MigrationScaffold } from './migration-scaffold.types'
 
 const migrationNumberPattern = /^(\d+)-/
-const minMigrationNumberWidth = 3
+const defaultMigrationNumberWidth = 3
+const moduleApiNameSchema = apiNameSchema('Module API name')
 
 /** Turns a module label or API name into the part of a file name: `Customer_Orders` → `customer-orders`. */
 export function toMigrationNameSegment(value: string): string {
@@ -14,12 +17,13 @@ export function toMigrationNameSegment(value: string): string {
 
 /**
  * Names a new migration after the last numbered one, so it lands at the end of the list:
- * `003-create-projects` follows `002-…`.
+ * `003-create-projects` follows `002-…`. The list is sorted as text, so the number keeps the width
+ * the project already uses; three digits start a project with none.
  */
 export function buildNextMigrationName(existingNames: string[], scaffold: MigrationScaffold): string {
     const numbers = existingNames.flatMap((name) => migrationNumberPattern.exec(name)?.[1] ?? [])
     const nextNumber = Math.max(0, ...numbers.map(Number)) + 1
-    const width = Math.max(minMigrationNumberWidth, ...numbers.map((number) => number.length))
+    const width = numbers.length > 0 ? Math.max(...numbers.map((number) => number.length)) : defaultMigrationNumberWidth
     const subject = scaffold.action === 'create' ? scaffold.plural_label : scaffold.module
     const segment = toMigrationNameSegment(subject) || 'module'
 
@@ -42,9 +46,9 @@ export function validateModuleLabel(value: string): string | null {
 }
 
 export function validateModuleApiName(value: string): string | null {
-    return /^[A-Za-z][A-Za-z0-9_]*$/.test(value)
-        ? null
-        : 'A module API name starts with a letter and holds only letters, digits, and underscores.'
+    const parsed = moduleApiNameSchema.safeParse(value)
+
+    return parsed.success ? null : (parsed.error.issues[0]?.message ?? 'The module API name is not valid.')
 }
 
 /** The file a migration starts from: the action filled in, the fields left for the user to declare. */
