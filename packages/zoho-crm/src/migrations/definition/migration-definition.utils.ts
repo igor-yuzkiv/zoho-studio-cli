@@ -1,5 +1,5 @@
 import { declareFields } from './field-schema.builder'
-import type { MigrationDefinition, MigrationDescription } from './migration-definition.types'
+import type { MigrationDefinition, MigrationDescription } from './types'
 
 const defaultProfiles = ['Administrator']
 
@@ -15,7 +15,8 @@ export function describeMigration(definition: MigrationDefinition): MigrationDes
 
         return {
             action: 'create',
-            module: api_name === undefined ? { singular_label, plural_label } : { api_name, singular_label, plural_label },
+            module:
+                api_name === undefined ? { singular_label, plural_label } : { api_name, singular_label, plural_label },
             profiles: profiles ?? defaultProfiles,
             fields: declareFields(fields),
         }

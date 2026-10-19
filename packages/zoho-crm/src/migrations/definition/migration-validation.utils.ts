@@ -3,11 +3,11 @@ import {
     createModuleSchema,
     describeIssues,
     fieldLabelSchema,
-    fieldOptionSchemas,
+    fieldTypeOf,
     findFieldRuleProblems,
     updateModuleSchema,
 } from './migration-definition.schemas'
-import type { FieldDeclaration, FieldsDeclaration, MigrationDefinition } from './migration-definition.types'
+import type { FieldDeclaration, FieldsDeclaration, MigrationDefinition } from './types'
 
 /** Returns every problem of a migration that can be found without asking Zoho; an empty list means valid. */
 export function validateMigration(definition: MigrationDefinition): string[] {
@@ -48,7 +48,7 @@ function validateFields(declarations: FieldDeclaration[]): string[] {
         const subject = `Field "${label}": `
         const report = (problem: string) => problems.push(`${subject}${problem}`)
         const parsedLabel = fieldLabelSchema.safeParse(label)
-        const parsedOptions = fieldOptionSchemas[dataType].safeParse(options)
+        const parsedOptions = fieldTypeOf(dataType).optionsSchema.safeParse(options)
 
         if (!parsedLabel.success) {
             problems.push(...describeIssues(parsedLabel.error.issues, { all: subject, unknownOption: subject }))
@@ -65,7 +65,7 @@ function validateFields(declarations: FieldDeclaration[]): string[] {
             continue
         }
 
-        const apiName = parsedOptions.data.api_name
+        const apiName = parsedOptions.data.api_name as string | undefined
 
         if (apiName !== undefined) {
             if (seenApiNames.has(apiName.toLowerCase())) {

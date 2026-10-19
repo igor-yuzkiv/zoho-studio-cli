@@ -36,7 +36,8 @@
   plus `currency.{rounding_option, precision}`; picklist/multiselectpicklist `pick_list_values`
   of `{display_value, actual_value}`; lookup `lookup.{display_label, module.api_name}`; email,
   website, date, datetime, boolean, userlookup none
-- **In our code:** `field-schema.builder.ts`; its tests assert exactly these payloads
+- **In our code:** `toPayload` of each type in `migrations/definition/fields/<type>/<type>.field.ts`;
+  `field-schema.builder.spec.ts` asserts exactly these payloads
 
 ## A static text tooltip is accepted only on fields typed into
 
@@ -47,8 +48,8 @@
   percent, currency, and lookup. date, datetime, boolean, picklist, multiselectpicklist, and
   userlookup were answered `DEPENDENT_MISMATCH` — "Invalid tooltip type static_text for data type
   <type>". textarea is untested: it failed for the reason below first.
-- **In our code:** the migration validation allows `static_text` only on the accepted types (textarea
-  excluded until tested) and limits it to 35 characters
+- **In our code:** `staticTextTooltip` of each field type allows `static_text` only on the accepted
+  types (textarea excluded until tested); the migration validation limits it to 35 characters
 
 ## A textarea needs a size
 
@@ -56,4 +57,5 @@
 - **Spec says:** `textarea.type` is optional
 - **Actually:** a textarea created without `textarea` was answered `DEPENDENT_FIELD_MISSING` —
   "Dependent field is missing"; with `textarea.type: "large"` it was created
-- **In our code:** the builder sends `textarea.type: "small"` when the migration names no size
+- **In our code:** `fields/textarea/textarea.field.ts` sends `textarea.type: "small"` when the
+  migration names no size

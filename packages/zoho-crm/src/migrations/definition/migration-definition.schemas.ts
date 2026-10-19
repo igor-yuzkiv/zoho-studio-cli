@@ -1,104 +1,78 @@
 import { z } from 'zod'
 
+import { bigintField } from './fields/bigint'
+import { booleanField } from './fields/boolean'
+import { currencyField } from './fields/currency'
+import { dateField } from './fields/date'
+import { datetimeField } from './fields/datetime'
+import { doubleField } from './fields/double'
+import { emailField } from './fields/email'
+import { integerField } from './fields/integer'
+import { lookupField } from './fields/lookup'
+import { multiselectpicklistField } from './fields/multiselectpicklist'
+import { percentField } from './fields/percent'
+import { phoneField } from './fields/phone'
+import { picklistField } from './fields/picklist'
+import { textareaField } from './fields/textarea'
+import { textField } from './fields/text'
+import { userlookupField } from './fields/userlookup'
+import { websiteField } from './fields/website'
+import type { FieldTooltip, FieldTypeDefinition } from './fields'
+import { apiNameSchema } from './fields/field-type.utils'
+
 const maxModuleLabelLength = 50
 const maxFieldLabelLength = 25
-const maxPicklistValueLength = 25
-const maxLength = 50000
-const maxDecimalPlace = 9
 const maxTooltipLength = 255
 const maxStaticTextTooltipLength = 35
-const apiNamePattern = /^[A-Za-z](?:[A-Za-z0-9]|_(?!_))*(?<!_)$/
-const apiNameRule = 'must start with a letter and hold only letters, digits and single underscores, not ending with one.'
 
-/** Seen accepted on a sandbox org; the rest answered DEPENDENT_MISMATCH, and textarea is untested. */
-const staticTextTooltipTypes = new Set([
-    'text',
-    'email',
-    'phone',
-    'website',
-    'integer',
-    'bigint',
-    'double',
-    'percent',
-    'currency',
-    'lookup',
-])
-
-const wholeNumber = (name: string, min: number, max: number) => {
-    const error = `${name} must be a whole number from ${min} to ${max}.`
-
-    return z.int({ error }).min(min, { error }).max(max, { error })
+/**
+ * Every field type a migration can declare, keyed by Zoho's `data_type`. `schema.<type>()`, its
+ * options, and the validation all come from here, so a new type is a folder in fields/ and a line
+ * below. The comment on each entry is what an editor shows for `schema.<type>`.
+ */
+export const fieldTypes = {
+    /** A single line of text: `schema.text('Code', { length: 50 })`. */
+    text: textField,
+    /** Several lines of text: `schema.textarea('Notes', { size: 'large' })`. */
+    textarea: textareaField,
+    /** An email address: `schema.email('Billing Email')`. */
+    email: emailField,
+    /** A phone number: `schema.phone('Mobile')`. */
+    phone: phoneField,
+    /** A URL: `schema.website('Portal')`. */
+    website: websiteField,
+    /** A whole number: `schema.integer('Seats')`. */
+    integer: integerField,
+    /** A whole number too long for `integer`: `schema.bigint('External ID')`. */
+    bigint: bigintField,
+    /** A number with a fractional part: `schema.double('Weight', { decimal_place: 3 })`. */
+    double: doubleField,
+    /** A percentage: `schema.percent('Discount', { decimal_place: 1 })`. */
+    percent: percentField,
+    /** An amount of money: `schema.currency('Budget', { decimal_place: 2 })`. */
+    currency: currencyField,
+    /** A date without time: `schema.date('Deadline')`. */
+    date: dateField,
+    /** A date with time: `schema.datetime('Starts At')`. */
+    datetime: datetimeField,
+    /** A checkbox: `schema.boolean('Archived')`. */
+    boolean: booleanField,
+    /** One value from a list: `schema.picklist('Stage', { values: ['New', 'Active', 'Done'] })`. */
+    picklist: picklistField,
+    /** Several values from a list: `schema.multiselectpicklist('Channels', { values: ['Email', 'Phone'] })`. */
+    multiselectpicklist: multiselectpicklistField,
+    /** A link to a record of another module: `schema.lookup('Account', { module: 'Accounts' })`. */
+    lookup: lookupField,
+    /** A link to a CRM user: `schema.userlookup('Reviewer')`. */
+    userlookup: userlookupField,
 }
 
-const apiName = (subject: string) =>
-    z.string({ error: `${subject} must be a string.` }).regex(apiNamePattern, {
-        error: (issue) => `${subject} "${String(issue.input)}" ${apiNameRule}`,
-    })
+export type FieldDataType = keyof typeof fieldTypes
 
-export const tooltipSchema = z.union(
-    [z.string(), z.strictObject({ type: z.enum(['static_text', 'info_icon']), text: z.string() })],
-    { error: "tooltip must be a text, or { type: 'static_text' | 'info_icon', text }." }
-)
-
-export const picklistValueSchema = z.union([z.string(), z.strictObject({ display_value: z.string(), actual_value: z.string() })])
-
-const baseOptions = {
-    api_name: apiName('API name').optional(),
-    tooltip: tooltipSchema.optional(),
+/** Looks a type up for code that handles any field; its options are known only after validation. */
+export function fieldTypeOf(dataType: FieldDataType): FieldTypeDefinition<Record<string, unknown>> {
+    return fieldTypes[dataType] as unknown as FieldTypeDefinition<Record<string, unknown>>
 }
-
-const lengthOption = { length: wholeNumber('length', 1, maxLength).optional() }
-const decimalOption = { decimal_place: wholeNumber('decimal_place', 0, maxDecimalPlace).optional() }
-
-const picklistOptions = {
-    values: z
-        .array(picklistValueSchema, {
-            error: 'values must be a list of strings or { display_value, actual_value } pairs.',
-        })
-        .min(1, { error: 'a picklist needs at least one value.' }),
-}
-
-/** The options of every field type; `z.strictObject` turns a misspelt option into an error. */
-export const fieldOptionSchemas = {
-    text: z.strictObject({ ...baseOptions, ...lengthOption }),
-    textarea: z.strictObject({
-        ...baseOptions,
-        size: z.enum(['small', 'large', 'rich_text'], { error: 'size must be small, large, or rich_text.' }).optional(),
-    }),
-    email: z.strictObject(baseOptions),
-    phone: z.strictObject({ ...baseOptions, ...lengthOption }),
-    website: z.strictObject(baseOptions),
-    integer: z.strictObject({ ...baseOptions, ...lengthOption }),
-    bigint: z.strictObject({ ...baseOptions, ...lengthOption }),
-    double: z.strictObject({ ...baseOptions, ...lengthOption, ...decimalOption }),
-    percent: z.strictObject({ ...baseOptions, ...decimalOption }),
-    currency: z.strictObject({
-        ...baseOptions,
-        ...lengthOption,
-        ...decimalOption,
-        rounding_option: z
-            .enum(['normal', 'round_off', 'round_up', 'round_down'], {
-                error: 'rounding_option must be normal, round_off, round_up, or round_down.',
-            })
-            .optional(),
-        precision: wholeNumber('precision', 0, maxDecimalPlace).optional(),
-    }),
-    date: z.strictObject(baseOptions),
-    datetime: z.strictObject(baseOptions),
-    boolean: z.strictObject(baseOptions),
-    picklist: z.strictObject({ ...baseOptions, ...picklistOptions }),
-    multiselectpicklist: z.strictObject({ ...baseOptions, ...picklistOptions }),
-    lookup: z.strictObject({
-        ...baseOptions,
-        module: z
-            .string({ error: 'a lookup needs the API name of its target module.' })
-            .min(1, { error: 'a lookup needs the API name of its target module.' }),
-        display_label: z.string().optional(),
-    }),
-    userlookup: z.strictObject(baseOptions),
-}
-
-export type FieldDataType = keyof typeof fieldOptionSchemas
 
 export const fieldLabelSchema = z
     .string({ error: `the label must be 1 to ${maxFieldLabelLength} characters.` })
@@ -108,10 +82,11 @@ export const fieldLabelSchema = z
 /** Rules that depend on the field type or compare values, checked once the options have their shape. */
 export function findFieldRuleProblems(dataType: FieldDataType, options: Record<string, unknown>): string[] {
     const problems: string[] = []
-    const tooltip = options.tooltip as z.infer<typeof tooltipSchema> | undefined
+    const fieldType = fieldTypeOf(dataType)
+    const tooltip = options.tooltip as FieldTooltip | undefined
 
     if (typeof tooltip === 'object' && tooltip.type === 'static_text') {
-        if (!staticTextTooltipTypes.has(dataType)) {
+        if (!fieldType.staticTextTooltip) {
             problems.push(
                 `a static_text tooltip is not supported for ${dataType} fields; give the text alone for an info icon.`
             )
@@ -126,22 +101,7 @@ export function findFieldRuleProblems(dataType: FieldDataType, options: Record<s
         }
     }
 
-    const values = options.values as z.infer<typeof picklistValueSchema>[] | undefined
-    const seenValues = new Set<string>()
-
-    for (const value of values ?? []) {
-        const actualValue = typeof value === 'string' ? value : value.actual_value
-
-        if (seenValues.has(actualValue)) {
-            problems.push(`picklist value "${actualValue}" is declared more than once.`)
-        }
-
-        seenValues.add(actualValue)
-
-        if (!isLengthBetween(actualValue, 1, maxPicklistValueLength)) {
-            problems.push(`picklist value "${actualValue}" must be 1 to ${maxPicklistValueLength} characters.`)
-        }
-    }
+    problems.push(...(fieldType.findProblems?.(options) ?? []))
 
     return problems
 }
@@ -158,7 +118,7 @@ const fieldsDeclarationSchema = (action: string) =>
     })
 
 export const createModuleSchema = z.strictObject({
-    api_name: apiName('Module API name').optional(),
+    api_name: apiNameSchema('Module API name').optional(),
     singular_label: moduleLabel('singular_label'),
     plural_label: moduleLabel('plural_label'),
     profiles: z.array(z.string(), { error: 'create: profiles must be a list of profile names.' }).optional(),
@@ -174,7 +134,7 @@ export const updateModuleSchema = z.strictObject({
 
 /**
  * Turns Zod issues into the problem lines a migration reports. Every message is written in full
- * above; only an unknown option gets its wording here, since Zod's names the key without context.
+ * where its schema is declared; only an unknown option gets its wording here, since Zod's names the key without context.
  */
 export function describeIssues(issues: z.core.$ZodIssue[], subject: { all?: string; unknownOption: string }): string[] {
     return issues.map((issue) =>

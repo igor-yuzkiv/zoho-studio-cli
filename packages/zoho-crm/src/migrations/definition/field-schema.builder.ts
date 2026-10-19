@@ -1,23 +1,14 @@
 import type { ZohoFieldCreate } from '../../entities/field'
 
-import { fieldOptionSchemas, type FieldDataType } from './migration-definition.schemas'
-import type {
-    CurrencyOptions,
-    FieldDeclaration,
-    FieldsDeclaration,
-    FieldSchema,
-    FieldTooltip,
-    LookupOptions,
-    PicklistOptions,
-    PicklistValue,
-    TextareaOptions,
-} from './migration-definition.types'
+import { fieldTypeOf, fieldTypes } from './migration-definition.schemas'
+import type { FieldTooltip } from './fields'
+import type { FieldDataType, FieldDeclaration, FieldsDeclaration, FieldSchema } from './types'
 
 /** Runs a fields declaration and records every call as written, for validation before any payload. */
 export function collectFieldDeclarations(declaration: FieldsDeclaration): FieldDeclaration[] {
     const declarations: FieldDeclaration[] = []
     const schema = Object.fromEntries(
-        (Object.keys(fieldOptionSchemas) as FieldDataType[]).map((dataType) => [
+        (Object.keys(fieldTypes) as FieldDataType[]).map((dataType) => [
             dataType,
             (label: string, options: Record<string, unknown> = {}) => declarations.push({ label, dataType, options }),
         ])
@@ -42,45 +33,8 @@ export function toFieldPayload({ label, dataType, options }: FieldDeclaration): 
         api_name: options.api_name as string | undefined,
         data_type: dataType,
         tooltip: tooltip === undefined ? undefined : toZohoTooltip(tooltip),
-        ...typeProperties(dataType, label, options),
+        ...fieldTypeOf(dataType).toPayload(label, options),
     })
-}
-
-function typeProperties(dataType: FieldDataType, label: string, options: Record<string, unknown>): object {
-    switch (dataType) {
-        case 'text':
-        case 'phone':
-        case 'integer':
-        case 'bigint':
-            return { length: options.length }
-        case 'textarea':
-            // Zoho refuses a textarea without a size, so the smallest one stands in for "not named".
-            return { textarea: { type: (options as TextareaOptions).size ?? 'small' } }
-        case 'double':
-            return { length: options.length, decimal_place: options.decimal_place }
-        case 'percent':
-            return { decimal_place: options.decimal_place }
-        case 'currency': {
-            const { length, decimal_place, rounding_option, precision } = options as CurrencyOptions
-            const rounding = withoutUndefined({ rounding_option, precision })
-
-            return { length, decimal_place, currency: Object.keys(rounding).length > 0 ? rounding : undefined }
-        }
-        case 'picklist':
-        case 'multiselectpicklist':
-            return { pick_list_values: (options as PicklistOptions).values.map(toPicklistValue) }
-        case 'lookup': {
-            const { module, display_label } = options as LookupOptions
-
-            return { lookup: { display_label: display_label ?? label, module: { api_name: module } } }
-        }
-        default:
-            return {}
-    }
-}
-
-function toPicklistValue(value: PicklistValue): { display_value: string; actual_value: string } {
-    return typeof value === 'string' ? { display_value: value, actual_value: value } : value
 }
 
 function toZohoTooltip(tooltip: FieldTooltip): { name: string; value: string } {

@@ -21,9 +21,14 @@ describe('validateMigration', () => {
     })
 
     test('requires exactly one action', () => {
-        expect(validateMigration({} as never)).toEqual(['A migration must declare exactly one action: create or update.'])
+        expect(validateMigration({} as never)).toEqual([
+            'A migration must declare exactly one action: create or update.',
+        ])
         expect(
-            validateMigration({ create: createProjects.create, update: { module: 'Projects', fields: () => {} } } as never)
+            validateMigration({
+                create: createProjects.create,
+                update: { module: 'Projects', fields: () => {} },
+            } as never)
         ).toEqual(['A migration must declare exactly one action: create or update.'])
     })
 
@@ -129,10 +134,12 @@ describe('validateMigration', () => {
         const migration = updateWith((schema) => {
             schema.currency('Budget', { tooltip: { type: 'static_text', text: 'Hint' } })
             schema.date('Deadline', { tooltip: { type: 'static_text', text: 'Hint' } })
+            schema.textarea('Notes', { tooltip: { type: 'static_text', text: 'Hint' } })
         })
 
         expect(validateMigration(migration)).toEqual([
             'Field "Deadline": a static_text tooltip is not supported for date fields; give the text alone for an info icon.',
+            'Field "Notes": a static_text tooltip is not supported for textarea fields; give the text alone for an info icon.',
         ])
     })
 
@@ -142,6 +149,30 @@ describe('validateMigration', () => {
         })
 
         expect(validateMigration(migration)).toEqual(['Field "Rate": unknown option "decimal_places".'])
+    })
+
+    // Walks the schema itself, so a field type added later is covered without touching this test.
+    test('every field type rejects an option it does not have', () => {
+        const requiredOptions: Record<string, object> = {
+            picklist: { values: ['A'] },
+            multiselectpicklist: { values: ['A'] },
+            lookup: { module: 'Accounts' },
+        }
+        const dataTypes: string[] = []
+        const migration = updateWith((schema) => {
+            for (const [dataType, declare] of Object.entries(schema)) {
+                dataTypes.push(dataType)
+                ;(declare as (label: string, options: object) => void)(`F ${dataType}`, {
+                    ...requiredOptions[dataType],
+                    bogus: 1,
+                })
+            }
+        })
+
+        expect(validateMigration(migration)).toEqual(
+            dataTypes.map((dataType) => `Field "F ${dataType}": unknown option "bogus".`)
+        )
+        expect(dataTypes).toHaveLength(17)
     })
 
     test('rejects an option value of the wrong type', () => {
