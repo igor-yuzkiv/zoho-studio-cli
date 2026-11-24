@@ -61,12 +61,15 @@ export function parseWidgetDescription(name: string, raw: unknown): WidgetDescri
     }
 }
 
-/** The SDK trusts only the parent named by `serviceOrigin`, so the harness puts its own origin there. */
+/**
+ * The SDK trusts only the parent named by `serviceOrigin`, so the harness puts its own origin there.
+ * The SDK reads parameters from everything after the first `?` of the full address, hash included,
+ * so the parameter goes at the very end: before a hash, a hash router's path would end up in its value.
+ */
 export function widgetUrlWithServiceOrigin(widgetUrl: string, serviceOrigin: string): string {
-    const url = new URL(widgetUrl)
-    url.searchParams.set('serviceOrigin', serviceOrigin)
+    const separator = widgetUrl.includes('?') ? '&' : '?'
 
-    return url.toString()
+    return `${widgetUrl}${separator}serviceOrigin=${encodeURIComponent(serviceOrigin)}`
 }
 
 const unsupported = (method: string): WidgetSdkCall => ({ method, supported: false })

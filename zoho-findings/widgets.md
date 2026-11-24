@@ -15,6 +15,19 @@
 - **In our code:** the widget emulator opens the widget with `serviceOrigin` set to itself and plays
   that parent (`entities/widget/emulator`)
 
+## The SDK reads `serviceOrigin` from everything after the first `?`, hash included
+
+- **Observed:** 2026-11-24, a Vite widget with a hash router run in the emulator: SDK 1.5 threw
+  "Parentwindow reference not found" on every `ZOHO.CRM.*` call (ZS-83)
+- **Spec says:** not documented
+- **Actually:** the SDK splits `window.location.href` after the first `?` on `&`, with no regard to
+  `#`. In `http://host/app/?serviceOrigin=X#/routes/shifts` the value becomes `X#/routes/shifts`, no
+  parent matches it, `SET_CONTEXT` is ignored and the parent reference stays unset
+- **Assumed:** Zoho CRM appends its parameters to the end of the widget URL, after any hash, which
+  is why hash-router widgets work there
+- **In our code:** `widgetUrlWithServiceOrigin` appends `serviceOrigin` at the very end of the
+  address, with `?` or `&` depending on whether the address already has a `?`
+
 ## `ZOHO.CRM.*` calls arrive as one message type with a category
 
 - **Observed:** 2026-11-24, SDK 1.5 source, checked with the emulator (ZS-83)

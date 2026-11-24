@@ -32,9 +32,15 @@ describe('parseWidgetDescription', () => {
 })
 
 describe('widgetUrlWithServiceOrigin', () => {
-    test('keeps the query and the hash of the widget address', () => {
+    test('puts serviceOrigin last, after a hash router path, where the SDK reads it whole', () => {
+        expect(widgetUrlWithServiceOrigin('http://localhost:4203/app/#/routes/shifts', 'http://127.0.0.1:4610')).toBe(
+            'http://localhost:4203/app/#/routes/shifts?serviceOrigin=http%3A%2F%2F127.0.0.1%3A4610'
+        )
         expect(widgetUrlWithServiceOrigin('http://127.0.0.1:5000/w.html?a=1#tab', 'http://127.0.0.1:4610')).toBe(
-            'http://127.0.0.1:5000/w.html?a=1&serviceOrigin=http%3A%2F%2F127.0.0.1%3A4610#tab'
+            'http://127.0.0.1:5000/w.html?a=1#tab&serviceOrigin=http%3A%2F%2F127.0.0.1%3A4610'
+        )
+        expect(widgetUrlWithServiceOrigin('http://127.0.0.1:5000/', 'http://127.0.0.1:4610')).toBe(
+            'http://127.0.0.1:5000/?serviceOrigin=http%3A%2F%2F127.0.0.1%3A4610'
         )
     })
 })
