@@ -98,6 +98,27 @@ export default defineWidgetScenario({
 такі самі: `getRecord` приходить як `{ APIData: { Entity, RecordID } }`, `updateRecord` — як
 `{ type, Entity, APIData }`. Журнал викликів їх показує.
 
+### Ключі моків
+
+Ключ моку — це шлях методу в SDK без `ZOHO.CRM.`: `ZOHO.CRM.API.updateRecord` — це
+`'API.updateRecord'`, `ZOHO.CRM.UI.Popup.closeReload` — `'UI.Popup.closeReload'`. Такий ключ має кожен
+публічний метод SDK 1.5.
+
+Сам SDK цієї назви не надсилає. Кожен виклик приходить на сторінку CRM як `postMessage` з
+`category` і `type` або `action` — `updateRecord` шле `{ category: 'UPDATE', type: 'RECORD', Entity,
+APIData }`, — і емулятор перетворює цю пару назад на назву методу. Таблицю складено з коду SDK 1.5,
+тож для іншої версії SDK її може знадобитися оновити.
+
+Два випадки визначаються за аргументами, а не за `category` і `type`:
+
+- `getRecord`, `getAllRecords` і `getRelatedRecords` шлють однакове `{ category: 'READ', APIData }`.
+  Виклик з `RecordID` і `RelatedList` (або `RelatedListAPIName`) — це `API.getRelatedRecords`, лише з
+  `RecordID` — `API.getRecord`, без нього — `API.getAllRecords`.
+- `insertRecord` і `upsertRecord` обидва шлють `category: 'CREATE'`; `upsertRecord` відрізняється за
+  `APIData.action: 'UPSERT'`.
+
+Журнал викликів показує, який ключ отримав кожен виклик.
+
 Під скомпільованим `zoho-studio` сценарій може імпортувати з `@zoho-studio/zoho-crm/widget` лише
 `defineWidgetScenario`: виконуваний файл не завантажує пакети з `node_modules` проєкту, тож цю одну
 функцію надає сам.

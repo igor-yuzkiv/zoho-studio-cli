@@ -98,6 +98,27 @@ The arguments a mock receives are what the SDK sends, which is close to what the
 not always the same: `getRecord` arrives as `{ APIData: { Entity, RecordID } }`, `updateRecord` as
 `{ type, Entity, APIData }`. The call log shows them.
 
+### Mock keys
+
+A mock key is the method's path in the SDK without `ZOHO.CRM.`: `ZOHO.CRM.API.updateRecord` is
+`'API.updateRecord'`, `ZOHO.CRM.UI.Popup.closeReload` is `'UI.Popup.closeReload'`. Every public method
+of SDK 1.5 has such a key.
+
+The SDK does not send that name. Each call reaches the CRM page as a `postMessage` that carries
+`category` with `type` or `action` — `updateRecord` sends `{ category: 'UPDATE', type: 'RECORD',
+Entity, APIData }` — and the emulator turns that pair back into the method name. The table was
+built from the SDK 1.5 source, so another SDK version may need it updated.
+
+Two cases rest on the arguments rather than on `category` and `type`:
+
+- `getRecord`, `getAllRecords` and `getRelatedRecords` all send `{ category: 'READ', APIData }`. A
+  call with `RecordID` and `RelatedList` (or `RelatedListAPIName`) is `API.getRelatedRecords`, with
+  `RecordID` alone `API.getRecord`, without it `API.getAllRecords`.
+- `insertRecord` and `upsertRecord` both send `category: 'CREATE'`; `upsertRecord` is told apart by
+  `APIData.action: 'UPSERT'`.
+
+The call log shows the key each call got.
+
 Under the compiled `zoho-studio`, a scenario can import only `defineWidgetScenario` from
 `@zoho-studio/zoho-crm/widget`: the executable does not load packages from the project's
 `node_modules`, so it provides that one function itself.
