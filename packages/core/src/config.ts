@@ -50,3 +50,10 @@ export function resolveWorkspaceSourcePath(projectPath: string): string {
 export function resolveWorkspaceMigrationsPath(projectPath: string): string {
     return join(projectPath, migrationsDirName)
 }
+
+/** Widgets are developed and served elsewhere; this folder holds only how the studio runs and tests them. */
+export const widgetsDirName = 'widgets'
+
+export function resolveWorkspaceWidgetsPath(projectPath: string): string {
+    return join(projectPath, widgetsDirName)
+}
