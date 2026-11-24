@@ -1,8 +1,14 @@
 # Zoho CRM JS SDK 1.5 — what a widget calls and what it gets
 
-Facts for writing mocks. Source: the SDK's own code (`live.zwidgets.com/js-sdk/1.5/ZohoEmbededAppSDK.min.js`)
-and Zoho's widget docs (<https://github.com/zoho/crm-skills>, <https://www.zoho.com/crm/developer/docs/widgets/>).
-When this file and Zoho's documentation disagree, check `zoho-findings/` in Zoho Studio's repository.
+Facts for writing mocks, so you do not need the network. Sources, when you need more:
+
+- the SDK's source with an example answer for every method:
+  <https://github.com/zoho/embeddedApp-js-sdk/blob/1.5/lib/ZohoCrmHelper.js> (release 1.5:
+  <https://github.com/zoho/embeddedApp-js-sdk/releases/tag/1.5>);
+- Zoho's reference per SDK version: <https://developer.zoho.com/crm/explore/widgets/v1.5>.
+
+Zoho's examples are not always consistent; where they disagree, this file says so. When a widget
+reads an answer in a way this file does not show, trust the widget's code and mock what it reads.
 
 ## Bootstrap
 
@@ -22,7 +28,7 @@ Every method returns a promise. Answers in Zoho follow the v2 envelopes below; m
 |---|---|---|
 | `API.getRecord` | `getRecord({ Entity, RecordID })` | `{ data: [record] }` |
 | `API.getAllRecords` | `getAllRecords({ Entity, sort_order?, per_page?, page? })` | `{ data: [...], info: { more_records, ... } }` |
-| `API.getRelatedRecords` | `getRelatedRecords({ Entity, RecordID, RelatedListAPIName })` | `{ data: [...], info }` |
+| `API.getRelatedRecords` | `getRelatedRecords({ Entity, RecordID, RelatedList, page?, per_page? })` (Zoho's docs also write `RelatedListAPIName`) | `{ data: [...], info }` |
 | `API.insertRecord` | `insertRecord({ Entity, APIData, Trigger? })` | `{ data: [{ code, details: { id }, status }] }` |
 | `API.updateRecord` | `updateRecord({ Entity, APIData: { id, ... }, Trigger? })` | `{ data: [{ code, details, status }] }` |
 | `API.upsertRecord` | `upsertRecord({ Entity, APIData, duplicate_check_fields? })` | same as insert |
@@ -39,7 +45,7 @@ Every method returns a promise. Answers in Zoho follow the v2 envelopes below; m
 | `META.getLayouts` | `getLayouts({ Entity, Id? })` | `{ layouts: [...] }` |
 | `META.getRelatedList` | `getRelatedList({ Entity })` | `{ related_lists: [...] }` |
 | `META.getCustomViews` | `getCustomViews({ Entity, Id? })` | `{ custom_views: [...] }` |
-| `CONFIG.getCurrentUser` | `getCurrentUser()` | `{ users: [user] }` |
+| `CONFIG.getCurrentUser` | `getCurrentUser()` | the SDK's example: the user object itself (`{ id, full_name, email, role, profile, … }`); Zoho's docs: `{ users: [user] }` — mock the shape the widget reads |
 | `CONFIG.getOrgInfo` | `getOrgInfo()` | `{ org: [org] }` |
 | `CONFIG.getUserPreference` | `getUserPreference()` | not documented |
 | `UI.Resize` | `Resize({ height, width })` | `true` |
@@ -60,3 +66,38 @@ as `{ Entity, Type, Query, ... }`. Check `calls.json` once and match on what is 
 Zoho rejects with an object such as `{ code: 'INVALID_DATA', message, details }`; common codes:
 `INVALID_MODULE`, `INVALID_DATA`, `MANDATORY_NOT_FOUND`, `NO_PERMISSION`, `INVALID_QUERY`.
 Throw the same shape from a mock to test how the widget shows an error.
+
+## Answer examples
+
+Trimmed from the SDK's examples. Records carry many system fields (`Owner`, `Created_Time`,
+`$approved`, …); a fixture needs only the ones the widget reads.
+
+```jsonc
+// API.getRecord / API.getAllRecords
+{ "data": [{ "id": "3000000040016", "Full_Name": "Naresh", "Company": "ZohoCorp", "Owner": { "name": "Naresh", "id": "3000000031045" } }],
+  "info": { "per_page": 200, "count": 1, "page": 1, "more_records": false } }
+
+// API.insertRecord / API.updateRecord / API.upsertRecord
+{ "data": [{ "code": "SUCCESS", "details": { "id": "3000000040016", "Modified_Time": "2017-12-22T03:29:57+05:30" },
+             "message": "record updated", "status": "success" }] }
+
+// API.deleteRecord
+{ "data": [{ "code": "SUCCESS", "details": { "id": "3000000040015" }, "message": "record deleted", "status": "success" }] }
+
+// API.coql
+{ "data": [{ "First_Name": null, "Last_Name": "Boyle", "id": "111118000000047003" }], "info": { "count": 1, "more_records": false } }
+
+// META.getFields
+{ "fields": [{ "api_name": "Owner", "field_label": "Contact Owner", "data_type": "ownerlookup", "custom_field": false, "visible": true }] }
+
+// API.getOrgVariable
+{ "Success": { "Content": "12345" } }
+
+// CONNECTION.invoke
+{ "code": "SUCCESS", "details": { "CODE": 200, "message": "action completed successfully", "status": "Success" },
+  "message": "Connection invoked successfully", "status": "success" }
+
+// HTTP.get / post / … — the external service's body, as it is
+```
+
+`UI.*` methods resolve with `true`.
