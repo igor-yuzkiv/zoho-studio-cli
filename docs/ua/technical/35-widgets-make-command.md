@@ -1,7 +1,7 @@
 # `zoho-studio z-crm:widgets:make`
 
 Створює `widgets/<name>/` для віджета, який уже десь працює: його опис, сценарій, що відкриває один
-запис, фікстуру з цим записом і тест Playwright — папку, яка одразу працює з
+запис і мокає його читання, і тест Playwright — папку, яка одразу працює з
 [`z-crm:widgets:serve`](34-widgets-serve-command.md). Команда нічого не питає, тож її може викликати агент.
 
 ```bash
@@ -12,7 +12,6 @@ zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom
 ```text
 Created widgets/deal-card/widget.json
 Created widgets/deal-card/scenarios/default.ts
-Created widgets/deal-card/fixtures/Deals.json
 Created widgets/deal-card/tests/deal-card.spec.ts
 Created playwright.config.ts
 ```
@@ -29,8 +28,8 @@ Created playwright.config.ts
 ## Що вона пише
 
 - `widget.json` — адреса, локація, шлях до коду й `defaultScenario: "default"`.
-- `scenarios/default.ts` — `PageLoad` для запису `1000000000001` модуля і порожні `mocks`.
-- `fixtures/<Module>.json` — цей запис.
+- `scenarios/default.ts` — `PageLoad` для запису `1000000000001` модуля і мок `API.getRecord`,
+  що відповідає цим записом.
 - `tests/<name>.spec.ts` — відкриває віджет і зберігає скріншот.
 - `playwright.config.ts` у корені проєкту — лише коли його ще немає: тести в `widgets/**/tests/`,
   HTML-звіт у `widgets/.report/` і `webServer`, що запускає `zoho-studio z-crm:widgets:serve --port=4610`.

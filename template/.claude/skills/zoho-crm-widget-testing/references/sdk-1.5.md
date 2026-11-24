@@ -59,7 +59,8 @@ Every method returns a promise. Answers in Zoho follow the v2 envelopes below; m
 The `args` a mock receives — and that `calls.json` shows — are what the SDK sends for the call,
 which is close to but not always the same as what the widget passed: `getRecord` arrives as
 `{ APIData: { Entity, RecordID } }`, `updateRecord` as `{ type, Entity, APIData }`, `searchRecord`
-as `{ Entity, Type, Query, ... }`. Check `calls.json` once and match on what is there.
+as `{ Entity, Type, Query, ... }`, `addNotes` as `{ Entity, RelatedID, APIData: { data: [{ Note_Title,
+Note_Content }] } }`, `UI.Record.open` as `{ action, data: { Entity, RecordID } }`. Check `calls.json` once and match on what is there.
 
 ## Errors
 
@@ -70,7 +71,7 @@ Throw the same shape from a mock to test how the widget shows an error.
 ## Answer examples
 
 Trimmed from the SDK's examples. Records carry many system fields (`Owner`, `Created_Time`,
-`$approved`, …); a fixture needs only the ones the widget reads.
+`$approved`, …); a mock needs only the ones the widget reads.
 
 ```jsonc
 // API.getRecord / API.getAllRecords

@@ -5,7 +5,6 @@ import type { WidgetLocation } from '../widget.types'
 import {
     parseWidgetDescription,
     widgetDescriptionFileName,
-    widgetFixturesDirName,
     widgetScenariosDirName,
 } from '../widget.utils'
 import { resolveWidgetDirPath } from './local-widgets.service'
@@ -24,8 +23,8 @@ export type ScaffoldedWidgetFiles = string[]
 const playwrightConfigFileName = 'playwright.config.ts'
 
 /**
- * Lays out a widget folder that runs as is: a description, a scenario that opens one record, a
- * fixture with that record, and a Playwright test. Refuses a name that is already taken.
+ * Lays out a widget folder that runs as is: a description, a scenario that opens one record and
+ * mocks reading it, and a Playwright test. Refuses a name that is already taken.
  */
 export async function scaffoldWidget(
     projectPath: string,
@@ -56,11 +55,6 @@ export async function scaffoldWidget(
             4
         )}\n`,
         [`widgets/${description.name}/${widgetScenariosDirName}/default.ts`]: scenarioTemplate(moduleName),
-        [`widgets/${description.name}/${widgetFixturesDirName}/${moduleName}.json`]: `${JSON.stringify(
-            [{ id: '1000000000001', Full_Name: 'Sample Record' }],
-            null,
-            4
-        )}\n`,
         [`widgets/${description.name}/tests/${description.name}.spec.ts`]: testTemplate(description.name),
     }
 
@@ -83,6 +77,7 @@ function scenarioTemplate(moduleName: string): string {
 export default defineWidgetScenario({
     pageLoad: { Entity: '${moduleName}', EntityId: '1000000000001' },
     mocks: {
+        'API.getRecord': { data: [{ id: '1000000000001' }] },
         // 'API.updateRecord': ({ Entity, APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
     },
 })

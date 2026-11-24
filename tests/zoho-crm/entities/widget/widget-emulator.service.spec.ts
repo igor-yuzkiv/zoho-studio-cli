@@ -18,7 +18,6 @@ async function write(relativePath: string, content: unknown) {
 beforeEach(async () => {
     projectPath = await createTempProject()
     await write('widgets/card/widget.json', { url: 'http://127.0.0.1:5050/app.html', defaultScenario: 'default' })
-    await write('widgets/card/fixtures/Leads.json', [{ id: '1', Last_Name: 'Doe' }])
     // A scenario outside a linked project cannot import the package; a plain object is what it exports anyway.
     await write('widgets/card/scenarios/default.ts', `export default { pageLoad: { Entity: 'Leads', EntityId: '1' } }`)
     await write(
@@ -31,7 +30,7 @@ beforeEach(async () => {
         }`
     )
     await write('data/zoho-crm/modules/Leads/fields/Last_Name.json', { api_name: 'Last_Name' })
-    await write('data/zoho-crm/modules/Leads/fields/Email.json', { api_name: 'Email' })
+    await write('widgets/card/fixtures/Leads.json', [{ id: '1', Last_Name: 'Doe' }])
     emulator = startWidgetEmulator({ projectPath })
 })
 
@@ -60,17 +59,18 @@ describe('widget emulator', () => {
         expect(page).toContain('"pageLoad":{"Entity":"Leads","EntityId":"1"}')
     })
 
-    test('answers metadata and fixtures by default', async () => {
+    test('answers nothing on its own, even when pulled metadata or fixture files exist', async () => {
         const { id } = await emulator.createSession('card')
+        const unmocked = [
+            { category: 'META', type: 'FIELD_LIST', Entity: 'Leads' },
+            { category: 'READ', APIData: { Entity: 'Leads', RecordID: '1' } },
+            { category: 'CONFIG', type: 'ORG' },
+            { category: 'UI', action: 'RESIZE' },
+        ]
 
-        expect(await sdk(id, { category: 'META', type: 'FIELD_LIST', Entity: 'Leads' })).toEqual({
-            ok: true,
-            data: { fields: [{ api_name: 'Email' }, { api_name: 'Last_Name' }] },
-            entry: expect.anything(),
-        } as never)
-        expect((await sdk(id, { category: 'READ', APIData: { Entity: 'Leads', RecordID: '1' } })).data).toEqual({
-            data: [{ id: '1', Last_Name: 'Doe' }],
-        })
+        for (const call of unmocked) {
+            expect(await sdk(id, call)).toMatchObject({ ok: false, data: { code: 'ZOHO_STUDIO_NO_MOCK' } })
+        }
     })
 
     test('lets a scenario mock resolve or reject a call', async () => {

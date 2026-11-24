@@ -17,11 +17,10 @@ This creates `widgets/deal-card/` with:
 
 - `widget.json` — where the widget runs and where its code is;
 - `scenarios/default.ts` — which record the widget opens on and how Zoho answers it;
-- `fixtures/Deals.json` — the records it can read;
 - `tests/deal-card.spec.ts` — an automated test.
 
-If the widget reads fields, layouts or modules, pull them first — `z-crm:fields:pull --module=Deals`
-and so on. Zoho Studio answers those calls from the pulled files.
+Zoho Studio answers nothing on its own: every SDK call the widget makes — reading a record, its
+fields, the org, even `UI.Resize` — needs an answer in the scenario.
 
 ## Look at it
 
@@ -56,8 +55,7 @@ A test can change an answer for itself without a new scenario:
 `widgetPage.open({ widget: 'deal-card', mocks: { 'API.searchRecord': { data: [] } } })`;
 `{ $reject: { … } }` as the answer makes the call fail, the way an error from Zoho does.
 
-When the widget calls something the scenario does not answer and Zoho Studio has no default for,
-the widget gets an error saying which method to add and where. Some SDK features — Deluge functions
+When the widget calls something the scenario does not answer, the widget gets an error saying which method to add and where. Some SDK features — Deluge functions
 (`FUNCTIONS.execute`), Blueprint, Wizard, ZRC — answer with an error saying Zoho Studio does not run
 them.
 
@@ -83,7 +81,7 @@ the list of SDK calls (`calls.json`) in `widgets/<name>/results/<test>/`; the HT
 ## For AI agents
 
 New projects get a skill in `.claude/skills/zoho-crm-widget-testing/` that teaches an agent to
-write scenarios, fixtures and tests and to report results with screenshots. In a project created
+write scenarios and tests and to report results with screenshots. In a project created
 before, copy that folder from a new project made with `zoho-studio init`, and add these lines to
 `.gitignore`:
 

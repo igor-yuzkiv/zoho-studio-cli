@@ -1,14 +1,14 @@
 ---
 name: zoho-crm-widget-testing
-description: Test Zoho CRM widgets locally with Zoho Studio — find the SDK calls a widget makes, mock them with scenarios and fixtures, run Playwright e2e tests with screenshots and an SDK call log. Use when the user asks to test, run or debug a widget without Zoho, and on your own before saying a change to a widget's code is done.
+description: Test Zoho CRM widgets locally with Zoho Studio — find the SDK calls a widget makes, mock them with scenarios, run Playwright e2e tests with screenshots and an SDK call log. Use when the user asks to test, run or debug a widget without Zoho, and on your own before saying a change to a widget's code is done.
 ---
 
 # Testing Zoho CRM widgets with Zoho Studio
 
 Zoho Studio does not tell you how to build a widget. It runs a widget that is **already served
 somewhere** (`zet run`, Vite, any static server) inside an emulated Zoho CRM: the widget keeps the
-real Zoho JS SDK v1.5, and Zoho Studio answers it — `PageLoad`, `ZOHO.CRM.*` calls — from a scenario,
-from metadata pulled into `data/`, and from fixtures. Nothing in the widget's code changes.
+real Zoho JS SDK v1.5, and Zoho Studio answers it — `PageLoad`, `ZOHO.CRM.*` calls — from a scenario
+and nothing else. Nothing in the widget's code changes.
 
 ## When to use
 
@@ -54,21 +54,10 @@ For each call, in this order:
 1. **Unsupported** — `FUNCTIONS.execute`, `zrc.*`, `ZDK.Client.*`, Blueprint, Wizard, approvals,
    `uploadFile`/`getFile`, `EVENTS.dispatch`. These always reject with `ZOHO_STUDIO_UNSUPPORTED`; a
    mock does not change that. Tell the user which flows cannot be tested locally because of them.
-2. **Answered by default** — when nothing mocks them:
-
-   | Method | Answer |
-   |---|---|
-   | `META.getFields({Entity})` | `{ fields }` from `data/zoho-crm/modules/<Entity>/fields/` |
-   | `META.getModules()` | `{ modules }` from every pulled module |
-   | `META.getLayouts({Entity})` | `{ layouts }` from `data/zoho-crm/modules/<Entity>/layouts/` |
-   | `CONFIG.getOrgInfo()` | `{ org: [...] }` from `.zoho-studio/org.json` |
-   | `API.getRecord({Entity, RecordID})` | `{ data: [record] }` from `fixtures/<Entity>.json`, or a rejection naming the missing record |
-   | `API.getAllRecords({Entity})` | `{ data, info }` from `fixtures/<Entity>.json` |
-   | `UI.*` | `true` |
-
-   Metadata must be pulled: `z-crm:modules:pull`, `z-crm:fields:pull --module=<M>`,
-   `z-crm:layouts:pull --module=<M>`. These talk to Zoho — ask the user before running them.
-3. **Everything else needs a mock** — otherwise it rejects with `ZOHO_STUDIO_NO_MOCK`.
+2. **Everything else needs a mock** — Zoho Studio answers nothing on its own: records, metadata
+   (`META.*`), `CONFIG.*`, even `UI.*` reject with `ZOHO_STUDIO_NO_MOCK` until a scenario or a test
+   mocks them. For field and layout answers, the pulled files in `data/zoho-crm/modules/<M>/` are a
+   good source to copy from or import.
 
 Then decide where each mock lives:
 
@@ -80,7 +69,7 @@ Then decide where each mock lives:
 Prefer one `default` scenario plus per-test overrides; add a scenario when a situation needs its
 own record or logic.
 
-### 4. Write scenarios and fixtures
+### 4. Write scenarios
 
 ```ts
 import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
@@ -100,9 +89,10 @@ export default defineWidgetScenario({
 - `pageLoad` is sent as is — give it what the widget reads (`Entity`, `EntityId`, `ButtonPosition`, …).
 - Answers follow Zoho's shapes in `references/sdk-1.5.md`, so the widget reads them as in Zoho.
 
-`fixtures/<Module>.json` is an array of records: `id` as a string, fields by API name. Take field
-names from `data/zoho-crm/modules/<Module>/fields/` and fill only what the widget reads, with
-realistic values. Never copy personal data from a real org.
+Records in mocks: `id` as a string, fields by API name. Take field names from
+`data/zoho-crm/modules/<Module>/fields/` and fill only what the widget reads, with realistic values.
+Never copy personal data from a real org. Large or shared data can live in a module or JSON file the
+scenario imports.
 
 ### 5. Write the tests
 
@@ -156,7 +146,7 @@ shows `error.code` (`ZOHO_STUDIO_NO_MOCK` names the method and file) and the `ar
 Tell the user: which tests passed and failed; the screenshot paths that show the behavior
 (`widgets/<name>/results/<test>/*.png`); for a failure, the relevant `calls.json` entries; which
 calls could not be tested because Zoho Studio does not run them. Say that the tests ran against an
-emulator and fixtures — they do not prove the widget works in Zoho.
+emulator and mocks — they do not prove the widget works in Zoho.
 
 ## Looking at a widget by hand
 

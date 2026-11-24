@@ -2,8 +2,7 @@
 
 Запускає віджети Zoho CRM на вашому комп'ютері без Zoho. Віджет лишається зі справжнім Zoho JS SDK
 v1.5 і працює за своєю адресою — `zet run`, Vite, будь-який статичний сервер; Zoho Studio грає роль
-сторінки CRM навколо нього й відповідає SDK зі сценарію, зі стягнутих у `data/` метаданих і з
-фікстур. У коді віджета нічого не змінюється.
+сторінки CRM навколо нього й відповідає SDK зі сценарію. У коді віджета нічого не змінюється.
 
 **Віджет має вже працювати за `url` з його `widget.json`.** Zoho Studio не збирає й не віддає
 віджет, а лише відкриває його.
@@ -27,7 +26,7 @@ Press Ctrl+C to stop.
 
 - `-w, --widget <name>` — відкриває сесію для `widgets/<name>/` і друкує її адресу.
 - `-s, --scenario <name>` — сценарій цієї сесії; без неї — `defaultScenario` з `widget.json`, а
-  без нього — жодного сценарію (лише стандартні відповіді).
+  без нього — жодного сценарію (кожен виклик відхиляється).
 - `-p, --port <number>` — порт, за замовчуванням `4610`. Емулятор слухає лише `127.0.0.1`.
 
 ## Папка віджета
@@ -36,7 +35,6 @@ Press Ctrl+C to stop.
 widgets/<name>/
   widget.json
   scenarios/<scenario>.ts
-  fixtures/<Module>.json
   tests/*.spec.ts
   results/<test>/            # пишуть e2e-тести
 ```
@@ -65,7 +63,7 @@ SDK спілкується зі сторінкою CRM навколо себе �
 
 1. на `REGISTER` від SDK відповідає `SET_CONTEXT`, після чого `ZOHO.embeddedApp.init()` завершується;
 2. надсилає `PageLoad` з `pageLoad` сценарію точно так, як його записано;
-3. відповідає на кожен виклик `ZOHO.CRM.*` — моком сценарію, стандартною відповіддю або помилкою — і
+3. відповідає на кожен виклик `ZOHO.CRM.*` — моком сценарію або помилкою — і
    пише його в журнал.
 
 Якщо віджет не зареєструвався за 10 секунд, сторінка про це скаже: віджет не працює за своїм `url`,
@@ -104,25 +102,13 @@ export default defineWidgetScenario({
 `defineWidgetScenario`: виконуваний файл не завантажує пакети з `node_modules` проєкту, тож цю одну
 функцію надає сам.
 
-## Відповіді без моку
+## Без моку
 
-| Метод | Відповідь |
-|---|---|
-| `META.getFields({ Entity })` | `{ fields }` з `data/zoho-crm/modules/<Entity>/fields/` |
-| `META.getModules()` | `{ modules }`, усі стягнуті модулі |
-| `META.getLayouts({ Entity, Id? })` | `{ layouts }` з `data/zoho-crm/modules/<Entity>/layouts/` |
-| `CONFIG.getOrgInfo()` | `{ org: [...] }` з `.zoho-studio/org.json` |
-| `API.getRecord({ Entity, RecordID })` | `{ data: [record] }` з `fixtures/<Entity>.json`; запису, якого там немає, відповідає помилка `ZOHO_STUDIO_NO_FIXTURE` |
-| `API.getAllRecords({ Entity })` | `{ data, info }` з `fixtures/<Entity>.json` |
-| `UI.*` | `true` |
-
-Фікстура — масив записів у тій формі, яку повертає Zoho. Метадані, які читає віджет, треба спершу
-стягнути (`z-crm:modules:pull`, `z-crm:fields:pull`, `z-crm:layouts:pull`); на відсутній pull
-відповідь — помилка з командою, яку треба запустити.
-
-Будь-який інший метод без моку — зокрема `HTTP.*`, `CONNECTION.invoke` і `CONNECTOR.*` — відхиляється
-з `{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, де повідомлення називає метод і файл сценарію, куди
-його додати.
+Zoho Studio нічого не відповідає сам. Кожен метод, якого не мокає сценарій або тест, — записи,
+метадані, `CONFIG.*`, `UI.*`, `HTTP.*`, `CONNECTION.invoke`, `CONNECTOR.*` — відхиляється з
+`{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, де повідомлення називає метод і файл сценарію, куди його
+додати. Як організувати мок-дані — прямо в сценарії, у спільних модулях, у JSON-файлах, які сценарій
+імпортує, — вирішує проєкт.
 
 Ці методи відхиляються з `ZOHO_STUDIO_UNSUPPORTED`, хоч би що казав сценарій: `FUNCTIONS.execute`,
 `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`, `API.getBluePrint`, `API.updateBluePrint`,

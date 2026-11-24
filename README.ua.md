@@ -42,7 +42,7 @@ bun run link                                 # once, so projects can import the 
 - [z-crm:functions:deploy](docs/ua/technical/30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/`
 - [z-crm:functions:run](docs/ua/technical/33-functions-run-command.md) — запуск коду функції з `src/` або `data/` у Zoho з виведенням результату
 - [z-crm:migrations:make](docs/ua/technical/32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями
-- [z-crm:widgets:make](docs/ua/technical/35-widgets-make-command.md) — створення папки віджета зі сценарієм, фікстурою й тестом Playwright
+- [z-crm:widgets:make](docs/ua/technical/35-widgets-make-command.md) — створення папки віджета зі сценарієм і тестом Playwright
 - [z-crm:widgets:serve](docs/ua/technical/34-widgets-serve-command.md) — запуск віджетів в емульованій Zoho CRM з мок-відповідями SDK
 - [z-crm:workflows:pull](docs/ua/technical/9-workflows-pull-command.md) — завантаження правил робочих процесів
 - [z-crm:org:info](docs/ua/technical/10-org-info-command.md) — читання організації та її збереження в проєкті

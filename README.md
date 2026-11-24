@@ -42,7 +42,7 @@ Start with the [user guide](docs/en/user-guide/1-overview.md) ([українсь
 - [z-crm:functions:deploy](docs/en/technical/30-functions-deploy-command.md) — creating or updating a function in Zoho from `src/`
 - [z-crm:functions:run](docs/en/technical/33-functions-run-command.md) — running a function's code from `src/` or `data/` in Zoho and printing the result
 - [z-crm:migrations:make](docs/en/technical/32-migrations-make-command.md) — creating a migration file through a few questions
-- [z-crm:widgets:make](docs/en/technical/35-widgets-make-command.md) — creating a widget folder with a scenario, a fixture and a Playwright test
+- [z-crm:widgets:make](docs/en/technical/35-widgets-make-command.md) — creating a widget folder with a scenario and a Playwright test
 - [z-crm:widgets:serve](docs/en/technical/34-widgets-serve-command.md) — running widgets in an emulated Zoho CRM with mocked SDK answers
 - [z-crm:workflows:pull](docs/en/technical/9-workflows-pull-command.md) — downloading workflow rules
 - [z-crm:org:info](docs/en/technical/10-org-info-command.md) — reading the organization and storing it in the project

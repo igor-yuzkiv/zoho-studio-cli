@@ -8,7 +8,6 @@ import type {
     WidgetSdkPayload,
 } from '../widget.types'
 import { resolveWidgetSdkCall } from '../widget.utils'
-import { answerWithDefault } from './widget-default-responses.service'
 
 export interface WidgetSdkAnswer {
     ok: boolean
@@ -90,12 +89,6 @@ export async function createWidgetSession(
             }
 
             return answer
-        }
-
-        const fallback = await answerWithDefault(projectPath, widgetName, method, args)
-
-        if (fallback.found) {
-            return fallback.value
         }
 
         throw {

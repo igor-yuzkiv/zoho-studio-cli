@@ -37,7 +37,6 @@ describe('z-crm:widgets:make', () => {
         expect(printed).toEqual([
             'Created widgets/card/widget.json',
             'Created widgets/card/scenarios/default.ts',
-            'Created widgets/card/fixtures/Deals.json',
             'Created widgets/card/tests/card.spec.ts',
             'Created playwright.config.ts',
         ])
@@ -49,6 +48,9 @@ describe('z-crm:widgets:make', () => {
         })
         expect(await readFile(join(projectPath, 'widgets/card/scenarios/default.ts'), 'utf8')).toContain(
             "pageLoad: { Entity: 'Deals', EntityId: '1000000000001' }"
+        )
+        expect(await readFile(join(projectPath, 'widgets/card/scenarios/default.ts'), 'utf8')).toContain(
+            "'API.getRecord': { data: [{ id: '1000000000001' }] }"
         )
     })
 

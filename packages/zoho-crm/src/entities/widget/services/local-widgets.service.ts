@@ -9,7 +9,6 @@ import {
     defineWidgetScenario,
     parseWidgetDescription,
     widgetDescriptionFileName,
-    widgetFixturesDirName,
     widgetScenariosDirName,
 } from '../widget.utils'
 
@@ -114,29 +113,4 @@ async function importScenarioModule(scenarioPath: string): Promise<{ default?: u
         // A failed import stays cached under its specifier, so the retry asks for a new one.
         return import(`${scenarioPath}?at=${Date.now()}-retry`)
     }
-}
-
-/** Records of one module the widget's API calls answer with: `widgets/<name>/fixtures/<Module>.json`, an array. */
-export async function readWidgetFixtureRecords(
-    projectPath: string,
-    widgetName: string,
-    moduleName: string
-): Promise<Record<string, unknown>[] | null> {
-    const file = Bun.file(
-        join(resolveWidgetDirPath(projectPath, widgetName), widgetFixturesDirName, `${toPathSegment(moduleName)}.json`)
-    )
-
-    if (!(await file.exists())) {
-        return null
-    }
-
-    const records = await file.json()
-
-    if (!Array.isArray(records)) {
-        throw new Error(
-            `widgets/${widgetName}/${widgetFixturesDirName}/${moduleName}.json must be an array of records.`
-        )
-    }
-
-    return records
 }

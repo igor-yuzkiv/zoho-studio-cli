@@ -1,7 +1,7 @@
 # `zoho-studio z-crm:widgets:make`
 
 Creates `widgets/<name>/` for a widget that already runs somewhere: its description, a scenario that
-opens one record, a fixture with that record, and a Playwright test — a folder that runs as is with
+opens one record and mocks reading it, and a Playwright test — a folder that runs as is with
 [`z-crm:widgets:serve`](34-widgets-serve-command.md). It asks nothing, so an agent can call it.
 
 ```bash
@@ -12,7 +12,6 @@ zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom
 ```text
 Created widgets/deal-card/widget.json
 Created widgets/deal-card/scenarios/default.ts
-Created widgets/deal-card/fixtures/Deals.json
 Created widgets/deal-card/tests/deal-card.spec.ts
 Created playwright.config.ts
 ```
@@ -29,8 +28,8 @@ Created playwright.config.ts
 ## What it writes
 
 - `widget.json` — the address, the location, the source, and `defaultScenario: "default"`.
-- `scenarios/default.ts` — `PageLoad` for record `1000000000001` of the module, and an empty `mocks`.
-- `fixtures/<Module>.json` — that record.
+- `scenarios/default.ts` — `PageLoad` for record `1000000000001` of the module, and a mock of
+  `API.getRecord` that answers with that record.
 - `tests/<name>.spec.ts` — opens the widget and saves a screenshot.
 - `playwright.config.ts` at the project root — only when the project has none: tests under
   `widgets/**/tests/`, the HTML report in `widgets/.report/`, and `webServer` starting

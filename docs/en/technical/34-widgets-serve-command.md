@@ -2,8 +2,7 @@
 
 Runs Zoho CRM widgets on your computer without Zoho. The widget keeps the real Zoho JS SDK v1.5
 and runs at its own address — `zet run`, Vite, any static server; Zoho Studio plays the CRM page
-around it and answers the SDK from a scenario, from the metadata pulled into `data/`, and from
-fixtures. Nothing in the widget's code changes.
+around it and answers the SDK from a scenario. Nothing in the widget's code changes.
 
 **The widget must already be running at the `url` in its `widget.json`.** Zoho Studio does not
 build or serve the widget; it only opens it.
@@ -27,7 +26,7 @@ fixture (see [e2e tests](#e2e-tests)) and the **Widgets** tab of [`browser`](25-
 
 - `-w, --widget <name>` — opens a session for `widgets/<name>/` and prints its address.
 - `-s, --scenario <name>` — the scenario of that session; without it, `defaultScenario` from
-  `widget.json`, and without that, no scenario (defaults only).
+  `widget.json`, and without that, no scenario (every call is rejected).
 - `-p, --port <number>` — the port, `4610` by default. The emulator listens on `127.0.0.1` only.
 
 ## The widget folder
@@ -36,7 +35,6 @@ fixture (see [e2e tests](#e2e-tests)) and the **Widgets** tab of [`browser`](25-
 widgets/<name>/
   widget.json
   scenarios/<scenario>.ts
-  fixtures/<Module>.json
   tests/*.spec.ts
   results/<test>/            # written by the e2e tests
 ```
@@ -65,7 +63,7 @@ widget in an iframe with `serviceOrigin` set to itself, then:
 
 1. answers the SDK's `REGISTER` with `SET_CONTEXT`, which resolves `ZOHO.embeddedApp.init()`;
 2. sends `PageLoad` with the scenario's `pageLoad`, exactly as written;
-3. answers every `ZOHO.CRM.*` call — from the scenario's mock, a default, or an error — and logs it.
+3. answers every `ZOHO.CRM.*` call — from the scenario's mock or with an error — and logs it.
 
 If the widget does not register within 10 seconds, the page says so: the widget is not running at
 its `url`, does not load the SDK, or never calls `ZOHO.embeddedApp.init()`.
@@ -104,25 +102,13 @@ Under the compiled `zoho-studio`, a scenario can import only `defineWidgetScenar
 `@zoho-studio/zoho-crm/widget`: the executable does not load packages from the project's
 `node_modules`, so it provides that one function itself.
 
-## Answers without a mock
+## Without a mock
 
-| Method | Answer |
-|---|---|
-| `META.getFields({ Entity })` | `{ fields }` from `data/zoho-crm/modules/<Entity>/fields/` |
-| `META.getModules()` | `{ modules }`, every pulled module |
-| `META.getLayouts({ Entity, Id? })` | `{ layouts }` from `data/zoho-crm/modules/<Entity>/layouts/` |
-| `CONFIG.getOrgInfo()` | `{ org: [...] }` from `.zoho-studio/org.json` |
-| `API.getRecord({ Entity, RecordID })` | `{ data: [record] }` from `fixtures/<Entity>.json`; a record not there is rejected with `ZOHO_STUDIO_NO_FIXTURE` |
-| `API.getAllRecords({ Entity })` | `{ data, info }` from `fixtures/<Entity>.json` |
-| `UI.*` | `true` |
-
-A fixture is an array of records shaped as Zoho returns them. Metadata the widget reads must be
-pulled first (`z-crm:modules:pull`, `z-crm:fields:pull`, `z-crm:layouts:pull`); a missing pull is
-rejected with the command to run.
-
-Any other method without a mock — including `HTTP.*`, `CONNECTION.invoke` and `CONNECTOR.*` — is
-rejected with `{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, where the message names the method and the
-scenario file to add it to.
+Zoho Studio answers nothing on its own. Every method the scenario or the test does not mock —
+records, metadata, `CONFIG.*`, `UI.*`, `HTTP.*`, `CONNECTION.invoke`, `CONNECTOR.*` — is rejected
+with `{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, where the message names the method and the scenario
+file to add it to. How the mock data is organised — inline, shared modules, JSON files the scenario
+imports — is up to the project.
 
 These are rejected with `ZOHO_STUDIO_UNSUPPORTED`, whatever the scenario says: `FUNCTIONS.execute`,
 `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`, `API.getBluePrint`, `API.updateBluePrint`,

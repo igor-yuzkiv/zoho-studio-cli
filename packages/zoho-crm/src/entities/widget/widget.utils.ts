@@ -2,7 +2,6 @@ import type { WidgetDescription, WidgetLocation, WidgetScenario, WidgetSdkCall, 
 
 export const widgetDescriptionFileName = 'widget.json'
 export const widgetScenariosDirName = 'scenarios'
-export const widgetFixturesDirName = 'fixtures'
 export const widgetResultsDirName = 'results'
 
 /** The places Zoho CRM can show a widget; the studio records it but sends whatever the scenario says. */
