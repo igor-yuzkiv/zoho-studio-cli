@@ -2,7 +2,13 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import type { ArtifactGroupSummary, FileEntry, ProjectInfo, PullRun } from '@/commands/browser/browser.types'
+import type {
+    ArtifactGroupSummary,
+    FileEntry,
+    ProjectInfo,
+    PullRun,
+    WidgetSession,
+} from '@/commands/browser/browser.types'
 import { startBrowserServer } from '@/commands/browser/browser-server.service'
 
 import { startApiStub } from '../../support/api-stub'
@@ -316,5 +322,39 @@ describe('browser server', () => {
 
         expect(await (await fetch(`${origin}/`)).text()).toBe('<div id="app"></div>')
         expect((await fetch(`${origin}/missing.js`)).status).toBe(404)
+    })
+})
+
+describe('widgets', () => {
+    test('lists the widgets with their scenarios and opens a session on the emulator port', async () => {
+        const { projectPath, origin } = await startProject()
+        await mkdir(join(projectPath, 'widgets', 'card', 'scenarios'), { recursive: true })
+        await Bun.write(
+            join(projectPath, 'widgets/card/widget.json'),
+            JSON.stringify({ url: 'http://127.0.0.1:5050/' })
+        )
+        await Bun.write(join(projectPath, 'widgets/card/scenarios/default.ts'), 'export default {}')
+
+        expect(await (await fetch(`${origin}/api/widgets`)).json()).toEqual([
+            {
+                name: 'card',
+                url: 'http://127.0.0.1:5050/',
+                location: null,
+                defaultScenario: null,
+                scenarios: ['default'],
+            },
+        ])
+
+        const session = (await (
+            await fetch(`${origin}/api/widgets/sessions`, {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({ widget: 'card', scenario: 'default' }),
+            })
+        ).json()) as WidgetSession
+
+        expect(session.origin).not.toBe(origin)
+        expect(session.url).toStartWith(`${session.origin}/harness/`)
+        expect(session.scenario).toBe('default')
     })
 })

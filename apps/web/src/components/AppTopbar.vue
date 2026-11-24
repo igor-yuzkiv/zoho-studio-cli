@@ -45,6 +45,7 @@ watch(currentGroup, () => (pullMenuOpen.value = false))
                 <b class="font-medium text-fg">{{ currentGroup.label }}</b>
                 <AppBadge class="ml-1.5">pulled {{ formatTimeAgo(currentGroup.pulledAt) }}</AppBadge>
             </template>
+            <b v-else-if="route.name === 'widgets'" class="font-medium text-fg">Widgets</b>
             <b v-else class="font-medium text-fg">Overview</b>
         </div>
         <div class="flex-1" />

@@ -4,6 +4,12 @@ import { resolveWorkspaceOrganizationPath, resolveWorkspaceDataPath } from '@zoh
 import { addProfile, listProfiles, readConnection } from '@zoho-studio/core'
 import { getProjectSettings } from '@zoho-studio/core'
 import { workflowActionTypes } from '@zoho-studio/zoho-crm/workflow-action'
+import {
+    listLocalWidgets,
+    listWidgetScenarios,
+    startWidgetEmulator,
+    type WidgetEmulator,
+} from '@zoho-studio/zoho-crm/widget'
 
 import { readFileTree, readJsonBundle, resolveRequestedPath } from './artifact-files.service'
 import { artifactGroups, findArtifactGroup, summarizeArtifactGroup } from './artifact-groups.service'
@@ -16,6 +22,9 @@ import type {
     ProjectInfo,
     PullRequest,
     ServerEvent,
+    WidgetSession,
+    WidgetSessionRequest,
+    WidgetSummary,
 } from './browser.types'
 import { readLogPage } from './log-reader.service'
 import { LoginBusyError, LoginSession } from './login-session.service'
@@ -34,6 +43,10 @@ const maxLogPageSize = 500
 export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserServerOptions) {
     const pullRunner = new PullRunner()
     const loginSession = new LoginSession()
+    let widgetEmulator: WidgetEmulator | null = null
+
+    // A separate port keeps widget code off this origin and its API; started only when a widget is opened.
+    const useWidgetEmulator = () => (widgetEmulator ??= startWidgetEmulator({ projectPath }))
 
     const server: ReturnType<typeof Bun.serve> = Bun.serve({
         hostname: '127.0.0.1',
@@ -148,6 +161,28 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
 
             '/api/events': (request) => streamEvents(request, pullRunner, loginSession),
 
+            '/api/widgets': async () => Response.json(await readWidgetSummaries(projectPath)),
+
+            '/api/widgets/sessions': {
+                POST: async (request) => {
+                    const { widget, scenario } = (await request.json()) as Partial<WidgetSessionRequest>
+
+                    if (!isFilled(widget)) {
+                        return apiError('A widget session needs a widget.', 400)
+                    }
+
+                    const emulator = useWidgetEmulator()
+                    const session = await emulator.createSession(widget, isFilled(scenario) ? scenario : undefined)
+
+                    return Response.json({
+                        id: session.id,
+                        url: session.url,
+                        origin: emulator.origin,
+                        scenario: session.scenario,
+                    } satisfies WidgetSession)
+                },
+            },
+
             '/api/*': () => apiError('Not found', 404),
         }),
 
@@ -211,6 +246,18 @@ export function refuseForeignRequest(request: Request, port: number | undefined)
     }
 
     return null
+}
+
+async function readWidgetSummaries(projectPath: string): Promise<WidgetSummary[]> {
+    return Promise.all(
+        (await listLocalWidgets(projectPath)).map(async (widget) => ({
+            name: widget.name,
+            url: widget.url,
+            location: widget.location ?? null,
+            defaultScenario: widget.defaultScenario ?? null,
+            scenarios: await listWidgetScenarios(projectPath, widget.name),
+        }))
+    )
 }
 
 async function readProjectInfo(projectPath: string): Promise<ProjectInfo> {

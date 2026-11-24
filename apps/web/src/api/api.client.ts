@@ -10,6 +10,9 @@ import type {
     ProfileSummary,
     ProjectInfo,
     PullRequest,
+    WidgetSession,
+    WidgetSessionRequest,
+    WidgetSummary,
     PullRun,
     ServerEvent,
 } from '@cli/commands/browser/browser.types'
@@ -69,6 +72,13 @@ export const api = {
             method: 'POST',
             headers: jsonHeaders,
             body: JSON.stringify(profile),
+        }),
+    getWidgets: () => request<WidgetSummary[]>('api/widgets'),
+    openWidgetSession: (sessionRequest: WidgetSessionRequest) =>
+        request<WidgetSession>('api/widgets/sessions', {
+            method: 'POST',
+            headers: jsonHeaders,
+            body: JSON.stringify(sessionRequest),
         }),
     startPull: (pullRequest: PullRequest) =>
         request<PullRun>('api/pulls', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(pullRequest) }),

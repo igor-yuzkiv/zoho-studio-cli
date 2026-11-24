@@ -1,7 +1,9 @@
-import { Archive, Blocks, Box, FileCode, House, ListChecks, SquareFunction, UserCog, Webhook, Workflow, Zap } from '@lucide/vue'
+import { AppWindow, Archive, Blocks, Box, FileCode, House, ListChecks, SquareFunction, UserCog, Webhook, Workflow, Zap } from '@lucide/vue'
 import type { Component } from 'vue'
 
 export const overviewIcon = House
+
+export const widgetsIcon = AppWindow
 
 const groupIcons: Record<string, Component> = {
     functions: SquareFunction,

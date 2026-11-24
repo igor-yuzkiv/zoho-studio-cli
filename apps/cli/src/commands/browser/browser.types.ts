@@ -126,3 +126,34 @@ export type LogPage = {
 }
 
 export type ApiError = { error: string }
+
+export type WidgetSummary = {
+    name: string
+    url: string
+    location: string | null
+    defaultScenario: string | null
+    scenarios: string[]
+}
+
+export type WidgetSessionRequest = {
+    widget: string
+    scenario?: string
+}
+
+/** The harness runs on the emulator's own origin, so the page checks messages against `origin`. */
+export type WidgetSession = {
+    id: string
+    url: string
+    origin: string
+    scenario: string | null
+}
+
+/** One SDK call as the harness reports it to the page. */
+export type WidgetCall = {
+    at: string
+    method: string
+    args: Record<string, unknown>
+    ok: boolean
+    response?: unknown
+    error?: unknown
+}

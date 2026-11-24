@@ -43,6 +43,15 @@ stores the tokens in `~/.zoho-studio`, the same way the CLI does. The client sec
 server once, when the profile is created, and is never sent back to the page. A pull that fails
 because the project is not logged in offers the same button.
 
+## Widgets
+
+The **Widgets** tab lists the widgets in `widgets/`. Pick one and a scenario, and **Open** shows the
+widget the way [`z-crm:widgets:serve`](34-widgets-serve-command.md) runs it; the panel beside it
+lists every SDK call with its arguments and answer as the widget makes it, and sends events to it.
+
+The widget runs on a second port, picked when the first widget is opened, so its code cannot call
+this server's API.
+
 ## Running from source
 
 The executable from `bun run compile` carries the page inside it, so `zoho-studio browser` works
@@ -82,3 +91,5 @@ would leave `data/` is refused.
 | `POST /api/profiles` | creates a profile: `{ "name": "acme", "clientId": "…", "clientSecret": "…" }`; `409` when the name is taken |
 | `POST /api/login` | starts a login: `{ "profile": "acme" }`; `409` while one waits for approval |
 | `GET /api/events` | a server-sent event stream with every change to a pull or the login |
+| `GET /api/widgets` | the widgets in `widgets/`: name, url, location, default scenario, scenarios |
+| `POST /api/widgets/sessions` | opens a widget on the emulator: `{ "widget": "deal-card", "scenario": "saves" }` → `{ id, url, origin, scenario }` |

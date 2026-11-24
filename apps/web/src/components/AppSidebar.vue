@@ -5,7 +5,7 @@ import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import { areaLabels, useProjectStore } from '@web/stores/project.store'
-import { groupIcon, overviewIcon } from '@web/utils/group-icons'
+import { groupIcon, overviewIcon, widgetsIcon } from '@web/utils/group-icons'
 import { formatCount } from '@web/utils/time.utils'
 
 const storageKey = 'zoho-studio:sidebar-expanded'
@@ -73,6 +73,18 @@ const activeClass = '!bg-accent !text-white'
                 </template>
             </RouterLink>
         </template>
+
+        <RouterLink
+            :to="{ name: 'widgets' }"
+            class="nav-link group"
+            :class="expanded ? 'w-full px-2 mt-3' : 'size-9 justify-center mt-2'"
+            :active-class="activeClass"
+            aria-label="Widgets"
+        >
+            <component :is="widgetsIcon" :size="18" class="shrink-0" />
+            <span v-if="expanded">Widgets</span>
+            <span v-else class="activity-tooltip">Widgets</span>
+        </RouterLink>
 
         <button
             type="button"
