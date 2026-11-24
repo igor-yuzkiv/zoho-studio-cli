@@ -18,6 +18,8 @@ shows the downloaded files and runs downloads from the browser.
 - **Browse** what was downloaded in a local web app and refresh any part of it. → [Browser](6-browser.md)
 - **Create** modules and add fields from migration files, checked against the CRM before anything
   is sent. → [Migrations](7-migrations.md)
+- **Run and test widgets** without Zoho: Zoho Studio plays the CRM around them, answers their SDK
+  calls, and runs automated tests with screenshots. → [Widgets](10-widgets.md)
 
 Zoho Studio never changes anything in your CRM except through a migration you run and confirm.
 
@@ -37,6 +39,7 @@ in the Zoho CRM organization with permission to view its setup — for migration
 7. [Migrations](7-migrations.md) — creating modules and fields
 8. [Troubleshooting](8-troubleshooting.md) — common errors and what to do
 9. [Scripts and packages](9-scripts-and-packages.md) — your own scripts with the shipped packages
+10. [Widgets](10-widgets.md) — running and testing widgets without Zoho
 
 The words these pages use — artifact, pull, snapshot, source, scaffold, import, deploy — are defined in the [glossary](../glossary.md).
 

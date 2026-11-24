@@ -30,8 +30,14 @@ describe('initializeProject', () => {
         expect(await Bun.file(join(workingPath, 'data/.gitkeep')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, 'src/zoho-crm/functions/.gitkeep')).exists()).toBe(true)
         expect(await readTemplateFile(workingPath, 'logs/.gitignore')).toBe('*.log\n')
-        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe('settings.json\norg.json\nmigrations.json\n')
-        expect(await readTemplateFile(workingPath, '.gitignore')).toBe('node_modules\n')
+        expect(await readTemplateFile(workingPath, '.zoho-studio/.gitignore')).toBe(
+            'settings.json\norg.json\nmigrations.json\n'
+        )
+        expect(await readTemplateFile(workingPath, '.gitignore')).toBe(
+            'node_modules\nwidgets/*/results/\nwidgets/.report/\ntest-results/\n'
+        )
+        expect(await Bun.file(join(workingPath, 'widgets/.gitkeep')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, '.claude/skills/zoho-crm-widget-testing/SKILL.md')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
             dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },
         })

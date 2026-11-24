@@ -9,12 +9,16 @@ import exampleScript from '../../../../../template/scripts/example.ts.tmpl' with
 import migrateScript from '../../../../../template/scripts/migrate.ts.tmpl' with { type: 'file' }
 import exampleMigration from '../../../../../template/scripts/example-migration.ts.txt' with { type: 'file' }
 import migrationsKeep from '../../../../../template/migrations/zoho-crm/.gitkeep' with { type: 'file' }
+import widgetsKeep from '../../../../../template/widgets/.gitkeep' with { type: 'file' }
+import widgetTestingSkill from '../../../../../template/.claude/skills/zoho-crm-widget-testing/SKILL.md' with { type: 'file' }
+import widgetSdkReference from '../../../../../template/.claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md' with { type: 'file' }
 
 import {
     logsDirName,
     migrationsDirName,
     workspaceDataDirName,
     workspaceSettingsDirName,
+    widgetsDirName,
     workspaceSourceDirName,
 } from '@zoho-studio/core'
 import { functionsDirName, zohoCrmDirName } from '@zoho-studio/zoho-crm'
@@ -51,4 +55,10 @@ export const templateFiles: TemplateFile[] = [
     { embeddedPath: migrateScript, destination: 'scripts/migrate.ts' },
     { embeddedPath: exampleMigration, destination: 'scripts/example-migration.ts.txt' },
     { embeddedPath: migrationsKeep, destination: `${migrationsDirName}/${zohoCrmDirName}/.gitkeep` },
+    { embeddedPath: widgetsKeep, destination: `${widgetsDirName}/.gitkeep` },
+    { embeddedPath: widgetTestingSkill, destination: '.claude/skills/zoho-crm-widget-testing/SKILL.md' },
+    {
+        embeddedPath: widgetSdkReference,
+        destination: '.claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md',
+    },
 ]
