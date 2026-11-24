@@ -15,6 +15,7 @@ export interface ScaffoldWidgetOptions {
     url: string
     location?: WidgetLocation
     module?: string
+    source?: string
 }
 
 /** Every file `z-crm:widgets:make` creates, keyed by its path relative to the project. */
@@ -35,6 +36,7 @@ export async function scaffoldWidget(
         url: options.url,
         location: options.location,
         defaultScenario: 'default',
+        source: options.source,
     })
     const widgetDir = resolveWidgetDirPath(projectPath, description.name)
 
@@ -44,7 +46,12 @@ export async function scaffoldWidget(
 
     const files: Record<string, string> = {
         [`widgets/${description.name}/${widgetDescriptionFileName}`]: `${JSON.stringify(
-            { url: description.url, location: description.location, defaultScenario: description.defaultScenario },
+            {
+                url: description.url,
+                location: description.location,
+                defaultScenario: description.defaultScenario,
+                source: description.source,
+            },
             null,
             4
         )}\n`,

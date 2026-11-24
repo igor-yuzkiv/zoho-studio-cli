@@ -48,11 +48,16 @@ export function parseWidgetDescription(name: string, raw: unknown): WidgetDescri
         throw new Error(`${where}: "defaultScenario" must be a scenario name.`)
     }
 
+    if (source.source !== undefined && (typeof source.source !== 'string' || source.source.trim() === '')) {
+        throw new Error(`${where}: "source" must be the path to the widget's code.`)
+    }
+
     return {
         name,
         url: source.url,
         location: source.location as WidgetLocation | undefined,
         defaultScenario: source.defaultScenario as string | undefined,
+        source: source.source as string | undefined,
     }
 }
 
@@ -76,7 +81,10 @@ export function resolveWidgetSdkCall(data: WidgetSdkPayload): WidgetSdkCall {
 
     switch (category) {
         case 'READ':
-            if (data.APIData?.RecordID && data.APIData?.RelatedListAPIName) return supported('API.getRelatedRecords')
+            // The SDK's own examples pass RelatedList, Zoho's widget docs RelatedListAPIName.
+            if (data.APIData?.RecordID && (data.APIData?.RelatedList || data.APIData?.RelatedListAPIName)) {
+                return supported('API.getRelatedRecords')
+            }
             return supported(data.APIData?.RecordID ? 'API.getRecord' : 'API.getAllRecords')
         case 'CREATE':
             if (type === 'NOTES') return supported('API.addNotes')

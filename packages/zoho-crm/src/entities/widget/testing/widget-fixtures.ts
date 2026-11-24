@@ -18,8 +18,11 @@ export interface WidgetCallRecord {
 }
 
 export interface WidgetPage {
-    /** Opens the widget in a fresh emulator session, so its call log is its own. */
-    open(options: { widget: string; scenario?: string }): Promise<void>
+    /**
+     * Opens the widget in a fresh emulator session, so its call log is its own. `mocks` replace the
+     * scenario's mocks of the same name for this test; they are data, `{ $reject: value }` rejects.
+     */
+    open(options: { widget: string; scenario?: string; mocks?: Record<string, unknown> }): Promise<void>
     /** The widget itself, inside the harness page. */
     readonly frame: FrameLocator
     calls(): Promise<WidgetCallRecord[]>
@@ -89,11 +92,19 @@ function createWidgetPage(page: Page, testInfo: TestInfo, emulatorUrl: string, p
         get resultsDir() {
             return resultsDir
         },
-        async open({ widget, scenario }: { widget: string; scenario?: string }) {
+        async open({
+            widget,
+            scenario,
+            mocks,
+        }: {
+            widget: string
+            scenario?: string
+            mocks?: Record<string, unknown>
+        }) {
             session = await api('/api/sessions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ widget, scenario }),
+                body: JSON.stringify({ widget, scenario, mocks }),
             })
             resultsDir = join(projectPath, 'widgets', widget, 'results', toRunName(testInfo))
             await page.goto(session!.url)

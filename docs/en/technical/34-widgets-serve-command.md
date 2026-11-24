@@ -44,7 +44,7 @@ widgets/<name>/
 `widget.json`:
 
 ```json
-{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default" }
+{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "source": "../deal-card-widget/app" }
 ```
 
 - `url` — required, the http(s) address the widget runs at. Its query and hash are kept.
@@ -52,6 +52,8 @@ widgets/<name>/
   `Wizard`, `Signal`, `Settings`, `Blueprint`. It is shown in `browser`; it does not change what the
   widget receives.
 - `defaultScenario` — optional, the scenario a session uses when none is named.
+- `source` — optional, where the widget's code is, relative to the project or absolute. Zoho Studio
+  does not read it; it tells an agent where to look for the SDK calls the widget makes.
 
 [`z-crm:widgets:make`](35-widgets-make-command.md) creates such a folder.
 
@@ -88,8 +90,9 @@ export default defineWidgetScenario({
 })
 ```
 
-A mock is keyed by the SDK method name. Data resolves the widget's promise; a function receives the
-call's arguments, and what it returns resolves the promise, what it throws rejects it. An `Error`
+A mock is keyed by the SDK method name. Data resolves the widget's promise, and
+`{ $reject: value }` rejects it with `value`; a function receives the call's arguments, and what it
+returns is treated the same way, what it throws rejects the promise. An `Error`
 is sent as `{ code: 'ZOHO_STUDIO_ERROR', message }`. The file is imported again for every session,
 so an edit applies to the next one without a restart.
 
@@ -152,8 +155,18 @@ test('saves the review', async ({ widgetPage }) => {
 })
 ```
 
-- `open({ widget, scenario? })` — opens the widget in a new session; it waits until the widget
-  registers and fails with the emulator's message if it does not.
+- `open({ widget, scenario?, mocks? })` — opens the widget in a new session; it waits until the
+  widget registers and fails with the emulator's message if it does not. `mocks` replace the
+  scenario's mocks of the same name for this test only; they are data, so a test needs no scenario
+  file for one changed answer:
+
+  ```ts
+  await widgetPage.open({
+      widget: 'deal-card',
+      mocks: { 'API.updateRecord': { $reject: { code: 'INVALID_DATA', message: 'invalid data' } } },
+  })
+  ```
+
 - `frame` — the widget, a Playwright `FrameLocator`.
 - `calls()`, `waitForCall(method, { timeout? })` — the session's call log.
 - `emit(name, data?)` — sends an event.
@@ -184,7 +197,7 @@ emulator's own — such as one from the widget — is refused with `403`.
 | Method and path | Does |
 |---|---|
 | `GET /api/widgets` | the widgets in `widgets/` with their scenarios |
-| `POST /api/sessions` | opens a session: `{ "widget": "deal-card", "scenario": "saves" }` → `{ id, widget, scenario, url }` |
+| `POST /api/sessions` | opens a session: `{ "widget": "deal-card", "scenario": "saves", "mocks": { … } }` → `{ id, widget, scenario, url }`; `scenario` and `mocks` are optional |
 | `GET /api/sessions/:id` | the session |
 | `DELETE /api/sessions/:id` | closes it |
 | `GET /api/sessions/:id/calls` | the call log: `[{ at, method, args, ok, response \| error }]` |

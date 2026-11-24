@@ -44,7 +44,7 @@ widgets/<name>/
 `widget.json`:
 
 ```json
-{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default" }
+{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "source": "../deal-card-widget/app" }
 ```
 
 - `url` — обов'язкова http(s)-адреса, за якою працює віджет. Її query і hash зберігаються.
@@ -52,6 +52,8 @@ widgets/<name>/
   `Wizard`, `Signal`, `Settings`, `Blueprint`. Показується в `browser` і не змінює того, що отримує
   віджет.
 - `defaultScenario` — необов'язково, сценарій сесії, коли його не названо.
+- `source` — необов'язково, де лежить код віджета, відносно проєкту або абсолютним шляхом. Zoho
+  Studio його не читає; він підказує агенту, де шукати виклики SDK, які робить віджет.
 
 Таку папку створює [`z-crm:widgets:make`](35-widgets-make-command.md).
 
@@ -88,8 +90,9 @@ export default defineWidgetScenario({
 })
 ```
 
-Ключ моку — ім'я методу SDK. Дані вирішують проміс віджета; функція отримує аргументи виклику, і те,
-що вона повертає, вирішує проміс, а те, що кидає, — відхиляє. `Error` надсилається як
+Ключ моку — ім'я методу SDK. Дані вирішують проміс віджета, а `{ $reject: value }` відхиляє його з
+`value`; функція отримує аргументи виклику, і з тим, що вона повертає, відбувається те саме, а те, що
+вона кидає, відхиляє проміс. `Error` надсилається як
 `{ code: 'ZOHO_STUDIO_ERROR', message }`. Файл імпортується заново для кожної сесії, тож правка діє з
 наступної сесії без перезапуску.
 
@@ -152,8 +155,18 @@ test('saves the review', async ({ widgetPage }) => {
 })
 ```
 
-- `open({ widget, scenario? })` — відкриває віджет у новій сесії; чекає, поки віджет зареєструється,
-  а якщо ні — падає з повідомленням емулятора.
+- `open({ widget, scenario?, mocks? })` — відкриває віджет у новій сесії; чекає, поки віджет
+  зареєструється, а якщо ні — падає з повідомленням емулятора. `mocks` замінюють однойменні моки
+  сценарію лише для цього тесту; це дані, тож для однієї зміненої відповіді окремий файл сценарію
+  не потрібен:
+
+  ```ts
+  await widgetPage.open({
+      widget: 'deal-card',
+      mocks: { 'API.updateRecord': { $reject: { code: 'INVALID_DATA', message: 'invalid data' } } },
+  })
+  ```
+
 - `frame` — сам віджет, `FrameLocator` Playwright.
 - `calls()`, `waitForCall(method, { timeout? })` — журнал викликів сесії.
 - `emit(name, data?)` — надсилає подію.
@@ -184,7 +197,7 @@ Playwright виконує тести в Node, а не в Bun; фікстура �
 | Метод і шлях | Що робить |
 |---|---|
 | `GET /api/widgets` | віджети з `widgets/` та їхні сценарії |
-| `POST /api/sessions` | відкриває сесію: `{ "widget": "deal-card", "scenario": "saves" }` → `{ id, widget, scenario, url }` |
+| `POST /api/sessions` | відкриває сесію: `{ "widget": "deal-card", "scenario": "saves", "mocks": { … } }` → `{ id, widget, scenario, url }`; `scenario` і `mocks` необов'язкові |
 | `GET /api/sessions/:id` | сесія |
 | `DELETE /api/sessions/:id` | закриває її |
 | `GET /api/sessions/:id/calls` | журнал викликів: `[{ at, method, args, ok, response \| error }]` |

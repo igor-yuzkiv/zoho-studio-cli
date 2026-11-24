@@ -6,7 +6,7 @@
 
 ```bash
 zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html
-zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals
+zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals -s ../deal-card-widget/app
 ```
 
 ```text
@@ -24,10 +24,11 @@ Created playwright.config.ts
 - `-l, --location <type>` — де Zoho CRM показує віджет: `Dashboard`, `Web Tab`, `Custom Button`,
   `Custom Related List`, `Wizard`, `Signal`, `Settings`, `Blueprint`.
 - `-m, --module <api_name>` — модуль зразкового запису, за замовчуванням `Leads`.
+- `-s, --source <path>` — де лежить код віджета, відносно проєкту або абсолютним шляхом.
 
 ## Що вона пише
 
-- `widget.json` — адреса, локація й `defaultScenario: "default"`.
+- `widget.json` — адреса, локація, шлях до коду й `defaultScenario: "default"`.
 - `scenarios/default.ts` — `PageLoad` для запису `1000000000001` модуля і порожні `mocks`.
 - `fixtures/<Module>.json` — цей запис.
 - `tests/<name>.spec.ts` — відкриває віджет і зберігає скріншот.

@@ -3,6 +3,7 @@ import type {
     WidgetCallLogEntry,
     WidgetDescription,
     WidgetEventName,
+    WidgetMockData,
     WidgetScenario,
     WidgetSdkPayload,
 } from '../widget.types'
@@ -32,14 +33,20 @@ export interface WidgetSession {
     subscribe(listener: (event: WidgetPushedEvent) => void): () => void
 }
 
+/**
+ * `mockOverrides` replace the scenario's mocks of the same name for this session only; a test
+ * passes them to try one situation without a scenario file of its own.
+ */
 export async function createWidgetSession(
     projectPath: string,
     widgetName: string,
-    scenarioName?: string
+    scenarioName?: string,
+    mockOverrides: WidgetMockData = {}
 ): Promise<WidgetSession> {
     const widget = await readLocalWidget(projectPath, widgetName)
     const resolvedScenarioName = scenarioName ?? widget.defaultScenario
-    const scenario = await loadWidgetScenario(projectPath, widgetName, resolvedScenarioName)
+    const loadedScenario = await loadWidgetScenario(projectPath, widgetName, resolvedScenarioName)
+    const scenario = { ...loadedScenario, mocks: { ...loadedScenario.mocks, ...mockOverrides } }
     const calls: WidgetCallLogEntry[] = []
     const listeners = new Set<(event: WidgetPushedEvent) => void>()
 
@@ -76,7 +83,13 @@ export async function createWidgetSession(
         const mock = scenario.mocks?.[method]
 
         if (mock !== undefined) {
-            return typeof mock === 'function' ? await mock(args) : mock
+            const answer = typeof mock === 'function' ? await mock(args) : mock
+
+            if (isRejection(answer)) {
+                throw answer.$reject
+            }
+
+            return answer
         }
 
         const fallback = await answerWithDefault(projectPath, widgetName, method, args)
@@ -105,6 +118,10 @@ export async function createWidgetSession(
             return () => listeners.delete(listener)
         },
     }
+}
+
+function isRejection(value: unknown): value is { $reject: unknown } {
+    return typeof value === 'object' && value !== null && '$reject' in value
 }
 
 /** A mock rejects by throwing; an Error becomes a plain object, because it crosses postMessage. */

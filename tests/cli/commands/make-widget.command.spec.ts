@@ -30,7 +30,8 @@ describe('z-crm:widgets:make', () => {
             '--name=card',
             '--url=http://127.0.0.1:5000/app/widget.html',
             '--location=Custom Button',
-            '--module=Deals'
+            '--module=Deals',
+            '--source=../card-widget/app'
         )
 
         expect(printed).toEqual([
@@ -44,6 +45,7 @@ describe('z-crm:widgets:make', () => {
             url: 'http://127.0.0.1:5000/app/widget.html',
             location: 'Custom Button',
             defaultScenario: 'default',
+            source: '../card-widget/app',
         })
         expect(await readFile(join(projectPath, 'widgets/card/scenarios/default.ts'), 'utf8')).toContain(
             "pageLoad: { Entity: 'Deals', EntityId: '1000000000001' }"

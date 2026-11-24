@@ -1,7 +1,7 @@
 import type { WidgetSdkPayload } from '../widget.types'
 import { listLocalWidgets, listWidgetScenarios } from '../services/local-widgets.service'
 import { widgetEventNames, widgetUrlWithServiceOrigin } from '../widget.utils'
-import type { WidgetEventName } from '../widget.types'
+import type { WidgetEventName, WidgetMockData } from '../widget.types'
 import { renderWidgetHarnessPage } from './widget-harness.page'
 import { createWidgetSession, type WidgetSession } from './widget-session.service'
 
@@ -14,7 +14,7 @@ export interface WidgetSessionInfo {
 
 export interface WidgetEmulator {
     origin: string
-    createSession(widgetName: string, scenarioName?: string): Promise<WidgetSessionInfo>
+    createSession(widgetName: string, scenarioName?: string, mocks?: WidgetMockData): Promise<WidgetSessionInfo>
     stop(): Promise<void>
 }
 
@@ -31,8 +31,12 @@ export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulat
     const sessions = new Map<string, WidgetSession>()
     let origin = ''
 
-    async function createSession(widgetName: string, scenarioName?: string): Promise<WidgetSessionInfo> {
-        const session = await createWidgetSession(projectPath, widgetName, scenarioName)
+    async function createSession(
+        widgetName: string,
+        scenarioName?: string,
+        mocks?: WidgetMockData
+    ): Promise<WidgetSessionInfo> {
+        const session = await createWidgetSession(projectPath, widgetName, scenarioName, mocks)
         sessions.set(session.id, session)
 
         return describeSession(session)
@@ -71,14 +75,18 @@ export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulat
                 ),
             '/api/sessions': {
                 POST: async (request) => {
-                    const body = (await request.json().catch(() => ({}))) as { widget?: string; scenario?: string }
+                    const body = (await request.json().catch(() => ({}))) as {
+                        widget?: string
+                        scenario?: string
+                        mocks?: WidgetMockData
+                    }
 
                     if (!body.widget) {
                         return Response.json({ error: 'Expected { "widget": "<name>" }' }, { status: 400 })
                     }
 
                     try {
-                        return Response.json(await createSession(body.widget, body.scenario))
+                        return Response.json(await createSession(body.widget, body.scenario, body.mocks))
                     } catch (error) {
                         return Response.json(
                             { error: error instanceof Error ? error.message : String(error) },

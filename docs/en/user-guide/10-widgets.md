@@ -10,12 +10,12 @@ opens it at that address and plays Zoho CRM around it.
 ## Add a widget
 
 ```bash
-zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals
+zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --source=../deal-card-widget/app
 ```
 
 This creates `widgets/deal-card/` with:
 
-- `widget.json` — where the widget runs;
+- `widget.json` — where the widget runs and where its code is;
 - `scenarios/default.ts` — which record the widget opens on and how Zoho answers it;
 - `fixtures/Deals.json` — the records it can read;
 - `tests/deal-card.spec.ts` — an automated test.
@@ -51,6 +51,10 @@ export default defineWidgetScenario({
     },
 })
 ```
+
+A test can change an answer for itself without a new scenario:
+`widgetPage.open({ widget: 'deal-card', mocks: { 'API.searchRecord': { data: [] } } })`;
+`{ $reject: { … } }` as the answer makes the call fail, the way an error from Zoho does.
 
 When the widget calls something the scenario does not answer and Zoho Studio has no default for,
 the widget gets an error saying which method to add and where. Some SDK features — Deluge functions

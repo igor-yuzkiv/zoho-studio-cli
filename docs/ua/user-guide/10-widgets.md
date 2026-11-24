@@ -10,12 +10,12 @@ Studio відкриває його за цією адресою і грає ро
 ## Додати віджет
 
 ```bash
-zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals
+zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --source=../deal-card-widget/app
 ```
 
 Команда створює `widgets/deal-card/`, де лежать:
 
-- `widget.json` — де працює віджет;
+- `widget.json` — де працює віджет і де лежить його код;
 - `scenarios/default.ts` — на якому записі відкривається віджет і як відповідає Zoho;
 - `fixtures/Deals.json` — записи, які він може читати;
 - `tests/deal-card.spec.ts` — автоматичний тест.
@@ -51,6 +51,10 @@ export default defineWidgetScenario({
     },
 })
 ```
+
+Тест може змінити відповідь лише для себе, без нового сценарію:
+`widgetPage.open({ widget: 'deal-card', mocks: { 'API.searchRecord': { data: [] } } })`;
+відповідь `{ $reject: { … } }` змушує виклик завершитися помилкою, як помилка від Zoho.
 
 Коли віджет викликає те, на що сценарій не відповідає і для чого в Zoho Studio немає стандартної
 відповіді, віджет отримує помилку з назвою методу й місцем, куди його додати. Деякі можливості SDK —

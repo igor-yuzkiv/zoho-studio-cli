@@ -87,6 +87,21 @@ describe('widget emulator', () => {
         })
     })
 
+    test('lets a session replace scenario mocks with data, and reject with $reject', async () => {
+        const { id } = await emulator.createSession('card', 'saves', {
+            'API.searchRecord': { data: [] },
+            'API.updateRecord': { $reject: { code: 'INVALID_DATA' } },
+        })
+
+        expect((await sdk(id, { category: 'SEARCH', Entity: 'Leads' })).data).toEqual({ data: [] })
+        expect(
+            await sdk(id, { category: 'UPDATE', type: 'RECORD', Entity: 'Leads', APIData: { id: '1' } })
+        ).toMatchObject({
+            ok: false,
+            data: { code: 'INVALID_DATA' },
+        })
+    })
+
     test('tells a missing mock apart from an unsupported method', async () => {
         const { id } = await emulator.createSession('card')
 

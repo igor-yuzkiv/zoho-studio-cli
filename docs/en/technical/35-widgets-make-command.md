@@ -6,7 +6,7 @@ opens one record, a fixture with that record, and a Playwright test — a folder
 
 ```bash
 zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html
-zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals
+zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals -s ../deal-card-widget/app
 ```
 
 ```text
@@ -24,10 +24,11 @@ Created playwright.config.ts
 - `-l, --location <type>` — where Zoho CRM shows it: `Dashboard`, `Web Tab`, `Custom Button`,
   `Custom Related List`, `Wizard`, `Signal`, `Settings`, `Blueprint`.
 - `-m, --module <api_name>` — the module of the sample record, `Leads` by default.
+- `-s, --source <path>` — where the widget's code is, relative to the project or absolute.
 
 ## What it writes
 
-- `widget.json` — the address, the location, and `defaultScenario: "default"`.
+- `widget.json` — the address, the location, the source, and `defaultScenario: "default"`.
 - `scenarios/default.ts` — `PageLoad` for record `1000000000001` of the module, and an empty `mocks`.
 - `fixtures/<Module>.json` — that record.
 - `tests/<name>.spec.ts` — opens the widget and saves a screenshot.

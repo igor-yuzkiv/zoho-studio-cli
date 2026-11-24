@@ -8,12 +8,20 @@ export interface WidgetDescription {
     url: string
     location?: WidgetLocation
     defaultScenario?: string
+    /** Where the widget's code is, relative to the project or absolute, so an agent can read which SDK calls it makes. */
+    source?: string
 }
 
 export type WidgetEventName = (typeof widgetEventNames)[number]
 
-/** What a mock answers: data resolves the widget's promise, a thrown error rejects it. */
+/**
+ * What a mock answers: data resolves the widget's promise, `{ $reject: value }` or a thrown error
+ * rejects it.
+ */
 export type WidgetMockHandler = unknown | ((args: Record<string, unknown>) => unknown | Promise<unknown>)
+
+/** Mocks that are plain data, so they can cross from a test process to the emulator. */
+export type WidgetMockData = Record<string, unknown>
 
 /** One run of a widget: what `PageLoad` carries and how SDK methods answer, keyed `API.getRecord`. */
 export interface WidgetScenario {

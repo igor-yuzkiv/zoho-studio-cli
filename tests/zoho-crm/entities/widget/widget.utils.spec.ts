@@ -9,17 +9,22 @@ describe('parseWidgetDescription', () => {
                 url: 'http://127.0.0.1:5000/app/widget.html',
                 location: 'Custom Button',
                 defaultScenario: 'default',
+                source: '../deal-card-widget/app',
             })
         ).toEqual({
             name: 'card',
             url: 'http://127.0.0.1:5000/app/widget.html',
             location: 'Custom Button',
             defaultScenario: 'default',
+            source: '../deal-card-widget/app',
         })
     })
 
     test('names the widget and the field it rejects', () => {
         expect(() => parseWidgetDescription('card', {})).toThrow('widgets/card/widget.json: "url"')
+        expect(() => parseWidgetDescription('card', { url: 'http://x', source: '' })).toThrow(
+            'widgets/card/widget.json: "source" must be the path'
+        )
         expect(() => parseWidgetDescription('card', { url: 'http://x', location: 'Sidebar' })).toThrow(
             'widgets/card/widget.json: "location" must be one of'
         )
@@ -40,6 +45,10 @@ describe('resolveWidgetSdkCall', () => {
         [{ category: 'READ', APIData: { Entity: 'Leads' } }, 'API.getAllRecords'],
         [
             { category: 'READ', APIData: { Entity: 'Leads', RecordID: '1', RelatedListAPIName: 'Notes' } },
+            'API.getRelatedRecords',
+        ],
+        [
+            { category: 'READ', APIData: { Entity: 'Leads', RecordID: '1', RelatedList: 'Notes' } },
             'API.getRelatedRecords',
         ],
         [{ category: 'CREATE', type: 'RECORD', APIData: { action: 'UPSERT' } }, 'API.upsertRecord'],
