@@ -1,0 +1,3 @@
+[test]
+# Specs live in tests/; scratch projects under _tmp may hold Playwright specs bun must not run.
+root = "tests"

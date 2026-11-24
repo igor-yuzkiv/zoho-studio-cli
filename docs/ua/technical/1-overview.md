@@ -61,3 +61,5 @@ bun run dev -- init my-project
 - [31-functions-import-command.md](31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/` командою `zoho-studio z-crm:functions:import`
 - [33-functions-run-command.md](33-functions-run-command.md) — запуск коду функції з `src/` або `data/` у Zoho командою `zoho-studio z-crm:functions:run`
 - [32-migrations-make-command.md](32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями командою `zoho-studio z-crm:migrations:make`
+- [34-widgets-serve-command.md](34-widgets-serve-command.md) — запуск віджетів в емульованій Zoho CRM, сценарії, фікстури й e2e-тести командою `zoho-studio z-crm:widgets:serve`
+- [35-widgets-make-command.md](35-widgets-make-command.md) — створення папки віджета, яка одразу працює, командою `zoho-studio z-crm:widgets:make`

@@ -23,6 +23,7 @@ import { pullGlobalPicklistsCommand } from '@/commands/zoho-crm/global-picklists
 import { pullProfilesCommand } from '@/commands/zoho-crm/profiles'
 import { pullClientScriptsCommand } from '@/commands/zoho-crm/client-scripts'
 import { pullStaticResourcesCommand } from '@/commands/zoho-crm/static-resources'
+import { makeWidgetCommand, serveWidgetsCommand } from '@/commands/zoho-crm/widgets'
 import { browserCommand } from '@/commands/browser'
 
 const program = new Command()
@@ -49,6 +50,8 @@ program.addCommand(pullGlobalPicklistsCommand)
 program.addCommand(pullProfilesCommand)
 program.addCommand(pullClientScriptsCommand)
 program.addCommand(pullStaticResourcesCommand)
+program.addCommand(makeWidgetCommand)
+program.addCommand(serveWidgetsCommand)
 program.addCommand(browserCommand)
 program.addCommand(presetCommand)
 
