@@ -29,7 +29,7 @@ it: `functions`, `fields`, `modules`, `logger`, `utils`, `shared`.
 
 ## Task references
 
-Project Office task keys are `ZS-<number>`. When the identifier is known, put it alone on the last
+Task keys are `ZS-<number>` (the `ZS` workspace in Workbench). When the identifier is known, put it alone on the last
 line of the body, separated by a blank line:
 
 ```text

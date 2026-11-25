@@ -21,15 +21,6 @@ itself.
 Mechanical restrictions live in `.claude/settings.json`. Never work around a blocked action:
 explain what was blocked and why it is needed.
 
-## Project Office task workflow
-
-When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
-CLI workflow for task context, durable checkpoints, and handoff. Project Office records the work;
-`/composable-pipeline:run-task` governs how the work is performed.
-
-The assembled workflow is part of that record. Checkpoint it once the user confirms it, and
-checkpoint every later deviation — see the conventions at the end of `.project-office/AGENTS.md`.
-
 ## What leaves this machine
 
 The agent commits; the person pushes. A push, a pull request, a release, or a message to a
@@ -37,7 +28,7 @@ client happens on an explicit instruction and is announced before it is sent.
 
 A commit carries no agent attribution: no `Co-Authored-By` trailer, no session link.
 
-This repository is personal, so a Project Office task key may go into a commit message, as the
-last line of the body (see `.claude/rules/git.md`). Checkpoints, session names, and local paths
-stay in the board and the chat; they do not appear in commit messages, code comments,
+This repository is personal, so a task key may go into a commit message, as the
+last line of the body (see `.claude/rules/git.md`). Task states, session names, and local paths
+stay in the tracker and the chat; they do not appear in commit messages, code comments,
 client-facing documents, or mockups.

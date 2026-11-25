@@ -5,16 +5,6 @@
 #
 # No secrets, no absolute paths. See the plugin template for the reasoning.
 
-artifacts:
-  progress_update: project-office
-  client_update: none
-  test_plan: project-office:comments
-  workflow_record: project-office
-  list_flow: project-office
-  coverage_pass:
-  options:
-  architecture:
-
 language:
   chat: Ukrainian
   code: English

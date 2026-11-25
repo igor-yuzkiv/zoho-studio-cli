@@ -15,8 +15,7 @@
             "Bash(git branch:*)",
             "Bash(git stash list:*)",
             "Bash(git add:*)",
-            "Bash(git commit:*)",
-            "Bash(project-office:*)"
+            "Bash(git commit:*)"
         ],
         "ask": [
             "Bash(git push:*)",

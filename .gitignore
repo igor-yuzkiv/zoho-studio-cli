@@ -39,7 +39,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 _tmp
 .claude/settings.local.json
 /.zoho-studio
-.project-office/repo-settings.json
 
 # temporary entry point of scripts/compile.ts
 .build
