@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 
-import { createCliPullProgress, printPullResult } from '@zoho-studio/core'
+import { createCliPullProgress, reportPullResult } from '@zoho-studio/core'
 import { pullLayouts, type PullLayoutsOptions } from '@zoho-studio/zoho-crm/layout'
 
 export const pullLayoutsCommand = new Command('z-crm:layouts:pull')
@@ -9,5 +9,5 @@ export const pullLayoutsCommand = new Command('z-crm:layouts:pull')
     )
     .option('--module <api_name>', 'Pull the layouts of a single module')
     .action(async (options: PullLayoutsOptions) => {
-        printPullResult(await pullLayouts(options, createCliPullProgress('layouts')))
+        reportPullResult(await pullLayouts(options, createCliPullProgress('layouts')))
     })
