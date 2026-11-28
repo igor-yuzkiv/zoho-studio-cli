@@ -24,8 +24,9 @@ explain what was blocked and why it is needed.
 
 ## What leaves this machine
 
-The agent commits; the person pushes. A push, a pull request, a release, or a message to a
-client happens on an explicit instruction and is announced before it is sent.
+The agent may push when the person asks for it or agrees to it. A push, a pull request, a
+release, or a message to a client happens on an explicit instruction and is announced before it
+is sent.
 
 A task key may go into a commit message (see `.claude/rules/git.md`). Task states, session names, and local paths
 stay in the tracker and the chat; they do not appear in commit messages, code comments,

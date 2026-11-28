@@ -41,8 +41,8 @@ version number and the moment of the release are the user's; how to choose a num
 9. **Merge into `master`:** `git switch master && git merge --no-ff develop -m "Release
    v<version>"`.
 10. **Tag** the merge commit: `git tag -a v<version> -m "v<version>"`. Switch back to `develop`.
-11. **Push** `develop`, `master`, and the tag only on a separate permission from the user;
-    otherwise name the commands left to run:
+11. **Push** `develop`, `master`, and the tag when the user asks or agrees to it — offer it once
+    the release is done; otherwise name the commands left to run:
     `git push origin develop master` and `git push origin v<version>`.
 
 ## Rules
