@@ -31,13 +31,15 @@ describe('z-crm:widgets:make', () => {
             '--url=http://127.0.0.1:5000/app/widget.html',
             '--location=Custom Button',
             '--module=Deals',
-            '--source=../card-widget/app'
+            '--source=../card-widget/app',
+            '--run=npm run dev'
         )
 
         expect(printed).toEqual([
             'Created widgets/card/widget.json',
-            'Created widgets/card/scenarios/default.ts',
-            'Created widgets/card/tests/card.spec.ts',
+            'Created widgets/card/testing/scenarios/default.ts',
+            'Created widgets/card/testing/mocks/record.ts',
+            'Created widgets/card/testing/tests/card.spec.ts',
             'Created playwright.config.ts',
         ])
         expect(JSON.parse(await readFile(join(projectPath, 'widgets/card/widget.json'), 'utf8'))).toEqual({
@@ -45,12 +47,16 @@ describe('z-crm:widgets:make', () => {
             location: 'Custom Button',
             defaultScenario: 'default',
             source: '../card-widget/app',
+            run: { command: 'npm run dev' },
         })
-        expect(await readFile(join(projectPath, 'widgets/card/scenarios/default.ts'), 'utf8')).toContain(
-            "pageLoad: { Entity: 'Deals', EntityId: '1000000000001' }"
-        )
-        expect(await readFile(join(projectPath, 'widgets/card/scenarios/default.ts'), 'utf8')).toContain(
+        const scenario = await readFile(join(projectPath, 'widgets/card/testing/scenarios/default.ts'), 'utf8')
+        expect(scenario).toContain("pageLoad: { Entity: 'Deals', EntityId: '1000000000001' }")
+        expect(scenario).toContain("use: ['record']")
+        expect(await readFile(join(projectPath, 'widgets/card/testing/mocks/record.ts'), 'utf8')).toContain(
             "'API.getRecord': { data: [{ id: '1000000000001' }] }"
+        )
+        expect(await readFile(join(projectPath, 'playwright.config.ts'), 'utf8')).toContain(
+            "testMatch: '**/testing/tests/**/*.spec.ts'"
         )
     })
 

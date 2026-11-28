@@ -1,6 +1,7 @@
 export {
     listLocalWidgets,
     listWidgetScenarios,
+    loadWidgetMocks,
     loadWidgetScenario,
     readLocalWidget,
     resolveWidgetDirPath,

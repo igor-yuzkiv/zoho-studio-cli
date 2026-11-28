@@ -4,20 +4,22 @@ Zoho Studio runs your Zoho CRM widgets on your computer, without Zoho: you open 
 record and answers to its SDK calls, and you see what it does — by hand or in automated tests with
 screenshots. You build the widget your usual way; nothing in its code changes.
 
-**Your widget must be running** — with `zet run`, a dev server, or any static server. Zoho Studio
-opens it at that address and plays Zoho CRM around it.
+**Your widget runs at its own address** — with `zet run`, a dev server, or any static server. Zoho Studio opens it there and plays Zoho CRM around it. Give it the command that starts the widget, and Zoho Studio starts it when needed.
 
 ## Add a widget
 
 ```bash
-zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --source=../deal-card-widget/app
+zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --run="npm run dev"
 ```
 
 This creates `widgets/deal-card/` with:
 
-- `widget.json` — where the widget runs and where its code is;
-- `scenarios/default.ts` — which record the widget opens on and how Zoho answers it;
-- `tests/deal-card.spec.ts` — an automated test.
+- `widget.json` — where the widget runs, where its code is, and how to start it;
+- `testing/scenarios/default.ts` — which record the widget opens on;
+- `testing/mocks/record.ts` — how Zoho answers reading that record;
+- `testing/tests/deal-card.spec.ts` — an automated test.
+
+Put the widget's code in `widgets/deal-card/src/`: the run command starts there. A widget that lives elsewhere — another repository, a shared folder — stays where it is: pass `--source=<path to its folder>` instead.
 
 Zoho Studio answers nothing on its own: every SDK call the widget makes — reading a record, its
 fields, the org, even `UI.Resize` — needs an answer in the scenario.
@@ -37,23 +39,30 @@ address to open.
 
 ## Describe situations with scenarios
 
-A scenario is one situation: a record, a user's answer from Zoho, an error. Write one file per
-situation in `scenarios/` and list the answers you need under `mocks`, by SDK method name:
+A scenario is one situation: a record, a user, an error. Answers from Zoho live separately, in `testing/mocks/`, by SDK method name, so several scenarios and tests share them:
 
 ```ts
+// testing/mocks/saving.ts
+import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
+
+export default defineWidgetMocks({
+    'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
+})
+```
+
+A scenario in `testing/scenarios/` names the record and the mocks it uses:
+
+```ts
+// testing/scenarios/saves.ts
 import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
 
 export default defineWidgetScenario({
     pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
-    mocks: {
-        'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
-    },
+    use: ['record', 'saving'],
 })
 ```
 
-A test can change an answer for itself without a new scenario:
-`widgetPage.open({ widget: 'deal-card', mocks: { 'API.searchRecord': { data: [] } } })`;
-`{ $reject: { … } }` as the answer makes the call fail, the way an error from Zoho does.
+A test can change an answer for itself without a new scenario: `widgetPage.open({ widget: 'deal-card', use: ['empty-search'] })` or `mocks: { 'API.searchRecord': { data: [] } }`; `{ $reject: { … } }` as the answer makes the call fail, the way an error from Zoho does.
 
 When the widget calls something the scenario does not answer, the widget gets an error saying which method to add and where. Some SDK features — Deluge functions
 (`FUNCTIONS.execute`), Blueprint, Wizard, ZRC — answer with an error saying Zoho Studio does not run
@@ -68,13 +77,13 @@ bun add -d @playwright/test
 bunx playwright install chromium
 ```
 
-Then, with the widget running:
+Then:
 
 ```bash
 bunx playwright test
 ```
 
-`playwright.config.ts` starts Zoho Studio's emulator for you. Each test leaves its screenshots and
+`playwright.config.ts` starts Zoho Studio's emulator for you, and the emulator starts the widget with its run command; without one, start the widget first. Each test leaves its screenshots and
 the list of SDK calls (`calls.json`) in `widgets/<name>/results/<test>/`; the HTML report is in
 `widgets/.report/`. Keep both out of git — new projects already ignore them.
 

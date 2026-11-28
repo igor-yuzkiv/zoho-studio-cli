@@ -1,7 +1,9 @@
 # z-crm:widgets:serve
 
 Starts the widget emulator on `127.0.0.1:4610` (`--port` to change). With `--widget <name>` (and
-`--scenario`) it also opens a session and prints the address to open. Runs until Ctrl+C.
+`--scenario`) it also opens a session and prints the address to open. A widget with `run` in its
+`widget.json` is started at its first session and stopped with the emulator. Runs until Ctrl+C or
+SIGTERM.
 
 - **Writes to Zoho:** no — every SDK call is answered from the scenario. **Needs login:** no.
 
@@ -9,23 +11,35 @@ Playwright starts it through `webServer` in `playwright.config.ts`, so tests rar
 hand; to show a widget to the person, start it in the background. The process of testing a widget is
 in `zoho-studio instructions z-crm:widgets`.
 
-## Scenarios
+## Scenarios and mocks
 
 ```ts
+// widgets/<name>/testing/mocks/saving.ts — answers, shared by scenarios and tests
+import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
+
+export default defineWidgetMocks({
+    'API.searchRecord': { data: [] },
+    'API.updateRecord': ({ APIData }) => ({
+        data: [{ code: 'SUCCESS', details: { id: APIData.id }, message: 'record updated', status: 'success' }],
+    }),
+    'API.deleteRecord': { $reject: { code: 'NO_PERMISSION', message: 'permission denied' } },
+})
+```
+
+```ts
+// widgets/<name>/testing/scenarios/saves.ts — a situation
 import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
 
 export default defineWidgetScenario({
     pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
-    mocks: {
-        'API.getRecord': { data: [{ id: '1000000000001', Deal_Name: 'Acme renewal', Amount: 1200 }] },
-        'API.searchRecord': { data: [] },
-        'API.updateRecord': ({ APIData }) => ({
-            data: [{ code: 'SUCCESS', details: { id: APIData.id }, message: 'record updated', status: 'success' }],
-        }),
-        'API.deleteRecord': { $reject: { code: 'NO_PERMISSION', message: 'permission denied' } },
-    },
+    use: ['record', 'saving'],
+    mocks: { 'API.getRecord': { data: [{ id: '1000000000001', Deal_Name: 'Acme renewal', Amount: 1200 }] } },
 })
 ```
+
+- Order, a later one replacing an earlier one of the same key: the scenario's `use` files in
+  order, the scenario's `mocks`, the test's `use`, the test's `mocks`. A `use` name with no file
+  fails the session with the path it looked for.
 
 - `pageLoad` is sent as written, once, after the widget registers — give it what the widget reads
   (`Entity`, `EntityId`, `ButtonPosition`, …).
@@ -33,10 +47,10 @@ export default defineWidgetScenario({
   arguments and its return value is treated the same way, what it throws rejects. An `Error` is
   sent as `{ code: 'ZOHO_STUDIO_ERROR', message }`.
 - Records: `id` as a string, fields by API name.
-- The file is imported again for every session: an edit applies without a restart. Large or shared
-  data can live in modules or JSON files the scenario imports.
-- Under the compiled `zoho-studio` a scenario can import only `defineWidgetScenario` from
-  `@zoho-studio/zoho-crm/widget`: the executable does not load the project's `node_modules`.
+- Scenario and mocks files are imported again for every session: an edit applies without a restart.
+- Under the compiled `zoho-studio` these files can import only `defineWidgetScenario` and
+  `defineWidgetMocks` from `@zoho-studio/zoho-crm/widget`: the executable does not load the
+  project's `node_modules`.
 
 ## Mock keys
 
@@ -100,6 +114,6 @@ A mock rejects with `{ $reject: value }` or by throwing. Give it the shape Zoho 
 ## HTTP API
 
 The harness page and the fixture use it; a request whose `Origin` is not the emulator's own is
-refused with `403`. `GET /api/widgets`; `POST /api/sessions` `{ widget, scenario?, mocks? }`;
+refused with `403`. `GET /api/widgets`; `POST /api/sessions` `{ widget, scenario?, use?, mocks? }`;
 `GET|DELETE /api/sessions/:id`; `GET /api/sessions/:id/calls` — the call log
 `[{ at, method, args, ok, response | error }]`; `POST /api/sessions/:id/events` `{ name, data }`.

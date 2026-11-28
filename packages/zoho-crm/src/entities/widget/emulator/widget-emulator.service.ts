@@ -3,7 +3,8 @@ import { listLocalWidgets, listWidgetScenarios } from '../services/local-widgets
 import { widgetEventNames, widgetUrlWithServiceOrigin } from '../widget.utils'
 import type { WidgetEventName, WidgetMockData } from '../widget.types'
 import { renderWidgetHarnessPage } from './widget-harness.page'
-import { createWidgetSession, type WidgetSession } from './widget-session.service'
+import { createWidgetRunner } from './widget-runner.service'
+import { createWidgetSession, type WidgetSession, type WidgetSessionOverrides } from './widget-session.service'
 
 export interface WidgetSessionInfo {
     id: string
@@ -14,29 +15,38 @@ export interface WidgetSessionInfo {
 
 export interface WidgetEmulator {
     origin: string
-    createSession(widgetName: string, scenarioName?: string, mocks?: WidgetMockData): Promise<WidgetSessionInfo>
+    createSession(widgetName: string, scenarioName?: string, overrides?: WidgetSessionOverrides): Promise<WidgetSessionInfo>
+    /** Stops the server and every widget it started with its `run` command. */
     stop(): Promise<void>
 }
 
 export interface StartWidgetEmulatorOptions {
     projectPath: string
     port?: number
+    /** How long a widget's `run` command has to make its `url` answer. */
+    widgetStartTimeoutMs?: number
 }
 
 /**
  * Serves harness pages and the session API. Bound to 127.0.0.1 only, and always named that way,
  * because the SDK compares the parent's origin to `serviceOrigin` character for character.
  */
-export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulatorOptions): WidgetEmulator {
+export function startWidgetEmulator({
+    projectPath,
+    port = 0,
+    widgetStartTimeoutMs,
+}: StartWidgetEmulatorOptions): WidgetEmulator {
     const sessions = new Map<string, WidgetSession>()
+    const runner = createWidgetRunner(projectPath, { startTimeoutMs: widgetStartTimeoutMs })
     let origin = ''
 
     async function createSession(
         widgetName: string,
         scenarioName?: string,
-        mocks?: WidgetMockData
+        overrides?: WidgetSessionOverrides
     ): Promise<WidgetSessionInfo> {
-        const session = await createWidgetSession(projectPath, widgetName, scenarioName, mocks)
+        const session = await createWidgetSession(projectPath, widgetName, scenarioName, overrides)
+        await runner.ensureRunning(session.widget)
         sessions.set(session.id, session)
 
         return describeSession(session)
@@ -78,6 +88,7 @@ export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulat
                     const body = (await request.json().catch(() => ({}))) as {
                         widget?: string
                         scenario?: string
+                        use?: string[]
                         mocks?: WidgetMockData
                     }
 
@@ -86,7 +97,9 @@ export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulat
                     }
 
                     try {
-                        return Response.json(await createSession(body.widget, body.scenario, body.mocks))
+                        return Response.json(
+                            await createSession(body.widget, body.scenario, { use: body.use, mocks: body.mocks })
+                        )
                     } catch (error) {
                         return Response.json(
                             { error: error instanceof Error ? error.message : String(error) },
@@ -152,6 +165,7 @@ export function startWidgetEmulator({ projectPath, port = 0 }: StartWidgetEmulat
         createSession,
         stop: async () => {
             await server.stop(true)
+            await runner.stopAll()
         },
     }
 }

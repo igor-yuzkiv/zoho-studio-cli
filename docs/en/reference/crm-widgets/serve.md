@@ -4,8 +4,7 @@ Runs Zoho CRM widgets on your computer without Zoho. The widget keeps the real Z
 and runs at its own address — `zet run`, Vite, any static server; Zoho Studio plays the CRM page
 around it and answers the SDK from a scenario. Nothing in the widget's code changes.
 
-**The widget must already be running at the `url` in its `widget.json`.** Zoho Studio does not
-build or serve the widget; it only opens it.
+**The widget runs at the `url` in its `widget.json`.** Zoho Studio does not build or serve it. If `widget.json` has a `run` command, the emulator starts the widget with it when the widget's first session opens; otherwise start the widget yourself.
 
 ```bash
 zoho-studio z-crm:widgets:serve                                    # the emulator on port 4610
@@ -34,15 +33,18 @@ fixture (see [e2e tests](#e2e-tests)) and the **Widgets** tab of [`browser`](../
 ```text
 widgets/<name>/
   widget.json
-  scenarios/<scenario>.ts
-  tests/*.spec.ts
+  src/                       # the widget's code, when it lives here
+  testing/
+    scenarios/<scenario>.ts  # a situation: PageLoad and which mocks to use
+    mocks/<mocks>.ts         # answers of SDK methods, shared by scenarios and tests
+    tests/*.spec.ts
   results/<test>/            # written by the e2e tests
 ```
 
 `widget.json`:
 
 ```json
-{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "source": "../deal-card-widget/app" }
+{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "run": { "command": "npm run dev" } }
 ```
 
 - `url` — required, the http(s) address the widget runs at. Its query and hash are kept.
@@ -50,8 +52,12 @@ widgets/<name>/
   `Wizard`, `Signal`, `Settings`, `Blueprint`. It is shown in `browser`; it does not change what the
   widget receives.
 - `defaultScenario` — optional, the scenario a session uses when none is named.
-- `source` — optional, where the widget's code is, relative to the project or absolute. Zoho Studio
-  does not read it; it tells an agent where to look for the SDK calls the widget makes.
+- `source` — optional, where the widget's code is, relative to the widget folder or absolute — for a widget that lives outside the project. Without it, `src/` of the widget folder when there is one. Zoho Studio reads no code from it; it tells an agent where to look, and it is where `run` starts.
+- `run` — optional, `{ "command": "<shell command>", "cwd": "<folder>" }`: how to start the widget. `cwd` is relative to the widget folder or absolute; without it, the `source` folder, and without that, the widget folder.
+
+### Starting the widget
+
+With `run`, the first session of a widget checks its `url`. If something answers, the widget is left alone — one you started yourself keeps running. If nothing answers, the emulator runs the command and waits up to 60 seconds for the `url` to answer; the session opens after that. A command that exits first, or does not make the `url` answer in time, fails the session with its last 20 lines of output. When the emulator stops — `Ctrl+C`, `SIGTERM` from Playwright, closing `browser` — it stops every widget it started, with everything the command started.
 
 [`z-crm:widgets:make`](make.md) creates such a folder.
 
@@ -70,29 +76,40 @@ its `url`, does not load the SDK, or never calls `ZOHO.embeddedApp.init()`.
 
 ## Scenarios
 
-A scenario is a TypeScript file whose default export says what `PageLoad` carries and how SDK
-methods answer:
+A scenario is a file in `testing/scenarios/` whose default export says what `PageLoad` carries and which mocks answer the SDK. Mocks live in `testing/mocks/`, one file per set of answers, so several scenarios and tests share them:
 
 ```ts
-import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
+// testing/mocks/saving.ts
+import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
 
-export default defineWidgetScenario({
-    pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
-    mocks: {
-        'API.searchRecord': { data: [] },
-        'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
-        'API.deleteRecord': () => {
-            throw { code: 'NO_PERMISSION', message: 'permission denied' }
-        },
+export default defineWidgetMocks({
+    'API.searchRecord': { data: [] },
+    'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
+    'API.deleteRecord': () => {
+        throw { code: 'NO_PERMISSION', message: 'permission denied' }
     },
 })
 ```
 
+```ts
+// testing/scenarios/saves.ts
+import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
+
+export default defineWidgetScenario({
+    pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
+    use: ['record', 'saving'],
+    mocks: {
+        'API.getRecord': { data: [{ id: '1000000000001', Deal_Name: 'Acme renewal' }] },
+    },
+})
+```
+
+`use` names files of `testing/mocks/` without `.ts`. Mocks apply in this order, a later one replacing an earlier one of the same key: the files the scenario uses, in order; the scenario's own `mocks`; the files the test uses; the test's `mocks`. A name with no file fails the session with the path it looked for.
+
 A mock is keyed by the SDK method name. Data resolves the widget's promise, and
 `{ $reject: value }` rejects it with `value`; a function receives the call's arguments, and what it
 returns is treated the same way, what it throws rejects the promise. An `Error`
-is sent as `{ code: 'ZOHO_STUDIO_ERROR', message }`. The file is imported again for every session,
-so an edit applies to the next one without a restart.
+is sent as `{ code: 'ZOHO_STUDIO_ERROR', message }`. Scenario and mocks files are imported again for every session, so an edit applies to the next one without a restart.
 
 The arguments a mock receives are what the SDK sends, which is close to what the widget passed but
 not always the same: `getRecord` arrives as `{ APIData: { Entity, RecordID } }`, `updateRecord` as
@@ -119,17 +136,13 @@ Two cases rest on the arguments rather than on `category` and `type`:
 
 The call log shows the key each call got.
 
-Under the compiled `zoho-studio`, a scenario can import only `defineWidgetScenario` from
-`@zoho-studio/zoho-crm/widget`: the executable does not load packages from the project's
-`node_modules`, so it provides that one function itself.
+Under the compiled `zoho-studio`, scenario and mocks files can import only `defineWidgetScenario` and `defineWidgetMocks` from `@zoho-studio/zoho-crm/widget`: the executable does not load packages from the project's `node_modules`, so it provides those two functions itself.
 
 ## Without a mock
 
 Zoho Studio answers nothing on its own. Every method the scenario or the test does not mock —
 records, metadata, `CONFIG.*`, `UI.*`, `HTTP.*`, `CONNECTION.invoke`, `CONNECTOR.*` — is rejected
-with `{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, where the message names the method and the scenario
-file to add it to. How the mock data is organised — inline, shared modules, JSON files the scenario
-imports — is up to the project.
+with `{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, where the message names the method and the scenario file to add it to.
 
 These are rejected with `ZOHO_STUDIO_UNSUPPORTED`, whatever the scenario says: `FUNCTIONS.execute`,
 `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`, `API.getBluePrint`, `API.updateBluePrint`,
@@ -162,14 +175,12 @@ test('saves the review', async ({ widgetPage }) => {
 })
 ```
 
-- `open({ widget, scenario?, mocks? })` — opens the widget in a new session; it waits until the
-  widget registers and fails with the emulator's message if it does not. `mocks` replace the
-  scenario's mocks of the same name for this test only; they are data, so a test needs no scenario
-  file for one changed answer:
+- `open({ widget, scenario?, use?, mocks? })` — opens the widget in a new session; it waits until the widget registers and fails with the emulator's message if it does not. `use` names files of `testing/mocks/` and `mocks` are inline answers; both replace the scenario's mocks of the same key for this test only, so a test needs no scenario file for one changed answer. Inline `mocks` are data: they cross from the test process, so a mock with logic goes into a file and is named in `use`.
 
   ```ts
   await widgetPage.open({
       widget: 'deal-card',
+      use: ['empty-search'],
       mocks: { 'API.updateRecord': { $reject: { code: 'INVALID_DATA', message: 'invalid data' } } },
   })
   ```
@@ -191,8 +202,11 @@ webServer: {
     command: 'zoho-studio z-crm:widgets:serve --port=4610',
     url: 'http://127.0.0.1:4610/api/widgets',
     reuseExistingServer: true,
+    gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
 },
 ```
+
+Without `gracefulShutdown`, Playwright kills the emulator with `SIGKILL`, and widgets started by `run` keep running.
 
 Playwright runs tests in Node, not Bun; the fixture is written for that.
 
@@ -204,7 +218,7 @@ emulator's own — such as one from the widget — is refused with `403`.
 | Method and path | Does |
 |---|---|
 | `GET /api/widgets` | the widgets in `widgets/` with their scenarios |
-| `POST /api/sessions` | opens a session: `{ "widget": "deal-card", "scenario": "saves", "mocks": { … } }` → `{ id, widget, scenario, url }`; `scenario` and `mocks` are optional |
+| `POST /api/sessions` | opens a session: `{ "widget": "deal-card", "scenario": "saves", "use": ["empty-search"], "mocks": { … } }` → `{ id, widget, scenario, url }`; all but `widget` are optional. With `run` in `widget.json`, it answers once the widget does |
 | `GET /api/sessions/:id` | the session |
 | `DELETE /api/sessions/:id` | closes it |
 | `GET /api/sessions/:id/calls` | the call log: `[{ at, method, args, ok, response \| error }]` |
