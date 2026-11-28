@@ -34,7 +34,7 @@ version number and the moment of the release are the user's; how to choose a num
 4. **Propose the version.** Recommend `PATCH`, `MINOR`, or `MAJOR` with the reason; a version passed
    as an argument is used as is. Done when the user confirms the number.
 5. **Bump the version** on `develop` in the root `package.json` and in
-   `plugins/claude/zoho-studio/.claude-plugin/plugin.json` when that file exists — the same number
+   `plugins/claude/zoho-studio/.claude-plugin/plugin.json` — the same number
    in both.
 6. **Write the change log** `CHANGELOG/v<version>.md` by
    [changelog-template.md](changelog-template.md): what a user of the CLI and the plugin gets, not
