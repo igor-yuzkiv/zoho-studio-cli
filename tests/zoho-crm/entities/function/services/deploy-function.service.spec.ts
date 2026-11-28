@@ -124,7 +124,7 @@ describe('deployFunctionSource', () => {
         await addPingFunction(crm.projectPath)
 
         await expect(deployFunctionSource(crm.projectPath, 'oz_sa_ping', options)).rejects.toThrow(
-            /already has a function/
+            /already has a function.*"zoho-studio z-crm:functions:import"/
         )
         expect((await Bun.file(deployFilePath(crm.projectPath)).json()).id).toBeNull()
     })
