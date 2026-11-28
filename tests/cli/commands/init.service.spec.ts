@@ -63,7 +63,10 @@ describe('initializeProject', () => {
         )
         expect(await Bun.file(join(workingPath, 'widgets/.gitkeep')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, '.claude/settings.json')).json()).toMatchObject({
-            permissions: { ask: expect.arrayContaining(['Bash(bun run scripts/*)']) },
+            permissions: {
+                ask: expect.arrayContaining(['Bash(bun run scripts/*)']),
+                deny: expect.arrayContaining(['Read(**/.env)', 'Read(~/.zoho-studio/projects/**)']),
+            },
         })
         expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
             dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },
