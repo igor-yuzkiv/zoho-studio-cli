@@ -10,11 +10,12 @@ Run `bun run check` before handing off a change.
 ## Project rules
 
 - `.claude/rules/architecture.md` — folder layout, file naming, exports, tests, CLI option style
-- `.claude/rules/git.md` — commit format and `ZS-<number>` task references
-- `.claude/rules/documentation.md` — `docs/<en|ua>/<user-guide|technical>/`, both languages, only shipped behavior
+- `.claude/rules/git.md` — branches (`feature/*` → `develop` → `master` on release), commit format
+- `.claude/rules/documentation.md` — `docs/<en|ua>/` with guides, reference, architecture, and ADRs; both languages, only shipped behavior
 - `.claude/rules/zoho-findings.md` — record how Zoho really behaves in `zoho-findings/`
+- `.claude/rules/versioning.md` — one version for the repository, releases only through `/release`
 
-A new command needs a page in `docs/<lang>/technical/`, an entry in its `1-overview.md`, and an
+A new command needs a page in `docs/<lang>/reference/`, an entry in the reference index, and an
 entry in `README.md` and `README.ua.md` — in both languages, in the same change as the command
 itself.
 
@@ -26,9 +27,6 @@ explain what was blocked and why it is needed.
 The agent commits; the person pushes. A push, a pull request, a release, or a message to a
 client happens on an explicit instruction and is announced before it is sent.
 
-A commit carries no agent attribution: no `Co-Authored-By` trailer, no session link.
-
-This repository is personal, so a task key may go into a commit message, as the
-last line of the body (see `.claude/rules/git.md`). Task states, session names, and local paths
+A task key may go into a commit message (see `.claude/rules/git.md`). Task states, session names, and local paths
 stay in the tracker and the chat; they do not appear in commit messages, code comments,
 client-facing documents, or mockups.

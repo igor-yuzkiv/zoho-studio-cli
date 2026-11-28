@@ -22,7 +22,7 @@ ln -s "$PWD/dist/zoho-studio" ~/.local/bin/zoho-studio   # or any folder on your
 bun run link                                 # once, so projects can import the packages
 ```
 
-`zoho-studio --help` then lists the commands. Pull the repository and run `bun run compile` again
+`zoho-studio --help` then lists the commands, and `zoho-studio --version` prints the installed version. Pull the repository and run `bun run compile` again
 to update; the link from `bun run link` follows the sources and needs no update. New to the tool?
 Start with the [user guide](docs/en/user-guide/1-overview.md) ([українською](docs/ua/user-guide/1-overview.md)).
 
