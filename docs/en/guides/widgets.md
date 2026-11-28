@@ -80,10 +80,7 @@ the list of SDK calls (`calls.json`) in `widgets/<name>/results/<test>/`; the HT
 
 ## For AI agents
 
-New projects get a skill in `.claude/skills/zoho-crm-widget-testing/` that teaches an agent to
-write scenarios and tests and to report results with screenshots. In a project created
-before, copy that folder from a new project made with `zoho-studio init`, and add these lines to
-`.gitignore`:
+The `widget-testing` skill of the [Claude Code plugin](claude-code-plugin.md) teaches an agent to write scenarios and tests and to report results with screenshots: ask the agent to test a widget, or run `/zoho-studio:widget-testing`. A project created by an older `zoho-studio init` has its own copy of that skill in `.claude/skills/zoho-crm-widget-testing/`; it no longer matches the CLI, so delete the folder. In a project created before widget testing existed, add these lines to `.gitignore`:
 
 ```text
 widgets/*/results/

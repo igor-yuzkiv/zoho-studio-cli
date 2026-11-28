@@ -48,7 +48,7 @@ When sources disagree, say so to the person and go by `instructions`, then the s
 
 - HTML and JavaScript in an iframe inside the CRM, talking to it through the JS SDK (`ZOHO.embeddedApp`, `ZOHO.CRM.*`). Handlers registered after `ZOHO.embeddedApp.init()` never fire.
 - Built and packed with Zoho's `zet` CLI; hosted by Zoho or at an external HTTPS address.
-- Sources: context7 widgets v1.5 for the SDK and `zet`. Testing a widget locally and the SDK methods with their answers — `zoho-studio instructions z-crm:widgets` and `… z-crm:widgets:serve`.
+- Sources: context7 widgets v1.5 for the SDK, what each method answers, and `zet`; the SDK's own source (`zoho/embeddedApp-js-sdk` on GitHub, branch `1.5`, `lib/ZohoCrmHelper.js`) has an example answer for every method. Testing a widget locally — `/zoho-studio:widget-testing`.
 
 ### COQL
 
