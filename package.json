@@ -64,6 +64,6 @@
     "test:watch": "bun test --watch",
     "check": "bun run lint && bun run typecheck && bun test",
     "dev:web": "vite",
-    "build:web": "vite build"
+    "build:web": "bun --bun vite build"
   }
 }
