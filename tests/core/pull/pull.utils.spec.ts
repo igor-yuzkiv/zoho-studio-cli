@@ -1,8 +1,12 @@
-import { afterEach, describe, expect, spyOn, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test'
 
 import { reportPullResult } from '@zoho-studio/core'
 
 describe('reportPullResult', () => {
+    beforeEach(() => {
+        process.exitCode = 0
+    })
+
     afterEach(() => {
         process.exitCode = 0
     })
