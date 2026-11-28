@@ -46,6 +46,7 @@ bun run dev -- init my-project
 - [`zoho-studio login`](project/login.md) — авторизація проєкту командою `zoho-studio login`
 - [`zoho-studio preset`](project/preset.md) — запуск іменованої послідовності команд командою `zoho-studio preset`
 - [`zoho-studio browser`](project/browser.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку командою `zoho-studio browser`
+- [`zoho-studio instructions`](project/instructions.md) — інструкції для ШІ-агентів: проєкт, група команд або одна команда, командою `zoho-studio instructions`
 
 ### Організація CRM
 

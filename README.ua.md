@@ -25,6 +25,7 @@ CLI збирається з цього репозиторію; готових б
 - [login](docs/ua/reference/project/login.md) — авторизація проєкту командою `zoho-studio login`
 - [preset](docs/ua/reference/project/preset.md) — запуск іменованої послідовності команд
 - [browser](docs/ua/reference/project/browser.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку
+- [instructions](docs/ua/reference/project/instructions.md) — інструкції для ШІ-агентів, що працюють у проєкті
 
 **Організація CRM**
 

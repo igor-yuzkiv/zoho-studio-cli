@@ -46,6 +46,7 @@ web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `
 - [`zoho-studio login`](project/login.md) — authorizing a project with `zoho-studio login`
 - [`zoho-studio preset`](project/preset.md) — running a named sequence of commands with `zoho-studio preset`
 - [`zoho-studio browser`](project/browser.md) — browsing the artifacts and running pulls in a local web app with `zoho-studio browser`
+- [`zoho-studio instructions`](project/instructions.md) — instructions for AI agents: the project, a group of commands, or one command, with `zoho-studio instructions`
 
 ### CRM organization
 

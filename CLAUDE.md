@@ -14,10 +14,12 @@ Run `bun run check` before handing off a change.
 - `.claude/rules/documentation.md` — `docs/<en|ua>/` with guides, reference, architecture, and ADRs; both languages, only shipped behavior
 - `.claude/rules/zoho-findings.md` — record how Zoho really behaves in `zoho-findings/`
 - `.claude/rules/versioning.md` — one version for the repository, releases only through `/release`
+- `.claude/rules/instructions.md` — what goes into `zoho-studio instructions` and keeping it true to the code
 
-A new command needs a page in `docs/<lang>/reference/`, an entry in the reference index, and an
-entry in `README.md` and `README.ua.md` — in both languages, in the same change as the command
-itself.
+A new command needs a page in `docs/<lang>/reference/`, an entry in the reference index, an
+entry in `README.md` and `README.ua.md` — in both languages — and its agent instructions in
+`apps/cli/src/commands/instructions/texts/`, in the same change as the command itself. A changed
+command updates its docs and its instructions text together.
 
 Mechanical restrictions live in `.claude/settings.json`. Never work around a blocked action:
 explain what was blocked and why it is needed.

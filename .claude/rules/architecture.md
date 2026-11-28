@@ -37,7 +37,8 @@ packages/
 apps/
   cli/            # the CLI; `@/` resolves to apps/cli/src
     src/
-      index.ts      # CLI entry point, registers the commands
+      index.ts      # CLI entry point, runs the program
+      program.ts    # createProgram(): registers the commands
       commands/     # CLI command definitions, one folder per command
         zoho-crm/   # the commands of the Zoho CRM area; bare folders above are commands of no product
           functions/  # several commands of one namespace: a folder per command (pull/, make/, run/, …)
