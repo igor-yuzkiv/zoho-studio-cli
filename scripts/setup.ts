@@ -65,7 +65,13 @@ try {
     // bun link prints a "how to use it in a project" hint per package; init already sets that up.
     runStep('Registering the packages for project scripts', ['bun', 'run', 'link'], { quiet: true })
 
-    const version = Bun.spawnSync([link.linkPath, '--version']).stdout.toString().trim()
+    const versionRun = Bun.spawnSync([link.linkPath, '--version'])
+
+    if (versionRun.exitCode !== 0) {
+        throw new Error(`the installed ${link.linkPath} does not run: "--version" exited with code ${versionRun.exitCode}.`)
+    }
+
+    const version = versionRun.stdout.toString().trim()
     console.log(`\nzoho-studio ${version} is installed.`)
 
     if (!isOnPath(binPath, process.env.PATH, home)) {

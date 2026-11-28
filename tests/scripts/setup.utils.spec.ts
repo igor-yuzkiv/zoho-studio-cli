@@ -42,6 +42,17 @@ describe('installExecutableLink', () => {
         expect(result.status).toBe('unchanged')
     })
 
+    test('accepts a link that reaches this clone through a symlinked folder', async () => {
+        const aliasPath = join(workPath, 'alias')
+        await symlink(join(workPath, 'clone'), aliasPath)
+        await mkdir(binPath)
+        await symlink(join(aliasPath, 'dist/zoho-studio'), join(binPath, 'zoho-studio'))
+
+        const result = await installExecutableLink({ binPath, targetPath, force: false })
+
+        expect(result.status).toBe('unchanged')
+    })
+
     test('refuses a link to another clone and names it', async () => {
         await mkdir(binPath)
         await symlink('/elsewhere/dist/zoho-studio', join(binPath, 'zoho-studio'))
@@ -109,7 +120,7 @@ describe('pathHint', () => {
 
     test('fish — fish_add_path', () => {
         expect(pathHint({ binPath, home, shell: '/usr/bin/fish', platform: 'linux' })).toContain(
-            'fish_add_path $HOME/.local/bin'
+            'fish_add_path "$HOME/.local/bin"'
         )
     })
 
@@ -123,6 +134,12 @@ describe('pathHint', () => {
     test('Linux adds that logging in again may be enough', () => {
         expect(pathHint({ binPath, home, shell: '/bin/zsh', platform: 'linux' })).toContain('logging in again')
         expect(pathHint({ binPath, home, shell: '/bin/zsh', platform: 'darwin' })).not.toContain('logging in again')
+    })
+
+    test('the login advice is only for ~/.local/bin', () => {
+        expect(pathHint({ binPath: '/opt/bin', home, shell: '/bin/zsh', platform: 'linux' })).not.toContain(
+            'logging in again'
+        )
     })
 
     test('a folder outside home is written as it is', () => {
