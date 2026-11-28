@@ -33,6 +33,7 @@ in the Zoho CRM organization with permission to view its setup — for migration
 In reading order:
 
 - [Installation](installation.md) — building the CLI, checking it, updating it
+- [Claude Code plugin](claude-code-plugin.md) — installing the plugin with the skills for AI agents
 - [Quick start](quick-start.md) — from nothing to downloaded files in a few minutes
 - [Connecting to Zoho](zoho-connection.md) — the client, the login, data centers
 - [The project](project.md) — what is in the folder and what goes into git
