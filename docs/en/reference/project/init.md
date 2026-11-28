@@ -28,6 +28,7 @@ Initialized Zoho Studio project in my-project
   widgets/.gitkeep — created
   .claude/skills/zoho-crm-widget-testing/SKILL.md — created
   .claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md — created
+  .git — initialized
 
 Next steps:
   Run "zoho-studio login" and choose or create a credential profile
@@ -41,6 +42,7 @@ and was left alone.
 
 ```text
 my-project/
+  .git/                  # the repository init created, see below
   .claude/
     skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
   .gitignore             # keeps node_modules, widget test results, and data/.removed out of git
@@ -72,6 +74,11 @@ in what is missing. Delete one and re-run `init` to get it back.
 A root `.gitignore` is created only when the project has none; an existing one is left exactly as
 it is. The two `.gitignore` files inside the folders travel with what they protect, so the settings
 file, the organization snapshot, and the logs stay out of git wherever the project sits.
+
+**The project becomes a git repository** — `init` runs `git init` and makes no commit; the first commit is yours. Two cases skip it, and the last line of the output says why:
+
+- The folder is already inside a git repository — `.git — skipped: the folder is already inside a git repository`. No repository is nested inside it.
+- git is not installed — `.git — skipped: git is not available; install it and run "git init" here`. The project is created anyway.
 
 ## Scripts
 

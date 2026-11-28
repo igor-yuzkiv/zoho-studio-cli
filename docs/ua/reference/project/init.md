@@ -28,6 +28,7 @@ Initialized Zoho Studio project in my-project
   widgets/.gitkeep — created
   .claude/skills/zoho-crm-widget-testing/SKILL.md — created
   .claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md — created
+  .git — initialized
 
 Next steps:
   Run "zoho-studio login" and choose or create a credential profile
@@ -41,6 +42,7 @@ Next steps:
 
 ```text
 my-project/
+  .git/                  # the repository init created, see below
   .claude/
     skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
   .gitignore             # keeps node_modules, widget test results, and data/.removed out of git
@@ -73,6 +75,11 @@ my-project/
 Кореневий `.gitignore` створюється, лише коли в проєкті його немає; наявний лишається рівно таким,
 як є. Два `.gitignore` усередині папок ідуть разом із тим, що вони захищають, тож файл
 налаштувань, знімок організації та логи лишаються поза git, хоч би де лежав проєкт.
+
+**Проєкт стає git-репозиторієм** — `init` виконує `git init` і не робить коміту; перший коміт за вами. У двох випадках цей крок пропускається, а останній рядок виводу пояснює чому:
+
+- Папка вже лежить усередині git-репозиторію — `.git — skipped: the folder is already inside a git repository`. Вкладений репозиторій не створюється.
+- git не встановлено — `.git — skipped: git is not available; install it and run "git init" here`. Проєкт однаково створюється.
 
 ## Скрипти
 
