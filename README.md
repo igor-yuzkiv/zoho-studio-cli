@@ -24,46 +24,46 @@ bun run link                                 # once, so projects can import the 
 
 `zoho-studio --help` then lists the commands, and `zoho-studio --version` prints the installed version. Pull the repository and run `bun run compile` again
 to update; the link from `bun run link` follows the sources and needs no update. New to the tool?
-Start with the [user guide](docs/en/user-guide/1-overview.md) ([українською](docs/ua/user-guide/1-overview.md)).
+Start with the [user guide](docs/en/guides/README.md) ([українською](docs/ua/guides/README.md)).
 
 ## Documentation
 
-- [Overview](docs/en/technical/1-overview.md) — what a project is, and how to run the CLI
-- [Project settings](docs/en/technical/2-settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
-- [init](docs/en/technical/3-init-command.md) — scaffolding a project with `zoho-studio init`
-- [login](docs/en/technical/4-login-command.md) — authorizing a project with `zoho-studio login`
-- [z-crm:status](docs/en/technical/5-status-command.md) — checking the connection with `zoho-studio z-crm:status`
-- [z-crm:functions:pull](docs/en/technical/6-functions-pull-command.md) — downloading functions
-- [z-crm:modules:pull](docs/en/technical/7-modules-pull-command.md) — downloading module metadata
-- [z-crm:fields:pull](docs/en/technical/8-fields-pull-command.md) — downloading module fields
-- [z-crm:layouts:pull](docs/en/technical/28-layouts-pull-command.md) — downloading module layouts with their sections and formulas
-- [z-crm:functions:make](docs/en/technical/29-functions-make-command.md) — scaffolding a new Deluge function in `src/`, or importing a pulled one
-- [z-crm:functions:import](docs/en/technical/31-functions-import-command.md) — copying a pulled function from `data/` into `src/`
-- [z-crm:functions:deploy](docs/en/technical/30-functions-deploy-command.md) — creating or updating a function in Zoho from `src/`
-- [z-crm:functions:run](docs/en/technical/33-functions-run-command.md) — running a function's code from `src/` or `data/` in Zoho and printing the result
-- [z-crm:migrations:make](docs/en/technical/32-migrations-make-command.md) — creating a migration file through a few questions
-- [z-crm:widgets:make](docs/en/technical/35-widgets-make-command.md) — creating a widget folder with a scenario and a Playwright test
-- [z-crm:widgets:serve](docs/en/technical/34-widgets-serve-command.md) — running widgets in an emulated Zoho CRM with mocked SDK answers
-- [z-crm:workflows:pull](docs/en/technical/9-workflows-pull-command.md) — downloading workflow rules
-- [z-crm:org:info](docs/en/technical/10-org-info-command.md) — reading the organization and storing it in the project
-- [z-crm:workflow-actions:pull](docs/en/technical/11-workflow-actions-pull-command.md) — downloading workflow actions
-- [z-crm:webhooks:pull](docs/en/technical/12-webhooks-pull-command.md) — downloading webhooks
-- [z-crm:global-picklists:pull](docs/en/technical/13-global-picklists-pull-command.md) — downloading global picklists
-- [z-crm:profiles:pull](docs/en/technical/26-profiles-pull-command.md) — downloading profiles
-- [z-crm:client-scripts:pull](docs/en/technical/22-client-scripts-pull-command.md) — downloading client scripts
-- [z-crm:static-resources:pull](docs/en/technical/23-static-resources-pull-command.md) — downloading static resources
-- [preset](docs/en/technical/24-preset-command.md) — running a named sequence of commands
-- [browser](docs/en/technical/25-browser-command.md) — browsing the artifacts and running pulls in a local web app
+- [Overview](docs/en/reference/README.md) — what a project is, and how to run the CLI
+- [Project settings](docs/en/reference/project/settings.md) — `.zoho-studio/settings.json` and how the CLI reads it
+- [init](docs/en/reference/project/init.md) — scaffolding a project with `zoho-studio init`
+- [login](docs/en/reference/project/login.md) — authorizing a project with `zoho-studio login`
+- [z-crm:status](docs/en/reference/crm-org/status.md) — checking the connection with `zoho-studio z-crm:status`
+- [z-crm:functions:pull](docs/en/reference/crm-functions/pull.md) — downloading functions
+- [z-crm:modules:pull](docs/en/reference/crm-metadata/modules.md) — downloading module metadata
+- [z-crm:fields:pull](docs/en/reference/crm-metadata/fields.md) — downloading module fields
+- [z-crm:layouts:pull](docs/en/reference/crm-metadata/layouts.md) — downloading module layouts with their sections and formulas
+- [z-crm:functions:make](docs/en/reference/crm-functions/make.md) — scaffolding a new Deluge function in `src/`, or importing a pulled one
+- [z-crm:functions:import](docs/en/reference/crm-functions/import.md) — copying a pulled function from `data/` into `src/`
+- [z-crm:functions:deploy](docs/en/reference/crm-functions/deploy.md) — creating or updating a function in Zoho from `src/`
+- [z-crm:functions:run](docs/en/reference/crm-functions/run.md) — running a function's code from `src/` or `data/` in Zoho and printing the result
+- [z-crm:migrations:make](docs/en/reference/crm-migrations/make.md) — creating a migration file through a few questions
+- [z-crm:widgets:make](docs/en/reference/crm-widgets/make.md) — creating a widget folder with a scenario and a Playwright test
+- [z-crm:widgets:serve](docs/en/reference/crm-widgets/serve.md) — running widgets in an emulated Zoho CRM with mocked SDK answers
+- [z-crm:workflows:pull](docs/en/reference/crm-metadata/workflows.md) — downloading workflow rules
+- [z-crm:org:info](docs/en/reference/crm-org/org-info.md) — reading the organization and storing it in the project
+- [z-crm:workflow-actions:pull](docs/en/reference/crm-metadata/workflow-actions.md) — downloading workflow actions
+- [z-crm:webhooks:pull](docs/en/reference/crm-metadata/webhooks.md) — downloading webhooks
+- [z-crm:global-picklists:pull](docs/en/reference/crm-metadata/global-picklists.md) — downloading global picklists
+- [z-crm:profiles:pull](docs/en/reference/crm-metadata/profiles.md) — downloading profiles
+- [z-crm:client-scripts:pull](docs/en/reference/crm-metadata/client-scripts.md) — downloading client scripts
+- [z-crm:static-resources:pull](docs/en/reference/crm-metadata/static-resources.md) — downloading static resources
+- [preset](docs/en/reference/project/preset.md) — running a named sequence of commands
+- [browser](docs/en/reference/project/browser.md) — browsing the artifacts and running pulls in a local web app
 
 ## Scripts in a project
 
 A project made by `zoho-studio init` comes with a `package.json` that links the framework packages
 (`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`)
 and a `scripts/example.ts` to copy. Run `bun run link` once in this repository, then `bun install`
-in the project; see [init](docs/en/technical/3-init-command.md#scripts).
+in the project; see [init](docs/en/reference/project/init.md#scripts).
 
 `bun run migrate` in a project creates Zoho CRM modules and adds fields from the files in
-`migrations/zoho-crm/`; see [migrations](docs/en/technical/27-migrations.md). `zoho-studio z-crm:migrations:make`
+`migrations/zoho-crm/`; see [migrations](docs/en/reference/crm-migrations/migrations.md). `zoho-studio z-crm:migrations:make`
 starts a new migration file.
 
 ## Editor support

@@ -24,46 +24,46 @@ bun run link                                 # once, so projects can import the 
 
 Після цього `zoho-studio --help` покаже список команд, а `zoho-studio --version` — встановлену версію. Щоб оновитися, підтягніть репозиторій і
 знову запустіть `bun run compile`; посилання з `bun run link` стежить за вихідним кодом і оновлення
-не потребує. Вперше працюєте з інструментом? Почніть із [посібника користувача](docs/ua/user-guide/1-overview.md).
+не потребує. Вперше працюєте з інструментом? Почніть із [посібника користувача](docs/ua/guides/README.md).
 
 ## Документація
 
-- [Огляд](docs/ua/technical/1-overview.md) — що таке проєкт і як запускати CLI
-- [Налаштування проєкту](docs/ua/technical/2-settings.md) — `.zoho-studio/settings.json` і те, як CLI його читає
-- [init](docs/ua/technical/3-init-command.md) — створення проєкту командою `zoho-studio init`
-- [login](docs/ua/technical/4-login-command.md) — авторизація проєкту командою `zoho-studio login`
-- [z-crm:status](docs/ua/technical/5-status-command.md) — перевірка підключення командою `zoho-studio z-crm:status`
-- [z-crm:functions:pull](docs/ua/technical/6-functions-pull-command.md) — завантаження функцій
-- [z-crm:modules:pull](docs/ua/technical/7-modules-pull-command.md) — завантаження метаданих модулів
-- [z-crm:fields:pull](docs/ua/technical/8-fields-pull-command.md) — завантаження полів модулів
-- [z-crm:layouts:pull](docs/ua/technical/28-layouts-pull-command.md) — завантаження layouts модулів із секціями та формулами
-- [z-crm:functions:make](docs/ua/technical/29-functions-make-command.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої
-- [z-crm:functions:import](docs/ua/technical/31-functions-import-command.md) — копіювання завантаженої функції з `data/` у `src/`
-- [z-crm:functions:deploy](docs/ua/technical/30-functions-deploy-command.md) — створення або оновлення функції в Zoho з `src/`
-- [z-crm:functions:run](docs/ua/technical/33-functions-run-command.md) — запуск коду функції з `src/` або `data/` у Zoho з виведенням результату
-- [z-crm:migrations:make](docs/ua/technical/32-migrations-make-command.md) — створення файлу міграції за кількома запитаннями
-- [z-crm:widgets:make](docs/ua/technical/35-widgets-make-command.md) — створення папки віджета зі сценарієм і тестом Playwright
-- [z-crm:widgets:serve](docs/ua/technical/34-widgets-serve-command.md) — запуск віджетів в емульованій Zoho CRM з мок-відповідями SDK
-- [z-crm:workflows:pull](docs/ua/technical/9-workflows-pull-command.md) — завантаження правил робочих процесів
-- [z-crm:org:info](docs/ua/technical/10-org-info-command.md) — читання організації та її збереження в проєкті
-- [z-crm:workflow-actions:pull](docs/ua/technical/11-workflow-actions-pull-command.md) — завантаження дій робочих процесів
-- [z-crm:webhooks:pull](docs/ua/technical/12-webhooks-pull-command.md) — завантаження вебхуків
-- [z-crm:global-picklists:pull](docs/ua/technical/13-global-picklists-pull-command.md) — завантаження глобальних списків вибору
-- [z-crm:profiles:pull](docs/ua/technical/26-profiles-pull-command.md) — завантаження профілів
-- [z-crm:client-scripts:pull](docs/ua/technical/22-client-scripts-pull-command.md) — завантаження клієнтських скриптів
-- [z-crm:static-resources:pull](docs/ua/technical/23-static-resources-pull-command.md) — завантаження статичних ресурсів
-- [preset](docs/ua/technical/24-preset-command.md) — запуск іменованої послідовності команд
-- [browser](docs/ua/technical/25-browser-command.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку
+- [Огляд](docs/ua/reference/README.md) — що таке проєкт і як запускати CLI
+- [Налаштування проєкту](docs/ua/reference/project/settings.md) — `.zoho-studio/settings.json` і те, як CLI його читає
+- [init](docs/ua/reference/project/init.md) — створення проєкту командою `zoho-studio init`
+- [login](docs/ua/reference/project/login.md) — авторизація проєкту командою `zoho-studio login`
+- [z-crm:status](docs/ua/reference/crm-org/status.md) — перевірка підключення командою `zoho-studio z-crm:status`
+- [z-crm:functions:pull](docs/ua/reference/crm-functions/pull.md) — завантаження функцій
+- [z-crm:modules:pull](docs/ua/reference/crm-metadata/modules.md) — завантаження метаданих модулів
+- [z-crm:fields:pull](docs/ua/reference/crm-metadata/fields.md) — завантаження полів модулів
+- [z-crm:layouts:pull](docs/ua/reference/crm-metadata/layouts.md) — завантаження layouts модулів із секціями та формулами
+- [z-crm:functions:make](docs/ua/reference/crm-functions/make.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої
+- [z-crm:functions:import](docs/ua/reference/crm-functions/import.md) — копіювання завантаженої функції з `data/` у `src/`
+- [z-crm:functions:deploy](docs/ua/reference/crm-functions/deploy.md) — створення або оновлення функції в Zoho з `src/`
+- [z-crm:functions:run](docs/ua/reference/crm-functions/run.md) — запуск коду функції з `src/` або `data/` у Zoho з виведенням результату
+- [z-crm:migrations:make](docs/ua/reference/crm-migrations/make.md) — створення файлу міграції за кількома запитаннями
+- [z-crm:widgets:make](docs/ua/reference/crm-widgets/make.md) — створення папки віджета зі сценарієм і тестом Playwright
+- [z-crm:widgets:serve](docs/ua/reference/crm-widgets/serve.md) — запуск віджетів в емульованій Zoho CRM з мок-відповідями SDK
+- [z-crm:workflows:pull](docs/ua/reference/crm-metadata/workflows.md) — завантаження правил робочих процесів
+- [z-crm:org:info](docs/ua/reference/crm-org/org-info.md) — читання організації та її збереження в проєкті
+- [z-crm:workflow-actions:pull](docs/ua/reference/crm-metadata/workflow-actions.md) — завантаження дій робочих процесів
+- [z-crm:webhooks:pull](docs/ua/reference/crm-metadata/webhooks.md) — завантаження вебхуків
+- [z-crm:global-picklists:pull](docs/ua/reference/crm-metadata/global-picklists.md) — завантаження глобальних списків вибору
+- [z-crm:profiles:pull](docs/ua/reference/crm-metadata/profiles.md) — завантаження профілів
+- [z-crm:client-scripts:pull](docs/ua/reference/crm-metadata/client-scripts.md) — завантаження клієнтських скриптів
+- [z-crm:static-resources:pull](docs/ua/reference/crm-metadata/static-resources.md) — завантаження статичних ресурсів
+- [preset](docs/ua/reference/project/preset.md) — запуск іменованої послідовності команд
+- [browser](docs/ua/reference/project/browser.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку
 
 ## Скрипти в проєкті
 
 Проєкт, створений `zoho-studio init`, має `package.json`, що підключає пакети фреймворку
 (`@zoho-studio/core`, `@zoho-studio/auth`, `@zoho-studio/zoho-crm`),
 і `scripts/example.ts` для копіювання. Один раз запустіть `bun run link` у цьому репозиторії, потім
-`bun install` у проєкті; див. [init](docs/ua/technical/3-init-command.md#скрипти).
+`bun install` у проєкті; див. [init](docs/ua/reference/project/init.md#скрипти).
 
 `bun run migrate` у проєкті створює модулі Zoho CRM і додає поля з файлів у
-`migrations/zoho-crm/`; див. [міграції](docs/ua/technical/27-migrations.md). `zoho-studio z-crm:migrations:make`
+`migrations/zoho-crm/`; див. [міграції](docs/ua/reference/crm-migrations/migrations.md). `zoho-studio z-crm:migrations:make`
 створює заготовку нової міграції.
 
 ## Підтримка в редакторі
