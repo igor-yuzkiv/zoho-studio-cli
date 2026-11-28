@@ -23,6 +23,31 @@ function readTemplateFile(projectPath: string, relativePath: string): Promise<st
 }
 
 describe('initializeProject', () => {
+    test('makes the new project a git repository without a commit', async () => {
+        const result = await initializeProject(workingPath)
+
+        expect(result.git).toBe('initialized')
+        expect((await stat(join(workingPath, '.git'))).isDirectory()).toBe(true)
+        expect(Bun.spawnSync(['git', 'rev-parse', '--verify', 'HEAD'], { cwd: workingPath }).exitCode).not.toBe(0)
+    })
+
+    test('does not nest a repository inside an existing one', async () => {
+        Bun.spawnSync(['git', 'init', '--quiet'], { cwd: workingPath })
+        const projectPath = join(workingPath, 'crm')
+
+        const result = await initializeProject(projectPath)
+
+        expect(result.git).toBe('existing')
+        expect(await Bun.file(join(projectPath, '.git')).exists()).toBe(false)
+    })
+
+    test('still creates the project when git is not installed', async () => {
+        const result = await initializeProject(workingPath, { gitExecutable: join(workingPath, 'no-git') })
+
+        expect(result.git).toBe('unavailable')
+        expect(await Bun.file(resolveWorkspaceSettingsPath(workingPath)).exists()).toBe(true)
+    })
+
     test('scaffolds the project tree and writes the settings', async () => {
         const result = await initializeProject(workingPath)
 

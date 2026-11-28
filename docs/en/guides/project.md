@@ -36,7 +36,7 @@ The full description is in the [settings reference](../reference/project/setting
 
 ## What goes into git
 
-`init` prepares the project for git:
+`init` makes the project a git repository, without a first commit, and prepares what goes into it:
 
 - **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`, widget test results, `data/.removed/`;
 - **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.

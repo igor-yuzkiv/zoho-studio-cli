@@ -36,7 +36,7 @@ my-crm/
 
 ## Що потрапляє в git
 
-`init` готує проєкт до git:
+`init` робить проєкт git-репозиторієм, без першого коміту, і готує те, що в нього потрапляє:
 
 - **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`, результати тестів віджетів, `data/.removed/`;
 - **призначені для коміту:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.

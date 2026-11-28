@@ -54,7 +54,7 @@ The web app opens in your browser with everything you downloaded. Stop it with C
 
 ## Next
 
-- Put the project into git: `git init && git add . && git commit -m "CRM snapshot"`. The settings
+- Commit the project: `git add . && git commit -m "CRM snapshot"` — `init` has already made it a repository. The settings
   and the secrets are kept out of it already — see [The project](project.md#what-goes-into-git).
 - Run `zoho-studio preset pull-crm` again whenever you want a fresh snapshot; `git diff` shows what
   changed in the CRM.

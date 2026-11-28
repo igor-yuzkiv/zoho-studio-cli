@@ -4,12 +4,13 @@ import { dirname, join } from 'node:path'
 import { workspaceSettingsFileName, resolveWorkspaceSettingsDirPath, resolveWorkspaceSettingsPath } from '@zoho-studio/core'
 import { defaultProjectSettings, saveProjectSettings } from '@zoho-studio/core'
 
+import { initializeProjectGit } from './init-git.service'
 import { templateFiles } from './template.manifest'
 import type { InitializeProjectOptions, InitializeProjectResult, TemplateFileResult } from './init.types'
 
 export async function initializeProject(
     projectPath: string,
-    { force = false }: InitializeProjectOptions = {}
+    { force = false, gitExecutable = 'git' }: InitializeProjectOptions = {}
 ): Promise<InitializeProjectResult> {
     await assertPathIsNotAFile(projectPath)
     await mkdir(projectPath, { recursive: true })
@@ -26,7 +27,7 @@ export async function initializeProject(
 
     await saveProjectSettings(projectPath, defaultProjectSettings)
 
-    return { templateFiles: copied }
+    return { templateFiles: copied, git: initializeProjectGit(projectPath, gitExecutable) }
 }
 
 /**

@@ -3,6 +3,13 @@ import { relative, resolve } from 'node:path'
 
 import { workspaceSettingsFileName, workspaceSettingsRelativePath } from '@zoho-studio/core'
 import { initializeProject } from './init.service'
+import type { ProjectGitOutcome } from './init.types'
+
+const gitOutcomeLines: Record<ProjectGitOutcome, string> = {
+    initialized: '  .git — initialized',
+    existing: '  .git — skipped: the folder is already inside a git repository',
+    unavailable: '  .git — skipped: git is not available; install it and run "git init" here',
+}
 
 export const initCommand = new Command('init')
     .description('Scaffold a Zoho Studio project in the target folder')
@@ -20,6 +27,8 @@ export const initCommand = new Command('init')
         for (const templateFile of result.templateFiles) {
             console.log(`  ${templateFile.path} — ${templateFile.outcome}`)
         }
+
+        console.log(gitOutcomeLines[result.git])
 
         console.log()
         console.log('Next steps:')

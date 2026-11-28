@@ -54,7 +54,7 @@ zoho-studio browser
 
 ## Що далі
 
-- Додайте проєкт у git: `git init && git add . && git commit -m "CRM snapshot"`. Налаштування
+- Закомітьте проєкт: `git add . && git commit -m "CRM snapshot"` — `init` уже зробив його репозиторієм. Налаштування
   й секрети вже виключено з нього — див. [Проєкт](project.md#що-потрапляє-в-git).
 - Запускайте `zoho-studio preset pull-crm` знову щоразу, коли потрібен свіжий знімок; `git diff`
   покаже, що змінилося в CRM.
