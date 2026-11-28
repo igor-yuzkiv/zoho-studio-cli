@@ -19,10 +19,11 @@ export interface WidgetCallRecord {
 
 export interface WidgetPage {
     /**
-     * Opens the widget in a fresh emulator session, so its call log is its own. `mocks` replace the
-     * scenario's mocks of the same name for this test; they are data, `{ $reject: value }` rejects.
+     * Opens the widget in a fresh emulator session, so its call log is its own. `use` names files in
+     * `testing/mocks/` and `mocks` are inline data; both replace the scenario's mocks of the same key
+     * for this test, `mocks` last. `{ $reject: value }` rejects.
      */
-    open(options: { widget: string; scenario?: string; mocks?: Record<string, unknown> }): Promise<void>
+    open(options: WidgetOpenOptions): Promise<void>
     /** The widget itself, inside the harness page. */
     readonly frame: FrameLocator
     calls(): Promise<WidgetCallRecord[]>
@@ -30,6 +31,13 @@ export interface WidgetPage {
     emit(name: string, data?: unknown): Promise<void>
     screenshot(name: string): Promise<string>
     readonly resultsDir: string
+}
+
+export interface WidgetOpenOptions {
+    widget: string
+    scenario?: string
+    use?: string[]
+    mocks?: Record<string, unknown>
 }
 
 export interface WidgetFixtureOptions {
@@ -92,19 +100,11 @@ function createWidgetPage(page: Page, testInfo: TestInfo, emulatorUrl: string, p
         get resultsDir() {
             return resultsDir
         },
-        async open({
-            widget,
-            scenario,
-            mocks,
-        }: {
-            widget: string
-            scenario?: string
-            mocks?: Record<string, unknown>
-        }) {
+        async open({ widget, scenario, use, mocks }: WidgetOpenOptions) {
             session = await api('/api/sessions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ widget, scenario, mocks }),
+                body: JSON.stringify({ widget, scenario, use, mocks }),
             })
             resultsDir = join(projectPath, 'widgets', widget, 'results', toRunName(testInfo))
             await page.goto(session!.url)

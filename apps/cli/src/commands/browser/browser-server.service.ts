@@ -195,7 +195,8 @@ export function startBrowserServer({ projectPath, port, resolveAsset }: BrowserS
         error: (error) => apiError(error.message, 400),
     })
 
-    return server
+    // Widgets started with their `run` command outlive this process unless stopped on the way out.
+    return Object.assign(server, { stopWidgets: async () => widgetEmulator?.stop() })
 }
 
 type RouteHandler = (request: Bun.BunRequest) => Response | Promise<Response>

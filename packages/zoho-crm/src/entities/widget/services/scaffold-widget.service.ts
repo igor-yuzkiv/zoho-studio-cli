@@ -5,7 +5,10 @@ import type { WidgetLocation } from '../widget.types'
 import {
     parseWidgetDescription,
     widgetDescriptionFileName,
+    widgetMocksDirName,
     widgetScenariosDirName,
+    widgetTestingDirName,
+    widgetTestsDirName,
 } from '../widget.utils'
 import { resolveWidgetDirPath } from './local-widgets.service'
 
@@ -15,6 +18,8 @@ export interface ScaffoldWidgetOptions {
     location?: WidgetLocation
     module?: string
     source?: string
+    /** The shell command that starts the widget, stored as `run.command`. */
+    run?: string
 }
 
 /** Every file `z-crm:widgets:make` creates, keyed by its path relative to the project. */
@@ -36,6 +41,7 @@ export async function scaffoldWidget(
         location: options.location,
         defaultScenario: 'default',
         source: options.source,
+        run: options.run ? { command: options.run } : undefined,
     })
     const widgetDir = resolveWidgetDirPath(projectPath, description.name)
 
@@ -43,6 +49,7 @@ export async function scaffoldWidget(
         throw new Error(`Widget "${description.name}" already exists in widgets/${description.name}.`)
     }
 
+    const testingDir = `widgets/${description.name}/${widgetTestingDirName}`
     const files: Record<string, string> = {
         [`widgets/${description.name}/${widgetDescriptionFileName}`]: `${JSON.stringify(
             {
@@ -50,12 +57,14 @@ export async function scaffoldWidget(
                 location: description.location,
                 defaultScenario: description.defaultScenario,
                 source: description.source,
+                run: description.run,
             },
             null,
             4
         )}\n`,
-        [`widgets/${description.name}/${widgetScenariosDirName}/default.ts`]: scenarioTemplate(moduleName),
-        [`widgets/${description.name}/tests/${description.name}.spec.ts`]: testTemplate(description.name),
+        [`${testingDir}/${widgetScenariosDirName}/default.ts`]: scenarioTemplate(moduleName),
+        [`${testingDir}/${widgetMocksDirName}/record.ts`]: recordMocksTemplate(),
+        [`${testingDir}/${widgetTestsDirName}/${description.name}.spec.ts`]: testTemplate(description.name),
     }
 
     if (!(await Bun.file(join(projectPath, playwrightConfigFileName)).exists())) {
@@ -74,12 +83,24 @@ export async function scaffoldWidget(
 function scenarioTemplate(moduleName: string): string {
     return `import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
 
+// A situation: the record the widget opens on, and which files of testing/mocks/ answer the SDK.
 export default defineWidgetScenario({
     pageLoad: { Entity: '${moduleName}', EntityId: '1000000000001' },
+    use: ['record'],
     mocks: {
-        'API.getRecord': { data: [{ id: '1000000000001' }] },
-        // 'API.updateRecord': ({ Entity, APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
+        // Mocks of this scenario only; they replace those of the files in use.
     },
+})
+`
+}
+
+function recordMocksTemplate(): string {
+    return `import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
+
+// Answers of SDK methods, shared by scenarios (use: ['record']) and tests (widgetPage.open({ use: ['record'] })).
+export default defineWidgetMocks({
+    'API.getRecord': { data: [{ id: '1000000000001' }] },
+    // 'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
 })
 `
 }
@@ -103,12 +124,14 @@ const playwrightConfigTemplate = `import { defineConfig } from '@playwright/test
 
 export default defineConfig({
     testDir: 'widgets',
-    testMatch: '**/tests/**/*.spec.ts',
+    testMatch: '**/testing/tests/**/*.spec.ts',
     reporter: [['list'], ['html', { outputFolder: 'widgets/.report', open: 'never' }]],
     webServer: {
         command: 'zoho-studio z-crm:widgets:serve --port=4610',
         url: 'http://127.0.0.1:4610/api/widgets',
         reuseExistingServer: true,
+        // SIGTERM lets the emulator stop the widgets it started with their run command.
+        gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
     },
 })
 `

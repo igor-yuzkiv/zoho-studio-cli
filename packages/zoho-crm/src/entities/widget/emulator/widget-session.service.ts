@@ -1,9 +1,10 @@
-import { loadWidgetScenario, readLocalWidget } from '../services/local-widgets.service'
+import { loadWidgetMocks, loadWidgetScenario, readLocalWidget } from '../services/local-widgets.service'
 import type {
     WidgetCallLogEntry,
     WidgetDescription,
     WidgetEventName,
     WidgetMockData,
+    WidgetMocks,
     WidgetScenario,
     WidgetSdkPayload,
 } from '../widget.types'
@@ -33,19 +34,41 @@ export interface WidgetSession {
 }
 
 /**
- * `mockOverrides` replace the scenario's mocks of the same name for this session only; a test
- * passes them to try one situation without a scenario file of its own.
+ * What a test changes for its own session: `use` names files in `testing/mocks/`, `mocks` are
+ * inline data. They cross from the test process, so they cannot hold functions.
+ */
+export interface WidgetSessionOverrides {
+    use?: string[]
+    mocks?: WidgetMockData
+}
+
+/**
+ * Mocks apply in this order, a later one replacing an earlier one of the same key: the scenario's
+ * `use`, the scenario's own `mocks`, the test's `use`, the test's `mocks`.
  */
 export async function createWidgetSession(
     projectPath: string,
     widgetName: string,
     scenarioName?: string,
-    mockOverrides: WidgetMockData = {}
+    overrides: WidgetSessionOverrides = {}
 ): Promise<WidgetSession> {
     const widget = await readLocalWidget(projectPath, widgetName)
     const resolvedScenarioName = scenarioName ?? widget.defaultScenario
     const loadedScenario = await loadWidgetScenario(projectPath, widgetName, resolvedScenarioName)
-    const scenario = { ...loadedScenario, mocks: { ...loadedScenario.mocks, ...mockOverrides } }
+    const useMocks = async (names: string[] = []): Promise<WidgetMocks> => {
+        const sets = await Promise.all(names.map((name) => loadWidgetMocks(projectPath, widgetName, name)))
+
+        return Object.assign({}, ...sets)
+    }
+    const scenario: WidgetScenario = {
+        ...loadedScenario,
+        mocks: {
+            ...(await useMocks(loadedScenario.use)),
+            ...loadedScenario.mocks,
+            ...(await useMocks(overrides.use)),
+            ...overrides.mocks,
+        },
+    }
     const calls: WidgetCallLogEntry[] = []
     const listeners = new Set<(event: WidgetPushedEvent) => void>()
 
@@ -93,7 +116,7 @@ export async function createWidgetSession(
 
         throw {
             code: 'ZOHO_STUDIO_NO_MOCK',
-            message: `No mock for ${method}. Add "${method}" to mocks in widgets/${widgetName}/scenarios/${resolvedScenarioName ?? '<scenario>'}.ts.`,
+            message: `No mock for ${method}. Add "${method}" to widgets/${widgetName}/testing/scenarios/${resolvedScenarioName ?? '<scenario>'}.ts or to a file in widgets/${widgetName}/testing/mocks/ the scenario uses.`,
         }
     }
 
