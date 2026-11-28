@@ -4,6 +4,7 @@ import { confirm, select } from '@inquirer/prompts'
 
 import { getProjectSettings } from '@zoho-studio/core'
 
+import { allowCrmWrites } from '../../api'
 import { getOrganizationRequest } from '../../entities/organization'
 import { readMigrationJournal } from '../journal'
 import { listMigrations } from '../loader'
@@ -82,6 +83,7 @@ export async function runMigrationScript(argv: string[] = process.argv.slice(2))
         return 0
     }
 
+    allowCrmWrites()
     const status = await runMigration(projectPath, prepared, print)
 
     return status === 'applied' ? 0 : 1

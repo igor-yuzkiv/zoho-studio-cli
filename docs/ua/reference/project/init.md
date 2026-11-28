@@ -26,6 +26,7 @@ Initialized Zoho Studio project in my-project
   scripts/example-migration.ts.txt — created
   migrations/zoho-crm/.gitkeep — created
   widgets/.gitkeep — created
+  .claude/settings.json — created
   .claude/skills/zoho-crm-widget-testing/SKILL.md — created
   .claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md — created
   .git — initialized
@@ -44,6 +45,7 @@ Next steps:
 my-project/
   .git/                  # the repository init created, see below
   .claude/
+    settings.json        # Claude Code permissions: instructions run freely, scripts ask first
     skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
   .gitignore             # keeps node_modules, widget test results, and data/.removed out of git
   .zoho-studio/

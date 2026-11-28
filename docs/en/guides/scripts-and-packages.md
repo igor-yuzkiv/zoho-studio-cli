@@ -36,6 +36,21 @@ Everything in `@zoho-studio/zoho-crm` is imported from the package itself:
 import { createFieldsRequest, getFieldsListRequest, getModulesListRequest } from '@zoho-studio/zoho-crm'
 ```
 
+## Scripts read by default
+
+A script cannot change the organization unless it says so. Every request to the CRM goes through one client, and that client refuses any `POST`, `PUT`, `PATCH`, or `DELETE` before sending it. The one exception is `POST /coql`, which only reads. A refused request throws `CrmWritesDisabledError` with the code `CRM_WRITES_DISABLED`, and nothing reaches Zoho. This guards against a script — yours or one an AI agent wrote — that was meant to read and writes by mistake.
+
+A script that is meant to write turns writes on first:
+
+```ts
+import { allowCrmWrites, createFieldsRequest } from '@zoho-studio/zoho-crm'
+
+allowCrmWrites()
+await createFieldsRequest('Leads', fields)
+```
+
+The CLI's own commands and `bun run migrate` turn writes on for themselves, so they work as before.
+
 ## Requests
 
 A function that sends a request to Zoho ends with `Request`, so you can tell at a glance what
@@ -74,7 +89,7 @@ The requests that exist, by entity:
 A `…ListRequest` returns every item, following Zoho's pages for you; a `…PageRequest` returns one
 page. Your editor shows the parameters and the shape of the result for each.
 
-**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest`, and `updateFunctionRequest` change the CRM, and `runFunctionRequest` runs code in it**; nothing undoes a module.
+**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest`, and `updateFunctionRequest` change the CRM, and `runFunctionRequest` runs code in it**, so each needs `allowCrmWrites()` first; nothing undoes a module.
 For creating modules and fields, a [migration](migrations.md) is safer: it checks first and asks
 before it sends.
 

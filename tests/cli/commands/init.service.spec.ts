@@ -63,6 +63,9 @@ describe('initializeProject', () => {
         )
         expect(await Bun.file(join(workingPath, 'widgets/.gitkeep')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, '.claude/skills/zoho-crm-widget-testing/SKILL.md')).exists()).toBe(true)
+        expect(await Bun.file(join(workingPath, '.claude/settings.json')).json()).toMatchObject({
+            permissions: { ask: expect.arrayContaining(['Bash(bun run scripts/*)']) },
+        })
         expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
             dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },
         })
