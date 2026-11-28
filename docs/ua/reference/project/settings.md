@@ -130,12 +130,12 @@ bunfig лише читає, тож `saveProjectSettings()` записує фай
 
 | Файл | Роль |
 | --- | --- |
-| `src/config.ts` | Назви файлів і папок, спільні для всіх областей, і допоміжні функції для шляхів |
-| `src/zoho-crm/zoho-crm.config.ts` | Фіксовані назви папок артефактів CRM |
-| `src/settings/types.ts` | Форма `ProjectSettings` |
-| `src/settings/default.settings.ts` | Типові значення, з якими зливається кожне читання |
-| `src/settings/settings.loader.ts` | `loadProjectSettings()`, `findProjectPath()` |
-| `src/settings/settings.store.ts` | `getProjectSettings()`, `saveProjectSettings()`, кеш |
+| `packages/core/src/config.ts` | Назви файлів і папок, спільні для всіх областей, і допоміжні функції для шляхів |
+| `packages/zoho-crm/src/zoho-crm.config.ts` | Фіксовані назви папок артефактів CRM |
+| `packages/core/src/settings/types.ts` | Форма `ProjectSettings` |
+| `packages/core/src/settings/default.settings.ts` | Типові значення, з якими зливається кожне читання |
+| `packages/core/src/settings/settings.loader.ts` | `loadProjectSettings()`, `findProjectPath()` |
+| `packages/core/src/settings/settings.store.ts` | `getProjectSettings()`, `saveProjectSettings()`, кеш |
 
 `saveProjectSettings()` отримує шлях до проєкту явно — `init` записує найперший файл налаштувань,
 коли ще немає проєкту, який можна було б знайти.

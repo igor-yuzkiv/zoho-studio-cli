@@ -14,6 +14,8 @@ my-crm/
   migrations/zoho-crm/     migration files you write
   logs/                    the log of every command
   scripts/                 scripts you write, including the migrate script
+  widgets/                 widgets you develop and test locally
+  .claude/skills/          a Claude Code skill for testing widgets
   package.json             the packages scripts and migrations use
   tsconfig.json            type-checks scripts and migrations against the packages
 ```
@@ -36,8 +38,8 @@ The full description is in the [settings reference](../reference/project/setting
 
 `init` prepares the project for git:
 
-- **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`;
-- **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
+- **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`, widget test results;
+- **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.
 
 Credentials are not in the project at all — they are in `~/.zoho-studio`.
 

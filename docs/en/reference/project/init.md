@@ -25,6 +25,9 @@ Initialized Zoho Studio project in my-project
   scripts/migrate.ts — created
   scripts/example-migration.ts.txt — created
   migrations/zoho-crm/.gitkeep — created
+  widgets/.gitkeep — created
+  .claude/skills/zoho-crm-widget-testing/SKILL.md — created
+  .claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md — created
 
 Next steps:
   Run "zoho-studio login" and choose or create a credential profile
@@ -38,7 +41,9 @@ and was left alone.
 
 ```text
 my-project/
-  .gitignore             # keeps node_modules out of git
+  .claude/
+    skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
+  .gitignore             # keeps node_modules and widget test results out of git
   .zoho-studio/
     .gitignore           # keeps settings.json, org.json and migrations.json out of git
     settings.json        # project settings, chmod 0600
@@ -54,6 +59,7 @@ my-project/
   src/
     zoho-crm/functions/  # source: functions developed locally
   tsconfig.json          # type-checks scripts/ against the packages' sources
+  widgets/               # widgets, see ../crm-widgets/make.md
 ```
 
 `data/` is where every pull writes: `data/zoho-crm/functions`, `data/zoho-crm/modules`, `data/zoho-crm/workflows`. Those paths are
@@ -69,7 +75,7 @@ file, the organization snapshot, and the logs stay out of git wherever the proje
 
 ## Scripts
 
-`package.json` lists the four framework packages — `@zoho-studio/core`, `@zoho-studio/auth`,
+`package.json` lists the three framework packages — `@zoho-studio/core`, `@zoho-studio/auth`,
 `@zoho-studio/zoho-crm` — as `link:` dependencies, resolved by name
 from Bun's link registry rather than by a path. Register them once per machine, from the clone of
 the framework repository:

@@ -9,11 +9,11 @@ zoho-studio preset pull-crm               # run one
 ```
 
 ```text
-[1/11] zoho-studio z-crm:org:info
+[1/12] zoho-studio z-crm:org:info
 …
-[2/11] zoho-studio z-crm:modules:pull
+[2/12] zoho-studio z-crm:modules:pull
 …
-Preset "pull-crm" finished: 11 steps
+Preset "pull-crm" finished: 12 steps
 ```
 
 ## Defining presets

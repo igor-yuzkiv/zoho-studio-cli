@@ -30,7 +30,7 @@ scaffolded or imported.
 |---|---|
 | `<api_name>` | The function folder in `src/zoho-crm/functions/`. |
 | `-y, --yes` | Deploy without asking for confirmation, for scripts and runs without a terminal. |
-| `--changelog <text>` | The changelog of this deployment. Without it, the message comes from [`zohoCrm.functions.changelogTemplate`](../project/settings.md), `Deployed {date}` by default, where `{date}` is the deployment date. |
+| `--changelog <text>` | The changelog of this deployment. Without it, the message comes from [`zohoCrm.functions.changelogTemplate`](../project/settings.md), `Deployed {date}` by default, where `{date}` is the moment of the deployment in UTC, in ISO 8601: `2026-10-18T12:00:00.000Z`. |
 
 ## Create or update
 
@@ -60,11 +60,12 @@ from the code it stores, so a pulled snapshot does not match the source byte for
 
 Nothing is sent to Zoho, and nothing is written, when:
 
-- the function folder or its deploy file is missing;
+- the function folder, its deploy file, or the code file `<api_name>.deluge` is missing;
 - the deploy file breaks a rule: the display name has 3–100 characters, starts with a letter, and
   holds letters, digits, spaces, `-` and `_`; the API name follows the same rule without spaces and
   matches the folder; the description is at most 3000 characters; the runtime is `Deluge 1.0`; the
-  category is one of the seven Deluge categories;
+  category is one of the seven Deluge categories; `id` is a string or `null`; `deployments` is a
+  list;
 - the code does not declare `<category>.<display name>` — the category and the display name in lower
   case with spaces and `-` replaced by `_`. Zoho matches the declaration ignoring case;
 - `src/zoho-crm/functions/` still holds pulled functions from before they moved to `data/` — move them

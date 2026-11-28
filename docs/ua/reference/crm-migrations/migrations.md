@@ -11,7 +11,7 @@
 ```bash
 bun run migrate                         # pick a migration from the list
 bun run migrate 001-projects --dry-run  # show the plan and the conflicts, change nothing
-bun run migrate 001-projects --yes      # run without the confirmation prompt
+bun run migrate 001-projects --yes      # run without the confirmation prompt (or -y)
 ```
 
 Скрипт постачається з проєктом, створеним [`zoho-studio init`](../project/init.md), і потребує

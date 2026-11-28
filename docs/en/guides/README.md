@@ -25,21 +25,23 @@ Zoho Studio never changes anything in your CRM except through a migration you ru
 
 ## Before you start
 
-Install the CLI as the [README](../../../README.md#getting-the-cli) describes. You need an account
+Install the CLI as [Installation](installation.md) describes. You need an account
 in the Zoho CRM organization with permission to view its setup — for migrations, to customize it.
 
 ## Pages
 
-1. [Overview](README.md) — this page
-2. [Quick start](quick-start.md) — from nothing to downloaded files in a few minutes
-3. [Connecting to Zoho](zoho-connection.md) — the client, the login, data centers
-4. [The project](project.md) — what is in the folder and what goes into git
-5. [Pulling](pulling.md) — downloading resources, presets
-6. [Browser](browser.md) — the local web app
-7. [Migrations](migrations.md) — creating modules and fields
-8. [Troubleshooting](troubleshooting.md) — common errors and what to do
-9. [Scripts and packages](scripts-and-packages.md) — your own scripts with the shipped packages
-10. [Widgets](widgets.md) — running and testing widgets without Zoho
+In reading order:
+
+- [Installation](installation.md) — building the CLI, checking it, updating it
+- [Quick start](quick-start.md) — from nothing to downloaded files in a few minutes
+- [Connecting to Zoho](zoho-connection.md) — the client, the login, data centers
+- [The project](project.md) — what is in the folder and what goes into git
+- [Pulling](pulling.md) — downloading resources, presets
+- [Browser](browser.md) — the local web app
+- [Migrations](migrations.md) — creating modules and fields
+- [Widgets](widgets.md) — running and testing widgets without Zoho
+- [Scripts and packages](scripts-and-packages.md) — your own scripts with the shipped packages
+- [Troubleshooting](troubleshooting.md) — common errors and what to do
 
 The words these pages use — artifact, pull, snapshot, source, scaffold, import, deploy — are defined in the [glossary](../glossary.md).
 

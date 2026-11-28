@@ -28,7 +28,7 @@ Created oz_sa_ping in Zoho (id 1023338000007548001)
 |---|---|
 | `<api_name>` | Папка функції в `src/zoho-crm/functions/`. |
 | `-y, --yes` | Deploy без запиту підтвердження — для скриптів і запусків без термінала. |
-| `--changelog <text>` | Changelog цього deploy. Без неї повідомлення береться з [`zohoCrm.functions.changelogTemplate`](../project/settings.md), типово `Deployed {date}`, де `{date}` — дата deploy. |
+| `--changelog <text>` | Changelog цього deploy. Без неї повідомлення береться з [`zohoCrm.functions.changelogTemplate`](../project/settings.md), типово `Deployed {date}`, де `{date}` — момент deploy в UTC у форматі ISO 8601: `2026-10-18T12:00:00.000Z`. |
 
 ## Створення чи оновлення
 
@@ -59,10 +59,10 @@ Created oz_sa_ping in Zoho (id 1023338000007548001)
 
 Нічого не надсилається в Zoho і нічого не записується, коли:
 
-- немає папки функції або її deploy-файлу;
+- немає папки функції, її deploy-файлу або файлу з кодом `<api_name>.deluge`;
 - deploy-файл порушує правило: display name має 3–100 символів, починається з літери й містить
   літери, цифри, пробіли, `-` і `_`; API-ім'я — те саме без пробілів і збігається з назвою папки;
-  опис — до 3000 символів; runtime — `Deluge 1.0`; категорія — одна із семи категорій Deluge;
+  опис — до 3000 символів; runtime — `Deluge 1.0`; категорія — одна із семи категорій Deluge; `id` — рядок або `null`; `deployments` — список;
 - код не оголошує `<category>.<display name>` — категорію та display name у нижньому регістрі, з `_`
   замість пробілів і `-`. Zoho звіряє оголошення без урахування регістру;
 - `src/zoho-crm/functions/` досі тримає завантажені функції з часів до переїзду в `data/` —

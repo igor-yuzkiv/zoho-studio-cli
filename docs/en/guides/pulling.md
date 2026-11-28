@@ -3,8 +3,12 @@
 Pulling downloads resources from the CRM into `data/zoho-crm/`. Each kind of resource has its own
 command, and a **preset** runs several of them in a row.
 
-**A pull replaces the folder it writes.** What was deleted in the CRM disappears locally too, so
-the files always mirror the CRM. Local edits in those folders are overwritten — keep them in git.
+**A full pull replaces the folder it writes.** What was deleted in the CRM disappears locally too, so the files mirror the CRM. Local edits in those folders are overwritten — keep them in git.
+
+Two cases keep older files:
+
+- A pull with `--module` (workflows, workflow actions) removes only that module's files and leaves the rest of the folder.
+- A part that failed to download — a module's fields or layouts, a type of workflow actions — keeps its previous files.
 
 ## Everything at once
 
@@ -35,8 +39,7 @@ Fields are pulled for the modules already downloaded, so run `z-crm:modules:pull
 commands take options, for example `zoho-studio z-crm:fields:pull --module=Leads` for one module;
 each command's page in the [technical reference](../reference/README.md#documents) lists them.
 
-When one item fails — a single function, say — the command reports it at the end and goes on with
-the rest.
+Most commands download items one at a time. When one item fails — a single function, say — such a command reports it at the end and goes on with the rest. `z-crm:modules:pull` and `z-crm:profiles:pull` fetch everything in one request, so an error there stops the command.
 
 ## Presets
 

@@ -14,6 +14,8 @@ my-crm/
   migrations/zoho-crm/     migration files you write
   logs/                    the log of every command
   scripts/                 scripts you write, including the migrate script
+  widgets/                 widgets you develop and test locally
+  .claude/skills/          a Claude Code skill for testing widgets
   package.json             the packages scripts and migrations use
   tsconfig.json            перевіряє типи скриптів і міграцій за пакетами
 ```
@@ -36,8 +38,8 @@ my-crm/
 
 `init` готує проєкт до git:
 
-- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`;
-- **призначені для коміту:** `data/`, `src/`, `migrations/`, `scripts/`, `package.json`, `tsconfig.json`.
+- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`, результати тестів віджетів;
+- **призначені для коміту:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.
 
 Облікових даних у проєкті немає взагалі — вони в `~/.zoho-studio`.
 

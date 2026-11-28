@@ -25,6 +25,9 @@ Initialized Zoho Studio project in my-project
   scripts/migrate.ts — created
   scripts/example-migration.ts.txt — created
   migrations/zoho-crm/.gitkeep — created
+  widgets/.gitkeep — created
+  .claude/skills/zoho-crm-widget-testing/SKILL.md — created
+  .claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md — created
 
 Next steps:
   Run "zoho-studio login" and choose or create a credential profile
@@ -38,7 +41,9 @@ Next steps:
 
 ```text
 my-project/
-  .gitignore             # keeps node_modules out of git
+  .claude/
+    skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
+  .gitignore             # keeps node_modules and widget test results out of git
   .zoho-studio/
     .gitignore           # keeps settings.json, org.json and migrations.json out of git
     settings.json        # project settings, chmod 0600
@@ -54,6 +59,7 @@ my-project/
   src/
     zoho-crm/functions/  # source: функції, які розробляються локально
   tsconfig.json          # type-checks scripts/ against the packages' sources
+  widgets/               # widgets, see ../crm-widgets/make.md
 ```
 
 `data/` — це місце, куди пише кожне завантаження: `data/zoho-crm/functions`, `data/zoho-crm/modules`, `data/zoho-crm/workflows`. Ці шляхи
@@ -70,7 +76,7 @@ my-project/
 
 ## Скрипти
 
-`package.json` перелічує чотири пакети фреймворку — `@zoho-studio/core`, `@zoho-studio/auth`,
+`package.json` перелічує три пакети фреймворку — `@zoho-studio/core`, `@zoho-studio/auth`,
 `@zoho-studio/zoho-crm` — як залежності `link:`, що розв'язуються за назвою
 з реєстру посилань Bun, а не за шляхом. Зареєструйте їх один раз на машині, з клону
 репозиторію фреймворку:

@@ -61,8 +61,9 @@ The requests that exist, by entity:
 | organization | `getOrganizationRequest` |
 | modules | `getModulesListRequest`, `createModuleRequest` |
 | fields | `getFieldsListRequest`, `getFieldsPageRequest`, `createFieldsRequest` |
+| layouts | `getLayoutsListRequest` |
 | profiles | `getProfilesListRequest` |
-| functions | `getFunctionsListRequest`, `getFunctionsPageRequest`, `getFunctionCodeRequest` |
+| functions | `getFunctionsListRequest`, `getFunctionsPageRequest`, `getFunctionCodeRequest`, `createFunctionRequest`, `updateFunctionRequest`, `runFunctionRequest` |
 | workflow rules | `getWorkflowRulesListRequest`, `getWorkflowRulesPageRequest`, `getWorkflowRuleRequest` |
 | workflow actions | `getWorkflowActionsListRequest`, `getWorkflowActionsPageRequest`, `getWorkflowActionRequest` |
 | webhooks | `getWebhooksListRequest`, `getWebhooksPageRequest`, `getWebhookRequest` |
@@ -73,7 +74,7 @@ The requests that exist, by entity:
 A `…ListRequest` returns every item, following Zoho's pages for you; a `…PageRequest` returns one
 page. Your editor shows the parameters and the shape of the result for each.
 
-**`createModuleRequest` and `createFieldsRequest` change the CRM** and nothing undoes a module.
+**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest`, and `updateFunctionRequest` change the CRM, and `runFunctionRequest` runs code in it**; nothing undoes a module.
 For creating modules and fields, a [migration](migrations.md) is safer: it checks first and asks
 before it sends.
 

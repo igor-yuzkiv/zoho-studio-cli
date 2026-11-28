@@ -1,4 +1,4 @@
-# Огляд
+# Довідник
 
 English version: [en](../../en/reference/README.md)
 
@@ -37,30 +37,48 @@ bun run dev -- init my-project
 
 ## Документи
 
-- [glossary.md](../glossary.md) — терміни, якими користується документація: artifact, pull, snapshot, source, scaffold, import, deploy
-- [project/settings.md](project/settings.md) — файл налаштувань і те, як CLI його читає й записує
-- [project/init.md](project/init.md) — створення проєкту командою `zoho-studio init`
-- [project/login.md](project/login.md) — авторизація проєкту командою `zoho-studio login`
-- [crm-org/status.md](crm-org/status.md) — перевірка підключення командою `zoho-studio z-crm:status`
-- [crm-functions/pull.md](crm-functions/pull.md) — завантаження функцій командою `zoho-studio z-crm:functions:pull`
-- [crm-metadata/modules.md](crm-metadata/modules.md) — завантаження метаданих модулів командою `zoho-studio z-crm:modules:pull`
-- [crm-metadata/fields.md](crm-metadata/fields.md) — завантаження полів модулів командою `zoho-studio z-crm:fields:pull`
-- [crm-metadata/workflows.md](crm-metadata/workflows.md) — завантаження правил робочих процесів командою `zoho-studio z-crm:workflows:pull`
-- [crm-org/org-info.md](crm-org/org-info.md) — читання та збереження організації командою `zoho-studio z-crm:org:info`
-- [crm-metadata/workflow-actions.md](crm-metadata/workflow-actions.md) — завантаження дій робочих процесів командою `zoho-studio z-crm:workflow-actions:pull`
-- [crm-metadata/webhooks.md](crm-metadata/webhooks.md) — завантаження вебхуків командою `zoho-studio z-crm:webhooks:pull`
-- [crm-metadata/global-picklists.md](crm-metadata/global-picklists.md) — завантаження глобальних списків вибору командою `zoho-studio z-crm:global-picklists:pull`
-- [crm-metadata/client-scripts.md](crm-metadata/client-scripts.md) — завантаження клієнтських скриптів командою `zoho-studio z-crm:client-scripts:pull`
-- [crm-metadata/static-resources.md](crm-metadata/static-resources.md) — завантаження статичних ресурсів командою `zoho-studio z-crm:static-resources:pull`
-- [project/preset.md](project/preset.md) — запуск іменованої послідовності команд командою `zoho-studio preset`
-- [project/browser.md](project/browser.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку командою `zoho-studio browser`
-- [crm-metadata/profiles.md](crm-metadata/profiles.md) — завантаження профілів командою `zoho-studio z-crm:profiles:pull`
-- [crm-migrations/migrations.md](crm-migrations/migrations.md) — створення модулів і додавання полів із файлів міграцій командою `bun run migrate`
-- [crm-metadata/layouts.md](crm-metadata/layouts.md) — завантаження layouts модулів із секціями та формулами командою `zoho-studio z-crm:layouts:pull`
-- [crm-functions/make.md](crm-functions/make.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої командою `zoho-studio z-crm:functions:make`
-- [crm-functions/deploy.md](crm-functions/deploy.md) — створення або оновлення функції в Zoho з `src/` командою `zoho-studio z-crm:functions:deploy`
-- [crm-functions/import.md](crm-functions/import.md) — копіювання завантаженої функції з `data/` у `src/` командою `zoho-studio z-crm:functions:import`
-- [crm-functions/run.md](crm-functions/run.md) — запуск коду функції з `src/` або `data/` у Zoho командою `zoho-studio z-crm:functions:run`
-- [crm-migrations/make.md](crm-migrations/make.md) — створення файлу міграції за кількома запитаннями командою `zoho-studio z-crm:migrations:make`
-- [crm-widgets/serve.md](crm-widgets/serve.md) — запуск віджетів в емульованій Zoho CRM, сценарії й e2e-тести командою `zoho-studio z-crm:widgets:serve`
-- [crm-widgets/make.md](crm-widgets/make.md) — створення папки віджета, яка одразу працює, командою `zoho-studio z-crm:widgets:make`
+- [Глосарій](../glossary.md) — терміни, якими користується документація: artifact, pull, snapshot, source, scaffold, import, deploy
+
+### Проєкт
+
+- [Налаштування](project/settings.md) — файл налаштувань і те, як CLI його читає й записує
+- [`zoho-studio init`](project/init.md) — створення проєкту командою `zoho-studio init`
+- [`zoho-studio login`](project/login.md) — авторизація проєкту командою `zoho-studio login`
+- [`zoho-studio preset`](project/preset.md) — запуск іменованої послідовності команд командою `zoho-studio preset`
+- [`zoho-studio browser`](project/browser.md) — перегляд артефактів і запуск завантажень у локальному вебзастосунку командою `zoho-studio browser`
+
+### Організація CRM
+
+- [`zoho-studio z-crm:status`](crm-org/status.md) — перевірка підключення командою `zoho-studio z-crm:status`
+- [`zoho-studio z-crm:org:info`](crm-org/org-info.md) — читання та збереження організації командою `zoho-studio z-crm:org:info`
+
+### Метадані CRM
+
+- [`zoho-studio z-crm:modules:pull`](crm-metadata/modules.md) — завантаження метаданих модулів командою `zoho-studio z-crm:modules:pull`
+- [`zoho-studio z-crm:fields:pull`](crm-metadata/fields.md) — завантаження полів модулів командою `zoho-studio z-crm:fields:pull`
+- [`zoho-studio z-crm:layouts:pull`](crm-metadata/layouts.md) — завантаження layouts модулів із секціями та формулами командою `zoho-studio z-crm:layouts:pull`
+- [`zoho-studio z-crm:workflows:pull`](crm-metadata/workflows.md) — завантаження правил робочих процесів командою `zoho-studio z-crm:workflows:pull`
+- [`zoho-studio z-crm:workflow-actions:pull`](crm-metadata/workflow-actions.md) — завантаження дій робочих процесів командою `zoho-studio z-crm:workflow-actions:pull`
+- [`zoho-studio z-crm:webhooks:pull`](crm-metadata/webhooks.md) — завантаження вебхуків командою `zoho-studio z-crm:webhooks:pull`
+- [`zoho-studio z-crm:global-picklists:pull`](crm-metadata/global-picklists.md) — завантаження глобальних списків вибору командою `zoho-studio z-crm:global-picklists:pull`
+- [`zoho-studio z-crm:profiles:pull`](crm-metadata/profiles.md) — завантаження профілів командою `zoho-studio z-crm:profiles:pull`
+- [`zoho-studio z-crm:client-scripts:pull`](crm-metadata/client-scripts.md) — завантаження клієнтських скриптів командою `zoho-studio z-crm:client-scripts:pull`
+- [`zoho-studio z-crm:static-resources:pull`](crm-metadata/static-resources.md) — завантаження статичних ресурсів командою `zoho-studio z-crm:static-resources:pull`
+
+### Функції CRM
+
+- [`zoho-studio z-crm:functions:pull`](crm-functions/pull.md) — завантаження функцій командою `zoho-studio z-crm:functions:pull`
+- [`zoho-studio z-crm:functions:make`](crm-functions/make.md) — створення нової Deluge-функції в `src/` або імпорт завантаженої командою `zoho-studio z-crm:functions:make`
+- [`zoho-studio z-crm:functions:import`](crm-functions/import.md) — копіювання завантаженої функції з `data/` у `src/` командою `zoho-studio z-crm:functions:import`
+- [`zoho-studio z-crm:functions:deploy`](crm-functions/deploy.md) — створення або оновлення функції в Zoho з `src/` командою `zoho-studio z-crm:functions:deploy`
+- [`zoho-studio z-crm:functions:run`](crm-functions/run.md) — запуск коду функції з `src/` або `data/` у Zoho командою `zoho-studio z-crm:functions:run`
+
+### Міграції CRM
+
+- [Міграції](crm-migrations/migrations.md) — створення модулів і додавання полів із файлів міграцій командою `bun run migrate`
+- [`zoho-studio z-crm:migrations:make`](crm-migrations/make.md) — створення файлу міграції за кількома запитаннями командою `zoho-studio z-crm:migrations:make`
+
+### Віджети CRM
+
+- [`zoho-studio z-crm:widgets:make`](crm-widgets/make.md) — створення папки віджета, яка одразу працює, командою `zoho-studio z-crm:widgets:make`
+- [`zoho-studio z-crm:widgets:serve`](crm-widgets/serve.md) — запуск віджетів в емульованій Zoho CRM, сценарії й e2e-тести командою `zoho-studio z-crm:widgets:serve`

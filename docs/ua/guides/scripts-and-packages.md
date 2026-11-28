@@ -62,8 +62,9 @@ for (const module of custom) {
 | організація | `getOrganizationRequest` |
 | модулі | `getModulesListRequest`, `createModuleRequest` |
 | поля | `getFieldsListRequest`, `getFieldsPageRequest`, `createFieldsRequest` |
+| layouts | `getLayoutsListRequest` |
 | профілі | `getProfilesListRequest` |
-| функції | `getFunctionsListRequest`, `getFunctionsPageRequest`, `getFunctionCodeRequest` |
+| функції | `getFunctionsListRequest`, `getFunctionsPageRequest`, `getFunctionCodeRequest`, `createFunctionRequest`, `updateFunctionRequest`, `runFunctionRequest` |
 | правила робочих процесів | `getWorkflowRulesListRequest`, `getWorkflowRulesPageRequest`, `getWorkflowRuleRequest` |
 | дії робочих процесів | `getWorkflowActionsListRequest`, `getWorkflowActionsPageRequest`, `getWorkflowActionRequest` |
 | вебхуки | `getWebhooksListRequest`, `getWebhooksPageRequest`, `getWebhookRequest` |
@@ -74,7 +75,7 @@ for (const module of custom) {
 `…ListRequest` повертає всі елементи, сам проходячи сторінками Zoho; `…PageRequest` повертає одну
 сторінку. Редактор показує параметри й форму результату кожного запиту.
 
-**`createModuleRequest` і `createFieldsRequest` змінюють CRM**, і створений модуль нічим не
+**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest` і `updateFunctionRequest` змінюють CRM, а `runFunctionRequest` виконує в ній код**, і створений модуль нічим не
 скасувати. Для створення модулів і полів безпечніша [міграція](migrations.md): вона спершу
 перевіряє і питає, перш ніж щось надіслати.
 

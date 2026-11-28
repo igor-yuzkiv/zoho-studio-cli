@@ -8,6 +8,7 @@ zoho-studio z-crm:modules:pull
 ```
 
 ```text
+Pulling modules |████████████████████| 42/42 | Vendors
 Modules found: 42
 Metadata saved: 42
 ```

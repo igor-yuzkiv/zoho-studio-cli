@@ -11,7 +11,7 @@ undone through it: Zoho has no API that deletes a module. Try a migration on a s
 ```bash
 bun run migrate                         # pick a migration from the list
 bun run migrate 001-projects --dry-run  # show the plan and the conflicts, change nothing
-bun run migrate 001-projects --yes      # run without the confirmation prompt
+bun run migrate 001-projects --yes      # run without the confirmation prompt (or -y)
 ```
 
 The script comes with a project made by [`zoho-studio init`](../project/init.md) and needs the
