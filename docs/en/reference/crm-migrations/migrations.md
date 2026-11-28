@@ -90,6 +90,16 @@ The other options keep Zoho's names, and an option you leave out gets Zoho's def
 | `picklist`, `multiselectpicklist` | `values`: strings, or `{ display_value, actual_value }` pairs |
 | `lookup` | `module` (required), `display_label` — the related list label, the field label by default |
 
+## What a migration does not do
+
+A migration covers exactly the actions and field types above. Everything else is out of its reach:
+
+- **Change or delete.** It never changes an existing field or module and never deletes one; Zoho has no API that deletes a module.
+- **Other field types.** Only the methods in the table exist. Any other Zoho field type — a formula, an auto-number, a file upload, a subform, for example — has no method, so a migration cannot create it.
+- **Other field settings.** A field gets only the options in the table and `api_name` and `tooltip`. Required, unique, or a default value cannot be set; an option the field type does not have blocks the run.
+- **A lookup to a module from the same migration.** The related module must already exist in the CRM, so create it in an earlier migration.
+- **Several actions in one file.** A file holds one `create` or one `update`.
+
 ## What is checked before a run
 
 Any of these blocks the run, and the script prints each one:

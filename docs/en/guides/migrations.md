@@ -6,7 +6,7 @@ and only after you confirm does it send anything.
 
 **A migration only creates, and cannot be undone through Zoho Studio.** It never changes or
 deletes a field, and Zoho offers no way to delete a module through its API. Try a migration on a
-sandbox organization first.
+sandbox organization first. Which field types and settings a migration supports, and what it cannot do, is in the [migrations reference](../reference/crm-migrations/migrations.md#field-types).
 
 The project needs its packages installed for migrations — see [The project](project.md#scripts-and-migrations).
 
