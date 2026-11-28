@@ -34,4 +34,4 @@ Zoho CRM ── Pull ──> data/ (snapshots)
 A snapshot is the state of the CRM at the moment of the last pull, not a versioned history: the next
 pull replaces it, and a pull never touches source. A deploy does not pull either. Each pull command clears its folder before writing, so a change made by hand to a
 snapshot is lost on the next pull of that artifact. Git is what keeps the history of snapshots, which
-is why `data/` is meant to be committed — see [the project](user-guide/4-project.md#what-goes-into-git).
+is why `data/` is meant to be committed — see [the project](guides/project.md#what-goes-into-git).
