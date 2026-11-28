@@ -1,5 +1,7 @@
 import { Command } from 'commander'
 
+import { version } from '../../../package.json'
+
 import { initCommand } from '@/commands/init'
 import { loginCommand } from '@/commands/login'
 import { statusCommand } from '@/commands/zoho-crm/status'
@@ -28,7 +30,7 @@ import { browserCommand } from '@/commands/browser'
 
 const program = new Command()
 
-program.name('zoho-studio')
+program.name('zoho-studio').version(version, '-V, --version', 'print the version of zoho-studio')
 
 program.addCommand(initCommand)
 program.addCommand(loginCommand)

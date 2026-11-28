@@ -22,7 +22,7 @@ ln -s "$PWD/dist/zoho-studio" ~/.local/bin/zoho-studio   # or any folder on your
 bun run link                                 # once, so projects can import the packages
 ```
 
-Після цього `zoho-studio --help` покаже список команд. Щоб оновитися, підтягніть репозиторій і
+Після цього `zoho-studio --help` покаже список команд, а `zoho-studio --version` — встановлену версію. Щоб оновитися, підтягніть репозиторій і
 знову запустіть `bun run compile`; посилання з `bun run link` стежить за вихідним кодом і оновлення
 не потребує. Вперше працюєте з інструментом? Почніть із [посібника користувача](docs/ua/user-guide/1-overview.md).
 
