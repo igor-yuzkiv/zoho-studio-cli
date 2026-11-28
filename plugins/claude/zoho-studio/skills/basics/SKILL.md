@@ -19,7 +19,7 @@ The person's question is answered from the organization's pulled files or the ch
 4. **Answer from the pulled files.** A question about the organization is answered from `data/`, read as the instructions describe. Pull first when what you need is missing or the person wants the current state; a pull only reads from Zoho.
 5. **Change only the project's own files** — sources, migrations, widgets, scripts, as the instructions name them. Files a pull writes are rewritten by the next pull; a change there is lost.
 6. **Anything that writes to Zoho** — the instructions mark which commands do — runs only after the person agreed to that run. Tell them the organization and whether it is a sandbox or production first; pass `--yes` or `--force` only with that agreement.
-7. **When the CLI cannot do it** — the instructions list what it does not do — say so plainly. Look the answer up in first-hand sources, as `/zoho-studio:sources` describes.
+7. **When the CLI cannot do it** — the instructions list what it does not do — say so plainly. A script on the packages can often do it — `/zoho-studio:scripts`. Look the answer up in first-hand sources, as `/zoho-studio:sources` describes.
 8. **Read the result by the exit code.** Non-zero is a failure, even when part of the work was done; the details are in the project log the instructions point to.
 
 ## Rules

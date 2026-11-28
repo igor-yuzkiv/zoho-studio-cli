@@ -34,6 +34,9 @@ version number and the moment of the release are the user's; how to choose a num
    Then compare the tools, services, and repositories the plugin skills name with
    `plugins/claude/zoho-studio/references/dependencies.md` (`.claude/rules/dependencies.md`); a
    missing or stale entry is fixed the same way.
+   Then compare `packages/*/README.md` with the public exports changed since the last tag
+   (`.claude/rules/package-readmes.md`); a name or an example that no longer matches is fixed the
+   same way.
 4. **Propose the version.** Recommend `PATCH`, `MINOR`, or `MAJOR` with the reason; a version passed
    as an argument is used as is. Done when the user confirms the number.
 5. **Bump the version** on `develop` in the root `package.json` and in

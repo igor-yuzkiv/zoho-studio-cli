@@ -10,6 +10,7 @@ import migrateScript from '../../../../../template/scripts/migrate.ts.tmpl' with
 import exampleMigration from '../../../../../template/scripts/example-migration.ts.txt' with { type: 'file' }
 import migrationsKeep from '../../../../../template/migrations/zoho-crm/.gitkeep' with { type: 'file' }
 import widgetsKeep from '../../../../../template/widgets/.gitkeep' with { type: 'file' }
+import claudeSettings from '../../../../../template/.claude/settings.json.tmpl' with { type: 'file' }
 import widgetTestingSkill from '../../../../../template/.claude/skills/zoho-crm-widget-testing/SKILL.md' with { type: 'file' }
 import widgetSdkReference from '../../../../../template/.claude/skills/zoho-crm-widget-testing/references/sdk-1.5.md' with { type: 'file' }
 
@@ -56,6 +57,7 @@ export const templateFiles: TemplateFile[] = [
     { embeddedPath: exampleMigration, destination: 'scripts/example-migration.ts.txt' },
     { embeddedPath: migrationsKeep, destination: `${migrationsDirName}/${zohoCrmDirName}/.gitkeep` },
     { embeddedPath: widgetsKeep, destination: `${widgetsDirName}/.gitkeep` },
+    { embeddedPath: claudeSettings, destination: '.claude/settings.json' },
     { embeddedPath: widgetTestingSkill, destination: '.claude/skills/zoho-crm-widget-testing/SKILL.md' },
     {
         embeddedPath: widgetSdkReference,

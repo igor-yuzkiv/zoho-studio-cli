@@ -1,5 +1,7 @@
 import { Command } from 'commander'
 
+import { allowCrmWrites } from '@zoho-studio/zoho-crm'
+
 import { version } from '../../../package.json'
 
 import { initCommand } from '@/commands/init'
@@ -30,6 +32,9 @@ import { browserCommand } from '@/commands/browser'
 import { instructionsCommand } from '@/commands/instructions'
 
 export function createProgram(): Command {
+    // Commands that write check what they send on their own; the read-only default guards project scripts.
+    allowCrmWrites()
+
     const program = new Command()
 
     program.name('zoho-studio').version(version, '-V, --version', 'print the version of zoho-studio')

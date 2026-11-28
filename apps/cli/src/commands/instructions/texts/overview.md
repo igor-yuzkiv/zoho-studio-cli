@@ -17,7 +17,9 @@ current folder, so they work from any subfolder; outside a project they stop and
 - `src/zoho-crm/functions/` — functions developed locally and deployed from here.
 - `migrations/zoho-crm/` — migration files, run with `bun run migrate`.
 - `widgets/` — widget folders for local runs and e2e tests.
-- `scripts/` — TypeScript scripts that use the `@zoho-studio/*` packages.
+- `scripts/` — TypeScript scripts that use the `@zoho-studio/*` packages. Their CRM client reads
+  only: any request that can change the organization fails with `CRM_WRITES_DISABLED` until the
+  script calls `allowCrmWrites()`.
 - `.zoho-studio/settings.json` — data center, scopes, presets, naming. No secrets: tokens and client
   secrets live in `~/.zoho-studio`, outside the project.
 - `logs/zoho-studio-cli.log` — structured JSON log of every command; details of a failure are there.
@@ -74,4 +76,5 @@ Do not invent commands for these; there are none:
 - Run widgets inside real Zoho, or build and serve widget code — the widget must already run at its
   own address.
 
-For these, work in the Zoho UI or through the Zoho CRM REST API directly, and say so to the person.
+For these, work in the Zoho UI, or write a project script on the packages — the `scripts` skill of
+the zoho-studio plugin — and say so to the person.
