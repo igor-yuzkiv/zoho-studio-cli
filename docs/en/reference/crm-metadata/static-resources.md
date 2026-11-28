@@ -1,0 +1,63 @@
+# `zoho-studio z-crm:static-resources:pull`
+
+Downloads every Zoho CRM static resource — the JavaScript files client scripts load — into
+`data/zoho-crm/static-resources/`, one directory per resource, holding its metadata and its file.
+
+```bash
+zoho-studio z-crm:static-resources:pull
+```
+
+```text
+Pulling static resources |████████████████████| 15/15 | pricingHelpers
+Static resources found: 15
+Metadata saved: 15
+Files downloaded: 15
+Files failed: 0
+```
+
+The command needs a project that has been through [`zoho-studio login`](../project/login.md) with
+the `ZohoCRM.settings.static_resources.READ` scope, which is in the default scopes.
+
+## What lands on disk
+
+Files are written under the project root — the folder holding `.zoho-studio/`, not the current
+directory.
+
+```text
+data/zoho-crm/static-resources/
+├── user/
+│   └── pricingHelpers.1000000000053904403/
+│       ├── pricingHelpers.metadata.json
+│       └── pricingHelpers.js
+├── crm/
+│   └── ZDK-1.0.1000000000000476013/
+│       └── …
+└── internal/
+    └── DotSDK-2.0.1000000000000476015/
+        ├── DotSDK-2.0.metadata.json
+        └── crm_dot_sdk.js.gzip
+```
+
+Every resource Zoho lists is pulled, and the first level splits them by their `source`: `user` for
+the files uploaded in this organization, `crm` and `internal` for the libraries Zoho itself ships.
+A resource directory is named after the resource and its id; the file inside keeps the
+`file_name` Zoho reports.
+
+`*.metadata.json` holds the full resource record exactly as Zoho returned it, formatted with a
+four-space indent and a trailing newline. The file is the one behind the resource `uri`, written
+byte for byte — Zoho's gzip resources stay gzip. The `uri` lies outside Zoho CRM and is requested
+without the OAuth token, the way the CRM web UI requests it.
+
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A resource removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
+
+## Failures
+
+A resource whose file cannot be fetched does not stop the run: its metadata is still written, a file from an earlier pull stays as it was, and it is listed in the summary with a short error; the command exits with code 1. Failing to fetch the resource
+list itself is fatal, since there would be nothing to write.
+
+## Logs
+
+The CLI writes structured JSON logs to [`logs.file`](../project/settings.md), `logs/zoho-studio-cli.log` by
+default. `z-crm:static-resources:pull` records the start of the run, how many resources were found,
+the final counts, and every failure with its stack trace. Tokens and authorization headers are
+never logged.

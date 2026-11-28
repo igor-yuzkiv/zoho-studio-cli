@@ -1,0 +1,57 @@
+# The project
+
+A project is a folder with `.zoho-studio/settings.json` in it. `zoho-studio init` creates it;
+every command works from the project folder or any folder inside it.
+
+```text
+my-crm/
+  .zoho-studio/
+    settings.json          which Zoho region to use, what to ask permission for, presets
+    org.json               the organization the project is logged in to
+    migrations.json        which migrations ran, per organization
+  data/zoho-crm/           snapshots: everything downloaded from the CRM
+  src/zoho-crm/functions/  functions you develop locally
+  migrations/zoho-crm/     migration files you write
+  logs/                    the log of every command
+  scripts/                 scripts you write, including the migrate script
+  widgets/                 widgets you develop and test locally
+  .claude/skills/          a Claude Code skill for testing widgets
+  package.json             the packages scripts and migrations use
+  tsconfig.json            type-checks scripts and migrations against the packages
+```
+
+What a pull downloads into `data/zoho-crm/` is a snapshot — a copy of the CRM's state that the next pull
+replaces; the [glossary](../glossary.md) page defines it and the other terms.
+
+## Settings
+
+`.zoho-studio/settings.json` holds no secrets. Every key in it is optional: what you leave out
+falls back to the default. The ones you are most likely to touch:
+
+- `auth.baseUrl`, `api.baseUrl` — your Zoho data center, see
+  [Connecting to Zoho](zoho-connection.md#data-centers);
+- `presets` — your own sequences of commands, see [Pulling](pulling.md#presets).
+
+The full description is in the [settings reference](../reference/project/settings.md).
+
+## What goes into git
+
+`init` makes the project a git repository, without a first commit, and prepares what goes into it:
+
+- **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`, widget test results, `data/.removed/`;
+- **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.
+
+Credentials are not in the project at all — they are in `~/.zoho-studio`.
+
+## Scripts and migrations
+
+`scripts/` and `migrations/` hold TypeScript files that use the packages Zoho Studio ships. To run
+them, the packages have to be linked once on your machine (`bun run link` in the Zoho Studio
+repository, see the [README](../../../README.md#getting-the-cli)) and installed in the project:
+
+```bash
+bun install
+```
+
+Migrations are described in [Migrations](migrations.md), scripts in [Scripts and packages](scripts-and-packages.md). More on the project files:
+[init reference](../reference/project/init.md).

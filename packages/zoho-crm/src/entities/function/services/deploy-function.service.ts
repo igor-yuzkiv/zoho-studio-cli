@@ -151,7 +151,7 @@ function explainFunctionRejection(error: unknown, metadata: FunctionDeployMetada
     if (error.code === 'DUPLICATE_DATA' && !metadata.id) {
         return new Error(
             `Zoho already has a function with the API name "${metadata.api_name}" (${error.message}). ` +
-                'Nothing was changed. To work on that function, pull functions and import it with "zoho-studio z-crm:functions:make".',
+                'Nothing was changed. To work on that function, pull functions and import it with "zoho-studio z-crm:functions:import".',
             { cause: error }
         )
     }

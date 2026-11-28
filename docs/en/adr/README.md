@@ -65,3 +65,4 @@ decision is revisited, a new ADR is written and only the status of the old one c
 
 | ADR | Decision | Status |
 |---|---|---|
+| [0001](0001-install-from-the-clone-with-setup.md) | The CLI is installed from a clone with `bun run setup` | Accepted |

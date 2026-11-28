@@ -1,5 +1,5 @@
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir, writeArtifactJson, writeArtifactText } from '@zoho-studio/core'
+import { openArtifactSnapshot, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -34,11 +34,11 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
 
     logger.info({ total: functions.length }, 'Functions found')
 
-    // The directory mirrors exactly what this pull returned, so stale functions are dropped.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, functionsDirName])
+    // The directory mirrors exactly what this pull returned, and what Zoho no longer has moves to data/.removed/.
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, functionsDirName])
 
     for (const zohoFunction of functions) {
-        await writeArtifactJson(projectPath, functionMetadataFilePath(zohoFunction), zohoFunction)
+        await snapshot.writeJson(functionMetadataFilePath(zohoFunction), zohoFunction)
     }
 
     const failed: FailedFunction[] = []
@@ -55,8 +55,9 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
 
             try {
                 const code = await getFunctionCodeRequest(zohoFunction.id)
-                await writeArtifactText(projectPath, functionCodeFilePath(zohoFunction), code)
+                await snapshot.writeText(functionCodeFilePath(zohoFunction), code)
             } catch (error) {
+                snapshot.keep(functionCodeFilePath(zohoFunction))
                 failed.push({
                     name: zohoFunction.name,
                     apiName: zohoFunction.api_name,
@@ -77,6 +78,8 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
     const downloaded = functions.length - failed.length
     logger.info({ total: functions.length, downloaded, failed: failed.length }, 'Functions pull finished')
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Functions found: ${functions.length}`,
@@ -84,7 +87,9 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
             `Code downloaded: ${downloaded}`,
             `Code failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.name} (${failure.apiName}): ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

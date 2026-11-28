@@ -1,12 +1,11 @@
 import { getProjectSettings } from '@zoho-studio/core'
 import { describeRequestError } from '../../../api'
 import {
-    ensureArtifactDir,
-    removeModuleArtifactFiles,
-    replaceArtifactDir,
+    isRecordOfModule,
+    openArtifactSnapshot,
     resolveArtifactFileName,
     sortForStableFileNames,
-    writeArtifactJson,
+    summarizeRemovedArtifacts,
 } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
@@ -43,13 +42,11 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
 
     logger.info({ total: workflowRules.length }, 'Workflow rules found')
 
-    // A full pull mirrors what Zoho returned; a single-module pull may only drop that module.
-    const takenFileNames = module
-        ? await removeModuleArtifactFiles(
-              await ensureArtifactDir(projectPath, [zohoCrmDirName, workflowsDirName]),
-              module
-          )
-        : await emptyWorkflowsDir(projectPath)
+    // A full pull mirrors what Zoho returned; a single-module pull owns only that module's rules.
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, workflowsDirName], {
+        owns: module ? (record) => isRecordOfModule(record, module) : undefined,
+    })
+    const takenFileNames = new Set(snapshot.keptFileNames)
 
     const failed: FailedRule[] = []
     let savedRules = 0
@@ -63,16 +60,18 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
 
             progress.update(workflowRule.name)
 
+            const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
+            takenFileNames.add(fileName)
+
             try {
                 // The list carries no conditions or actions, so the full record is fetched per rule.
                 const details = await getWorkflowRuleRequest(workflowRule.id)
-                const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
 
-                await writeArtifactJson(projectPath, [zohoCrmDirName, workflowsDirName, fileName], details)
+                await snapshot.writeJson([zohoCrmDirName, workflowsDirName, fileName], details)
 
-                takenFileNames.add(fileName)
                 savedRules += 1
             } catch (error) {
+                snapshot.keep([zohoCrmDirName, workflowsDirName, fileName])
                 failed.push({ name: workflowRule.name, message: describeRequestError(error) })
                 logger.error({ err: error, rule: workflowRule.name }, 'Failed to pull a workflow rule')
             }
@@ -88,19 +87,18 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
         'Workflow rules pull finished'
     )
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Workflow rules found: ${workflowRules.length}`,
             `Workflow rules saved: ${savedRules}`,
             `Workflow rules failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.name}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }
 
-async function emptyWorkflowsDir(projectPath: string): Promise<Set<string>> {
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, workflowsDirName])
-
-    return new Set()
-}

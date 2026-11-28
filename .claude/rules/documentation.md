@@ -24,7 +24,7 @@ docs/
     glossary.md      the terms shared by every part
     guides/          how to use the CLI — for its user, one task at a time
     reference/       what each command and setting does — looked up, not read through
-      <group>/       one folder per CLI component, the same groups as `zoho-studio instructions`
+      <group>/       one folder per CLI component
     architecture/    how the CLI works inside and why — for whoever changes it
     adr/             decisions that are expensive to reverse, with their reasons
   ua/
@@ -48,8 +48,10 @@ README.ua.md         Ukrainian, links to docs/ua/
   `.claude/rules/architecture.md`; this part explains, it does not prescribe.
 - **ADR** — see below.
 
-A new command needs a reference page, an entry in `reference/README.md`, and an entry in both
-READMEs — in both languages, in the same change as the command.
+A new command needs a reference page, an entry in `reference/README.md`, an entry in both
+READMEs — in both languages — and its `zoho-studio instructions` text, in the same change as the
+command. A change to what a command does updates its reference page and its instructions text
+together.
 
 ## Document what exists
 

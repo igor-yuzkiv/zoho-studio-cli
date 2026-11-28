@@ -1,5 +1,5 @@
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir, writeArtifactBytes, writeArtifactJson } from '@zoho-studio/core'
+import { openArtifactSnapshot, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { staticResourcesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
@@ -32,7 +32,7 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
     logger.info({ total: resources.length }, 'Static resources found')
 
     // The directory mirrors exactly what this pull returned, so stale resources are dropped.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, staticResourcesDirName])
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, staticResourcesDirName])
 
     const failed: FailedResource[] = []
 
@@ -41,7 +41,7 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
     try {
         for (const resource of resources) {
             progress.update(resource.name)
-            await writeArtifactJson(projectPath, staticResourceMetadataFilePath(resource), resource)
+            await snapshot.writeJson(staticResourceMetadataFilePath(resource), resource)
 
             try {
                 if (!resource.uri) {
@@ -49,8 +49,9 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
                 }
 
                 const content = await getStaticResourceContentRequest(resource.uri)
-                await writeArtifactBytes(projectPath, staticResourceContentFilePath(resource), content)
+                await snapshot.writeBytes(staticResourceContentFilePath(resource), content)
             } catch (error) {
+                snapshot.keep(staticResourceContentFilePath(resource))
                 failed.push({
                     name: resource.name,
                     source: resource.source,
@@ -68,6 +69,8 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
     const downloaded = resources.length - failed.length
     logger.info({ total: resources.length, downloaded, failed: failed.length }, 'Static resources pull finished')
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Static resources found: ${resources.length}`,
@@ -75,7 +78,9 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
             `Files downloaded: ${downloaded}`,
             `Files failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.name} (${failure.source}): ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

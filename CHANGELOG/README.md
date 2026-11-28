@@ -12,4 +12,4 @@ update to it. One file per version: `v<version>.md`, matching the git tag `v<ver
 - Changes that are not released yet.
 - The current description of the tool — it lives in `docs/` and `README.md`.
 
-Version files are not rewritten after the release.
+Version files are not rewritten after the release. The one exception is a mechanical fix of relative links when a document they link to moves to another folder.

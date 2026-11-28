@@ -2,3 +2,4 @@ node_modules
 widgets/*/results/
 widgets/.report/
 test-results/
+data/.removed/

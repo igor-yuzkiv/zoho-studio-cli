@@ -28,8 +28,16 @@ export function createCliPullProgress(subject: string): PullProgress {
     }
 }
 
-export function printPullResult(result: PullResult): void {
+/**
+ * A partial failure still completes the run, but a script or a preset must be able to tell it from a
+ * clean one, so it ends the process with a non-zero exit code.
+ */
+export function reportPullResult(result: PullResult): void {
     for (const line of result.summary) {
         console.log(line)
+    }
+
+    if (result.failedCount > 0) {
+        process.exitCode = 1
     }
 }

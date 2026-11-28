@@ -1,6 +1,6 @@
 {
   "name": "zoho-studio-cli",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "module": "apps/cli/src/index.ts",
   "type": "module",
   "private": true,
@@ -57,6 +57,7 @@
     "compile": "bun run build:web && bun scripts/compile.ts",
     "link": "for d in packages/*/; do (cd \"$d\" && bun link); done",
     "unlink": "for d in packages/*/; do (cd \"$d\" && bun unlink); done",
+    "setup": "bun scripts/setup.ts",
     "lint": "eslint packages apps tests scripts vite.config.ts",
     "typecheck": "tsc --noEmit && vue-tsc --noEmit -p apps/web/tsconfig.json",
     "test": "bun test",

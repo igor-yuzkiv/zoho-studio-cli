@@ -1,0 +1,64 @@
+import { Command } from 'commander'
+
+import { version } from '../../../package.json'
+
+import { initCommand } from '@/commands/init'
+import { loginCommand } from '@/commands/login'
+import { statusCommand } from '@/commands/zoho-crm/status'
+import { orgInfoCommand } from '@/commands/zoho-crm/org'
+import { presetCommand } from '@/commands/preset'
+import {
+    deployFunctionCommand,
+    importFunctionCommand,
+    runFunctionCommand,
+    makeFunctionCommand,
+    pullFunctionsCommand,
+} from '@/commands/zoho-crm/functions'
+import { pullModulesCommand } from '@/commands/zoho-crm/modules'
+import { pullFieldsCommand } from '@/commands/zoho-crm/fields'
+import { makeMigrationCommand } from '@/commands/zoho-crm/migrations'
+import { pullLayoutsCommand } from '@/commands/zoho-crm/layouts'
+import { pullWorkflowsCommand } from '@/commands/zoho-crm/workflows'
+import { pullWebhooksCommand } from '@/commands/zoho-crm/webhooks'
+import { pullWorkflowActionsCommand } from '@/commands/zoho-crm/workflow-actions'
+import { pullGlobalPicklistsCommand } from '@/commands/zoho-crm/global-picklists'
+import { pullProfilesCommand } from '@/commands/zoho-crm/profiles'
+import { pullClientScriptsCommand } from '@/commands/zoho-crm/client-scripts'
+import { pullStaticResourcesCommand } from '@/commands/zoho-crm/static-resources'
+import { makeWidgetCommand, serveWidgetsCommand } from '@/commands/zoho-crm/widgets'
+import { browserCommand } from '@/commands/browser'
+import { instructionsCommand } from '@/commands/instructions'
+
+export function createProgram(): Command {
+    const program = new Command()
+
+    program.name('zoho-studio').version(version, '-V, --version', 'print the version of zoho-studio')
+
+    program.addCommand(initCommand)
+    program.addCommand(loginCommand)
+    program.addCommand(statusCommand)
+    program.addCommand(orgInfoCommand)
+    program.addCommand(pullFunctionsCommand)
+    program.addCommand(makeFunctionCommand)
+    program.addCommand(importFunctionCommand)
+    program.addCommand(deployFunctionCommand)
+    program.addCommand(runFunctionCommand)
+    program.addCommand(pullModulesCommand)
+    program.addCommand(pullFieldsCommand)
+    program.addCommand(makeMigrationCommand)
+    program.addCommand(pullLayoutsCommand)
+    program.addCommand(pullWorkflowsCommand)
+    program.addCommand(pullWebhooksCommand)
+    program.addCommand(pullWorkflowActionsCommand)
+    program.addCommand(pullGlobalPicklistsCommand)
+    program.addCommand(pullProfilesCommand)
+    program.addCommand(pullClientScriptsCommand)
+    program.addCommand(pullStaticResourcesCommand)
+    program.addCommand(makeWidgetCommand)
+    program.addCommand(serveWidgetsCommand)
+    program.addCommand(browserCommand)
+    program.addCommand(presetCommand)
+    program.addCommand(instructionsCommand)
+
+    return program
+}
