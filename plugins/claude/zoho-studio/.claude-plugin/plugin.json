@@ -1,6 +1,6 @@
 {
   "name": "zoho-studio",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Skills for AI agents in zoho-studio projects: installing the CLI, working in a project, and the parts of Zoho CRM.",
   "author": { "name": "Igor Yuzkiv" }
 }
