@@ -10,7 +10,7 @@ It is designed for both developers and AI agents, providing a predictable interf
 
 ## Getting the CLI
 
-The CLI is built from this repository; there are no prebuilt binaries. It needs [Bun](https://bun.sh) 1.3 or newer. [Installation](docs/en/guides/installation.md) has the steps, how to check the result, and how to update.
+The CLI is built from this repository; there are no prebuilt binaries. It installs on macOS and Linux with `bun run setup` and needs [Bun](https://bun.sh) 1.3 or newer and git. [Installation](docs/en/guides/installation.md) has the steps, how to check the result, and how to update.
 
 `zoho-studio --help` lists the commands, and `zoho-studio --version` prints the installed version.
 

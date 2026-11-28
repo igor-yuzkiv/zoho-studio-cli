@@ -1,8 +1,6 @@
 # `zoho-studio instructions`
 
-Prints instructions for an AI agent working in a zoho-studio project, as markdown: what the
-project is, where to start, which commands write to Zoho, what the CLI does not do, and what each
-command is for.
+Prints instructions for an AI agent working in a zoho-studio project, as markdown: what the project is, where to start, which commands write to Zoho, what the CLI does not do, and what each command is for.
 
 ```bash
 zoho-studio instructions                       # the project, where to start, what the CLI does not do, every command
@@ -11,18 +9,14 @@ zoho-studio instructions z-crm:functions       # one group: its commands and the
 zoho-studio instructions z-crm:functions:pull  # one command
 ```
 
-The name follows the command names: any command, or any prefix of them up to a `:` — `z-crm`,
-`z-crm:functions`, `z-crm:fields`. A group lists its commands with their one-line description. A
-command's text says what it is for, when to use it, whether it writes to Zoho, needs a login or an
-interactive terminal, and what it changes on disk; its options stay in `zoho-studio <command> --help`.
+The name follows the command names: any command, or any prefix of them up to a `:` — `z-crm`, `z-crm:functions`, `z-crm:fields`. A group lists its commands with their one-line description, and some groups carry a guide for that kind of work: `z-crm` — how to read the pulled files and what refers to what; `z-crm:functions` — the files of a function and how Zoho treats its code; `z-crm:migrations` — how to write and run a migration; `z-crm:widgets` — how to test a widget with scenarios and mocks. A command's text says what it is for, when to use it, whether it writes to Zoho, needs a login or an interactive terminal, and what it changes on disk; its options stay in `zoho-studio <command> --help`.
 
 It works anywhere, inside a project or not, and sends nothing to Zoho.
 
 An unknown name fails with exit code 1 and suggests the closest names:
 
 ```text
-There is no command or group named "z-crm:function". Did you mean: z-crm:functions, …?
+There is no command or group named "z-crm:function". Did you mean: z-crm:functions, z-crm:functions:deploy, z-crm:functions:import, z-crm:functions:make, z-crm:functions:pull?
 ```
 
-The texts are built into the executable, so they always match the version of the CLI that prints
-them.
+The texts are built into the executable, so they always match the version of the CLI that prints them.

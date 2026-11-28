@@ -1,6 +1,6 @@
 # Installation
 
-The CLI is built from its repository on your machine; there are no prebuilt binaries. You need [Bun](https://bun.sh) 1.3 or newer and git.
+The CLI is built from its repository on your machine; there are no prebuilt binaries. It installs on macOS and Linux; Windows is not supported. You need [Bun](https://bun.sh) 1.3 or newer and git.
 
 Українська версія: [ua](../../ua/guides/installation.md)
 
@@ -9,13 +9,23 @@ The CLI is built from its repository on your machine; there are no prebuilt bina
 ```bash
 git clone <this repository> zoho-studio-cli
 cd zoho-studio-cli
-bun install
-bun run compile                              # → dist/zoho-studio, with the web app inside
-ln -s "$PWD/dist/zoho-studio" ~/.local/bin/zoho-studio   # or any folder on your PATH
-bun run link                                 # once, so projects can import the packages
+bun run setup
 ```
 
-`bun run link` registers the framework packages on this machine, so the scripts and migrations of a project made by [`zoho-studio init`](../reference/project/init.md) can import them by name.
+`bun run setup` installs the dependencies, builds `dist/zoho-studio` with the web app inside, links it as `~/.local/bin/zoho-studio`, and registers the framework packages on this machine, so the scripts and migrations of a project made by [`zoho-studio init`](../reference/project/init.md) can import them by name. It ends with the installed version:
+
+```text
+zoho-studio 1.0.1 is installed.
+```
+
+When `~/.local/bin` is not on your `PATH`, setup says so and prints the line to add for your shell (zsh, bash, or fish); it does not edit your shell files itself. On many Linux systems the folder joins `PATH` at the next login once it exists.
+
+| Option | Meaning |
+|---|---|
+| `--bin-dir <path>` | Put the link in another folder instead of `~/.local/bin`. |
+| `--force` | Replace whatever is already at `<bin-dir>/zoho-studio` — a link to another clone, or a file. |
+
+Without `--force`, setup stops when `<bin-dir>/zoho-studio` is anything but a link to this clone and says what is there.
 
 ## Check the result
 
@@ -28,15 +38,12 @@ zoho-studio --help
 
 ## Update
 
-Pull the repository and build again:
-
 ```bash
 git pull
-bun install
-bun run compile
+bun run setup
 ```
 
-The link in `~/.local/bin` points at `dist/zoho-studio`, so it picks up the new build. The registration from `bun run link` follows the sources and needs no update.
+Setup never pulls on its own: it builds whatever the clone holds. Running it again is safe — a link that already points at this clone is left as it is.
 
 ## Next
 

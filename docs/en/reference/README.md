@@ -31,8 +31,7 @@ bun run dev -- init my-project
 ```
 
 `bun run build` produces a bundle in `dist/`, and `bun run compile` a standalone executable with the
-web page of `zoho-studio browser` built in, `dist/zoho-studio`. Put it on your `PATH` to call it as
-`zoho-studio`, which is the name used throughout these documents — see the README.
+web page of `zoho-studio browser` built in, `dist/zoho-studio`. `bun run setup` builds it and links it onto your `PATH` as `zoho-studio`, the name used throughout these documents — see [Installation](../guides/installation.md).
 `zoho-studio --version` (or `-V`) prints the version of the CLI.
 
 ## Documents

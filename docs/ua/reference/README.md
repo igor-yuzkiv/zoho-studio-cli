@@ -31,8 +31,7 @@ bun run dev -- init my-project
 ```
 
 `bun run build` створює бандл у `dist/`, а `bun run compile` — самостійний виконуваний файл із
-вбудованою вебсторінкою `zoho-studio browser`, `dist/zoho-studio`. Додайте його до `PATH`, щоб
-викликати як `zoho-studio` — саме ця назва вживається в усіх цих документах; див. README.
+вбудованою вебсторінкою `zoho-studio browser`, `dist/zoho-studio`. `bun run setup` збирає його й додає до `PATH` як `zoho-studio` — саме ця назва вживається в усіх цих документах; див. [Встановлення](../guides/installation.md).
 `zoho-studio --version` (або `-V`) друкує версію CLI.
 
 ## Документи

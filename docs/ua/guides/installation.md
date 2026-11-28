@@ -1,6 +1,6 @@
 # Встановлення
 
-CLI збирається з його репозиторію на вашій машині; готових бінарників немає. Потрібні [Bun](https://bun.sh) 1.3 або новіший і git.
+CLI збирається з його репозиторію на вашій машині; готових бінарників немає. Встановлюється на macOS і Linux; Windows не підтримується. Потрібні [Bun](https://bun.sh) 1.3 або новіший і git.
 
 English version: [en](../../en/guides/installation.md)
 
@@ -9,13 +9,23 @@ English version: [en](../../en/guides/installation.md)
 ```bash
 git clone <this repository> zoho-studio-cli
 cd zoho-studio-cli
-bun install
-bun run compile                              # → dist/zoho-studio, with the web app inside
-ln -s "$PWD/dist/zoho-studio" ~/.local/bin/zoho-studio   # or any folder on your PATH
-bun run link                                 # once, so projects can import the packages
+bun run setup
 ```
 
-`bun run link` реєструє пакети фреймворку на цій машині, щоб скрипти й міграції проєкту, створеного [`zoho-studio init`](../reference/project/init.md), могли імпортувати їх за назвою.
+`bun run setup` встановлює залежності, збирає `dist/zoho-studio` із вбудованим вебзастосунком, створює посилання `~/.local/bin/zoho-studio` і реєструє пакети фреймворку на цій машині, щоб скрипти й міграції проєкту, створеного [`zoho-studio init`](../reference/project/init.md), могли імпортувати їх за назвою. Наприкінці друкує встановлену версію:
+
+```text
+zoho-studio 1.0.1 is installed.
+```
+
+Якщо `~/.local/bin` немає у вашому `PATH`, setup повідомляє про це і друкує рядок, який треба додати для вашої оболонки (zsh, bash або fish); сам файли оболонки не змінює. У багатьох системах Linux папка потрапляє в `PATH` під час наступного входу, щойно вона існує.
+
+| Опція | Значення |
+|---|---|
+| `--bin-dir <path>` | Покласти посилання в іншу папку замість `~/.local/bin`. |
+| `--force` | Замінити те, що вже лежить у `<bin-dir>/zoho-studio`, — посилання на інший клон або файл. |
+
+Без `--force` setup зупиняється, якщо `<bin-dir>/zoho-studio` — щось інше, ніж посилання на цей клон, і каже, що там лежить.
 
 ## Перевірити результат
 
@@ -28,15 +38,12 @@ zoho-studio --help
 
 ## Оновити
 
-Підтягніть репозиторій і зберіть знову:
-
 ```bash
 git pull
-bun install
-bun run compile
+bun run setup
 ```
 
-Посилання в `~/.local/bin` вказує на `dist/zoho-studio`, тож підхоплює нову збірку. Реєстрація з `bun run link` стежить за вихідним кодом і оновлення не потребує.
+Setup ніколи не підтягує зміни сам: він збирає те, що зараз у клоні. Повторний запуск безпечний — посилання, яке вже вказує на цей клон, лишається як є.
 
 ## Далі
 
