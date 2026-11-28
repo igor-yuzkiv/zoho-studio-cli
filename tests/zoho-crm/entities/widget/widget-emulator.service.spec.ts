@@ -19,9 +19,9 @@ beforeEach(async () => {
     projectPath = await createTempProject()
     await write('widgets/card/widget.json', { url: 'http://127.0.0.1:5050/app.html', defaultScenario: 'default' })
     // A scenario outside a linked project cannot import the package; a plain object is what it exports anyway.
-    await write('widgets/card/scenarios/default.ts', `export default { pageLoad: { Entity: 'Leads', EntityId: '1' } }`)
+    await write('widgets/card/testing/scenarios/default.ts', `export default { pageLoad: { Entity: 'Leads', EntityId: '1' } }`)
     await write(
-        'widgets/card/scenarios/saves.ts',
+        'widgets/card/testing/scenarios/saves.ts',
         `export default {
             mocks: {
                 'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
@@ -89,8 +89,10 @@ describe('widget emulator', () => {
 
     test('lets a session replace scenario mocks with data, and reject with $reject', async () => {
         const { id } = await emulator.createSession('card', 'saves', {
-            'API.searchRecord': { data: [] },
-            'API.updateRecord': { $reject: { code: 'INVALID_DATA' } },
+            mocks: {
+                'API.searchRecord': { data: [] },
+                'API.updateRecord': { $reject: { code: 'INVALID_DATA' } },
+            },
         })
 
         expect((await sdk(id, { category: 'SEARCH', Entity: 'Leads' })).data).toEqual({ data: [] })
@@ -116,6 +118,35 @@ describe('widget emulator', () => {
                 message: expect.stringContaining('FUNCTIONS.execute is not supported'),
             },
         })
+    })
+
+    test('applies mocks in order: scenario use, scenario mocks, test use, test mocks', async () => {
+        await write('widgets/card/testing/mocks/base.ts', `export default { 'API.searchRecord': { from: 'base' }, 'API.getRecord': { from: 'base' }, 'API.coql': { from: 'base' } }`)
+        await write('widgets/card/testing/mocks/empty.ts', `export default { 'API.searchRecord': ({ Entity }) => ({ from: 'empty', Entity }) }`)
+        await write(
+            'widgets/card/testing/scenarios/layered.ts',
+            `export default { use: ['base'], mocks: { 'API.getRecord': { from: 'scenario' }, 'API.coql': { from: 'scenario' } } }`
+        )
+
+        const { id } = await emulator.createSession('card', 'layered', { use: ['empty'], mocks: { 'API.coql': { from: 'test' } } })
+
+        expect((await sdk(id, { category: 'SEARCH', Entity: 'Leads' })).data).toEqual({ from: 'empty', Entity: 'Leads' })
+        expect((await sdk(id, { category: 'READ', APIData: { Entity: 'Leads', RecordID: '1' } })).data).toEqual({ from: 'scenario' })
+        expect((await sdk(id, { category: 'QUERY' })).data).toEqual({ from: 'test' })
+    })
+
+    test('names the missing file when a scenario or a test uses mocks that do not exist', async () => {
+        await expect(emulator.createSession('card', 'default', { use: ['nope'] })).rejects.toThrow(
+            /Mocks "nope" of widget "card" are not in .*widgets\/card\/testing\/mocks\/nope\.ts/
+        )
+    })
+
+    test('rejects use that is not a list of names', async () => {
+        await write('widgets/card/testing/scenarios/wrong.ts', `export default { use: 'record' }`)
+
+        await expect(emulator.createSession('card', 'wrong')).rejects.toThrow(
+            'Scenario "wrong" of widget "card": "use" must be a list of names'
+        )
     })
 
     test('keeps a call log per session', async () => {

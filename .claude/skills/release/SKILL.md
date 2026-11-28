@@ -31,10 +31,16 @@ version number and the moment of the release are the user's; how to choose a num
    with the code. Run `bun run dev -- instructions <name>` for each changed command. A text that is
    wrong or missing is fixed in its own `docs` commit on a work branch, merged into `develop` after the
    user's review, before the release continues; list what was checked and what was fixed for the user.
+   Then compare the tools, services, and repositories the plugin skills name with
+   `plugins/claude/zoho-studio/references/dependencies.md` (`.claude/rules/dependencies.md`); a
+   missing or stale entry is fixed the same way.
+   Then compare `packages/*/README.md` with the public exports changed since the last tag
+   (`.claude/rules/package-readmes.md`); a name or an example that no longer matches is fixed the
+   same way.
 4. **Propose the version.** Recommend `PATCH`, `MINOR`, or `MAJOR` with the reason; a version passed
    as an argument is used as is. Done when the user confirms the number.
 5. **Bump the version** on `develop` in the root `package.json` and in
-   `plugins/claude/zoho-studio/.claude-plugin/plugin.json` when that file exists — the same number
+   `plugins/claude/zoho-studio/.claude-plugin/plugin.json` — the same number
    in both.
 6. **Write the change log** `CHANGELOG/v<version>.md` by
    [changelog-template.md](changelog-template.md): what a user of the CLI and the plugin gets, not

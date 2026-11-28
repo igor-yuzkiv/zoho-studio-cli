@@ -8,3 +8,4 @@ How Zoho actually behaves where its docs and spec are silent or wrong. See
 - [functions.md](functions.md) — creating and updating functions, declarations, errors
 - [functions-run.md](functions-run.md) — running a function's code without saving it (undocumented)
 - [widgets.md](widgets.md) — the JS SDK 1.5 protocol between a widget and the CRM page
+- [organization.md](organization.md) — the organization record: type, domain, no data center

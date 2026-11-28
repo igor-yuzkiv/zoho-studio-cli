@@ -4,20 +4,22 @@ Zoho Studio запускає ваші віджети Zoho CRM на вашому 
 отримує запис і відповіді на свої виклики SDK, і ви бачите, що він робить, — вручну або в
 автоматичних тестах зі скріншотами. Віджет ви пишете як звикли; в його коді нічого не змінюється.
 
-**Віджет має бути запущений** — через `zet run`, dev-сервер або будь-який статичний сервер. Zoho
-Studio відкриває його за цією адресою і грає роль Zoho CRM навколо нього.
+**Віджет працює за своєю адресою** — через `zet run`, dev-сервер або будь-який статичний сервер. Zoho Studio відкриває його там і грає роль Zoho CRM навколо нього. Дайте йому команду, що запускає віджет, і Zoho Studio запустить його, коли треба.
 
 ## Додати віджет
 
 ```bash
-zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --source=../deal-card-widget/app
+zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html --module=Deals --run="npm run dev"
 ```
 
 Команда створює `widgets/deal-card/`, де лежать:
 
-- `widget.json` — де працює віджет і де лежить його код;
-- `scenarios/default.ts` — на якому записі відкривається віджет і як відповідає Zoho;
-- `tests/deal-card.spec.ts` — автоматичний тест.
+- `widget.json` — де працює віджет, де лежить його код і як його запустити;
+- `testing/scenarios/default.ts` — на якому записі відкривається віджет;
+- `testing/mocks/record.ts` — як Zoho відповідає на читання цього запису;
+- `testing/tests/deal-card.spec.ts` — автоматичний тест.
+
+Покладіть код віджета в `widgets/deal-card/src/`: команда запуску стартує там. Віджет, що лежить деінде — в іншому репозиторії, у спільній папці, — лишається на своєму місці: натомість передайте `--source=<шлях до його папки>`.
 
 Zoho Studio нічого не відповідає сам: кожен виклик SDK віджета — читання запису, його полів,
 організації, навіть `UI.Resize` — потребує відповіді в сценарії.
@@ -37,23 +39,30 @@ zoho-studio browser
 
 ## Описати ситуації сценаріями
 
-Сценарій — це одна ситуація: запис, відповідь Zoho, помилка. Напишіть по файлу на ситуацію в
-`scenarios/` і перелічіть потрібні відповіді в `mocks` за іменами методів SDK:
+Сценарій — це одна ситуація: запис, користувач, помилка. Відповіді Zoho лежать окремо, у `testing/mocks/`, за іменами методів SDK, тож їх спільно використовують кілька сценаріїв і тестів:
 
 ```ts
+// testing/mocks/saving.ts
+import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
+
+export default defineWidgetMocks({
+    'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
+})
+```
+
+Сценарій у `testing/scenarios/` називає запис і моки, які він використовує:
+
+```ts
+// testing/scenarios/saves.ts
 import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
 
 export default defineWidgetScenario({
     pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
-    mocks: {
-        'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
-    },
+    use: ['record', 'saving'],
 })
 ```
 
-Тест може змінити відповідь лише для себе, без нового сценарію:
-`widgetPage.open({ widget: 'deal-card', mocks: { 'API.searchRecord': { data: [] } } })`;
-відповідь `{ $reject: { … } }` змушує виклик завершитися помилкою, як помилка від Zoho.
+Тест може змінити відповідь лише для себе, без нового сценарію: `widgetPage.open({ widget: 'deal-card', use: ['empty-search'] })` або `mocks: { 'API.searchRecord': { data: [] } }`; відповідь `{ $reject: { … } }` змушує виклик завершитися помилкою, як помилка від Zoho.
 
 Коли віджет викликає те, на що сценарій не відповідає, віджет отримує помилку з назвою методу й місцем, куди його додати. Деякі можливості SDK —
 функції Deluge (`FUNCTIONS.execute`), Blueprint, Wizard, ZRC — відповідають помилкою, що Zoho Studio
@@ -68,21 +77,19 @@ bun add -d @playwright/test
 bunx playwright install chromium
 ```
 
-Далі, коли віджет запущено:
+Далі:
 
 ```bash
 bunx playwright test
 ```
 
-`playwright.config.ts` сам запускає емулятор Zoho Studio. Кожен тест лишає свої скріншоти й список
+`playwright.config.ts` сам запускає емулятор Zoho Studio, а емулятор запускає віджет його командою запуску; без неї спершу запустіть віджет. Кожен тест лишає свої скріншоти й список
 викликів SDK (`calls.json`) у `widgets/<name>/results/<test>/`; HTML-звіт — у `widgets/.report/`.
 Не додавайте їх у git — нові проєкти вже їх ігнорують.
 
 ## Для AI-агентів
 
-Нові проєкти отримують скіл у `.claude/skills/zoho-crm-widget-testing/`, який навчає агента писати
-сценарії й тести та звітувати результати зі скріншотами. У проєкт, створений раніше,
-скопіюйте цю папку з нового проєкту, створеного `zoho-studio init`, і додайте в `.gitignore`:
+Скіл `widget-add` [плагіна Claude Code](claude-code-plugin.md) додає віджет у проєкт або створює новий на Vue, React чи чистому HTML, який працює тут і пакується `zet` від Zoho: попросіть агента додати чи створити віджет або запустіть `/zoho-studio:widget-add`. Скіл `widget-testing` навчає агента писати сценарії й тести та звітувати результати зі скріншотами: попросіть агента протестувати віджет або запустіть `/zoho-studio:widget-testing`. Проєкт, створений старішим `zoho-studio init`, має власну копію цього скіла в `.claude/skills/zoho-crm-widget-testing/`; вона вже не відповідає CLI, тож видаліть цю папку. У проєкт, створений до появи тестування віджетів, додайте в `.gitignore`:
 
 ```text
 widgets/*/results/

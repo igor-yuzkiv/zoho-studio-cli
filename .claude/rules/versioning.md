@@ -1,7 +1,7 @@
 # Rule: Versioning and releases
 
 The repository has one version, shared by the CLI and the Claude Code plugin: `version` in the root
-`package.json` and, once the plugin exists, in `plugins/claude/zoho-studio/.claude-plugin/plugin.json`.
+`package.json` and in `plugins/claude/zoho-studio/.claude-plugin/plugin.json`.
 The skills rely on `zoho-studio instructions` of the same version, so the two never drift apart.
 
 Use Semantic Versioning, `MAJOR.MINOR.PATCH`:

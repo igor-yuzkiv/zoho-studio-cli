@@ -3,9 +3,13 @@ import axios from 'axios'
 import { tokenService } from '@zoho-studio/auth'
 import { getProjectSettings } from '@zoho-studio/core'
 
+import { assertCrmRequestAllowed } from './crm-writes'
+
 const crmClient = axios.create()
 
 crmClient.interceptors.request.use(async (config) => {
+    assertCrmRequestAllowed(config.method, config.url)
+
     const { settings } = await getProjectSettings()
 
     config.baseURL = `${settings.api.baseUrl}/crm/${settings.api.version}`

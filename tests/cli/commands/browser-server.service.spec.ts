@@ -328,12 +328,12 @@ describe('browser server', () => {
 describe('widgets', () => {
     test('lists the widgets with their scenarios and opens a session on the emulator port', async () => {
         const { projectPath, origin } = await startProject()
-        await mkdir(join(projectPath, 'widgets', 'card', 'scenarios'), { recursive: true })
+        await mkdir(join(projectPath, 'widgets', 'card', 'testing', 'scenarios'), { recursive: true })
         await Bun.write(
             join(projectPath, 'widgets/card/widget.json'),
             JSON.stringify({ url: 'http://127.0.0.1:5050/' })
         )
-        await Bun.write(join(projectPath, 'widgets/card/scenarios/default.ts'), 'export default {}')
+        await Bun.write(join(projectPath, 'widgets/card/testing/scenarios/default.ts'), 'export default {}')
 
         expect(await (await fetch(`${origin}/api/widgets`)).json()).toEqual([
             {

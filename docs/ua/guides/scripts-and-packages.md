@@ -37,6 +37,21 @@ bun run scripts/example.ts
 import { createFieldsRequest, getFieldsListRequest, getModulesListRequest } from '@zoho-studio/zoho-crm'
 ```
 
+## Скрипти за замовчуванням лише читають
+
+Скрипт не може змінити організацію, доки сам цього не попросить. Усі запити до CRM ідуть через один клієнт, і він відхиляє кожен `POST`, `PUT`, `PATCH` чи `DELETE` ще до надсилання. Єдиний виняток — `POST /coql`, який лише читає. Відхилений запит кидає `CrmWritesDisabledError` з кодом `CRM_WRITES_DISABLED`, і до Zoho нічого не доходить. Це захищає від скрипта — вашого чи написаного ШІ-агентом, — який мав лише читати, а помилково пише.
+
+Скрипт, який має писати, спершу вмикає запис:
+
+```ts
+import { allowCrmWrites, createFieldsRequest } from '@zoho-studio/zoho-crm'
+
+allowCrmWrites()
+await createFieldsRequest('Leads', fields)
+```
+
+Власні команди CLI і `bun run migrate` вмикають запис самі, тож працюють, як і раніше.
+
 ## Запити
 
 Функція, що надсилає запит до Zoho, закінчується на `Request`, тож одразу видно, що звертається до
@@ -75,7 +90,7 @@ for (const module of custom) {
 `…ListRequest` повертає всі елементи, сам проходячи сторінками Zoho; `…PageRequest` повертає одну
 сторінку. Редактор показує параметри й форму результату кожного запиту.
 
-**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest` і `updateFunctionRequest` змінюють CRM, а `runFunctionRequest` виконує в ній код**, і створений модуль нічим не
+**`createModuleRequest`, `createFieldsRequest`, `createFunctionRequest` і `updateFunctionRequest` змінюють CRM, а `runFunctionRequest` виконує в ній код**, тож кожен потребує спершу `allowCrmWrites()`, і створений модуль нічим не
 скасувати. Для створення модулів і полів безпечніша [міграція](migrations.md): вона спершу
 перевіряє і питає, перш ніж щось надіслати.
 

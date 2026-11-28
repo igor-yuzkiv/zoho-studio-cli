@@ -1,10 +1,15 @@
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, beforeAll, describe, expect, test } from 'bun:test'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
+
+import { allowCrmWrites } from '@zoho-studio/zoho-crm'
 
 import { deployFunctionSource, scaffoldFunctionSource } from '@zoho-studio/zoho-crm/function'
 
 import { startCrmStub, type CrmStub } from '../../../../support/crm-stub'
+
+// The CLI allows writes for its commands; these specs call the writing code directly.
+beforeAll(allowCrmWrites)
 
 let crm: CrmStub | null = null
 

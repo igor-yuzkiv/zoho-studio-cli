@@ -1,0 +1,14 @@
+{
+  "name": "zoho-studio",
+  "owner": {
+    "name": "Igor Yuzkiv"
+  },
+  "description": "Claude Code plugins for working with Zoho through the zoho-studio CLI.",
+  "plugins": [
+    {
+      "name": "zoho-studio",
+      "source": "./plugins/claude/zoho-studio",
+      "description": "Skills for AI agents in zoho-studio projects."
+    }
+  ]
+}

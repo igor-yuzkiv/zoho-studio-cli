@@ -1,7 +1,8 @@
 # z-crm:widgets — testing widgets without Zoho
 
-zoho-studio does not build or serve a widget. It runs a widget that is **already served
-somewhere** (`zet run`, Vite, any static server) inside an emulated Zoho CRM page: the widget keeps
+zoho-studio does not build or serve a widget. It runs a widget served at its own address (`zet run`,
+Vite, any static server) — started by hand or by the `run` command in `widget.json` — inside an
+emulated Zoho CRM page: the widget keeps
 the real Zoho JS SDK v1.5, and the emulator answers it — `PageLoad`, every `ZOHO.CRM.*` call — from a
 scenario and nothing else. Nothing in the widget's code changes. Tests run against mocks: they do
 not prove the widget works in Zoho.
@@ -10,48 +11,53 @@ not prove the widget works in Zoho.
 
 ```text
 widgets/<name>/
-  widget.json              # where the widget runs and where its code is
-  scenarios/<scenario>.ts  # PageLoad data and mocked SDK answers
-  tests/*.spec.ts          # Playwright tests with the widgetPage fixture
-  results/<test>/          # written by the tests: calls.json, final.png, screenshots
+  widget.json              # where the widget runs, where its code is, how to start it
+  src/                     # the widget's code, when it lives in the project
+  testing/
+    scenarios/<s>.ts       # a situation: PageLoad and which mocks files to use
+    mocks/<m>.ts           # answers of SDK methods, shared by scenarios and tests
+    tests/*.spec.ts        # Playwright tests with the widgetPage fixture
+  results/<test>/          # written by the tests: calls.json, final.png, screenshots; out of git
 ```
 
 ```json
-{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "source": "../deal-card-widget/app" }
+{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "run": { "command": "npm run dev" } }
 ```
 
-`url` (required) — the address the widget runs at. `source` — where its code is, relative to the
-project or absolute, often outside it; the emulator does not read it, it tells you where to look.
-No folder yet: `zoho-studio z-crm:widgets:make --name=<name> --url=<address> --source=<path>`.
+- `url` (required) — the address the widget runs at.
+- `source` — where the widget's code is, relative to the widget folder or absolute. Default: `src`
+  when the widget folder has it. An external widget (another repository) stays where it is and
+  `source` points at it. The emulator reads no code from it; it is where you look for SDK calls.
+- `run` — `{ "command", "cwd"? }`: how to start the widget. The emulator runs it at the widget's
+  first session if nothing answers at `url`, waits up to 60 s, and stops it when the emulator stops.
+  `cwd` defaults to the `source` folder, then the widget folder. A failed start names the command
+  and its last output lines.
 
-## Testing a widget
+No folder yet: `zoho-studio z-crm:widgets:make --name=<name> --url=<address> [--run=<command>] [--source=<path>]`.
 
-1. **Check it runs.** Open its `url`; if nothing answers, ask the person to start it (or start it the
-   way its project says).
-2. **List the SDK calls.** Search the code at `source` (skip `node_modules`, `dist`, minified
-   files) for `ZOHO.embeddedApp.on('<Event>'` (events it listens to), `ZOHO.CRM.<NS>.<method>(`
-   (every call, with its arguments), and `zrc.` / `ZDK.` (not emulated). For each call note the
-   method, the `Entity`, and what the code reads from the answer (`data[0].Deal_Name`).
-3. **Decide what to mock.** Some methods always reject with `ZOHO_STUDIO_UNSUPPORTED`, whatever the
-   scenario says: `FUNCTIONS.execute`, `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`,
-   `API.getBluePrint`, `API.updateBluePrint`, approvals, `API.uploadFile`, `API.getFile`,
-   `ACTION.*`, `zrc.*`, `ZDK.Client.*` — flows that depend on them cannot be tested locally; say so.
-   **Everything else needs a mock**: records, `META.*`, `CONFIG.*`, even `UI.*` reject with
-   `ZOHO_STUDIO_NO_MOCK` until mocked.
-4. **Write the scenario** — what is true for a whole situation: the record the widget opens on,
-   answers most tests share, mocks with logic. See `zoho-studio instructions z-crm:widgets:serve`
-   for the format, the mock keys, and the answer shapes. Take field API names from
-   `data/zoho-crm/modules/<Module>/fields/`; fill only what the widget reads, with realistic values,
-   never personal data from a real organization.
-5. **Write the tests** — one behavior each, from the user's side: what is shown, what the widget
-   sends to Zoho after an action (assert the call's `args`), how it shows an error. Per-test changes
-   go into `open({ mocks })` instead of a new scenario.
-6. **Run** `bunx playwright test widgets/<name>`. The config starts `z-crm:widgets:serve` itself;
-   the widget must be running. First time in a project: `bun add -d @playwright/test` and
-   `bunx playwright install chromium` — they download packages and a browser, ask the person.
-7. **Read the result.** A test failing on an SDK call: `widgets/<name>/results/<test>/calls.json`
-   shows each call's key, `args`, and `error.code` (`ZOHO_STUDIO_NO_MOCK` names the method and the
-   scenario file). Screenshots are next to it.
+## What the emulator covers
+
+- **Not emulated, whatever the scenario says** — these always reject with `ZOHO_STUDIO_UNSUPPORTED`:
+  `FUNCTIONS.execute`, `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`, `API.getBluePrint`,
+  `API.updateBluePrint`, approvals, `API.uploadFile`, `API.getFile`, `ACTION.*`, `zrc.*`,
+  `ZDK.Client.*`. A flow that depends on them cannot be tested locally.
+- **Everything else answers only from a mock**: records, `META.*`, `CONFIG.*`, even `UI.*` reject
+  with `ZOHO_STUDIO_NO_MOCK` until a scenario or a test mocks them. The emulator invents nothing.
+- To find what a widget calls, search its code at `source` for `ZOHO.embeddedApp.on('<Event>'`,
+  `ZOHO.CRM.<NS>.<method>(`, and `zrc.` / `ZDK.`.
+- Field API names for mocked records: `data/zoho-crm/modules/<Module>/fields/`.
+- Scenario and mocks formats, mock keys, and the `args` each call arrives with:
+  `zoho-studio instructions z-crm:widgets:serve`.
+
+## Running the tests
+
+`bunx playwright test widgets/<name>`. The project's `playwright.config.ts` starts
+`z-crm:widgets:serve` itself, and the emulator starts the widget with `run`; without `run`, the
+widget must already answer at its `url`. A project runs Playwright
+after `bun add -d @playwright/test` and `bunx playwright install chromium` — both download (a
+package, a browser). A test failing on an SDK call: `widgets/<name>/results/<test>/calls.json` shows
+each call's key, `args`, and `error.code` (`ZOHO_STUDIO_NO_MOCK` names the method and the scenario
+file); screenshots are next to it.
 
 ## Tests
 
@@ -79,8 +85,9 @@ test('shows Zoho rejecting the save', async ({ widgetPage }) => {
 })
 ```
 
-- `open({ widget, scenario?, mocks? })` — a new session; waits until the widget registers. `mocks`
-  replace the scenario's mocks of the same key for this test only; they are data, not functions.
+- `open({ widget, scenario?, use?, mocks? })` — a new session; waits until the widget registers.
+  `use` names files of `testing/mocks/`, `mocks` are inline data (not functions — they cross from
+  the test process); both replace the scenario's mocks of the same key for this test only.
 - `frame` — the widget as a Playwright `FrameLocator`.
 - `calls()`, `waitForCall(key, { timeout? })` — the session's call log.
 - `emit(name, data?)` — sends `Notify`, `NotifyAndWait`, `ContextUpdate`, `DialerActive` or `Dial`.

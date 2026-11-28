@@ -18,6 +18,13 @@ export const browserCommand = new Command('browser')
         console.log(`Zoho Studio is running at ${url}`)
         console.log('Press Ctrl+C to stop.')
 
+        for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+            process.once(signal, async () => {
+                await server.stopWidgets()
+                process.exit(0)
+            })
+        }
+
         if (options.open) {
             await open(url)
         }

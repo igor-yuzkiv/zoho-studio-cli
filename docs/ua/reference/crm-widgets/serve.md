@@ -4,8 +4,7 @@
 v1.5 і працює за своєю адресою — `zet run`, Vite, будь-який статичний сервер; Zoho Studio грає роль
 сторінки CRM навколо нього й відповідає SDK зі сценарію. У коді віджета нічого не змінюється.
 
-**Віджет має вже працювати за `url` з його `widget.json`.** Zoho Studio не збирає й не віддає
-віджет, а лише відкриває його.
+**Віджет працює за `url` з його `widget.json`.** Zoho Studio не збирає й не віддає його. Якщо в `widget.json` є команда `run`, емулятор запускає нею віджет, коли відкривається перша сесія віджета; інакше запустіть віджет самі.
 
 ```bash
 zoho-studio z-crm:widgets:serve                                    # емулятор на порту 4610
@@ -34,15 +33,18 @@ Press Ctrl+C to stop.
 ```text
 widgets/<name>/
   widget.json
-  scenarios/<scenario>.ts
-  tests/*.spec.ts
+  src/                       # код віджета, коли він лежить тут
+  testing/
+    scenarios/<scenario>.ts  # ситуація: PageLoad і які моки взяти
+    mocks/<mocks>.ts         # відповіді методів SDK, спільні для сценаріїв і тестів
+    tests/*.spec.ts
   results/<test>/            # пишуть e2e-тести
 ```
 
 `widget.json`:
 
 ```json
-{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "source": "../deal-card-widget/app" }
+{ "url": "http://127.0.0.1:5000/app/widget.html", "location": "Custom Button", "defaultScenario": "default", "run": { "command": "npm run dev" } }
 ```
 
 - `url` — обов'язкова http(s)-адреса, за якою працює віджет. Її query і hash зберігаються.
@@ -50,8 +52,12 @@ widgets/<name>/
   `Wizard`, `Signal`, `Settings`, `Blueprint`. Показується в `browser` і не змінює того, що отримує
   віджет.
 - `defaultScenario` — необов'язково, сценарій сесії, коли його не названо.
-- `source` — необов'язково, де лежить код віджета, відносно проєкту або абсолютним шляхом. Zoho
-  Studio його не читає; він підказує агенту, де шукати виклики SDK, які робить віджет.
+- `source` — необов'язково, де лежить код віджета, відносно папки віджета або абсолютним шляхом, — для віджета, що лежить поза проєктом. Без нього — `src/` папки віджета, коли вона є. Zoho Studio не читає з нього коду; він підказує агенту, де шукати, і саме там стартує `run`.
+- `run` — необов'язково, `{ "command": "<shell command>", "cwd": "<folder>" }`: як запустити віджет. `cwd` — відносно папки віджета або абсолютним шляхом; без нього — папка `source`, а без неї — папка віджета.
+
+### Запуск віджета
+
+З `run` перша сесія віджета перевіряє його `url`. Якщо щось відповідає, віджет не чіпають — запущений вами самими працює далі. Якщо нічого не відповідає, емулятор виконує команду й чекає до 60 секунд, поки `url` відповість; після цього відкривається сесія. Якщо команда завершилася раніше або не змусила `url` відповісти вчасно, сесія завершується помилкою з останніми 20 рядками виводу команди. Коли емулятор зупиняється — `Ctrl+C`, `SIGTERM` від Playwright, закриття `browser`, — він зупиняє кожен запущений ним віджет разом з усім, що запустила команда.
 
 Таку папку створює [`z-crm:widgets:make`](make.md).
 
@@ -71,28 +77,40 @@ SDK спілкується зі сторінкою CRM навколо себе �
 
 ## Сценарії
 
-Сценарій — це TypeScript-файл, чий default export каже, що несе `PageLoad` і як відповідають методи SDK:
+Сценарій — це файл у `testing/scenarios/`, чий default export каже, що несе `PageLoad` і які моки відповідають SDK. Моки лежать у `testing/mocks/`, по файлу на набір відповідей, тож їх спільно використовують кілька сценаріїв і тестів:
 
 ```ts
-import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
+// testing/mocks/saving.ts
+import { defineWidgetMocks } from '@zoho-studio/zoho-crm/widget'
 
-export default defineWidgetScenario({
-    pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
-    mocks: {
-        'API.searchRecord': { data: [] },
-        'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
-        'API.deleteRecord': () => {
-            throw { code: 'NO_PERMISSION', message: 'permission denied' }
-        },
+export default defineWidgetMocks({
+    'API.searchRecord': { data: [] },
+    'API.updateRecord': ({ APIData }) => ({ data: [{ code: 'SUCCESS', details: { id: APIData.id } }] }),
+    'API.deleteRecord': () => {
+        throw { code: 'NO_PERMISSION', message: 'permission denied' }
     },
 })
 ```
 
+```ts
+// testing/scenarios/saves.ts
+import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'
+
+export default defineWidgetScenario({
+    pageLoad: { Entity: 'Deals', EntityId: '1000000000001' },
+    use: ['record', 'saving'],
+    mocks: {
+        'API.getRecord': { data: [{ id: '1000000000001', Deal_Name: 'Acme renewal' }] },
+    },
+})
+```
+
+`use` називає файли з `testing/mocks/` без `.ts`. Моки застосовуються в такому порядку, і пізніший замінює раніший з тим самим ключем: файли, які використовує сценарій, по порядку; власні `mocks` сценарію; файли, які використовує тест; `mocks` тесту. Якщо файлу з такою назвою немає, сесія завершується помилкою зі шляхом, за яким його шукали.
+
 Ключ моку — ім'я методу SDK. Дані вирішують проміс віджета, а `{ $reject: value }` відхиляє його з
 `value`; функція отримує аргументи виклику, і з тим, що вона повертає, відбувається те саме, а те, що
 вона кидає, відхиляє проміс. `Error` надсилається як
-`{ code: 'ZOHO_STUDIO_ERROR', message }`. Файл імпортується заново для кожної сесії, тож правка діє з
-наступної сесії без перезапуску.
+`{ code: 'ZOHO_STUDIO_ERROR', message }`. Файли сценаріїв і моків імпортуються заново для кожної сесії, тож правка діє з наступної сесії без перезапуску.
 
 Аргументи моку — це те, що надсилає SDK. Вони близькі до того, що передав віджет, але не завжди
 такі самі: `getRecord` приходить як `{ APIData: { Entity, RecordID } }`, `updateRecord` — як
@@ -119,17 +137,13 @@ APIData }`, — і емулятор перетворює цю пару наза�
 
 Журнал викликів показує, який ключ отримав кожен виклик.
 
-Під скомпільованим `zoho-studio` сценарій може імпортувати з `@zoho-studio/zoho-crm/widget` лише
-`defineWidgetScenario`: виконуваний файл не завантажує пакети з `node_modules` проєкту, тож цю одну
-функцію надає сам.
+Під скомпільованим `zoho-studio` файли сценаріїв і моків можуть імпортувати з `@zoho-studio/zoho-crm/widget` лише `defineWidgetScenario` і `defineWidgetMocks`: виконуваний файл не завантажує пакети з `node_modules` проєкту, тож ці дві функції надає сам.
 
 ## Без моку
 
 Zoho Studio нічого не відповідає сам. Кожен метод, якого не мокає сценарій або тест, — записи,
 метадані, `CONFIG.*`, `UI.*`, `HTTP.*`, `CONNECTION.invoke`, `CONNECTOR.*` — відхиляється з
-`{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, де повідомлення називає метод і файл сценарію, куди його
-додати. Як організувати мок-дані — прямо в сценарії, у спільних модулях, у JSON-файлах, які сценарій
-імпортує, — вирішує проєкт.
+`{ code: 'ZOHO_STUDIO_NO_MOCK', message }`, де повідомлення називає метод і файл сценарію, куди його додати.
 
 Ці методи відхиляються з `ZOHO_STUDIO_UNSUPPORTED`, хоч би що казав сценарій: `FUNCTIONS.execute`,
 `EVENTS.dispatch`, `WIZARD.post`, `BLUEPRINT.proceed`, `API.getBluePrint`, `API.updateBluePrint`,
@@ -162,14 +176,12 @@ test('saves the review', async ({ widgetPage }) => {
 })
 ```
 
-- `open({ widget, scenario?, mocks? })` — відкриває віджет у новій сесії; чекає, поки віджет
-  зареєструється, а якщо ні — падає з повідомленням емулятора. `mocks` замінюють однойменні моки
-  сценарію лише для цього тесту; це дані, тож для однієї зміненої відповіді окремий файл сценарію
-  не потрібен:
+- `open({ widget, scenario?, use?, mocks? })` — відкриває віджет у новій сесії; чекає, поки віджет зареєструється, а якщо ні — падає з повідомленням емулятора. `use` називає файли з `testing/mocks/`, а `mocks` — це відповіді прямо в тесті; і ті, й інші замінюють моки сценарію з тим самим ключем лише для цього тесту, тож для однієї зміненої відповіді окремий файл сценарію не потрібен. Вбудовані `mocks` — це дані: вони переходять з процесу тесту, тож мок з логікою кладуть у файл і називають у `use`:
 
   ```ts
   await widgetPage.open({
       widget: 'deal-card',
+      use: ['empty-search'],
       mocks: { 'API.updateRecord': { $reject: { code: 'INVALID_DATA', message: 'invalid data' } } },
   })
   ```
@@ -191,8 +203,11 @@ webServer: {
     command: 'zoho-studio z-crm:widgets:serve --port=4610',
     url: 'http://127.0.0.1:4610/api/widgets',
     reuseExistingServer: true,
+    gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
 },
 ```
+
+Без `gracefulShutdown` Playwright вбиває емулятор через `SIGKILL`, і віджети, запущені через `run`, працюють далі.
 
 Playwright виконує тести в Node, а не в Bun; фікстура написана саме під це.
 
@@ -204,7 +219,7 @@ Playwright виконує тести в Node, а не в Bun; фікстура �
 | Метод і шлях | Що робить |
 |---|---|
 | `GET /api/widgets` | віджети з `widgets/` та їхні сценарії |
-| `POST /api/sessions` | відкриває сесію: `{ "widget": "deal-card", "scenario": "saves", "mocks": { … } }` → `{ id, widget, scenario, url }`; `scenario` і `mocks` необов'язкові |
+| `POST /api/sessions` | відкриває сесію: `{ "widget": "deal-card", "scenario": "saves", "use": ["empty-search"], "mocks": { … } }` → `{ id, widget, scenario, url }`; усе, крім `widget`, необов'язкове. З `run` у `widget.json` відповідає, щойно відповість віджет |
 | `GET /api/sessions/:id` | сесія |
 | `DELETE /api/sessions/:id` | закриває її |
 | `GET /api/sessions/:id/calls` | журнал викликів: `[{ at, method, args, ok, response \| error }]` |

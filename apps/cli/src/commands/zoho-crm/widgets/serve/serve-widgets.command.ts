@@ -20,8 +20,12 @@ export const serveWidgetsCommand = new Command('z-crm:widgets:serve')
         }
 
         console.log('Press Ctrl+C to stop.')
-        process.once('SIGINT', async () => {
-            await emulator.stop()
-            process.exit(0)
-        })
+
+        // Playwright stops its webServer with SIGTERM; either way the widgets started by `run` stop too.
+        for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+            process.once(signal, async () => {
+                await emulator.stop()
+                process.exit(0)
+            })
+        }
     })

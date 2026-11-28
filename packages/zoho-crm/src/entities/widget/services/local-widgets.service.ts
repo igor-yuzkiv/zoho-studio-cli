@@ -1,15 +1,19 @@
 import { plugin } from 'bun'
-import { readdir } from 'node:fs/promises'
+import { readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { resolveWorkspaceWidgetsPath, toPathSegment } from '@zoho-studio/core'
 
-import type { WidgetDescription, WidgetScenario } from '../widget.types'
+import type { WidgetDescription, WidgetMocks, WidgetScenario } from '../widget.types'
 import {
+    defineWidgetMocks,
     defineWidgetScenario,
     parseWidgetDescription,
     widgetDescriptionFileName,
+    widgetMocksDirName,
     widgetScenariosDirName,
+    widgetSourceDirName,
+    widgetTestingDirName,
 } from '../widget.utils'
 
 export function resolveWidgetDirPath(projectPath: string, widgetName: string): string {
@@ -37,12 +41,27 @@ export async function readLocalWidget(projectPath: string, widgetName: string): 
         throw new Error(`Widget "${widgetName}" has no widgets/${widgetName}/${widgetDescriptionFileName}.`)
     }
 
-    return parseWidgetDescription(widgetName, await file.json().catch(() => null))
+    const widget = parseWidgetDescription(widgetName, await file.json().catch(() => null))
+    const defaultSourcePath = join(resolveWidgetDirPath(projectPath, widgetName), widgetSourceDirName)
+
+    if (widget.source === undefined && (await isDirectory(defaultSourcePath))) {
+        widget.source = widgetSourceDirName
+    }
+
+    return widget
 }
 
-/** Scenario names are the `.ts` files in `widgets/<name>/scenarios/`, without the extension. */
+async function isDirectory(path: string): Promise<boolean> {
+    return (await stat(path).catch(() => null))?.isDirectory() ?? false
+}
+
+function resolveWidgetTestingPath(projectPath: string, widgetName: string, dirName: string): string {
+    return join(resolveWidgetDirPath(projectPath, widgetName), widgetTestingDirName, dirName)
+}
+
+/** Scenario names are the `.ts` files in `widgets/<name>/testing/scenarios/`, without the extension. */
 export async function listWidgetScenarios(projectPath: string, widgetName: string): Promise<string[]> {
-    const scenariosPath = join(resolveWidgetDirPath(projectPath, widgetName), widgetScenariosDirName)
+    const scenariosPath = resolveWidgetTestingPath(projectPath, widgetName, widgetScenariosDirName)
     const fileNames = await readdir(scenariosPath).catch(() => [])
 
     return fileNames
@@ -65,8 +84,7 @@ export async function loadWidgetScenario(
     }
 
     const scenarioPath = join(
-        resolveWidgetDirPath(projectPath, widgetName),
-        widgetScenariosDirName,
+        resolveWidgetTestingPath(projectPath, widgetName, widgetScenariosDirName),
         `${toPathSegment(scenarioName)}.ts`
     )
 
@@ -74,7 +92,7 @@ export async function loadWidgetScenario(
         throw new Error(`Scenario "${scenarioName}" of widget "${widgetName}" is not in ${scenarioPath}.`)
     }
 
-    const module = await importScenarioModule(scenarioPath)
+    const module = await importWidgetModule(scenarioPath)
     const scenario = module.default as WidgetScenario | undefined
 
     if (!scenario || typeof scenario !== 'object') {
@@ -86,17 +104,37 @@ export async function loadWidgetScenario(
     return scenario
 }
 
+/** Imports `widgets/<name>/testing/mocks/<mocksName>.ts` afresh, like a scenario. */
+export async function loadWidgetMocks(projectPath: string, widgetName: string, mocksName: string): Promise<WidgetMocks> {
+    const mocksPath = join(
+        resolveWidgetTestingPath(projectPath, widgetName, widgetMocksDirName),
+        `${toPathSegment(mocksName)}.ts`
+    )
+
+    if (!(await Bun.file(mocksPath).exists())) {
+        throw new Error(`Mocks "${mocksName}" of widget "${widgetName}" are not in ${mocksPath}.`)
+    }
+
+    const mocks = (await importWidgetModule(mocksPath)).default as WidgetMocks | undefined
+
+    if (!mocks || typeof mocks !== 'object') {
+        throw new Error(`${mocksPath} must export mocks as default: export default defineWidgetMocks({ ... }).`)
+    }
+
+    return mocks
+}
+
 const widgetSubpath = '@zoho-studio/zoho-crm/widget'
 let widgetSubpathProvided = false
 
 /**
  * The compiled `zoho-studio` cannot resolve the project's `node_modules` for a file it imports at
  * run time, so a scenario's `import { defineWidgetScenario } from '@zoho-studio/zoho-crm/widget'`
- * fails there. That function only returns its argument, so the binary provides it itself.
+ * fails there. Those functions only return their argument, so the binary provides them itself.
  */
-async function importScenarioModule(scenarioPath: string): Promise<{ default?: unknown }> {
+async function importWidgetModule(modulePath: string): Promise<{ default?: unknown }> {
     try {
-        return await import(`${scenarioPath}?at=${Date.now()}`)
+        return await import(`${modulePath}?at=${Date.now()}`)
     } catch (error) {
         if (widgetSubpathProvided || !String(error).includes(`Cannot find module '${widgetSubpath}'`)) {
             throw error
@@ -105,12 +143,12 @@ async function importScenarioModule(scenarioPath: string): Promise<{ default?: u
         plugin({
             name: 'zoho-studio-widget-scenario',
             setup(build) {
-                build.module(widgetSubpath, () => ({ exports: { defineWidgetScenario }, loader: 'object' }))
+                build.module(widgetSubpath, () => ({ exports: { defineWidgetMocks, defineWidgetScenario }, loader: 'object' }))
             },
         })
         widgetSubpathProvided = true
 
         // A failed import stays cached under its specifier, so the retry asks for a new one.
-        return import(`${scenarioPath}?at=${Date.now()}-retry`)
+        return import(`${modulePath}?at=${Date.now()}-retry`)
     }
 }

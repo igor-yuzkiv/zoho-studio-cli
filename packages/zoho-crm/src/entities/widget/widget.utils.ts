@@ -1,7 +1,21 @@
-import type { WidgetDescription, WidgetLocation, WidgetScenario, WidgetSdkCall, WidgetSdkPayload } from './widget.types'
+import type {
+    WidgetDescription,
+    WidgetLocation,
+    WidgetMocks,
+    WidgetRunCommand,
+    WidgetScenario,
+    WidgetSdkCall,
+    WidgetSdkPayload,
+} from './widget.types'
 
 export const widgetDescriptionFileName = 'widget.json'
+export const widgetSourceDirName = 'src'
+/** What the person or an agent writes to test a widget: `testing/scenarios`, `testing/mocks`, `testing/tests`. */
+export const widgetTestingDirName = 'testing'
 export const widgetScenariosDirName = 'scenarios'
+export const widgetMocksDirName = 'mocks'
+export const widgetTestsDirName = 'tests'
+/** What the tests write, next to `testing/` and out of git. */
 export const widgetResultsDirName = 'results'
 
 /** The places Zoho CRM can show a widget; the studio records it but sends whatever the scenario says. */
@@ -31,6 +45,11 @@ export function defineWidgetScenario(scenario: WidgetScenario): WidgetScenario {
     return scenario
 }
 
+/** Gives a file in `testing/mocks/` its type, like `defineWidgetScenario`. */
+export function defineWidgetMocks(mocks: WidgetMocks): WidgetMocks {
+    return mocks
+}
+
 export function parseWidgetDescription(name: string, raw: unknown): WidgetDescription {
     const source = (raw ?? {}) as Record<string, unknown>
     const where = `widgets/${name}/${widgetDescriptionFileName}`
@@ -57,7 +76,26 @@ export function parseWidgetDescription(name: string, raw: unknown): WidgetDescri
         location: source.location as WidgetLocation | undefined,
         defaultScenario: source.defaultScenario as string | undefined,
         source: source.source as string | undefined,
+        run: parseWidgetRunCommand(source.run, where),
     }
+}
+
+function parseWidgetRunCommand(raw: unknown, where: string): WidgetRunCommand | undefined {
+    if (raw === undefined) {
+        return undefined
+    }
+
+    const run = (raw ?? {}) as Record<string, unknown>
+
+    if (typeof run.command !== 'string' || run.command.trim() === '') {
+        throw new Error(`${where}: "run.command" must be the shell command that starts the widget.`)
+    }
+
+    if (run.cwd !== undefined && (typeof run.cwd !== 'string' || run.cwd.trim() === '')) {
+        throw new Error(`${where}: "run.cwd" must be a folder, relative to the widget folder or absolute.`)
+    }
+
+    return { command: run.command, cwd: run.cwd as string | undefined }
 }
 
 /**

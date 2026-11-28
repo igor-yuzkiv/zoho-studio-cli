@@ -1,18 +1,17 @@
 # `zoho-studio z-crm:widgets:make`
 
-Створює `widgets/<name>/` для віджета, який уже десь працює: його опис, сценарій, що відкриває один
-запис і мокає його читання, і тест Playwright — папку, яка одразу працює з
-[`z-crm:widgets:serve`](serve.md). Команда нічого не питає, тож її може викликати агент.
+Створює `widgets/<name>/` для віджета: його опис, сценарій, що відкриває один запис, файл моків, що відповідає на його читання, і тест Playwright — папку, яка одразу працює з [`z-crm:widgets:serve`](serve.md). Команда нічого не питає, тож її може викликати агент.
 
 ```bash
 zoho-studio z-crm:widgets:make --name=deal-card --url=http://127.0.0.1:5000/app/widget.html
-zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals -s ../deal-card-widget/app
+zoho-studio z-crm:widgets:make -n deal-card -u http://127.0.0.1:5000/ -l "Custom Button" -m Deals -r "npm run dev"
 ```
 
 ```text
 Created widgets/deal-card/widget.json
-Created widgets/deal-card/scenarios/default.ts
-Created widgets/deal-card/tests/deal-card.spec.ts
+Created widgets/deal-card/testing/scenarios/default.ts
+Created widgets/deal-card/testing/mocks/record.ts
+Created widgets/deal-card/testing/tests/deal-card.spec.ts
 Created playwright.config.ts
 ```
 
@@ -23,16 +22,17 @@ Created playwright.config.ts
 - `-l, --location <type>` — де Zoho CRM показує віджет: `Dashboard`, `Web Tab`, `Custom Button`,
   `Custom Related List`, `Wizard`, `Signal`, `Settings`, `Blueprint`.
 - `-m, --module <api_name>` — модуль зразкового запису, за замовчуванням `Leads`.
-- `-s, --source <path>` — де лежить код віджета, відносно проєкту або абсолютним шляхом.
+- `-s, --source <path>` — де лежить код віджета, відносно папки віджета або абсолютним шляхом. Не вказуйте її, коли код лежить у `widgets/<name>/src/`: ця папка — за замовчуванням.
+- `-r, --run <command>` — shell-команда, що запускає віджет, зберігається як `run.command`; з нею емулятор сам запускає віджет (див. [`serve`](serve.md#запуск-віджета)).
 
 ## Що вона пише
 
-- `widget.json` — адреса, локація, шлях до коду й `defaultScenario: "default"`.
-- `scenarios/default.ts` — `PageLoad` для запису `1000000000001` модуля і мок `API.getRecord`,
-  що відповідає цим записом.
-- `tests/<name>.spec.ts` — відкриває віджет і зберігає скріншот.
-- `playwright.config.ts` у корені проєкту — лише коли його ще немає: тести в `widgets/**/tests/`,
-  HTML-звіт у `widgets/.report/` і `webServer`, що запускає `zoho-studio z-crm:widgets:serve --port=4610`.
+- `widget.json` — адреса, локація, шлях до коду й команда запуску, коли їх задано, і `defaultScenario: "default"`.
+- `testing/scenarios/default.ts` — `PageLoad` для запису `1000000000001` модуля, що використовує моки `record`.
+- `testing/mocks/record.ts` — мок `API.getRecord`, що відповідає цим записом.
+- `testing/tests/<name>.spec.ts` — відкриває віджет і зберігає скріншот.
+- `playwright.config.ts` у корені проєкту — лише коли його ще немає: тести в `widgets/**/testing/tests/`, HTML-звіт у `widgets/.report/` і `webServer`, що запускає `zoho-studio z-crm:widgets:serve --port=4610` і зупиняє його через `SIGTERM`, тож зупиняються й запущені ним віджети.
 
-Щоб запустити тест, один раз додайте Playwright у проєкт (`bun add -d @playwright/test`,
-`bunx playwright install chromium`), запустіть віджет і виконайте `bunx playwright test`.
+Вона не створює `src/`: покладіть туди код віджета або вкажіть на нього через `--source`.
+
+Щоб запустити тест, один раз додайте Playwright у проєкт (`bun add -d @playwright/test`, `bunx playwright install chromium`) і виконайте `bunx playwright test`. Без `--run` спершу запустіть віджет.

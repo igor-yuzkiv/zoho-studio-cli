@@ -1,8 +1,13 @@
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, beforeAll, describe, expect, test } from 'bun:test'
+
+import { allowCrmWrites } from '@zoho-studio/zoho-crm'
 
 import { createModuleRequest } from '@zoho-studio/zoho-crm/module'
 
 import { startCrmStub, type CrmStub } from '../../../../support/crm-stub'
+
+// The CLI allows writes for its commands; these specs call the writing code directly.
+beforeAll(allowCrmWrites)
 
 let crm: CrmStub | null = null
 

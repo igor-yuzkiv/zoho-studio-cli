@@ -8,8 +8,18 @@ export interface WidgetDescription {
     url: string
     location?: WidgetLocation
     defaultScenario?: string
-    /** Where the widget's code is, relative to the project or absolute, so an agent can read which SDK calls it makes. */
+    /**
+     * Where the widget's code is, relative to the widget folder or absolute, so an agent can read
+     * which SDK calls it makes. Defaults to `src` when the widget folder has one.
+     */
     source?: string
+    /** How to start the widget when nothing answers at `url`; `cwd` is relative to the widget folder. */
+    run?: WidgetRunCommand
+}
+
+export interface WidgetRunCommand {
+    command: string
+    cwd?: string
 }
 
 export type WidgetEventName = (typeof widgetEventNames)[number]
@@ -23,10 +33,17 @@ export type WidgetMockHandler = unknown | ((args: Record<string, unknown>) => un
 /** Mocks that are plain data, so they can cross from a test process to the emulator. */
 export type WidgetMockData = Record<string, unknown>
 
-/** One run of a widget: what `PageLoad` carries and how SDK methods answer, keyed `API.getRecord`. */
+/** Answers of SDK methods keyed `API.getRecord`: a file in `testing/mocks/`, or inline. */
+export type WidgetMocks = Record<string, WidgetMockHandler>
+
+/**
+ * One run of a widget: what `PageLoad` carries and how SDK methods answer. `use` names files in
+ * `testing/mocks/`, applied in order; `mocks` override them by key.
+ */
 export interface WidgetScenario {
     pageLoad?: Record<string, unknown>
-    mocks?: Record<string, WidgetMockHandler>
+    use?: string[]
+    mocks?: WidgetMocks
 }
 
 export interface WidgetCallLogEntry {

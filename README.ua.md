@@ -10,7 +10,7 @@ Zoho Studio CLI — інструмент командного рядка для 
 
 ## Як отримати CLI
 
-CLI збирається з цього репозиторію; готових бінарників немає. Встановлюється на macOS і Linux командою `bun run setup`; потрібні [Bun](https://bun.sh) 1.3 або новіший і git. Кроки, перевірку результату й оновлення описує [Встановлення](docs/ua/guides/installation.md).
+CLI збирається з цього репозиторію; готових бінарників немає. Встановлюється на macOS і Linux командою `bun run setup`; потрібні [Bun](https://bun.sh) 1.3 або новіший і git. Кроки, перевірку результату й оновлення описує [Встановлення](docs/ua/guides/installation.md). Плагін Claude Code зі скілами для ШІ-агентів ставиться з того самого клону — див. [Плагін Claude Code](docs/ua/guides/claude-code-plugin.md).
 
 `zoho-studio --help` показує список команд, а `zoho-studio --version` — встановлену версію.
 
