@@ -8,8 +8,9 @@ SIGTERM.
 - **Writes to Zoho:** no — every SDK call is answered from the scenario. **Needs login:** no.
 
 Playwright starts it through `webServer` in `playwright.config.ts`, so tests rarely need it run by
-hand; to show a widget to the person, start it in the background. The process of testing a widget is
-in `zoho-studio instructions z-crm:widgets`.
+hand; to show a widget to the person, start it in the background. What the emulator covers and how
+to run the tests is in `zoho-studio instructions z-crm:widgets`; the steps of testing a widget with
+the person are the `widget-testing` skill of the zoho-studio plugin.
 
 ## Scenarios and mocks
 
