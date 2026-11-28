@@ -42,3 +42,10 @@ Every install or update runs only after the person agreed to that specific actio
 - **Check:** `claude mcp get context7` finds the server, or its tools are available in the session.
 - **Install:** `claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp` (needs Node.js with `npx`). It works from the next session.
 - **Without it:** `sources` falls back to Zoho's documentation on the web; nothing else depends on it.
+
+### zet — Zoho's widget CLI (optional)
+
+- **Needed by:** the `widget-add` skill, to create a plain HTML widget (`zet init`) and to pack and validate a widget for Zoho (`zet pack`, `zet validate`). Testing widgets in the emulator does not need it.
+- **Check:** `zet --version` prints a version.
+- **Install:** `npm install -g zoho-extension-toolkit` (needs Node.js with `npm`). Without permission to write the global npm folder, tell the person rather than using `sudo`.
+- **Without it:** widgets still run and are tested locally; only packing for Zoho is left to the person.
