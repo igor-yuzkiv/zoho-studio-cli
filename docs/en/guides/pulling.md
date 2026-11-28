@@ -39,7 +39,7 @@ Fields are pulled for the modules already downloaded, so run `z-crm:modules:pull
 commands take options, for example `zoho-studio z-crm:fields:pull --module=Leads` for one module;
 each command's page in the [technical reference](../reference/README.md#documents) lists them.
 
-Most commands download items one at a time. When one item fails — a single function, say — such a command reports it at the end and goes on with the rest. `z-crm:modules:pull` and `z-crm:profiles:pull` fetch everything in one request, so an error there stops the command.
+Most commands download items one at a time. When one item fails — a single function, say — such a command reports it at the end, goes on with the rest, and exits with code 1 so a script or a preset can tell a partial pull from a clean one. `z-crm:modules:pull` and `z-crm:profiles:pull` fetch everything in one request, so an error there stops the command.
 
 ## Presets
 
