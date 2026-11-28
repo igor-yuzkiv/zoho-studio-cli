@@ -45,8 +45,7 @@ secret is part of the response.
 
 The folder is always `data/zoho-crm/webhooks/`; no setting moves it.
 
-**The whole folder is deleted and recreated on each run**, so a webhook removed in Zoho disappears
-locally and any local edit is lost.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A webhook removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
 
 Files are named after the webhook. Only characters a path segment cannot contain are replaced;
 nothing else about the name is changed. When two webhooks would claim the same file name the second

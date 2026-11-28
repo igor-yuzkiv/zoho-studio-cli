@@ -1,4 +1,4 @@
-import { getProjectSettings } from '@zoho-studio/core'
+import { getProjectSettings, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -25,6 +25,7 @@ export async function pullLayouts(options: PullLayoutsOptions, progress: PullPro
 
     logger.info({ modules: moduleNames.length }, 'Local modules found')
 
+    const removedPaths: string[] = []
     const failed: FailedModule[] = []
     let savedLayouts = 0
     progress.start(moduleNames.length)
@@ -41,7 +42,7 @@ export async function pullLayouts(options: PullLayoutsOptions, progress: PullPro
                 const layouts = await getLayoutsListRequest(moduleName)
 
                 // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
-                await saveModuleLayouts(projectPath, moduleName, layouts)
+                removedPaths.push(...(await saveModuleLayouts(projectPath, moduleName, layouts)))
 
                 savedLayouts += layouts.length
             } catch (error) {
@@ -66,7 +67,9 @@ export async function pullLayouts(options: PullLayoutsOptions, progress: PullPro
             `Layouts saved: ${savedLayouts}`,
             `Modules failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.apiName}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

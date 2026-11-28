@@ -1,18 +1,16 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdtemp, readdir, rm } from 'node:fs/promises'
+import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import {
-    removeModuleArtifactFiles,
-    replaceArtifactDir,
+    isRecordOfModule,
     resolveArtifactFileName,
     resolveArtifactPath,
     resolveSourcePath,
     sortForStableFileNames,
     toPathSegment,
     writeArtifactJson,
-    writeArtifactText,
 } from '@zoho-studio/core'
 
 let projectPath: string
@@ -58,20 +56,6 @@ describe('resolveArtifactPath', () => {
     })
 })
 
-describe('replaceArtifactDir', () => {
-    test('empties the directory and recreates it', async () => {
-        await writeArtifactText(projectPath, ['functions', 'stale.json'], '{}')
-
-        const dirPath = await replaceArtifactDir(projectPath, ['functions'])
-
-        expect(await readdir(dirPath)).toEqual([])
-    })
-
-    test('refuses to replace the whole data directory', async () => {
-        await expect(replaceArtifactDir(projectPath, [])).rejects.toThrow(/whole data directory/)
-    })
-})
-
 describe('writeArtifactJson', () => {
     test('creates the parent directories and writes indented json', async () => {
         await writeArtifactJson(projectPath, ['modules', 'Leads', 'Leads.metadata.json'], { api_name: 'Leads' })
@@ -101,33 +85,15 @@ describe('resolveArtifactFileName', () => {
     })
 })
 
-describe('removeModuleArtifactFiles', () => {
-    async function writeRecordFile(fileName: string, record: unknown): Promise<void> {
-        await Bun.write(join(projectPath, fileName), JSON.stringify(record))
-    }
-
-    test('drops only the records of the asked module and reports the surviving file names', async () => {
-        await writeRecordFile('Deals Alert.json', { id: '1', name: 'Deals Alert', module: { api_name: 'Deals' } })
-        await writeRecordFile('Leads Alert.json', { id: '2', name: 'Leads Alert', module: { api_name: 'Leads' } })
-
-        expect(await removeModuleArtifactFiles(projectPath, 'Deals')).toEqual(new Set(['Leads Alert.json']))
-        expect(await readdir(projectPath)).toEqual(['Leads Alert.json'])
+describe('isRecordOfModule', () => {
+    test('matches a record of the asked module', () => {
+        expect(isRecordOfModule({ module: { api_name: 'Deals' } }, 'Deals')).toBe(true)
+        expect(isRecordOfModule({ module: { api_name: 'Leads' } }, 'Deals')).toBe(false)
     })
 
-    test('leaves a file that cannot be read as a record alone', async () => {
-        await Bun.write(join(projectPath, 'broken.json'), 'not json')
-        await writeRecordFile('no-module.json', { id: '3', name: 'No Module' })
-
-        expect(await removeModuleArtifactFiles(projectPath, 'Deals')).toEqual(
-            new Set(['broken.json', 'no-module.json'])
-        )
-        expect((await readdir(projectPath)).sort()).toEqual(['broken.json', 'no-module.json'])
-    })
-
-    // The caller creates the directory before calling this, so an empty one is the smallest input.
-    test('claims no file names when the directory is empty', async () => {
-        expect(await removeModuleArtifactFiles(projectPath, 'Deals')).toEqual(new Set())
-        expect(await readdir(projectPath)).toEqual([])
+    test('treats a record without a module, or no record at all, as foreign', () => {
+        expect(isRecordOfModule({ id: '3' }, 'Deals')).toBe(false)
+        expect(isRecordOfModule(null, 'Deals')).toBe(false)
     })
 })
 

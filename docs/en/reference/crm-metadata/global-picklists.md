@@ -32,9 +32,7 @@ Each file is one picklist exactly as Zoho returned it from `settings/global_pick
 metadata plus every value with its `actual_value`, `display_value`, and `sequence_number`. Files are
 named after `api_name`; a picklist whose name leaves no usable file name is stored under its id.
 
-The folder is emptied and rewritten on every run, so it mirrors what Zoho answered rather than
-accumulating picklists that were since deleted. It is emptied only after the list request succeeds —
-a failed run leaves the previous snapshot in place.
+The folder mirrors what Zoho answered: a file whose content did not change stays as it is, a changed one is rewritten, and picklists deleted in Zoho move to `data/.removed/<date-time>/` — see [Pulling](../../guides/pulling.md). Nothing is moved until the list request succeeds, so a failed run leaves the previous snapshot in place.
 
 ## When a single picklist fails
 
@@ -48,7 +46,7 @@ Global picklists failed: 1
 ```
 
 A failure of the list request itself stops the command, because there is nothing to iterate over
-and nothing has been deleted yet.
+and nothing has been written or moved yet.
 
 Which fields use a global picklist is not part of this command — that association endpoint needs a
 scope Zoho has not granted here. What each module's fields hold comes from

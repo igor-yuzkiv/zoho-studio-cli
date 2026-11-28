@@ -14,4 +14,6 @@ export type PullResult = {
     summary: string[]
     /** Items that could not be pulled; the rest of the run still completed. */
     failedCount: number
+    /** Files Zoho no longer has, moved into `data/.removed/`; paths relative to `data/`. */
+    removedPaths: string[]
 }

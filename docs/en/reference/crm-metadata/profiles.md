@@ -33,6 +33,4 @@ Each file is one profile exactly as Zoho returned it from `settings/profiles` �
 `api_name`, `type`, and the permissions the list carries. Files are named after `api_name`; a
 profile whose name leaves no usable file name is stored under its id.
 
-The folder is emptied and rewritten on every run, so it mirrors what Zoho answered rather than
-accumulating profiles that were since deleted. It is emptied only after the list request succeeds —
-a failed run leaves the previous snapshot in place.
+The folder mirrors what Zoho answered: a file whose content did not change stays as it is, a changed one is rewritten, and profiles deleted in Zoho move to `data/.removed/<date-time>/` — see [Pulling](../../guides/pulling.md). Nothing is moved until the list request succeeds, so a failed run leaves the previous snapshot in place.

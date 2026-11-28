@@ -1,6 +1,6 @@
 import { getProjectSettings } from '@zoho-studio/core'
 import { describeRequestError } from '../../../api'
-import { replaceArtifactDir, resolveArtifactFileName, writeArtifactJson } from '@zoho-studio/core'
+import { openArtifactSnapshot, resolveArtifactFileName, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { profilesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
@@ -28,7 +28,7 @@ export async function pullProfiles(progress: PullProgress): Promise<PullResult> 
     logger.info({ total: profiles.length }, 'Profiles found')
 
     // Rewritten only once the list arrived, so a failed pull keeps the previous snapshot.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, profilesDirName])
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, profilesDirName])
 
     const takenFileNames = new Set<string>()
 
@@ -40,7 +40,7 @@ export async function pullProfiles(progress: PullProgress): Promise<PullResult> 
 
             const fileName = resolveArtifactFileName(profile.api_name, profile.id, takenFileNames)
 
-            await writeArtifactJson(projectPath, [zohoCrmDirName, profilesDirName, fileName], profile)
+            await snapshot.writeJson([zohoCrmDirName, profilesDirName, fileName], profile)
             takenFileNames.add(fileName)
 
             progress.increment()
@@ -51,8 +51,11 @@ export async function pullProfiles(progress: PullProgress): Promise<PullResult> 
 
     logger.info({ total: profiles.length }, 'Profiles pull finished')
 
+    const removedPaths = await snapshot.close()
+
     return {
-        summary: [`Profiles saved: ${profiles.length}`],
+        summary: [`Profiles saved: ${profiles.length}`, ...summarizeRemovedArtifacts(removedPaths)],
         failedCount: 0,
+        removedPaths,
     }
 }

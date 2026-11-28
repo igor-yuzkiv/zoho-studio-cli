@@ -65,8 +65,7 @@ outside Zoho CRM and is requested without the OAuth token, the way the web UI re
 Zoho exposes no earlier revisions of a script, so the pull holds the current version only. Commit
 the pulled tree to keep a history.
 
-**The target directory is deleted and recreated on every run.** It always reflects the current pull,
-so a script removed in Zoho disappears locally, and any local edit inside it is lost.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A script removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
 
 ## Failures
 

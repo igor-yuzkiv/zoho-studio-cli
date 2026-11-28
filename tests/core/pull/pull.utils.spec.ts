@@ -10,7 +10,7 @@ describe('reportPullResult', () => {
     test('prints the summary and leaves the exit code alone when nothing failed', () => {
         const log = spyOn(console, 'log').mockImplementation(() => {})
 
-        reportPullResult({ summary: ['Functions found: 2'], failedCount: 0 })
+        reportPullResult({ summary: ['Functions found: 2'], failedCount: 0, removedPaths: [] })
 
         expect(log).toHaveBeenCalledWith('Functions found: 2')
         expect(process.exitCode).toBe(0)
@@ -20,7 +20,7 @@ describe('reportPullResult', () => {
     test('sets a non-zero exit code when some items failed', () => {
         const log = spyOn(console, 'log').mockImplementation(() => {})
 
-        reportPullResult({ summary: ['Failed: 1'], failedCount: 1 })
+        reportPullResult({ summary: ['Failed: 1'], failedCount: 1, removedPaths: [] })
 
         expect(process.exitCode).toBe(1)
         log.mockRestore()

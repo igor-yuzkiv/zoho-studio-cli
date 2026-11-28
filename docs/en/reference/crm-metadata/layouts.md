@@ -17,9 +17,7 @@ Modules failed: 1
   - Ghost_Module: Request failed with status code 400
 ```
 
-**Run [`zoho-studio z-crm:modules:pull`](modules.md) first, and re-run this command after
-every `z-crm:modules:pull`.** The list of modules to walk comes from the local modules folder, and
-`z-crm:modules:pull` deletes and recreates that folder — layouts included.
+**Run [`zoho-studio z-crm:modules:pull`](modules.md) first.** The list of modules to walk comes from the local modules folder, so a module new in Zoho gets its layouts only after `z-crm:modules:pull` has saved it.
 
 The command also needs a project that has been through [`zoho-studio login`](../project/login.md),
 with the `ZohoCRM.settings.layouts.READ` scope (or `ZohoCRM.settings.ALL`) granted.
@@ -59,8 +57,7 @@ sections next to the ones the record page shows. A formula field inside a sectio
 }
 ```
 
-**The `layouts/` folder of every pulled module is deleted and recreated on each run**, so a layout
-removed in Zoho disappears locally and any local edit inside it is lost. The module's metadata and
+**The `layouts/` folder of every pulled module mirrors the current pull.** A file whose content did not change stays as it is, a changed one is rewritten, and a layout removed in Zoho moves to `data/.removed/<date-time>/` — see [Pulling](../../guides/pulling.md). The module's metadata and
 its `fields/` folder are not touched, and a module that is not part of the run keeps its layouts.
 
 ## One module at a time
@@ -71,7 +68,7 @@ zoho-studio z-crm:layouts:pull --module=Deals
 
 The value is a module API name — the name of its local directory. A value that is not a plain
 directory name, or a module that has no local directory, stops the command before anything is
-deleted.
+written or moved.
 
 ## Failures
 

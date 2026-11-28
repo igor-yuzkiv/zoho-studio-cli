@@ -43,7 +43,7 @@ and was left alone.
 my-project/
   .claude/
     skills/zoho-crm-widget-testing/  # a Claude Code skill for testing widgets
-  .gitignore             # keeps node_modules and widget test results out of git
+  .gitignore             # keeps node_modules, widget test results, and data/.removed out of git
   .zoho-studio/
     .gitignore           # keeps settings.json, org.json and migrations.json out of git
     settings.json        # project settings, chmod 0600
