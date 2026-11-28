@@ -116,8 +116,7 @@ zoho-studio z-crm:workflow-actions:pull --module=Deals --type=webhooks
 
 Nothing here is fatal, because each type is independent.
 
-An action whose full record cannot be fetched — a rejected request, not the empty answer above — is
-listed in the summary with a short error, and the remaining actions are still pulled. A type whose
+An action whose full record cannot be fetched — a rejected request, not the empty answer above — is listed in the summary with a short error, its file from an earlier pull stays as it was, and the remaining actions are still pulled. A type whose
 *list* cannot be fetched is reported the same way, its folder is left as it was, and the other types
 still run.
 

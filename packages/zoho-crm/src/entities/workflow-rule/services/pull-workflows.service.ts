@@ -60,16 +60,18 @@ export async function pullWorkflows(options: PullWorkflowsOptions, progress: Pul
 
             progress.update(workflowRule.name)
 
+            const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
+            takenFileNames.add(fileName)
+
             try {
                 // The list carries no conditions or actions, so the full record is fetched per rule.
                 const details = await getWorkflowRuleRequest(workflowRule.id)
-                const fileName = resolveArtifactFileName(workflowRule.name, workflowRule.id, takenFileNames)
 
                 await snapshot.writeJson([zohoCrmDirName, workflowsDirName, fileName], details)
 
-                takenFileNames.add(fileName)
                 savedRules += 1
             } catch (error) {
+                snapshot.keep([zohoCrmDirName, workflowsDirName, fileName])
                 failed.push({ name: workflowRule.name, message: describeRequestError(error) })
                 logger.error({ err: error, rule: workflowRule.name }, 'Failed to pull a workflow rule')
             }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdtemp, readdir, rm, stat } from 'node:fs/promises'
+import { access, mkdtemp, readdir, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, relative } from 'node:path'
 
@@ -26,7 +26,68 @@ async function listFiles(dirPath: string): Promise<string[]> {
         .sort()
 }
 
+/** macOS file systems ignore case by default, Linux ones do not; the expected result differs. */
+async function isCaseInsensitive(dirPath: string): Promise<boolean> {
+    await Bun.write(join(dirPath, 'CaseProbe'), '')
+    const insensitive = await access(join(dirPath, 'caseprobe')).then(
+        () => true,
+        () => false
+    )
+    await rm(join(dirPath, 'CaseProbe'))
+
+    return insensitive
+}
+
 describe('openArtifactSnapshot', () => {
+    test('keeps a file the pull could not fetch this time', async () => {
+        await writeArtifactText(projectPath, ['zoho-crm', 'functions', 'f', 'F.deluge'], 'old code')
+
+        const snapshot = await openArtifactSnapshot(projectPath, ['zoho-crm', 'functions'])
+        snapshot.keep(['zoho-crm', 'functions', 'f', 'F.deluge'])
+        const moved = await snapshot.close()
+
+        expect(moved).toEqual([])
+        expect(await Bun.file(join(dataPath(), 'zoho-crm/functions/f/F.deluge')).text()).toBe('old code')
+    })
+
+    test('keeps every file under a kept folder', async () => {
+        await writeArtifactJson(projectPath, ['zoho-crm', 'client-scripts', 'Deals', 'page', 'S.1', 'S.metadata.json'], {})
+        await writeArtifactText(projectPath, ['zoho-crm', 'client-scripts', 'Deals', 'page', 'S.1', 'S.js'], 'x')
+        await writeArtifactText(projectPath, ['zoho-crm', 'client-scripts', 'Deals', 'pageTwo', 'T.js'], 'y')
+
+        const snapshot = await openArtifactSnapshot(projectPath, ['zoho-crm', 'client-scripts'])
+        snapshot.keep(['zoho-crm', 'client-scripts', 'Deals', 'page'])
+        const moved = await snapshot.close()
+
+        expect(moved.map((path) => path.split('/').slice(2).join('/'))).toEqual([
+            'zoho-crm/client-scripts/Deals/pageTwo/T.js',
+        ])
+        expect(await listFiles(join(dataPath(), 'zoho-crm/client-scripts'))).toEqual([
+            'Deals/page/S.1/S.js',
+            'Deals/page/S.1/S.metadata.json',
+        ])
+    })
+
+    test('keeps the content written under a name that differs only in case', async () => {
+        await writeArtifactText(projectPath, ['zoho-crm', 'functions', 'f', 'Send invoice.deluge'], 'old')
+        const insensitive = await isCaseInsensitive(join(dataPath(), 'zoho-crm/functions/f'))
+
+        const snapshot = await openArtifactSnapshot(projectPath, ['zoho-crm', 'functions'])
+        await snapshot.writeText(['zoho-crm', 'functions', 'f', 'Send Invoice.deluge'], 'new')
+        const moved = await snapshot.close()
+
+        const files = await listFiles(join(dataPath(), 'zoho-crm/functions'))
+
+        if (insensitive) {
+            expect(moved).toEqual([])
+            expect(files).toHaveLength(1)
+            expect(await Bun.file(join(dataPath(), 'zoho-crm/functions/f', files[0]!.split('/')[1]!)).text()).toBe('new')
+        } else {
+            expect(moved).toHaveLength(1)
+            expect(files).toEqual(['f/Send Invoice.deluge'])
+        }
+    })
+
     test('leaves a file whose content did not change untouched', async () => {
         await writeArtifactJson(projectPath, ['zoho-crm', 'webhooks', 'A.json'], { id: '1' })
         const filePath = join(dataPath(), 'zoho-crm/webhooks/A.json')

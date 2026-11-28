@@ -13,5 +13,5 @@ for byte).
 
 ## Side effects
 
-Code is fetched one function at a time; a function whose code fails keeps its metadata and is
-listed in the summary. A function removed in Zoho moves to `data/.removed/`. `src/` is not touched.
+Code is fetched one function at a time; a function whose code fails keeps its metadata and its code
+file from an earlier pull, is listed in the summary, and the run exits 1. A function removed in Zoho moves to `data/.removed/`. `src/` is not touched.

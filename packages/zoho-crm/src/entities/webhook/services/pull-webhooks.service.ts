@@ -49,17 +49,19 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
 
             progress.update(webhook.name)
 
+            const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
+            takenFileNames.add(fileName)
+
             try {
                 // The list carries no body, headers, or authentication, so the full record is
                 // fetched per webhook.
                 const details = await getWebhookRequest(webhook.id)
-                const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
 
                 await snapshot.writeJson([zohoCrmDirName, webhooksDirName, fileName], details)
 
-                takenFileNames.add(fileName)
                 savedWebhooks += 1
             } catch (error) {
+                snapshot.keep([zohoCrmDirName, webhooksDirName, fileName])
                 failed.push({ name: webhook.name, message: describeRequestError(error) })
                 logger.error({ err: error, webhook: webhook.name }, 'Failed to pull a webhook')
             }

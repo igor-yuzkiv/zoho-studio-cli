@@ -67,7 +67,7 @@ moved, and a module Zoho does not know stops the command with Zoho's own message
 ## Failures
 
 A rule whose full record cannot be fetched does not stop the run: it is listed in the summary with
-a short error, the remaining rules are still pulled, and the command still succeeds.
+a short error, its file from an earlier pull stays as it was, the remaining rules are still pulled, and the command exits with code 1.
 
 ```text
 Workflow rules failed: 1

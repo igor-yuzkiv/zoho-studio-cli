@@ -51,6 +51,7 @@ export async function pullStaticResources(progress: PullProgress): Promise<PullR
                 const content = await getStaticResourceContentRequest(resource.uri)
                 await snapshot.writeBytes(staticResourceContentFilePath(resource), content)
             } catch (error) {
+                snapshot.keep(staticResourceContentFilePath(resource))
                 failed.push({
                     name: resource.name,
                     source: resource.source,

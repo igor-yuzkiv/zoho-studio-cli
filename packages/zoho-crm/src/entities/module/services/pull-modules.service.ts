@@ -2,6 +2,8 @@ import { readdir } from 'node:fs/promises'
 
 import { getProjectSettings } from '@zoho-studio/core'
 import {
+    fileIdentities,
+    fileIdentity,
     moveArtifactToRemoved,
     openArtifactSnapshot,
     resolveArtifactPath,
@@ -77,12 +79,24 @@ async function moveRemovedModuleFolders(projectPath: string, modules: ZohoModule
     const entries = await readdir(resolveArtifactPath(projectPath, modulesSegments), { withFileTypes: true }).catch(
         () => []
     )
+    const currentFolderIdentities = await fileIdentities(
+        [...currentFolders].map((folder) => resolveArtifactPath(projectPath, [...modulesSegments, folder]))
+    )
     const moved: string[] = []
 
     for (const entry of entries) {
-        if (entry.isDirectory() && !currentFolders.has(entry.name)) {
-            moved.push(...(await moveArtifactToRemoved(projectPath, [...modulesSegments, entry.name])))
+        if (!entry.isDirectory() || currentFolders.has(entry.name)) {
+            continue
         }
+
+        const folderSegments = [...modulesSegments, entry.name]
+        const folderIdentity = await fileIdentity(resolveArtifactPath(projectPath, folderSegments))
+
+        if (folderIdentity && currentFolderIdentities.has(folderIdentity)) {
+            continue
+        }
+
+        moved.push(...(await moveArtifactToRemoved(projectPath, folderSegments)))
     }
 
     return moved

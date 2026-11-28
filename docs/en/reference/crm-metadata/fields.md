@@ -60,8 +60,7 @@ written or moved.
 
 A module whose fields cannot be fetched — no subscription, no longer in Zoho, a stray directory
 that is not a module — does not stop the run. Its existing `fields/` folder is left untouched, the
-module is listed in the summary with a short error, and the remaining modules are still pulled. The
-command still succeeds.
+module is listed in the summary with a short error, and the remaining modules are still pulled. The command exits with code 1.
 
 Running with an empty or missing modules folder is fatal: there is nothing to walk, and the error
 points at `z-crm:modules:pull`.

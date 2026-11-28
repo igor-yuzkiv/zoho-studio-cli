@@ -22,6 +22,8 @@ Commands for one Zoho CRM organization: the one the project is logged in to. Che
 - `data/zoho-crm/` mirrors the last pull: unchanged files are left alone, changed ones are
   rewritten, items deleted in Zoho move to `data/.removed/<date-time>/`. Local edits in `data/` are
   lost.
+- An item whose details could not be fetched keeps its file from the previous pull and is listed
+  in the summary; the pull then exits 1. Only what Zoho no longer has moves to `.removed`.
 - `z-crm:modules:pull` must run before `z-crm:fields:pull` and `z-crm:layouts:pull`: those walk the
   local module folders.
 - Pulls run their requests one at a time with a delay (Zoho API limits), so a large organization
