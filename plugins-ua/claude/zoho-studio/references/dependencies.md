@@ -35,3 +35,10 @@
 - **Встановлення:** `git clone https://github.com/zoho/crm-oas ~/.zoho-studio/references/crm-oas` (за потреби створює `~/.zoho-studio/references/`).
 - **Оновлення:** `git -C ~/.zoho-studio/references/crm-oas pull --ff-only`.
 - **Не git-репозиторій:** у папці лежить щось інше — скажи людині й залиш як є.
+
+### context7 — MCP-сервер документації (необов'язковий)
+
+- **Потрібен:** скілу `sources`, щоб шукати в документації Zoho з цитатами й посиланнями.
+- **Перевірка:** `claude mcp get context7` знаходить сервер, або його інструменти доступні в сесії.
+- **Встановлення:** `claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp` (потрібен Node.js з `npx`). Діє з наступної сесії.
+- **Без нього:** `sources` переходить на документацію Zoho в мережі; більше ніщо від нього не залежить.

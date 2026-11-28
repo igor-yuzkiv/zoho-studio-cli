@@ -35,3 +35,10 @@ Every install or update runs only after the person agreed to that specific actio
 - **Install:** `git clone https://github.com/zoho/crm-oas ~/.zoho-studio/references/crm-oas` (creates `~/.zoho-studio/references/` if needed).
 - **Update:** `git -C ~/.zoho-studio/references/crm-oas pull --ff-only`.
 - **Not a git repository:** something else is in the folder — tell the person and leave it.
+
+### context7 — documentation MCP server (optional)
+
+- **Needed by:** the `sources` skill, to look up Zoho's documentation with quotes and links.
+- **Check:** `claude mcp get context7` finds the server, or its tools are available in the session.
+- **Install:** `claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp` (needs Node.js with `npx`). It works from the next session.
+- **Without it:** `sources` falls back to Zoho's documentation on the web; nothing else depends on it.
