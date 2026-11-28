@@ -38,7 +38,7 @@ The full description is in the [settings reference](../reference/project/setting
 
 `init` prepares the project for git:
 
-- **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`, widget test results;
+- **kept out:** `settings.json`, `org.json`, `migrations.json`, the logs, `node_modules`, widget test results, `data/.removed/`;
 - **meant to be committed:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.
 
 Credentials are not in the project at all — they are in `~/.zoho-studio`.

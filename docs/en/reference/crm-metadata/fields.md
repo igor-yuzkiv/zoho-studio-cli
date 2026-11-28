@@ -15,10 +15,7 @@ Modules failed: 1
   - Ghost_Module: Request failed with status code 400
 ```
 
-**Run [`zoho-studio z-crm:modules:pull`](modules.md) first, and re-run this command after
-every `z-crm:modules:pull`.** The list of modules to walk comes from the local modules folder, not from
-the API, and `z-crm:modules:pull` deletes and recreates that folder — which throws away the fields pulled
-earlier. The correct order is always `z-crm:modules:pull` → `z-crm:fields:pull`.
+**Run [`zoho-studio z-crm:modules:pull`](modules.md) first.** The list of modules to walk comes from the local modules folder, not from the API, so a module new in Zoho gets its fields only after `z-crm:modules:pull` has saved it.
 
 The command also needs a project that has been through [`zoho-studio login`](../project/login.md),
 with the `ZohoCRM.settings.fields.READ` scope granted.
@@ -42,8 +39,7 @@ characters a path segment cannot contain are replaced; nothing else about the na
 The `fields/` folder is fixed — it is not configurable. Its parent is
 `data/zoho-crm/modules/`, the same folder `z-crm:modules:pull` writes to.
 
-**The `fields/` folder of every pulled module is deleted and recreated on each run**, so a field
-removed in Zoho disappears locally and any local edit inside it is lost. Nothing else is touched:
+**The `fields/` folder of every pulled module mirrors the current pull.** A file whose content did not change stays as it is, a changed one is rewritten, and a field removed in Zoho moves to `data/.removed/<date-time>/` — see [Pulling](../../guides/pulling.md). Nothing else is touched:
 the module's metadata file stays where it is, and a module that is not part of the run keeps its
 fields.
 
@@ -58,7 +54,7 @@ zoho-studio z-crm:fields:pull --module=Leads
 
 The value is a module API name — the name of its local directory. A value that is not a plain
 directory name, or a module that has no local directory, stops the command before anything is
-deleted.
+written or moved.
 
 ## Failures
 

@@ -34,7 +34,7 @@ describe('initializeProject', () => {
             'settings.json\norg.json\nmigrations.json\n'
         )
         expect(await readTemplateFile(workingPath, '.gitignore')).toBe(
-            'node_modules\nwidgets/*/results/\nwidgets/.report/\ntest-results/\n'
+            'node_modules\nwidgets/*/results/\nwidgets/.report/\ntest-results/\ndata/.removed/\n'
         )
         expect(await Bun.file(join(workingPath, 'widgets/.gitkeep')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, '.claude/skills/zoho-crm-widget-testing/SKILL.md')).exists()).toBe(true)

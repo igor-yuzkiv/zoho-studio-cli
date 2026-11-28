@@ -1,4 +1,4 @@
-import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
+import { mkdir } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 
 import { resolveWorkspaceDataPath, resolveWorkspaceSourcePath } from '../config'
@@ -48,23 +48,6 @@ export async function ensureArtifactDir(projectPath: string, segments: string[])
     return dirPath
 }
 
-/**
- * Empties a directory so it mirrors exactly what a pull returned. Destructive by design, which is
- * why it takes segments rather than a path: nothing outside `data` can be passed to it.
- */
-export async function replaceArtifactDir(projectPath: string, segments: string[]): Promise<string> {
-    if (segments.length === 0) {
-        throw new Error('Refusing to replace the whole data directory.')
-    }
-
-    const dirPath = resolveArtifactPath(projectPath, segments)
-
-    await rm(dirPath, { recursive: true, force: true })
-    await mkdir(dirPath, { recursive: true })
-
-    return dirPath
-}
-
 export async function writeArtifactJson(projectPath: string, segments: string[], value: unknown): Promise<void> {
     await writeJsonFile(resolveArtifactPath(projectPath, segments), value)
 }
@@ -100,32 +83,11 @@ export function resolveArtifactFileName(name: string, id: string, takenFileNames
 }
 
 /**
- * Drops the records of one module from a flat directory and reports the file names left behind.
- * The owning module is read back out of each file, because the file is named after the record
- * rather than the module.
+ * Whether a stored record belongs to the module. The module is read out of the record, because a
+ * flat directory names its files after records rather than modules.
  */
-export async function removeModuleArtifactFiles(dirPath: string, module: string): Promise<Set<string>> {
-    const entries = await readdir(dirPath, { withFileTypes: true })
-    const survivingFileNames = new Set<string>()
-
-    for (const entry of entries) {
-        if (!entry.isFile() || !entry.name.endsWith('.json')) {
-            continue
-        }
-
-        const filePath = join(dirPath, entry.name)
-        const storedRecord = await Bun.file(filePath)
-            .json()
-            .catch(() => null)
-
-        if (storedRecord?.module?.api_name === module) {
-            await unlink(filePath)
-        } else {
-            survivingFileNames.add(entry.name)
-        }
-    }
-
-    return survivingFileNames
+export function isRecordOfModule(record: unknown, module: string): boolean {
+    return (record as ModuleOwnedRecord | null)?.module?.api_name === module
 }
 
 export async function writeArtifactText(projectPath: string, segments: string[], content: string): Promise<void> {

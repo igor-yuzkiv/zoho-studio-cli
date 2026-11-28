@@ -1,11 +1,6 @@
 import { getProjectSettings } from '@zoho-studio/core'
 import { describeRequestError } from '../../../api'
-import {
-    replaceArtifactDir,
-    resolveArtifactFileName,
-    sortForStableFileNames,
-    writeArtifactJson,
-} from '@zoho-studio/core'
+import { openArtifactSnapshot, resolveArtifactFileName, sortForStableFileNames, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -38,7 +33,7 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
 
     logger.info({ total: webhooks.length }, 'Webhooks found')
 
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, webhooksDirName])
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, webhooksDirName])
 
     const takenFileNames = new Set<string>()
     const failed: FailedWebhook[] = []
@@ -60,7 +55,7 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
                 const details = await getWebhookRequest(webhook.id)
                 const fileName = resolveArtifactFileName(webhook.name, webhook.id, takenFileNames)
 
-                await writeArtifactJson(projectPath, [zohoCrmDirName, webhooksDirName, fileName], details)
+                await snapshot.writeJson([zohoCrmDirName, webhooksDirName, fileName], details)
 
                 takenFileNames.add(fileName)
                 savedWebhooks += 1
@@ -77,13 +72,17 @@ export async function pullWebhooks(progress: PullProgress): Promise<PullResult> 
 
     logger.info({ total: webhooks.length, saved: savedWebhooks, failed: failed.length }, 'Webhooks pull finished')
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Webhooks found: ${webhooks.length}`,
             `Webhooks saved: ${savedWebhooks}`,
             `Webhooks failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.name}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

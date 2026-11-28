@@ -74,9 +74,7 @@ itself comes from [`z-crm:functions:pull`](../crm-functions/pull.md).
 
 The folder is always `data/zoho-crm/workflow-actions/`; no setting moves it.
 
-**A type's folder is deleted and recreated on each full run**, so an action removed in Zoho
-disappears locally and any local edit is lost. A type whose list request failed keeps its previous
-contents untouched.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A action removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md). A type whose list request failed keeps its previous contents untouched.
 
 Files are named after the action. Only characters a path segment cannot contain are replaced;
 nothing else about the name is changed. Action names are unique within a module but not across an
@@ -101,12 +99,13 @@ Only that type's folder is rewritten; the other four are left alone.
 zoho-studio z-crm:workflow-actions:pull --module=Deals
 ```
 
-This run does **not** wipe any folder. In each type's folder it removes only the files whose action
+In each type's folder this run owns only the files whose action
 belongs to that module — each file records its own module, so the owner is read back out of the
-file — and leaves every other action where it is. A file that cannot be read as an action is left
+file — and leaves every other action where it is. An action of that module that Zoho no longer has moves
+to `data/.removed/`. A file that cannot be read as an action is left
 alone rather than guessed about.
 
-The two options combine, and each is validated before anything is deleted: `--module` takes a
+The two options combine, and each is validated before anything is moved: `--module` takes a
 module API name, `--type` one of the five types above.
 
 ```bash

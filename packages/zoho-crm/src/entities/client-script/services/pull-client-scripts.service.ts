@@ -1,5 +1,5 @@
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir, writeArtifactJson, writeArtifactText } from '@zoho-studio/core'
+import { openArtifactSnapshot, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -38,8 +38,8 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
 
     logger.info({ total: pages.length }, 'Client script pages found')
 
-    // The directory mirrors exactly what this pull returned, so stale scripts are dropped.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, clientScriptsDirName])
+    // The directory mirrors exactly what this pull returned, and what Zoho no longer has moves to data/.removed/.
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, clientScriptsDirName])
 
     const pageDirSegments = resolvePageDirSegments(pages)
     const failed: Failure[] = []
@@ -58,7 +58,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
             const pageLabel = dirSegments.slice(2).join('/')
 
             progress.update(pageLabel)
-            await writeArtifactJson(projectPath, [...dirSegments, clientScriptPageMetadataFileName], page)
+            await snapshot.writeJson([...dirSegments, clientScriptPageMetadataFileName], page)
 
             let scripts: ClientScript[]
 
@@ -74,7 +74,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
             scriptsFound += scripts.length
 
             for (const script of scripts) {
-                await writeArtifactJson(projectPath, resolveScriptMetadataSegments(dirSegments, script), script)
+                await snapshot.writeJson(resolveScriptMetadataSegments(dirSegments, script), script)
 
                 try {
                     const hostingUrl = script.hosting?.url
@@ -84,7 +84,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
                     }
 
                     const source = await getClientScriptSourceRequest(hostingUrl)
-                    await writeArtifactText(projectPath, resolveScriptSourceSegments(dirSegments, script), source)
+                    await snapshot.writeText(resolveScriptSourceSegments(dirSegments, script), source)
                     sourcesDownloaded += 1
                 } catch (error) {
                     failed.push({
@@ -106,6 +106,8 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
         'Client scripts pull finished'
     )
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Pages found: ${pages.length}`,
@@ -113,8 +115,10 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
             `Source downloaded: ${sourcesDownloaded}`,
             `Failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.subject}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }
 

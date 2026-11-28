@@ -1,11 +1,11 @@
 import { getProjectSettings } from '@zoho-studio/core'
 import {
-    ensureArtifactDir,
-    removeModuleArtifactFiles,
-    replaceArtifactDir,
+    isRecordOfModule,
+    openArtifactSnapshot,
     resolveArtifactFileName,
     sortForStableFileNames,
-    writeArtifactJson,
+    summarizeRemovedArtifacts,
+    type ArtifactSnapshot,
 } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
@@ -21,6 +21,7 @@ const delayBetweenActionRequestsMs = 300
 type PendingAction = {
     type: WorkflowActionType
     action: ZohoWorkflowAction
+    snapshot: ArtifactSnapshot
     /** The file names its directory already holds, so a collision resolves against them. */
     takenFileNames: Set<string>
 }
@@ -62,11 +63,14 @@ export async function pullWorkflowActions(
 
     // Only a type Zoho answered for is rewritten, so a failed list keeps the previous snapshot.
     const pending: PendingAction[] = []
+    const snapshots: ArtifactSnapshot[] = []
 
     for (const [type, actions] of listedByType) {
-        const takenFileNames = await prepareTypeDir(projectPath, type, module)
+        const snapshot = await openTypeSnapshot(projectPath, type, module)
+        const takenFileNames = new Set(snapshot.keptFileNames)
 
-        pending.push(...actions.map((action) => ({ type, action, takenFileNames })))
+        snapshots.push(snapshot)
+        pending.push(...actions.map((action) => ({ type, action, snapshot, takenFileNames })))
     }
 
     logger.info({ total: pending.length, types: listedByType.size }, 'Workflow actions found')
@@ -76,7 +80,7 @@ export async function pullWorkflowActions(
     progress.start(pending.length)
 
     try {
-        for (const [index, { type, action, takenFileNames }] of pending.entries()) {
+        for (const [index, { type, action, snapshot, takenFileNames }] of pending.entries()) {
             if (index > 0) {
                 await delay(delayBetweenActionRequestsMs)
             }
@@ -96,8 +100,7 @@ export async function pullWorkflowActions(
                     logger.warn({ type, action: action.name }, 'Saved a workflow action from the list')
                 }
 
-                await writeArtifactJson(
-                    projectPath,
+                await snapshot.writeJson(
                     [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type), fileName],
                     details ?? action
                 )
@@ -125,6 +128,12 @@ export async function pullWorkflowActions(
         'Workflow actions pull finished'
     )
 
+    const removedPaths: string[] = []
+
+    for (const snapshot of snapshots) {
+        removedPaths.push(...(await snapshot.close()))
+    }
+
     return {
         summary: [
             `Workflow actions found: ${pending.length}`,
@@ -133,24 +142,20 @@ export async function pullWorkflowActions(
             ...savedFromList.map((name) => `  - ${name}`),
             `Failures: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.name}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }
 
-/** A full pull mirrors what Zoho returned; a single-module pull may only drop that module. */
-async function prepareTypeDir(
+/** A full pull mirrors what Zoho returned; a single-module pull owns only that module's actions. */
+function openTypeSnapshot(
     projectPath: string,
     type: WorkflowActionType,
     module: string | undefined
-): Promise<Set<string>> {
-    const segments = [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type)]
-
-    if (!module) {
-        await replaceArtifactDir(projectPath, segments)
-
-        return new Set()
-    }
-
-    return removeModuleArtifactFiles(await ensureArtifactDir(projectPath, segments), module)
+): Promise<ArtifactSnapshot> {
+    return openArtifactSnapshot(projectPath, [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type)], {
+        owns: module ? (record) => isRecordOfModule(record, module) : undefined,
+    })
 }

@@ -48,8 +48,7 @@ four-space indent and a trailing newline. The file is the one behind the resourc
 byte for byte — Zoho's gzip resources stay gzip. The `uri` lies outside Zoho CRM and is requested
 without the OAuth token, the way the CRM web UI requests it.
 
-**The target directory is deleted and recreated on every run.** It always reflects the current pull,
-so a resource removed in Zoho disappears locally, and any local edit inside it is lost.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A resource removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
 
 ## Failures
 

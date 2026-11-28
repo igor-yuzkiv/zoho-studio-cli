@@ -1,6 +1,6 @@
 import { getProjectSettings } from '@zoho-studio/core'
 import { describeRequestError } from '../../../api'
-import { replaceArtifactDir, resolveArtifactFileName, writeArtifactJson } from '@zoho-studio/core'
+import { openArtifactSnapshot, resolveArtifactFileName, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -35,7 +35,7 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
     logger.info({ total: globalPicklists.length }, 'Global picklists found')
 
     // Rewritten only once the list arrived, so a failed pull keeps the previous snapshot.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, globalPicklistsDirName])
+    const snapshot = await openArtifactSnapshot(projectPath, [zohoCrmDirName, globalPicklistsDirName])
 
     const takenFileNames = new Set<string>()
     const failed: FailedPicklist[] = []
@@ -56,7 +56,7 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
                 const details = await getGlobalPicklistRequest(globalPicklist.id)
                 const fileName = resolveArtifactFileName(globalPicklist.api_name, globalPicklist.id, takenFileNames)
 
-                await writeArtifactJson(projectPath, [zohoCrmDirName, globalPicklistsDirName, fileName], details)
+                await snapshot.writeJson([zohoCrmDirName, globalPicklistsDirName, fileName], details)
 
                 takenFileNames.add(fileName)
                 savedPicklists += 1
@@ -79,13 +79,17 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
         'Global picklists pull finished'
     )
 
+    const removedPaths = await snapshot.close()
+
     return {
         summary: [
             `Global picklists found: ${globalPicklists.length}`,
             `Global picklists saved: ${savedPicklists}`,
             `Global picklists failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.apiName}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

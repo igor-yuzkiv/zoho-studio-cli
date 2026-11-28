@@ -36,13 +36,9 @@ characters a path segment cannot contain are replaced; nothing else about the na
 `*.metadata.json` holds the full module record exactly as the endpoint returned it, formatted with a
 four-space indent and a trailing newline.
 
-**The target directory is deleted and recreated on every run.** It always reflects the current pull,
-so a module removed in Zoho disappears locally, and any local edit inside it is lost.
+**This command owns only the metadata file of each module.** The fields [`zoho-studio z-crm:fields:pull`](fields.md) writes into `<module>/fields/` and the layouts [`zoho-studio z-crm:layouts:pull`](layouts.md) writes into `<module>/layouts/` stay where they are. A metadata file whose content did not change stays as it is, and a changed one is rewritten.
 
-That includes the fields [`zoho-studio z-crm:fields:pull`](fields.md) writes into
-`<module>/fields/` and the layouts [`zoho-studio z-crm:layouts:pull`](layouts.md)
-writes into `<module>/layouts/`: this command wipes them along with everything else. The order is
-always `z-crm:modules:pull` first, `z-crm:fields:pull` and `z-crm:layouts:pull` after.
+A module removed in Zoho moves to `data/.removed/<date-time>/` with its whole folder — metadata, fields, and layouts — see [Pulling](../../guides/pulling.md). Run `z-crm:modules:pull` first, `z-crm:fields:pull` and `z-crm:layouts:pull` after: they walk the modules in the local folder.
 
 The location is fixed: `data/zoho-crm/modules/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](../project/init.md) for the project tree.
@@ -50,8 +46,8 @@ setting moves it — see [`zoho-studio init`](../project/init.md) for the projec
 ## Failures
 
 The whole command is a single request, so failing to fetch the module list is fatal — there would be
-nothing to write, and the existing directory is left untouched because it is wiped only after the
-list arrives.
+nothing to write, and the existing folder is left untouched because nothing is moved until the list
+arrives.
 
 ## Logs
 

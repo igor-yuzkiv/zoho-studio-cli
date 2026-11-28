@@ -3,12 +3,14 @@
 Pulling downloads resources from the CRM into `data/zoho-crm/`. Each kind of resource has its own
 command, and a **preset** runs several of them in a row.
 
-**A full pull replaces the folder it writes.** What was deleted in the CRM disappears locally too, so the files mirror the CRM. Local edits in those folders are overwritten — keep them in git.
+**A pull mirrors the CRM in the folder it writes.** A file whose content did not change stays as it is; a changed one is rewritten, so local edits in those folders are overwritten — keep them in git. A file for something deleted in the CRM is not deleted: it moves to `data/.removed/<date-time>/`, under the same path it had in `data/`, and the pull prints a line `Moved N removed files to data/.removed/<date-time>/`. All the steps of one preset share one such folder. Nothing cleans `data/.removed/` up; delete what you no longer need. A project made by `init` keeps it out of git; in an older project, add `data/.removed/` to `.gitignore`.
 
-Two cases keep older files:
+Two cases keep older files where they are:
 
-- A pull with `--module` (workflows, workflow actions) removes only that module's files and leaves the rest of the folder.
+- A pull with `--module` (workflows, workflow actions) owns only that module's files and leaves the rest of the folder.
 - A part that failed to download — a module's fields or layouts, a type of workflow actions — keeps its previous files.
+
+A single item that failed within a part — one function, say — is not written, so its previous file moves to `data/.removed/` with the rest.
 
 ## Everything at once
 

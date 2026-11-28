@@ -1,4 +1,4 @@
-import { getProjectSettings } from '@zoho-studio/core'
+import { getProjectSettings, summarizeRemovedArtifacts } from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { delay } from '@zoho-studio/core'
@@ -25,6 +25,7 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
 
     logger.info({ modules: moduleNames.length }, 'Local modules found')
 
+    const removedPaths: string[] = []
     const failed: FailedModule[] = []
     let savedFields = 0
     progress.start(moduleNames.length)
@@ -41,7 +42,7 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
                 const fields = await getFieldsListRequest(moduleName)
 
                 // Rewritten only once the module answered, so a failed pull keeps the previous snapshot.
-                await saveModuleFields(projectPath, moduleName, fields)
+                removedPaths.push(...(await saveModuleFields(projectPath, moduleName, fields)))
 
                 savedFields += fields.length
             } catch (error) {
@@ -66,7 +67,9 @@ export async function pullFields(options: PullFieldsOptions, progress: PullProgr
             `Fields saved: ${savedFields}`,
             `Modules failed: ${failed.length}`,
             ...failed.map((failure) => `  - ${failure.apiName}: ${failure.message}`),
+            ...summarizeRemovedArtifacts(removedPaths),
         ],
         failedCount: failed.length,
+        removedPaths,
     }
 }

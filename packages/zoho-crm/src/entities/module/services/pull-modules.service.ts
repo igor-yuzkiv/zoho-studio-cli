@@ -1,12 +1,22 @@
+import { readdir } from 'node:fs/promises'
+
 import { getProjectSettings } from '@zoho-studio/core'
-import { replaceArtifactDir } from '@zoho-studio/core'
+import {
+    moveArtifactToRemoved,
+    openArtifactSnapshot,
+    resolveArtifactPath,
+    summarizeRemovedArtifacts,
+    toPathSegment,
+} from '@zoho-studio/core'
 import { createCommandLogger } from '@zoho-studio/core'
 import type { PullProgress, PullResult } from '@zoho-studio/core'
 import { modulesDirName, zohoCrmDirName } from '../../../zoho-crm.config'
 
 import { getModulesListRequest } from '../api'
 import type { ZohoModule } from '../module.types'
-import { saveModuleMetadata } from './save-module-metadata.service'
+import { moduleMetadataFilePath } from '../module.utils'
+
+const modulesSegments = [zohoCrmDirName, modulesDirName]
 
 export async function pullModules(progress: PullProgress): Promise<PullResult> {
     const logger = await createCommandLogger('z-crm:modules:pull')
@@ -25,25 +35,55 @@ export async function pullModules(progress: PullProgress): Promise<PullResult> {
 
     logger.info({ total: modules.length }, 'Modules found')
 
-    // The directory mirrors exactly what this pull returned, so stale modules are dropped.
-    await replaceArtifactDir(projectPath, [zohoCrmDirName, modulesDirName])
+    // A module folder also holds the fields and layouts other pulls write, so this pull owns only
+    // the metadata file of each module.
+    const snapshot = await openArtifactSnapshot(projectPath, modulesSegments, {
+        owns: (_record, relativePath) => relativePath.endsWith('.metadata.json'),
+    })
 
     progress.start(modules.length)
 
     try {
         for (const module of modules) {
             progress.update(module.api_name)
-            await saveModuleMetadata(projectPath, module)
+            await snapshot.writeJson(moduleMetadataFilePath(module.api_name), module)
             progress.increment()
         }
     } finally {
         progress.stop()
     }
 
-    logger.info({ total: modules.length }, 'Modules pull finished')
+    const removedPaths = [
+        ...(await snapshot.close()),
+        ...(await moveRemovedModuleFolders(projectPath, modules)),
+    ]
+
+    logger.info({ total: modules.length, removed: removedPaths.length }, 'Modules pull finished')
 
     return {
-        summary: [`Modules found: ${modules.length}`, `Metadata saved: ${modules.length}`],
+        summary: [
+            `Modules found: ${modules.length}`,
+            `Metadata saved: ${modules.length}`,
+            ...summarizeRemovedArtifacts(removedPaths),
+        ],
         failedCount: 0,
+        removedPaths,
     }
+}
+
+/** A module Zoho no longer has takes its whole folder along — fields and layouts included. */
+async function moveRemovedModuleFolders(projectPath: string, modules: ZohoModule[]): Promise<string[]> {
+    const currentFolders = new Set(modules.map((module) => toPathSegment(module.api_name)))
+    const entries = await readdir(resolveArtifactPath(projectPath, modulesSegments), { withFileTypes: true }).catch(
+        () => []
+    )
+    const moved: string[] = []
+
+    for (const entry of entries) {
+        if (entry.isDirectory() && !currentFolders.has(entry.name)) {
+            moved.push(...(await moveArtifactToRemoved(projectPath, [...modulesSegments, entry.name])))
+        }
+    }
+
+    return moved
 }

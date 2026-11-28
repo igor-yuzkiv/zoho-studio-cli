@@ -37,8 +37,7 @@ characters a path segment cannot contain are replaced; nothing else about the na
 formatted with a four-space indent and a trailing newline. `*.deluge` holds the source verbatim —
 it is never formatted, wrapped, or parsed.
 
-**The target directory is deleted and recreated on every run.** It always reflects the current pull,
-so a function removed in Zoho disappears locally, and any local edit inside it is lost.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A function removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
 
 The location is fixed: `data/zoho-crm/functions/` under the project root, created if it is not there. No
 setting moves it — see [`zoho-studio init`](../project/init.md) for the project tree.

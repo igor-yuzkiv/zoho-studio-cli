@@ -38,7 +38,7 @@ my-crm/
 
 `init` готує проєкт до git:
 
-- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`, результати тестів віджетів;
+- **не потрапляють:** `settings.json`, `org.json`, `migrations.json`, логи, `node_modules`, результати тестів віджетів, `data/.removed/`;
 - **призначені для коміту:** `data/`, `src/`, `migrations/`, `scripts/`, `widgets/`, `.claude/`, `package.json`, `tsconfig.json`.
 
 Облікових даних у проєкті немає взагалі — вони в `~/.zoho-studio`.

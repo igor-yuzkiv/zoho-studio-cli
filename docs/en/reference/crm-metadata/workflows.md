@@ -40,8 +40,7 @@ separate endpoints and are not pulled.
 
 The folder is always `data/zoho-crm/workflows/`; no setting moves it.
 
-**The whole folder is deleted and recreated on each full run**, so a rule removed in Zoho disappears
-locally and any local edit is lost.
+**The folder mirrors the current pull.** A file whose content did not change stays as it is, and a changed one is rewritten, so a local edit inside it is lost. A rule removed in Zoho moves to `data/.removed/<date-time>/` under its path — see [Pulling](../../guides/pulling.md).
 
 Files are named after the rule. Only characters a path segment cannot contain are replaced; nothing
 else about the name is changed. Rule names are not unique, so when two rules would claim the same
@@ -58,12 +57,12 @@ by a full one — both rules are kept either way, but the pair shows up as a ren
 zoho-studio z-crm:workflows:pull --module=Deals
 ```
 
-This run does **not** wipe the folder. It removes only the files whose rule belongs to that module —
-each file records its own module, so the owner is read back out of the file — and leaves every other
-rule where it is. A file that cannot be read as a rule is left alone rather than guessed about.
+This run owns only the files whose rule belongs to that module — each file records its own module,
+so the owner is read back out of the file — and leaves every other rule where it is. A rule of that
+module that Zoho no longer has moves to `data/.removed/`. A file that cannot be read as a rule is left alone rather than guessed about.
 
 The value is a module API name. A value that is not a plain name is refused before anything is
-deleted, and a module Zoho does not know stops the command with Zoho's own message.
+moved, and a module Zoho does not know stops the command with Zoho's own message.
 
 ## Failures
 
