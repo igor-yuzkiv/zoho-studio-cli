@@ -47,4 +47,22 @@ describe('pullModules', () => {
         expect(await readdir(join(crm.projectPath, 'data/zoho-crm/modules'))).toEqual(['Leads'])
         expect(result.summary.at(-1)).toMatch(/^Moved 2 removed files to data\/\.removed\//)
     })
+
+    test('keeps a module folder whose API name changed only in case on a case-insensitive disk', async () => {
+        crm = await startCrmStub(modulesAnswer('leads'))
+        await writeArtifactJson(crm.projectPath, ['zoho-crm', 'modules', 'Leads', 'fields', 'Email.json'], {})
+        const modulesPath = join(crm.projectPath, 'data/zoho-crm/modules')
+        const insensitive = await Bun.file(join(modulesPath, 'leads', 'fields', 'Email.json')).exists()
+
+        const result = await pullModules(silentPullProgress)
+
+        if (insensitive) {
+            expect(result.removedPaths).toEqual([])
+            expect(await Bun.file(join(modulesPath, 'leads', 'fields', 'Email.json')).exists()).toBe(true)
+        } else {
+            expect(result.removedPaths.map((path) => path.split('/').slice(2).join('/'))).toEqual([
+                'zoho-crm/modules/Leads/fields/Email.json',
+            ])
+        }
+    })
 })

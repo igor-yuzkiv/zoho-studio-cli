@@ -44,9 +44,7 @@ setting moves it — see [`zoho-studio init`](../project/init.md) for the projec
 
 ## Failures
 
-A function whose code cannot be fetched does not stop the run: its metadata is still written, no
-code file is created, and it is listed in the summary with a short error. The command still
-succeeds — partial code failures are reported, not fatal.
+A function whose code cannot be fetched does not stop the run: its metadata is still written, a code file from an earlier pull stays as it was, and the function is listed in the summary with a short error. The command then exits with code 1.
 
 Failing to fetch the function list itself is fatal, since there would be nothing to write.
 

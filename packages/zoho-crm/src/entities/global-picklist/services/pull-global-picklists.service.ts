@@ -51,16 +51,18 @@ export async function pullGlobalPicklists(progress: PullProgress): Promise<PullR
 
             progress.update(globalPicklist.api_name)
 
+            const fileName = resolveArtifactFileName(globalPicklist.api_name, globalPicklist.id, takenFileNames)
+            takenFileNames.add(fileName)
+
             try {
                 // The list carries no picklist values, so the full record is fetched per picklist.
                 const details = await getGlobalPicklistRequest(globalPicklist.id)
-                const fileName = resolveArtifactFileName(globalPicklist.api_name, globalPicklist.id, takenFileNames)
 
                 await snapshot.writeJson([zohoCrmDirName, globalPicklistsDirName, fileName], details)
 
-                takenFileNames.add(fileName)
                 savedPicklists += 1
             } catch (error) {
+                snapshot.keep([zohoCrmDirName, globalPicklistsDirName, fileName])
                 failed.push({ apiName: globalPicklist.api_name, message: describeRequestError(error) })
                 logger.error(
                     { err: error, globalPicklist: globalPicklist.api_name },

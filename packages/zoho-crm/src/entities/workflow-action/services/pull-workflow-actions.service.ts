@@ -87,10 +87,13 @@ export async function pullWorkflowActions(
 
             progress.update(`${type}: ${action.name}`)
 
+            const fileName = resolveArtifactFileName(action.name, action.id, takenFileNames)
+            const fileSegments = [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type), fileName]
+            takenFileNames.add(fileName)
+
             try {
                 // The list omits what an action actually does, so the full record is fetched per action.
                 const details = await getWorkflowActionRequest(type, action.id)
-                const fileName = resolveArtifactFileName(action.name, action.id, takenFileNames)
 
                 // Zoho reports no details for some actions it lists quite normally. Keeping the
                 // list entry loses nothing for a field update or a task, and for the other types
@@ -100,14 +103,11 @@ export async function pullWorkflowActions(
                     logger.warn({ type, action: action.name }, 'Saved a workflow action from the list')
                 }
 
-                await snapshot.writeJson(
-                    [zohoCrmDirName, workflowActionsDirName, toWorkflowActionDirName(type), fileName],
-                    details ?? action
-                )
+                await snapshot.writeJson(fileSegments, details ?? action)
 
-                takenFileNames.add(fileName)
                 savedActions += 1
             } catch (error) {
+                snapshot.keep(fileSegments)
                 failed.push({ name: `${type}: ${action.name}`, message: describePullError(error) })
                 logger.error({ err: error, type, action: action.name }, 'Failed to pull a workflow action')
             }

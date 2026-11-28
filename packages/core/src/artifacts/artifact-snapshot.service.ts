@@ -1,4 +1,4 @@
-import { mkdir, readdir, rename, rm, rmdir } from 'node:fs/promises'
+import { mkdir, readdir, rename, rm, rmdir, stat } from 'node:fs/promises'
 import { dirname, join, relative, sep } from 'node:path'
 
 import { resolveWorkspaceDataPath } from '../config'
@@ -23,6 +23,11 @@ export interface ArtifactSnapshot {
     writeJson(segments: string[], value: unknown): Promise<void>
     writeText(segments: string[], content: string): Promise<void>
     writeBytes(segments: string[], content: Uint8Array): Promise<void>
+    /**
+     * Keeps an existing file — or every file under a folder — as it is, for an item Zoho still has
+     * but whose content could not be fetched this time.
+     */
+    keep(segments: string[]): void
     /** Names of the files directly in the folder that the pull does not own. */
     readonly keptFileNames: Set<string>
     /** Moves what was not written and returns the moved paths, relative to `data/`. */
@@ -66,6 +71,9 @@ export async function openArtifactSnapshot(
     }
 
     const writtenFilePaths = new Set<string>()
+    const keptPaths = new Set<string>()
+    const isKept = (filePath: string) =>
+        [...keptPaths].some((keptPath) => filePath === keptPath || filePath.startsWith(keptPath + sep))
 
     async function write(fileSegments: string[], content: string | Uint8Array): Promise<void> {
         const filePath = resolveArtifactPath(projectPath, fileSegments)
@@ -83,14 +91,24 @@ export async function openArtifactSnapshot(
         writeJson: (fileSegments, value) => write(fileSegments, `${JSON.stringify(value, null, 4)}\n`),
         writeText: (fileSegments, content) => write(fileSegments, content),
         writeBytes: (fileSegments, content) => write(fileSegments, content),
+        keep: (fileSegments) => {
+            keptPaths.add(resolveArtifactPath(projectPath, fileSegments))
+        },
         keptFileNames,
         async close() {
             const moved: string[] = []
+            const writtenIdentities = await fileIdentities([...writtenFilePaths])
 
             for (const filePath of ownedFilePaths) {
-                if (!writtenFilePaths.has(filePath)) {
-                    moved.push(await moveFileToRemoved(projectPath, filePath))
+                if (
+                    writtenFilePaths.has(filePath) ||
+                    isKept(filePath) ||
+                    writtenIdentities.has((await fileIdentity(filePath)) ?? '')
+                ) {
+                    continue
                 }
+
+                moved.push(await moveFileToRemoved(projectPath, filePath))
             }
 
             await removeEmptyDirs(dirPath)
@@ -123,6 +141,22 @@ async function moveFileToRemoved(projectPath: string, filePath: string): Promise
     await rename(filePath, removedPath)
 
     return removedRelativePath.split(sep).join('/')
+}
+
+/**
+ * Which file on disk a path names. On a case-insensitive file system (macOS by default) `Foo.json`
+ * and `foo.json` are one file, so a renamed item's new path must not count the old one as removed.
+ */
+export async function fileIdentity(path: string): Promise<string | null> {
+    const stats = await stat(path).catch(() => null)
+
+    return stats ? `${stats.dev}:${stats.ino}` : null
+}
+
+export async function fileIdentities(paths: string[]): Promise<Set<string>> {
+    const identities = await Promise.all(paths.map(fileIdentity))
+
+    return new Set(identities.filter((identity): identity is string => identity !== null))
 }
 
 async function listFilesUnder(dirPath: string): Promise<string[]> {

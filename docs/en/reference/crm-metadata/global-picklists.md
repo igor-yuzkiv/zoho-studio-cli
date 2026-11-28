@@ -37,7 +37,7 @@ The folder mirrors what Zoho answered: a file whose content did not change stays
 ## When a single picklist fails
 
 The list is fetched once, then each picklist is fetched on its own, with a short pause between
-requests. A picklist that fails is reported by name at the end and the run continues:
+requests. A picklist that fails is reported by name at the end, its file from an earlier pull stays as it was, and the run continues:
 
 ```text
 Global picklists saved: 13

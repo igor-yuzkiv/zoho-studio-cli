@@ -10,7 +10,7 @@ Two cases keep older files where they are:
 - A pull with `--module` (workflows, workflow actions) owns only that module's files and leaves the rest of the folder.
 - A part that failed to download — a module's fields or layouts, a type of workflow actions — keeps its previous files.
 
-A single item that failed within a part — one function, say — is not written, so its previous file moves to `data/.removed/` with the rest.
+A single item that failed within a part — the code of one function, say — keeps its previous file: Zoho still has the item, so nothing about it moves to `data/.removed/`.
 
 ## Everything at once
 

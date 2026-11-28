@@ -70,8 +70,7 @@ the pulled tree to keep a history.
 ## Failures
 
 A page whose scripts cannot be listed, or a script whose source cannot be fetched, does not stop the
-run: what could be written is written, and the failure is listed in the summary with a short
-error. The command still succeeds.
+run: what could be written is written, the files of that page or script from an earlier pull stay as they were, and the failure is listed in the summary with a short error. The command exits with code 1.
 
 Failing to fetch the page list itself is fatal, since there would be nothing to write.
 

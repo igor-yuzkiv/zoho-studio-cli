@@ -64,7 +64,7 @@ lists the webhooks it invokes.
 ## Failures
 
 A webhook whose full record cannot be fetched does not stop the run: it is listed in the summary
-with a short error, the remaining webhooks are still pulled, and the command still succeeds.
+with a short error, its file from an earlier pull stays as it was, the remaining webhooks are still pulled, and the command exits with code 1.
 
 ```text
 Webhooks failed: 1

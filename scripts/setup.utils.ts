@@ -1,4 +1,4 @@
-import { lstat, mkdir, readlink, rm, symlink } from 'node:fs/promises'
+import { lstat, mkdir, readlink, realpath, rm, symlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
 export const executableName = 'zoho-studio'
@@ -47,7 +47,7 @@ export async function installExecutableLink({
     if (existing.isSymbolicLink()) {
         const currentTarget = await readlink(linkPath)
 
-        if (resolve(binPath, currentTarget) === resolve(targetPath)) {
+        if (await isSameFile(resolve(binPath, currentTarget), targetPath)) {
             return { status: 'unchanged', linkPath }
         }
 
@@ -96,13 +96,14 @@ export function pathHint({
     const exportLine = `export PATH="${folder}:$PATH"`
     const shellName = shell?.split('/').pop()
 
+    const quotedFolder = `"${folder}"`
     const command =
         shellName === 'zsh'
             ? `echo '${exportLine}' >> ~/.zshrc`
             : shellName === 'bash'
               ? `echo '${exportLine}' >> ${platform === 'darwin' ? '~/.bash_profile' : '~/.bashrc'}`
               : shellName === 'fish'
-                ? `fish_add_path ${folder}`
+                ? `fish_add_path ${quotedFolder}`
                 : exportLine
 
     const lines = [
@@ -113,11 +114,22 @@ export function pathHint({
         'then open a new terminal.',
     ]
 
-    if (platform === 'linux') {
+    if (platform === 'linux' && binPath === join(home, '.local/bin')) {
         lines.push('Many Linux systems add ~/.local/bin to PATH at login once it exists, so logging in again may be enough.')
     }
 
     return lines.join('\n')
+}
+
+/** Compares where two paths lead, so a clone reached through a symlinked folder still matches. */
+async function isSameFile(left: string, right: string): Promise<boolean> {
+    if (resolve(left) === resolve(right)) {
+        return true
+    }
+
+    const [realLeft, realRight] = await Promise.all([realpath(left).catch(() => null), realpath(right).catch(() => null)])
+
+    return realLeft !== null && realLeft === realRight
 }
 
 function expandHome(entry: string, home: string): string {

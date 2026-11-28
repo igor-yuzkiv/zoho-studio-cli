@@ -65,6 +65,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
             try {
                 scripts = await getClientScriptsListRequest(page.id)
             } catch (error) {
+                snapshot.keep(dirSegments)
                 failed.push({ subject: `page ${pageLabel}`, message: toMessage(error) })
                 logger.error({ err: error, pageId: page.id }, 'Failed to fetch the client scripts of a page')
                 progress.increment()
@@ -87,6 +88,7 @@ export async function pullClientScripts(progress: PullProgress): Promise<PullRes
                     await snapshot.writeText(resolveScriptSourceSegments(dirSegments, script), source)
                     sourcesDownloaded += 1
                 } catch (error) {
+                    snapshot.keep(resolveScriptSourceSegments(dirSegments, script))
                     failed.push({
                         subject: `${pageLabel}/${script.name} (${script.id})`,
                         message: toMessage(error),

@@ -52,8 +52,7 @@ without the OAuth token, the way the CRM web UI requests it.
 
 ## Failures
 
-A resource whose file cannot be fetched does not stop the run: its metadata is still written, no
-file is created, and it is listed in the summary with a short error. Failing to fetch the resource
+A resource whose file cannot be fetched does not stop the run: its metadata is still written, a file from an earlier pull stays as it was, and it is listed in the summary with a short error; the command exits with code 1. Failing to fetch the resource
 list itself is fatal, since there would be nothing to write.
 
 ## Logs

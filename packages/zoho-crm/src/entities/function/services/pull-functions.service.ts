@@ -57,6 +57,7 @@ export async function pullFunctions(progress: PullProgress): Promise<PullResult>
                 const code = await getFunctionCodeRequest(zohoFunction.id)
                 await snapshot.writeText(functionCodeFilePath(zohoFunction), code)
             } catch (error) {
+                snapshot.keep(functionCodeFilePath(zohoFunction))
                 failed.push({
                     name: zohoFunction.name,
                     apiName: zohoFunction.api_name,
