@@ -25,6 +25,7 @@ The [documentation map](docs/en/README.md) shows where everything is. New to the
 - [login](docs/en/reference/project/login.md) — authorizing a project with `zoho-studio login`
 - [preset](docs/en/reference/project/preset.md) — running a named sequence of commands
 - [browser](docs/en/reference/project/browser.md) — browsing the artifacts and running pulls in a local web app
+- [instructions](docs/en/reference/project/instructions.md) — instructions for AI agents working in a project
 
 **CRM organization**
 
