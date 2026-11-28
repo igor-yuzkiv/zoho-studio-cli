@@ -48,7 +48,7 @@ Zoho CRM змінюється, і пам'ять про нього часто х�
 
 - HTML і JavaScript в iframe всередині CRM, що спілкуються з ним через JS SDK (`ZOHO.embeddedApp`, `ZOHO.CRM.*`). Обробники, зареєстровані після `ZOHO.embeddedApp.init()`, ніколи не спрацьовують.
 - Збираються й пакуються CLI Zoho `zet`; хостяться в Zoho або за зовнішньою HTTPS-адресою.
-- Джерела: context7 віджети v1.5 — SDK, що відповідає кожен метод, і `zet`; власний вихідний код SDK (`zoho/embeddedApp-js-sdk` на GitHub, гілка `1.5`, `lib/ZohoCrmHelper.js`) має приклад відповіді для кожного методу. Локальне тестування віджета — `/zoho-studio:widget-testing`.
+- Джерела: context7 віджети v1.5 — SDK, що відповідає кожен метод, і `zet`; власний вихідний код SDK (`zoho/embeddedApp-js-sdk` на GitHub, гілка `1.5`, `lib/ZohoCrmHelper.js`) має приклад відповіді для кожного методу. Додавання чи створення віджета і що очікує `zet` — `/zoho-studio:widget-add`; локальне тестування віджета — `/zoho-studio:widget-testing`.
 
 ### COQL
 

@@ -43,7 +43,7 @@ Next steps:
 my-project/
   .git/                  # the repository init created, see below
   .claude/
-    settings.json        # Claude Code permissions: instructions run freely, scripts ask first, secrets are not read
+    settings.json        # Claude Code permissions: instructions run freely, scripts ask first, file tools skip secrets
   .gitignore             # keeps node_modules, widget test results, and data/.removed out of git
   .zoho-studio/
     .gitignore           # keeps settings.json, org.json and migrations.json out of git

@@ -97,6 +97,42 @@ describe('widget run command', () => {
         await expect(emulator.createSession('card')).rejects.toThrow('did not make')
     })
 
+    test('does not leave a widget running when the emulator stops during its start', async () => {
+        const port = freePort()
+        await widgetWithRun(port, `sleep 1 && ${serveOn(port)}`)
+        emulator = startWidgetEmulator({ projectPath, widgetStartTimeoutMs: 10_000 })
+
+        const session = emulator.createSession('card').catch((error: unknown) => error)
+        await Bun.sleep(200)
+        await emulator.stop()
+        emulator = null
+
+        expect(String(await session)).toContain('the emulator is stopping')
+        await Bun.sleep(1_500)
+        expect(await answers(`http://127.0.0.1:${port}/app.html`)).toBe(false)
+    }, 15_000)
+
+    test('starts a widget again when it stopped after answering', async () => {
+        const port = freePort()
+        const servesThenExits = `${process.execPath} -e "Bun.serve({ hostname: '127.0.0.1', port: ${port}, fetch: () => new Response('ok') }); setTimeout(() => process.exit(0), 700)"`
+        await widgetWithRun(port, servesThenExits)
+        emulator = startWidgetEmulator({ projectPath, widgetStartTimeoutMs: 10_000 })
+
+        await emulator.createSession('card')
+        await Bun.sleep(1_200)
+        expect(await answers(`http://127.0.0.1:${port}/app.html`)).toBe(false)
+
+        await emulator.createSession('card')
+        expect(await answers(`http://127.0.0.1:${port}/app.html`)).toBe(true)
+    }, 15_000)
+
+    test('names a run folder that does not exist', async () => {
+        await widgetWithRun(freePort(), 'true', { cwd: 'nowhere' })
+        emulator = startWidgetEmulator({ projectPath })
+
+        await expect(emulator.createSession('card')).rejects.toThrow(/widgets\/card\/nowhere, does not exist/)
+    })
+
     test('runs the command in the source folder unless run.cwd says otherwise', async () => {
         const port = freePort()
         await mkdir(join(projectPath, 'widgets/card/src'), { recursive: true })
