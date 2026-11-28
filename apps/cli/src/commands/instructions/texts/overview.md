@@ -24,8 +24,9 @@ current folder, so they work from any subfolder; outside a project they stop and
 
 ## Where to start
 
-1. `zoho-studio z-crm:status` — confirms the project is logged in and shows the organization. If it
-   says "This project is not authorized yet", the person has to run `zoho-studio login`.
+1. `zoho-studio z-crm:status` — confirms the project is logged in and shows the organization and
+   whether it is a sandbox. If it says "This project is not authorized yet", the person has to run
+   `zoho-studio login`.
 2. Look at what is already pulled in `data/`. To refresh everything: `zoho-studio preset pull-crm`.
 3. Read `zoho-studio instructions <command>` before using a command for the first time.
 
