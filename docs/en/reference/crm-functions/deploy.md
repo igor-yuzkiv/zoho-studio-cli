@@ -84,7 +84,8 @@ A refused deploy leaves the deploy file as it was and the command exits with cod
 
   A return type the category does not allow is reported the same way.
 - **A function with the same API name already exists** (`DUPLICATE_DATA`, which Zoho checks ignoring
-  case) — the command stops and suggests importing that function instead. It never binds to it on
+  case) — the command stops and suggests pulling functions and importing that one with
+  [`z-crm:functions:import`](import.md) instead. It never binds to it on
   its own.
 - **The function with the stored id no longer exists** (`INVALID_DATA`) — set `id` to `null` to create
   it again.
