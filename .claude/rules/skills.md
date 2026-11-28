@@ -75,7 +75,7 @@ A skill carries what the CLI's code does not: the process of working with the pe
 
 - Skills of the plugin are named in kebab-case without a prefix: Claude Code adds the plugin name (`setup` is called as `/zoho-studio:setup`).
 - The plugin is self-contained: a skill reads only files of its plugin (`${CLAUDE_PLUGIN_ROOT}`), never `docs/` or other folders of the clone — installed from git, the plugin may have only its own folder.
-- What the skills need on the machine is listed in `plugins/claude/zoho-studio/references/dependencies.md`: for each dependency, how to check it, how to install or update it, and what to tell the person.
+- What the skills need on the machine is listed in `plugins/claude/zoho-studio/references/dependencies.md`: for each dependency, how to check it, how to install or update it, and what to tell the person. The rule for keeping it complete is `.claude/rules/dependencies.md`.
 - `version` in `plugin.json` equals `version` in the root `package.json` and changes only through `/release` (`.claude/rules/versioning.md`).
 
 ## Language

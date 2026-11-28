@@ -17,6 +17,7 @@ Run `bun run check` before handing off a change.
 - `.claude/rules/instructions.md` — what goes into `zoho-studio instructions` and keeping it true to the code
 - `.claude/rules/skills.md` — how skills of the plugin and of this repository are written; `write-skill` applies it
 - `.claude/rules/translation.md` — the Ukrainian mirror `plugins-ua/` of the plugin
+- `.claude/rules/dependencies.md` — every tool a plugin skill relies on is listed in its `references/dependencies.md`
 
 A new command needs a page in `docs/<lang>/reference/`, an entry in the reference index, an
 entry in `README.md` and `README.ua.md` — in both languages — and its agent instructions in
