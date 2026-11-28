@@ -26,13 +26,14 @@ packages/
       api/          # Zoho CRM client and request error handling
       zoho-crm.config.ts  # names and constants that belong to this area only
       migrations/   # migrations of modules and fields, one folder per responsibility:
-                    #   definition/, loader/, planning/, running/, journal/, script/
+                    #   definition/, loader/, planning/, running/, journal/, script/, scaffold/
       entities/     # domain entities of this area (e.g.: field, function, module)
         <entity>/
           <entity>.types.ts   # the shape the CLI depends on
           <entity>.utils.ts   # helpers belonging to this entity — file names, ordering, validation
           api/                # requests belonging to this entity, one per file
           services/           # work built on top of the entity, when more than one caller needs it
+          <part>/             # a large self-contained part of the entity, e.g. widget/emulator/
 apps/
   cli/            # the CLI; `@/` resolves to apps/cli/src
     src/
@@ -109,7 +110,7 @@ path.utils.ts
 ```
 
 Responsibility suffixes in use: `.command.ts`, `.request.ts`, `.client.ts`, `.service.ts`,
-`.store.ts`, `.loader.ts`, `.types.ts`, `.settings.ts`, `.error.ts`, `.utils.ts`, `.builder.ts`, `.schemas.ts`, `.field.ts` (a field type of a migration), `.spec.ts`.
+`.store.ts`, `.loader.ts`, `.types.ts`, `.settings.ts`, `.error.ts`, `.utils.ts`, `.builder.ts`, `.schemas.ts`, `.config.ts` (names and constants of an area), `.page.ts` (an HTML page served or rendered by the CLI), `.field.ts` (a field type of a migration), `.spec.ts`.
 
 Add a new suffix only when an existing one does not fit the responsibility.
 
