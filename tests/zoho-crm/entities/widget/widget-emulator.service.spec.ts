@@ -141,6 +141,14 @@ describe('widget emulator', () => {
         )
     })
 
+    test('rejects use that is not a list of names', async () => {
+        await write('widgets/card/testing/scenarios/wrong.ts', `export default { use: 'record' }`)
+
+        await expect(emulator.createSession('card', 'wrong')).rejects.toThrow(
+            'Scenario "wrong" of widget "card": "use" must be a list of names'
+        )
+    })
+
     test('keeps a call log per session', async () => {
         const first = await emulator.createSession('card')
         const second = await emulator.createSession('card')

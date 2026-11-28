@@ -49,3 +49,10 @@ Every install or update runs only after the person agreed to that specific actio
 - **Check:** `zet --version` prints a version.
 - **Install:** `npm install -g zoho-extension-toolkit` (needs Node.js with `npm`). Without permission to write the global npm folder, tell the person rather than using `sudo`.
 - **Without it:** widgets still run and are tested locally; only packing for Zoho is left to the person.
+
+### Playwright — per project, for widget tests
+
+- **Needed by:** the `widget-testing` skill; the tests run in Node.js, not Bun, so Node.js has to be installed.
+- **Check:** `@playwright/test` is in the project's `package.json`, and `bunx playwright --version` prints a version; `node --version` for Node.js.
+- **Install:** in the project, `bun add -d @playwright/test`, then `bunx playwright install chromium` (downloads a browser). Node.js — from nodejs.org or the person's version manager (`nvm`); ask the person, it is their machine.
+- **Without it:** the emulator still runs widgets by hand (`z-crm:widgets:serve`, `zoho-studio browser`); only automated tests are missing.

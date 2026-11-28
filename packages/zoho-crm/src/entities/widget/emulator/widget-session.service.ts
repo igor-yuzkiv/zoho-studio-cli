@@ -55,7 +55,11 @@ export async function createWidgetSession(
     const widget = await readLocalWidget(projectPath, widgetName)
     const resolvedScenarioName = scenarioName ?? widget.defaultScenario
     const loadedScenario = await loadWidgetScenario(projectPath, widgetName, resolvedScenarioName)
-    const useMocks = async (names: string[] = []): Promise<WidgetMocks> => {
+    const useMocks = async (names: unknown = [], where: string): Promise<WidgetMocks> => {
+        if (!Array.isArray(names) || names.some((name) => typeof name !== 'string')) {
+            throw new Error(`${where}: "use" must be a list of names of files in widgets/${widgetName}/testing/mocks/.`)
+        }
+
         const sets = await Promise.all(names.map((name) => loadWidgetMocks(projectPath, widgetName, name)))
 
         return Object.assign({}, ...sets)
@@ -63,9 +67,9 @@ export async function createWidgetSession(
     const scenario: WidgetScenario = {
         ...loadedScenario,
         mocks: {
-            ...(await useMocks(loadedScenario.use)),
+            ...(await useMocks(loadedScenario.use, `Scenario "${resolvedScenarioName}" of widget "${widgetName}"`)),
             ...loadedScenario.mocks,
-            ...(await useMocks(overrides.use)),
+            ...(await useMocks(overrides.use, 'The session request')),
             ...overrides.mocks,
         },
     }
