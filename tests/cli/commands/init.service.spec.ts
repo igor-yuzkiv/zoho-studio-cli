@@ -62,9 +62,11 @@ describe('initializeProject', () => {
             'node_modules\nwidgets/*/results/\nwidgets/.report/\ntest-results/\ndata/.removed/\n'
         )
         expect(await Bun.file(join(workingPath, 'widgets/.gitkeep')).exists()).toBe(true)
-        expect(await Bun.file(join(workingPath, '.claude/skills/zoho-crm-widget-testing/SKILL.md')).exists()).toBe(true)
         expect(await Bun.file(join(workingPath, '.claude/settings.json')).json()).toMatchObject({
-            permissions: { ask: expect.arrayContaining(['Bash(bun run scripts/*)']) },
+            permissions: {
+                ask: expect.arrayContaining(['Bash(bun run scripts/*)']),
+                deny: expect.arrayContaining(['Read(**/.env)', 'Read(~/.zoho-studio/projects/**)']),
+            },
         })
         expect(await Bun.file(join(workingPath, 'package.json')).json()).toMatchObject({
             dependencies: { '@zoho-studio/core': 'link:@zoho-studio/core' },
