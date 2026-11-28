@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, realpath, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -64,7 +64,9 @@ export async function createTempProject(settings: TestProjectSettings = buildSet
     await useTempCredentialsHome()
 
     const { clientId, clientSecret, tokens, ...auth } = settings.auth
-    const projectPath = await mkdtemp(join(tmpdir(), 'zoho-studio-'))
+    // On macOS tmpdir() is under /var, a link to /private/var, while process.cwd() reports the
+    // resolved path; tokens are stored by path, so the project must be known by its real one.
+    const projectPath = await realpath(await mkdtemp(join(tmpdir(), 'zoho-studio-')))
     await Bun.write(resolveWorkspaceSettingsPath(projectPath), JSON.stringify({ ...settings, auth }))
 
     if (clientId && clientSecret) {

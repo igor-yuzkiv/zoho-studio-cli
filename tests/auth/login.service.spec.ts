@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from 'bun:test'
-import { mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
+import { mkdir, mkdtemp, realpath, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -147,7 +147,7 @@ describe('login', () => {
         const firstPath = projectPath!
         const home = process.env[credentialsHomeEnvName]!
 
-        const secondPath = await mkdtemp(join(tmpdir(), 'zoho-studio-'))
+        const secondPath = await realpath(await mkdtemp(join(tmpdir(), 'zoho-studio-')))
         await mkdir(join(secondPath, '.zoho-studio'))
         await Bun.write(
             resolveWorkspaceSettingsPath(secondPath),
